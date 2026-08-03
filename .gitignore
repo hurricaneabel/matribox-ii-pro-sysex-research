@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.vscode/
+
+log_matribox.txt
+*.pcap
+*.pcapng
+
+captures/
+logs/
