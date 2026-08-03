@@ -12,7 +12,7 @@ from set_effect_slot import (
 
 
 class TestEffectSlotProtocol(unittest.TestCase):
-    """Testes do SysEx para ligar e desligar efeitos por posição."""
+    """Testes do SysEx para controlar os slots internos de efeitos."""
 
     def test_split_value_into_nibbles(self):
         high, low = split_into_nibbles(0x2F)
@@ -20,13 +20,13 @@ class TestEffectSlotProtocol(unittest.TestCase):
         self.assertEqual(high, 0x02)
         self.assertEqual(low, 0x0F)
 
-    def test_position_1_enabled(self):
+    def test_slot_1_enabled(self):
         message = build_effect_message(
             effect_position=1,
             enabled=True,
         )
 
-        # O Mido remove F0 e F7.
+        # O Mido remove F0 e F7 do campo data.
         self.assertEqual(
             message.data[SLOT_HIGH_INDEX - 1],
             0x00,
@@ -48,7 +48,7 @@ class TestEffectSlotProtocol(unittest.TestCase):
             0x1C,
         )
 
-    def test_position_2_disabled(self):
+    def test_slot_2_disabled(self):
         message = build_effect_message(
             effect_position=2,
             enabled=False,
@@ -75,7 +75,7 @@ class TestEffectSlotProtocol(unittest.TestCase):
             0x1C,
         )
 
-    def test_position_3_enabled(self):
+    def test_slot_3_enabled(self):
         message = build_effect_message(
             effect_position=3,
             enabled=True,
@@ -102,17 +102,72 @@ class TestEffectSlotProtocol(unittest.TestCase):
             0x1E,
         )
 
-    def test_reject_position_zero(self):
+    def test_slot_4_disabled(self):
+        message = build_effect_message(
+            effect_position=4,
+            enabled=False,
+        )
+
+        self.assertEqual(
+            message.data[SLOT_HIGH_INDEX - 1],
+            0x00,
+        )
+        self.assertEqual(
+            message.data[SLOT_LOW_INDEX - 1],
+            0x03,
+        )
+        self.assertEqual(
+            message.data[STATE_HIGH_INDEX - 1],
+            0x00,
+        )
+        self.assertEqual(
+            message.data[STATE_LOW_INDEX - 1],
+            0x00,
+        )
+        self.assertEqual(
+            message.data[CHECKSUM_INDEX - 1],
+            0x1E,
+        )
+
+    def test_slot_12_enabled(self):
+        message = build_effect_message(
+            effect_position=12,
+            enabled=True,
+        )
+
+        # Slot 12 da interface = ID interno 11 = hexadecimal 0B.
+        self.assertEqual(
+            message.data[SLOT_HIGH_INDEX - 1],
+            0x00,
+        )
+        self.assertEqual(
+            message.data[SLOT_LOW_INDEX - 1],
+            0x0B,
+        )
+        self.assertEqual(
+            message.data[STATE_HIGH_INDEX - 1],
+            0x00,
+        )
+        self.assertEqual(
+            message.data[STATE_LOW_INDEX - 1],
+            0x01,
+        )
+        self.assertEqual(
+            message.data[CHECKSUM_INDEX - 1],
+            0x27,
+        )
+
+    def test_reject_slot_zero(self):
         with self.assertRaises(ValueError):
             build_effect_message(
                 effect_position=0,
                 enabled=True,
             )
 
-    def test_reject_unconfirmed_position(self):
+    def test_reject_slot_above_12(self):
         with self.assertRaises(ValueError):
             build_effect_message(
-                effect_position=4,
+                effect_position=13,
                 enabled=True,
             )
 

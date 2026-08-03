@@ -1,45 +1,96 @@
-## Controle de efeitos pela posição na cadeia
+## Controle de efeitos pelos slots internos
 
 Foi confirmado um comando SysEx capaz de ligar e desligar um efeito de acordo
-com sua posição na cadeia.
+com seu slot interno dentro do preset.
 
-O comando não depende do tipo de efeito carregado.
+O comando não depende:
 
-O mesmo pacote funcionou com diferentes categorias, incluindo:
+- do tipo de efeito carregado;
+- da categoria do efeito;
+- da posição visual atual na cadeia;
+- do banco;
+- do número do preset.
+
+O mesmo comando funcionou com diferentes categorias, incluindo:
 
 - DYN;
 - DRV;
+- WAH;
 - AMP;
-- CAB.
+- CAB;
+- MOD;
+- FREQ;
+- RVB.
 
-Isso indica que o comando controla a posição do efeito, e não um modelo ou
-categoria específica.
+## Diferença entre slot interno e posição visual
 
-### Posição do efeito
+A Matribox mantém duas informações diferentes para cada efeito:
 
-A posição é armazenada nos índices 39 e 40 da mensagem completa, contando
-o byte `F0` como índice zero.
+```text
+Slot interno:
+endereço persistente utilizado pelo protocolo SysEx
 
-O protocolo utiliza numeração começando em zero:
+Posição visual:
+local onde o efeito aparece atualmente na cadeia
+```
 
-| Posição na interface | Valor interno | Bytes enviados |
+Mover um efeito para outra posição da cadeia não altera seu slot interno.
+
+Foi realizado o seguinte teste:
+
+1. um WAH ocupava originalmente o slot interno 1;
+2. o WAH foi movido para o final da cadeia;
+3. o preset foi salvo;
+4. outro banco e outro preset foram selecionados;
+5. o preset original foi aberto novamente;
+6. o comando do slot interno 1 continuou controlando o WAH;
+7. o WAH foi apagado;
+8. outro efeito foi adicionado;
+9. o novo efeito reutilizou o slot interno 1.
+
+Isso confirma que o slot interno funciona como um endereço persistente dentro
+do preset.
+
+## Numeração dos slots internos
+
+Nosso programa apresenta os slots começando em 1.
+
+O protocolo utiliza valores começando em zero:
+
+| Slot apresentado | Valor interno | Bytes enviados |
 |---:|---:|---:|
 | 1 | 0 | `00 00` |
 | 2 | 1 | `00 01` |
 | 3 | 2 | `00 02` |
+| 4 | 3 | `00 03` |
+| 5 | 4 | `00 04` |
+| 6 | 5 | `00 05` |
+| 7 | 6 | `00 06` |
+| 8 | 7 | `00 07` |
+| 9 | 8 | `00 08` |
+| 10 | 9 | `00 09` |
+| 11 | 10 | `00 0A` |
+| 12 | 11 | `00 0B` |
 
 A conversão utilizada é:
 
 ```python
-protocol_position = effect_position - 1
+protocol_slot = effect_position - 1
 
-slot_high = (protocol_position >> 4) & 0x0F
-slot_low = protocol_position & 0x0F
+slot_high = (protocol_slot >> 4) & 0x0F
+slot_low = protocol_slot & 0x0F
 ```
 
-### Estado ligado ou desligado
+Os bytes do slot interno são armazenados nos índices:
 
-O estado é armazenado nos índices 47 e 48.
+```text
+39 = nibble alto
+40 = nibble baixo
+```
+
+## Estado ligado ou desligado
+
+O estado do efeito é armazenado nos índices 47 e 48.
 
 Desligado:
 
@@ -62,13 +113,13 @@ state_high = (state_value >> 4) & 0x0F
 state_low = state_value & 0x0F
 ```
 
-### Checksum confirmado
+## Checksum
 
 O checksum permanece no índice 7.
 
 Resultados confirmados:
 
-| Posição | Estado | Checksum |
+| Slot | Estado | Checksum |
 |---:|---|---:|
 | 1 | desligado | `1B` |
 | 1 | ligado | `1C` |
@@ -76,8 +127,11 @@ Resultados confirmados:
 | 2 | ligado | `1D` |
 | 3 | desligado | `1D` |
 | 3 | ligado | `1E` |
+| 4 | desligado | `1E` |
+| 4 | ligado | `1F` |
+| 12 | ligado | `27` |
 
-O checksum foi calculado usando o tamanho informado no índice 9:
+O checksum é calculado utilizando o tamanho informado no índice 9:
 
 ```python
 payload_start = 10
@@ -100,22 +154,26 @@ Como cada byte é transmitido em dois nibbles:
 24 × 2 = 48 bytes codificados
 ```
 
-### Testes realizados
+## Testes realizados
 
-O comando foi confirmado nas posições:
+Foi criado um preset de teste com 12 efeitos adicionados em sequência.
 
-- efeito 1;
-- efeito 2;
-- efeito 3.
-
-Também foi confirmado que ele funciona independentemente do tipo de efeito
-presente na posição.
-
-O arquivo utilizado para gerar os comandos é:
+O arquivo:
 
 ```text
 set_effect_slot.py
 ```
+
+foi testado nos 12 slots internos.
+
+Todos os slots foram ligados e desligados corretamente:
+
+```text
+1 até 12
+```
+
+Também foi confirmado que o mesmo slot interno pode controlar diferentes
+categorias de efeitos em diferentes presets.
 
 Os testes automáticos estão em:
 
@@ -123,5 +181,20 @@ Os testes automáticos estão em:
 tests/test_effect_slot_protocol.py
 ```
 
-Até este momento, somente as posições 1, 2 e 3 foram liberadas no código,
-pois são as posições confirmadas por testes reais.
+Atualmente existem:
+
+```text
+15 testes automáticos
+```
+
+Todos estão passando.
+
+## Interpretação atual
+
+Os índices 39 e 40 não identificam a posição visual do efeito.
+
+Eles identificam o slot interno persistente utilizado pela estrutura do
+preset.
+
+A posição visual da cadeia deve estar armazenada em outro campo ou em outro
+tipo de mensagem SysEx, ainda não identificado.

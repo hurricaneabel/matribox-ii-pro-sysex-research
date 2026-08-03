@@ -1,4 +1,4 @@
-"""Liga ou desliga um efeito pela posição na cadeia da Matribox II Pro."""
+"""Liga ou desliga um efeito pelo slot interno da Matribox II Pro."""
 
 from __future__ import annotations
 
@@ -48,9 +48,9 @@ def build_effect_message(
     enabled: bool,
 ) -> mido.Message:
     """Monta o SysEx para ligar ou desligar uma posição da cadeia."""
-    if not 1 <= effect_position <= 3:
+    if not 1 <= effect_position <= 12:
         raise ValueError(
-            "Nesta etapa, use somente as posições 1, 2 ou 3, "
+            "Nesta etapa, use somente as posições 1 até 12 "
             "que já foram confirmadas nas capturas."
         )
 
@@ -82,7 +82,7 @@ def build_effect_message(
     )
 
     print(
-        "Posição codificada:",
+        "Slot Interno Codificado:",
         f"{slot_high:02X} {slot_low:02X}",
     )
 
@@ -119,7 +119,7 @@ def main() -> None:
     try:
         effect_position = int(
             input(
-                "Digite a posição do efeito na cadeia (1, 2 ou 3): "
+                "Digite o slot interno do efeito (1 até 12): "
             ).strip()
         )
 
@@ -145,7 +145,7 @@ def main() -> None:
         state_name = "ligado" if enabled else "desligado"
 
         print(
-            f"Efeito da posição {effect_position} "
+            f"Efeito de slot interno {effect_position} "
             f"{state_name}."
         )
 
