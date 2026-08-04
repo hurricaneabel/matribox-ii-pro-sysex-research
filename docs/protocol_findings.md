@@ -295,3 +295,121 @@ A classe FREQ está completamente mapeada em relação aos modelos exibidos pelo
 Ainda não está confirmado qual campo identifica a classe do efeito.
 
 Também ainda não foi validado se o mesmo modelo de pacote pode trocar modelos em todos os slots internos.
+
+## Adição e remoção de efeitos da cadeia visual
+
+Foi confirmado que configurar o modelo de um slot não é suficiente para fazer um efeito ausente aparecer visualmente na cadeia.
+
+A criação e a remoção visual utilizam um comando SysEx separado, identificado pelo tipo `0x17`.
+
+Características confirmadas:
+
+```text
+tamanho total: 60 bytes
+índice 7: checksum
+índice 9: 0x17
+índices 39–40: slot de origem
+índices 41–42: slot de destino
+índices 43–44: estado inicial
+índices 45–46: identificador do modelo
+```
+
+O valor que representa uma posição vazia é:
+
+```text
+0F 0F = vazio
+```
+
+### Remoção de um efeito
+
+Para remover um slot existente da cadeia:
+
+```text
+índices 39–40 = slot existente
+índices 41–42 = 0F 0F
+```
+
+Exemplo confirmado para remover o slot interno 11:
+
+```text
+origem  = 00 0A
+destino = 0F 0F
+checksum = 0x4E
+```
+
+Exemplo confirmado para remover o slot interno 12:
+
+```text
+origem  = 00 0B
+destino = 0F 0F
+checksum = 0x4F
+```
+
+### Adição de um efeito
+
+Para adicionar um efeito a um slot ausente:
+
+```text
+índices 39–40 = 0F 0F
+índices 41–42 = slot que será criado
+índices 43–44 = 00 01
+índices 45–46 = modelo escolhido
+```
+
+O efeito criado pelo editor oficial nasce ligado.
+
+Exemplo confirmado para adicionar Filter no slot interno 11:
+
+```text
+origem  = 0F 0F
+destino = 00 0A
+estado  = 00 01
+modelo  = 01 09
+checksum = 0x5A
+```
+
+Exemplo confirmado para adicionar Octaver no slot interno 11:
+
+```text
+origem  = 0F 0F
+destino = 00 0A
+estado  = 00 01
+modelo  = 02 01
+checksum = 0x53
+```
+
+Exemplo confirmado para adicionar Filter no slot interno 12:
+
+```text
+origem  = 0F 0F
+destino = 00 0B
+estado  = 00 01
+modelo  = 01 09
+checksum = 0x5B
+```
+
+Os slots apresentados ao usuário usam a numeração de 1 até 12.
+
+No protocolo, os mesmos slots usam valores de 0 até 11:
+
+```text
+slot 1  = 00 00
+slot 2  = 00 01
+slot 11 = 00 0A
+slot 12 = 00 0B
+```
+
+Foram implementados os seguintes comandos:
+
+```text
+python -m tools.commands.add_effect
+python -m tools.commands.remove_effect
+```
+
+O comando `add_effect` permite criar qualquer um dos oito modelos FREQ já mapeados em um slot ausente.
+
+O comando `remove_effect` retira um slot existente da cadeia visual.
+
+Os testes automatizados cobrem a codificação dos slots de 1 até 12. Os testes físicos confirmaram a criação e a remoção nos slots 11 e 12, além de testes adicionais realizados diretamente na pedaleira.
+
+Esses comandos alteram a cadeia carregada, mas não executam automaticamente o salvamento permanente do preset.
