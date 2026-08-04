@@ -1,136 +1,192 @@
-"""Reconstrói e decodifica o dump SysEx recebido da Matribox II Pro."""
+"""Reconstrói um dump binário a partir de fragmentos SysEx da Matribox."""
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DUMPS_DIRECTORY = PROJECT_ROOT / "data" / "dumps"
 
-INPUT_FILE = DUMPS_DIRECTORY / "preset_dump_received.txt"
+DEFAULT_INPUT_FILE = (
+    DUMPS_DIRECTORY
+    / "preset_dump_received.txt"
+)
 
-OUTPUT_BINARY_FILE = DUMPS_DIRECTORY / "preset_45B_original.bin"
-OUTPUT_HEX_FILE = DUMPS_DIRECTORY / "preset_45B_original.hex"
-
-HEADER = bytes(
-    [
-        0xF0,
-        0x21,
-        0x25,
-        0x4D,
-        0x50,
-    ]
+MATRIBOX_HEADER = bytes.fromhex(
+    "F0 21 25 4D 50"
 )
 
 
-def read_messages_from_file(path: Path) -> list[bytes]:
-    """Lê as mensagens hexadecimais salvas pelo script de captura."""
-    if not path.exists():
-        raise FileNotFoundError(
-            f"O arquivo {path} não foi encontrado."
+def resolve_input_path(
+    supplied_path: str,
+) -> Path:
+    """Localiza o arquivo informado no caminho atual ou em data/dumps."""
+    direct_path = Path(
+        supplied_path
+    )
+
+    if direct_path.is_file():
+        return direct_path.resolve()
+
+    dumps_path = (
+        DUMPS_DIRECTORY
+        / supplied_path
+    )
+
+    if dumps_path.is_file():
+        return dumps_path.resolve()
+
+    raise FileNotFoundError(
+        f"Arquivo não encontrado: {supplied_path}"
+    )
+
+
+def parse_hex_line(
+    line: str,
+) -> bytes | None:
+    """Converte uma linha contendo uma mensagem SysEx em bytes."""
+    cleaned_line = line.strip()
+
+    if not cleaned_line.upper().startswith(
+        "F0 "
+    ):
+        return None
+
+    tokens = cleaned_line.split()
+
+    try:
+        message = bytes(
+            int(token, 16)
+            for token in tokens
         )
+    except ValueError:
+        return None
 
+    if not message:
+        return None
+
+    if message[0] != 0xF0:
+        return None
+
+    if message[-1] != 0xF7:
+        return None
+
+    return message
+
+
+def read_sysex_messages(
+    input_file: Path,
+) -> list[bytes]:
+    """Extrai todas as mensagens SysEx completas do arquivo de texto."""
     messages: list[bytes] = []
-    current_bytes: list[int] = []
 
-    for raw_line in path.read_text(
-        encoding="utf-8"
-    ).splitlines():
-        line = raw_line.strip()
-
-        if not line:
-            if current_bytes:
-                messages.append(bytes(current_bytes))
-                current_bytes = []
-            continue
-
-        if line.startswith("Mensagem "):
-            if current_bytes:
-                messages.append(bytes(current_bytes))
-                current_bytes = []
-            continue
-
-        try:
-            current_bytes.extend(
-                int(value, 16)
-                for value in line.split()
+    with input_file.open(
+        "r",
+        encoding="utf-8",
+    ) as source_file:
+        for line in source_file:
+            message = parse_hex_line(
+                line
             )
-        except ValueError as error:
-            raise ValueError(
-                f"Linha hexadecimal inválida: {line}"
-            ) from error
 
-    if current_bytes:
-        messages.append(bytes(current_bytes))
+            if message is not None:
+                messages.append(
+                    message
+                )
+
+    if not messages:
+        raise ValueError(
+            "Nenhuma mensagem SysEx completa foi encontrada."
+        )
 
     return messages
 
 
-def decode_nibbles(encoded_data: bytes) -> bytes:
-    """Junta cada par de nibbles em um byte original."""
+def decode_nibbles(
+    encoded_data: bytes,
+) -> bytes:
+    """Une pares de nibbles em bytes normais."""
     if len(encoded_data) % 2 != 0:
         raise ValueError(
             "A quantidade de nibbles não é par."
         )
 
-    decoded = bytearray()
+    decoded_data = bytearray()
 
-    for index in range(0, len(encoded_data), 2):
+    for index in range(
+        0,
+        len(encoded_data),
+        2,
+    ):
         high_nibble = encoded_data[index]
         low_nibble = encoded_data[index + 1]
 
-        if high_nibble > 0x0F or low_nibble > 0x0F:
+        if high_nibble > 0x0F:
             raise ValueError(
-                "O conteúdo possui um valor que não é nibble."
+                f"Nibble alto inválido: {high_nibble:02X}"
+            )
+
+        if low_nibble > 0x0F:
+            raise ValueError(
+                f"Nibble baixo inválido: {low_nibble:02X}"
             )
 
         decoded_byte = (
             high_nibble << 4
         ) | low_nibble
 
-        decoded.append(decoded_byte)
+        decoded_data.append(
+            decoded_byte
+        )
 
-    return bytes(decoded)
+    return bytes(
+        decoded_data
+    )
 
 
 def decode_fragment(
     message: bytes,
 ) -> tuple[int, int, bytes]:
     """
-    Decodifica um fragmento do dump.
+    Decodifica um fragmento.
 
     Retorna:
-        tamanho total;
-        offset do fragmento;
-        conteúdo decodificado.
+    - tamanho total do preset;
+    - offset do fragmento;
+    - conteúdo decodificado.
     """
     if len(message) < 14:
         raise ValueError(
-            "Mensagem pequena demais para ser um fragmento."
+            "Mensagem curta demais para ser um fragmento."
         )
 
-    if not message.startswith(HEADER):
+    if not message.startswith(
+        MATRIBOX_HEADER
+    ):
         raise ValueError(
-            "A mensagem não possui o cabeçalho esperado."
+            "Cabeçalho da Matribox não encontrado."
         )
 
     if message[-1] != 0xF7:
         raise ValueError(
-            "A mensagem não termina com F7."
+            "Mensagem não termina com F7."
         )
 
-    # Valores de 14 bits, divididos em dois bytes MIDI de 7 bits.
-    total_size = message[9] + (
-        message[10] << 7
+    total_size = (
+        message[9]
+        + (message[10] << 7)
     )
 
-    fragment_offset = message[11] + (
-        message[12] << 7
+    fragment_offset = (
+        message[11]
+        + (message[12] << 7)
     )
 
-    # Remove o cabeçalho de 13 bytes e o F7 final.
-    encoded_payload = message[13:-1]
+    encoded_payload = message[
+        13:-1
+    ]
 
     decoded_payload = decode_nibbles(
         encoded_payload
@@ -143,177 +199,272 @@ def decode_fragment(
     )
 
 
-def format_hex_dump(data: bytes) -> str:
-    """Produz uma visualização hexadecimal com offsets."""
+def reconstruct_dump(
+    messages: list[bytes],
+) -> tuple[bytes, list[tuple[int, int]]]:
+    """Reconstrói o dump completo usando os offsets dos fragmentos."""
+    fragments: list[
+        tuple[int, int, bytes]
+    ] = []
+
+    for message in messages:
+        fragments.append(
+            decode_fragment(
+                message
+            )
+        )
+
+    expected_total = fragments[0][0]
+
+    for total_size, _, _ in fragments:
+        if total_size != expected_total:
+            raise ValueError(
+                "Os fragmentos declaram tamanhos totais diferentes."
+            )
+
+    reconstructed_data = bytearray(
+        expected_total
+    )
+
+    coverage = [
+        False
+        for _ in range(
+            expected_total
+        )
+    ]
+
+    fragment_summary: list[
+        tuple[int, int]
+    ] = []
+
+    for _, offset, payload in sorted(
+        fragments,
+        key=lambda fragment: fragment[1],
+    ):
+        fragment_end = (
+            offset
+            + len(payload)
+        )
+
+        if fragment_end > expected_total:
+            raise ValueError(
+                "Um fragmento ultrapassa o tamanho total declarado."
+            )
+
+        for local_index, value in enumerate(
+            payload
+        ):
+            absolute_index = (
+                offset
+                + local_index
+            )
+
+            if (
+                coverage[absolute_index]
+                and reconstructed_data[absolute_index]
+                != value
+            ):
+                raise ValueError(
+                    "Fragmentos sobrepostos possuem valores diferentes "
+                    f"no índice {absolute_index}."
+                )
+
+            reconstructed_data[absolute_index] = value
+            coverage[absolute_index] = True
+
+        fragment_summary.append(
+            (
+                offset,
+                len(payload),
+            )
+        )
+
+    missing_positions = [
+        index
+        for index, covered in enumerate(
+            coverage
+        )
+        if not covered
+    ]
+
+    if missing_positions:
+        raise ValueError(
+            "O dump está incompleto. "
+            f"Faltam {len(missing_positions)} bytes. "
+            f"Primeiro índice ausente: {missing_positions[0]}."
+        )
+
+    return (
+        bytes(reconstructed_data),
+        fragment_summary,
+    )
+
+
+def format_hex_dump(
+    data: bytes,
+) -> str:
+    """Cria uma visualização hexadecimal com 16 bytes por linha."""
     lines: list[str] = []
 
-    for offset in range(0, len(data), 16):
-        row = data[offset:offset + 16]
+    for offset in range(
+        0,
+        len(data),
+        16,
+    ):
+        chunk = data[
+            offset:offset + 16
+        ]
 
         hexadecimal = " ".join(
             f"{byte:02X}"
-            for byte in row
+            for byte in chunk
         )
 
         ascii_text = "".join(
             chr(byte)
             if 32 <= byte <= 126
             else "."
-            for byte in row
+            for byte in chunk
         )
 
         lines.append(
-            f"{offset:04X}  "
-            f"{hexadecimal:<47}  "
+            f"{offset:04X}: "
+            f"{hexadecimal:<47} "
             f"{ascii_text}"
         )
 
-    return "\n".join(lines)
-
-
-def reconstruct_dump(
-    messages: list[bytes],
-) -> bytes:
-    """Posiciona cada fragmento no local correto do dump."""
-    if not messages:
-        raise ValueError(
-            "Nenhuma mensagem foi encontrada."
-        )
-
-    decoded_fragments: list[
-        tuple[int, bytes]
-    ] = []
-
-    expected_total_size: int | None = None
-
-    for message_number, message in enumerate(
-        messages,
-        start=1,
-    ):
-        total_size, offset, decoded_payload = (
-            decode_fragment(message)
-        )
-
-        if expected_total_size is None:
-            expected_total_size = total_size
-
-        if total_size != expected_total_size:
-            raise ValueError(
-                "Os fragmentos informam tamanhos totais diferentes."
-            )
-
-        print(
-            f"Mensagem {message_number}:"
-        )
-        print(
-            f"  SysEx completo: {len(message)} bytes"
-        )
-        print(
-            f"  Tamanho total informado: {total_size} bytes"
-        )
-        print(
-            f"  Offset: {offset}"
-        )
-        print(
-            f"  Conteúdo decodificado: "
-            f"{len(decoded_payload)} bytes"
-        )
-
-        decoded_fragments.append(
-            (
-                offset,
-                decoded_payload,
-            )
-        )
-
-    if expected_total_size is None:
-        raise ValueError(
-            "Não foi possível determinar o tamanho do dump."
-        )
-
-    reconstructed = bytearray(
-        expected_total_size
+    return "\n".join(
+        lines
     )
 
-    received_positions = [
-        False
-    ] * expected_total_size
 
-    for offset, payload in decoded_fragments:
-        end_offset = offset + len(payload)
+def save_outputs(
+    input_file: Path,
+    reconstructed_data: bytes,
+) -> tuple[Path, Path]:
+    """Salva o arquivo binário e sua visualização hexadecimal."""
+    output_binary_file = input_file.with_suffix(
+        ".bin"
+    )
 
-        if end_offset > expected_total_size:
-            raise ValueError(
-                "Um fragmento ultrapassa o tamanho total informado."
-            )
+    output_hex_file = input_file.with_suffix(
+        ".hex"
+    )
 
-        reconstructed[offset:end_offset] = payload
+    output_binary_file.write_bytes(
+        reconstructed_data
+    )
 
-        for position in range(
-            offset,
-            end_offset,
-        ):
-            received_positions[position] = True
-
-    missing_positions = [
-        index
-        for index, received in enumerate(
-            received_positions
+    output_hex_file.write_text(
+        format_hex_dump(
+            reconstructed_data
         )
-        if not received
-    ]
+        + "\n",
+        encoding="utf-8",
+    )
 
-    if missing_positions:
-        raise ValueError(
-            "O dump está incompleto. "
-            f"Faltam {len(missing_positions)} bytes."
+    return (
+        output_binary_file,
+        output_hex_file,
+    )
+
+
+def create_argument_parser() -> argparse.ArgumentParser:
+    """Cria os argumentos da linha de comando."""
+    parser = argparse.ArgumentParser(
+        description=(
+            "Reconstrói um dump binário da Matribox "
+            "a partir de fragmentos SysEx."
         )
+    )
 
-    return bytes(reconstructed)
+    parser.add_argument(
+        "input_file",
+        nargs="?",
+        default=str(
+            DEFAULT_INPUT_FILE
+        ),
+        help=(
+            "Arquivo TXT completo ou nome de um arquivo "
+            "existente dentro de data/dumps."
+        ),
+    )
+
+    return parser
 
 
 def main() -> None:
-    """Lê, decodifica, reconstrói e salva o dump."""
+    """Executa a reconstrução do dump."""
+    parser = create_argument_parser()
+    arguments = parser.parse_args()
+
     try:
-        messages = read_messages_from_file(
-            INPUT_FILE
+        input_file = resolve_input_path(
+            arguments.input_file
+        )
+
+        messages = read_sysex_messages(
+            input_file
+        )
+
+        reconstructed_data, fragment_summary = (
+            reconstruct_dump(
+                messages
+            )
+        )
+
+        binary_file, hex_file = save_outputs(
+            input_file,
+            reconstructed_data,
         )
 
         print(
-            "Mensagens encontradas:",
+            "Arquivo de entrada:",
+            input_file,
+        )
+
+        print(
+            "Mensagens SysEx encontradas:",
             len(messages),
         )
 
-        dump = reconstruct_dump(messages)
-
-        OUTPUT_BINARY_FILE.write_bytes(dump)
-
-        OUTPUT_HEX_FILE.write_text(
-            format_hex_dump(dump),
-            encoding="utf-8",
-        )
+        for index, (
+            offset,
+            decoded_length,
+        ) in enumerate(
+            fragment_summary,
+            start=1,
+        ):
+            print(
+                f"Fragmento {index}: "
+                f"offset {offset}, "
+                f"{decoded_length} bytes"
+            )
 
         print(
-            "\nDump reconstruído com sucesso:",
-            len(dump),
+            "Tamanho reconstruído:",
+            len(reconstructed_data),
             "bytes",
         )
 
         print(
             "Arquivo binário:",
-            OUTPUT_BINARY_FILE,
+            binary_file,
         )
 
         print(
-            "Visualização hexadecimal:",
-            OUTPUT_HEX_FILE,
+            "Arquivo hexadecimal:",
+            hex_file,
         )
 
     except (
         FileNotFoundError,
         ValueError,
+        OSError,
     ) as error:
-        print("Erro:", error)
+        raise SystemExit(
+            f"Erro: {error}"
+        ) from error
 
 
 if __name__ == "__main__":

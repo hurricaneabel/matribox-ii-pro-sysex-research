@@ -198,3 +198,13 @@ preset.
 
 A posição visual da cadeia deve estar armazenada em outro campo ou em outro
 tipo de mensagem SysEx, ainda não identificado.
+
+## Inicialização independente da sessão
+
+A Matribox aceita comandos de escrita imediatamente, mas o envio de respostas
+SysEx precisa ser habilitado por uma sequência de inicialização.
+
+Mensagem observada no início da comunicação do editor oficial:
+
+```text
+F0 21 25 7E 47 50 2D 32 11 12 00 00 00 F7

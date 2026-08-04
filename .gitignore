@@ -10,3 +10,7 @@ log_matribox.txt
 
 captures/
 logs/
+
+# Dumps e relatórios gerados durante experimentos
+data/dumps/preset_45B_*
+data/dumps/*_report.txt
