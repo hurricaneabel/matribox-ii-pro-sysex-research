@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 DYN_CLASS_ID = 0x00
 FREQ_CLASS_ID = 0x01
+WAH_CLASS_ID = 0x02
 DRV_CLASS_ID = 0x03
 
 
@@ -93,6 +94,16 @@ DYN_MODELS = (
 )
 
 
+WAH_MODELS = (
+    EffectModel(1, "VOKS WAH", 0x01, 0x05),
+    EffectModel(2, "CRY WAH", 0x08, 0x05),
+    EffectModel(3, "RACK WAH", 0x0A, 0x05),
+    EffectModel(4, "BASS WAH", 0x07, 0x05),
+    EffectModel(5, "TOUCH WAH", 0x0F, 0x01),
+    EffectModel(6, "AUTO WAH", 0x15, 0x01),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -111,6 +122,12 @@ EFFECT_CLASSES = (
         name="DYN",
         class_id=DYN_CLASS_ID,
         models=DYN_MODELS,
+    ),
+    EffectClass(
+        menu_number=4,
+        name="WAH",
+        class_id=WAH_CLASS_ID,
+        models=WAH_MODELS,
     ),
 )
 
