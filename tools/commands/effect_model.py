@@ -1,10 +1,5 @@
 """Troca de modelo dentro da mesma classe usando o comando 0x16.
 
-Validações físicas disponíveis:
-
-- FREQ: modelos no slot 1 e testes adicionais no slot 2;
-- DRV: todos os 24 modelos no slot 11.
-
 Para trocar entre classes diferentes, use o comando 0x17 por meio de
 ``build_replace_effect_message``.
 """
@@ -14,8 +9,6 @@ from __future__ import annotations
 import mido
 
 from tools.commands.effect_chain import (
-    MAX_SLOT,
-    MIN_SLOT,
     split_into_nibbles,
     validate_effect_ids,
     validate_slot,
@@ -31,7 +24,10 @@ CLASS_HIGH_INDEX = 41
 CLASS_LOW_INDEX = 42
 MODEL_HIGH_INDEX = 43
 MODEL_LOW_INDEX = 44
-CLASS_MIRROR_INDEX = 50
+SECONDARY_SELECTOR_INDEX = 50
+
+# Alias preservado para compatibilidade com os testes anteriores.
+CLASS_MIRROR_INDEX = SECONDARY_SELECTOR_INDEX
 
 EXPECTED_MESSAGE_LENGTH = 58
 EXPECTED_COMMAND_TYPE = 0x16
@@ -68,6 +64,7 @@ def build_set_effect_model_message(
     slot_number: int,
     class_id: int,
     model_id: int,
+    secondary_selector: int | None = None,
 ) -> mido.Message:
     """Troca o modelo mantendo a classe indicada."""
     validate_slot(
@@ -76,6 +73,7 @@ def build_set_effect_model_message(
     validate_effect_ids(
         class_id,
         model_id,
+        secondary_selector,
     )
 
     full_message = list(
@@ -104,13 +102,16 @@ def build_set_effect_model_message(
         model_id
     )
 
+    if secondary_selector is None:
+        secondary_selector = class_id
+
     full_message[SLOT_HIGH_INDEX] = slot_high
     full_message[SLOT_LOW_INDEX] = slot_low
     full_message[CLASS_HIGH_INDEX] = class_high
     full_message[CLASS_LOW_INDEX] = class_low
     full_message[MODEL_HIGH_INDEX] = model_high
     full_message[MODEL_LOW_INDEX] = model_low
-    full_message[CLASS_MIRROR_INDEX] = class_id
+    full_message[SECONDARY_SELECTOR_INDEX] = secondary_selector
 
     full_message[CHECKSUM_INDEX] = calculate_checksum(
         full_message

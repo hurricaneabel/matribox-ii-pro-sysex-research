@@ -1,4 +1,4 @@
-"""Adiciona um efeito FREQ ou DRV a um slot vazio."""
+"""Adiciona um efeito catalogado a um slot vazio."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ OUTPUT_PORT = "Matribox II Pro Subdevice 1"
 def print_classes() -> None:
     """Exibe as classes atualmente mapeadas."""
     print(
-        "Classes:"
+        "Classes catalogadas:"
     )
 
     for effect_class in EFFECT_CLASSES:
@@ -43,7 +43,8 @@ def print_models(effect_class) -> None:
         print(
             f"{model.menu_number:2}. "
             f"{model.name} "
-            f"(0x{model.model_id:02X})"
+            f"(modelo 0x{model.model_id:02X}, "
+            f"seletor 0x{model.secondary_selector:02X})"
         )
 
 
@@ -78,7 +79,7 @@ def main() -> None:
         )
 
         model_value = input(
-            "\nEscolha o modelo pelo número, nome ou ID: "
+            "\nEscolha o modelo pelo número ou nome: "
         )
         model = find_effect_model(
             effect_class,
@@ -99,6 +100,7 @@ def main() -> None:
             slot_number=slot_number,
             class_id=effect_class.class_id,
             model_id=model.model_id,
+            secondary_selector=model.secondary_selector,
         )
         packet = full_message_bytes(
             message
@@ -117,6 +119,10 @@ def main() -> None:
         print(
             f"modelo: {model.name} "
             f"(0x{model.model_id:02X})"
+        )
+        print(
+            "seletor secundário: "
+            f"0x{model.secondary_selector:02X}"
         )
         print(
             f"checksum: 0x{packet[CHECKSUM_INDEX]:02X}"

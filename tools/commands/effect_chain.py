@@ -1,11 +1,7 @@
 """Comandos para criar, remover e substituir efeitos na cadeia visual.
 
-O comando SysEx 0x17 foi validado fisicamente para:
-
-- criar FREQ e DRV em slots ausentes;
-- remover slots existentes;
-- substituir FREQ / Filter por DRV / Skreamer;
-- substituir DRV / Skreamer por FREQ / Filter.
+O comando SysEx 0x17 foi validado fisicamente para criar FREQ, DRV e DYN em
+slots ausentes, remover slots existentes e substituir efeitos entre classes.
 
 Slots apresentados ao usuário usam 1 a 12. O protocolo usa 0 a 11.
 O valor 0xFF, codificado como 0F 0F, representa uma posição vazia.
@@ -18,6 +14,8 @@ import mido
 from tools.commands.effect_catalog import (
     DRV_CLASS_ID,
     DRV_MODELS,
+    DYN_CLASS_ID,
+    DYN_MODELS,
     EFFECT_CLASSES,
     FREQ_CLASS_ID,
     FREQ_MODELS,
@@ -40,10 +38,10 @@ CLASS_HIGH_INDEX = 43
 CLASS_LOW_INDEX = 44
 MODEL_HIGH_INDEX = 45
 MODEL_LOW_INDEX = 46
-CLASS_MIRROR_INDEX = 52
+SECONDARY_SELECTOR_INDEX = 52
 
-# Compatibilidade com os testes e imports anteriores. Esses campos foram
-# inicialmente interpretados como estado, mas agora estão confirmados como classe.
+# Alias preservado para compatibilidade com os testes e imports anteriores.
+CLASS_MIRROR_INDEX = SECONDARY_SELECTOR_INDEX
 ENABLED_HIGH_INDEX = CLASS_HIGH_INDEX
 ENABLED_LOW_INDEX = CLASS_LOW_INDEX
 
@@ -54,9 +52,17 @@ EMPTY_SLOT_ID = 0xFF
 EXPECTED_MESSAGE_LENGTH = 60
 EXPECTED_COMMAND_TYPE = 0x17
 
-REMOVE_TEMPLATE_HEX = "f021254d5000004e12170000000001000000000100000f000000000000010c0001000000040001000a0f0f00000000000000000000010100000000f7"
+REMOVE_TEMPLATE_HEX = (
+    "f021254d5000004e12170000000001000000000100000f00"
+    "0000000000010c0001000000040001000a0f0f0000000000"
+    "0000000000010100000000f7"
+)
 
-ADD_TEMPLATE_HEX = "f021254d5000005a12170000000001000000000100000f000000000000010c00010000000400010f0f000a00010109000000000001010100000000f7"
+ADD_TEMPLATE_HEX = (
+    "f021254d5000005a12170000000001000000000100000f00"
+    "0000000000010c00010000000400010f0f000a0001010900"
+    "0000000001010100000000f7"
+)
 
 
 def split_into_nibbles(value: int) -> tuple[int, int]:
@@ -83,16 +89,21 @@ def validate_slot(slot_number: int) -> None:
 def validate_effect_ids(
     class_id: int,
     model_id: int,
+    secondary_selector: int | None = None,
 ) -> None:
-    """Valida IDs de classe e modelo."""
-    if not 0 <= class_id <= 0xFF:
-        raise ValueError(
-            "O ID da classe deve estar entre 0x00 e 0xFF."
-        )
+    """Valida IDs de classe, modelo e seletor secundário."""
+    for field_name, value in (
+        ("classe", class_id),
+        ("modelo", model_id),
+    ):
+        if not 0 <= value <= 0xFF:
+            raise ValueError(
+                f"O ID de {field_name} deve estar entre 0x00 e 0xFF."
+            )
 
-    if not 0 <= model_id <= 0xFF:
+    if secondary_selector is not None and not 0 <= secondary_selector <= 0x7F:
         raise ValueError(
-            "O ID do modelo deve estar entre 0x00 e 0xFF."
+            "O seletor secundário deve estar entre 0x00 e 0x7F."
         )
 
 
@@ -152,12 +163,29 @@ def find_freq_model(value: str) -> EffectModel:
     )
 
 
-def _set_class_and_model_fields(
+def _resolve_secondary_selector(
+    class_id: int,
+    secondary_selector: int | None,
+) -> int:
+    """Mantém compatibilidade: FREQ e DRV usavam o ID da classe."""
+    if secondary_selector is None:
+        return class_id
+
+    return secondary_selector
+
+
+def _set_effect_fields(
     full_message: list[int],
     class_id: int,
     model_id: int,
+    secondary_selector: int | None,
 ) -> None:
-    """Aplica classe, modelo e campo espelhado ao pacote."""
+    """Aplica classe, modelo e seletor secundário ao pacote."""
+    resolved_selector = _resolve_secondary_selector(
+        class_id,
+        secondary_selector,
+    )
+
     class_high, class_low = split_into_nibbles(
         class_id
     )
@@ -169,13 +197,14 @@ def _set_class_and_model_fields(
     full_message[CLASS_LOW_INDEX] = class_low
     full_message[MODEL_HIGH_INDEX] = model_high
     full_message[MODEL_LOW_INDEX] = model_low
-    full_message[CLASS_MIRROR_INDEX] = class_id
+    full_message[SECONDARY_SELECTOR_INDEX] = resolved_selector
 
 
 def build_add_effect_message(
     slot_number: int,
     model_id: int,
     class_id: int = FREQ_CLASS_ID,
+    secondary_selector: int | None = None,
 ) -> mido.Message:
     """Cria um efeito em um slot ausente da cadeia visual."""
     validate_slot(
@@ -184,6 +213,7 @@ def build_add_effect_message(
     validate_effect_ids(
         class_id,
         model_id,
+        secondary_selector,
     )
 
     full_message = list(
@@ -208,10 +238,11 @@ def build_add_effect_message(
     full_message[DESTINATION_SLOT_HIGH_INDEX] = slot_high
     full_message[DESTINATION_SLOT_LOW_INDEX] = slot_low
 
-    _set_class_and_model_fields(
+    _set_effect_fields(
         full_message,
         class_id,
         model_id,
+        secondary_selector,
     )
 
     full_message[CHECKSUM_INDEX] = calculate_checksum(
@@ -268,6 +299,7 @@ def build_replace_effect_message(
     slot_number: int,
     class_id: int,
     model_id: int,
+    secondary_selector: int | None = None,
 ) -> mido.Message:
     """Substitui classe e modelo mantendo o mesmo slot visual."""
     validate_slot(
@@ -276,6 +308,7 @@ def build_replace_effect_message(
     validate_effect_ids(
         class_id,
         model_id,
+        secondary_selector,
     )
 
     full_message = list(
@@ -297,10 +330,11 @@ def build_replace_effect_message(
     full_message[DESTINATION_SLOT_HIGH_INDEX] = slot_high
     full_message[DESTINATION_SLOT_LOW_INDEX] = slot_low
 
-    _set_class_and_model_fields(
+    _set_effect_fields(
         full_message,
         class_id,
         model_id,
+        secondary_selector,
     )
 
     full_message[CHECKSUM_INDEX] = calculate_checksum(

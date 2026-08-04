@@ -1,4 +1,4 @@
-"""Altera o efeito existente usando o comando apropriado.
+"""Altera um efeito existente usando o comando apropriado.
 
 - mesma classe: comando 0x16;
 - classe diferente: comando 0x17 com origem e destino iguais.
@@ -16,7 +16,6 @@ from tools.commands.effect_catalog import (
 from tools.commands.effect_chain import (
     CHECKSUM_INDEX as REPLACE_CHECKSUM_INDEX,
     build_replace_effect_message,
-    full_message_bytes,
 )
 from tools.commands.effect_model import (
     CHECKSUM_INDEX as MODEL_CHECKSUM_INDEX,
@@ -43,7 +42,8 @@ def print_models(effect_class) -> None:
         print(
             f"{model.menu_number:2}. "
             f"{model.name} "
-            f"(0x{model.model_id:02X})"
+            f"(modelo 0x{model.model_id:02X}, "
+            f"seletor 0x{model.secondary_selector:02X})"
         )
 
 
@@ -115,6 +115,7 @@ def main() -> None:
                 slot_number=slot_number,
                 class_id=target_class.class_id,
                 model_id=target_model.model_id,
+                secondary_selector=target_model.secondary_selector,
             )
             command_name = "0x16 — troca dentro da mesma classe"
             checksum_index = MODEL_CHECKSUM_INDEX
@@ -124,6 +125,7 @@ def main() -> None:
                 slot_number=slot_number,
                 class_id=target_class.class_id,
                 model_id=target_model.model_id,
+                secondary_selector=target_model.secondary_selector,
             )
             command_name = "0x17 — substituição entre classes"
             checksum_index = REPLACE_CHECKSUM_INDEX
@@ -143,6 +145,10 @@ def main() -> None:
         )
         print(
             f"destino: {target_class.name} / {target_model.name}"
+        )
+        print(
+            "seletor secundário: "
+            f"0x{target_model.secondary_selector:02X}"
         )
         print(
             f"checksum: 0x{packet[checksum_index]:02X}"
