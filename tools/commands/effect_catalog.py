@@ -15,6 +15,7 @@ FREQ_CLASS_ID = 0x01
 WAH_CLASS_ID = 0x02
 DRV_CLASS_ID = 0x03
 AMP_CLASS_ID = 0x04
+CAB_CLASS_ID = 0x05
 
 
 @dataclass(frozen=True)
@@ -172,6 +173,71 @@ AMP_MODELS = (
 )
 
 
+CAB_MODELS = (
+    EffectModel(1, "SUPERO 1X6", 0x00, 0x0A),
+    EffectModel(2, "CHAP 1X8", 0x01, 0x0A),
+    EffectModel(3, "PRINCE 1X10", 0x02, 0x0A),
+    EffectModel(4, "TWD 2X10", 0x14, 0x0A),
+    EffectModel(5, "TWD LUX 1X12", 0x0B, 0x0A),
+    EffectModel(6, "DARK LUX 1X12", 0x03, 0x0A),
+    EffectModel(7, "TWIN VERB 2X12", 0x12, 0x0A),
+    EffectModel(8, "CUSTOM 2X12", 0x1B, 0x0A),
+    EffectModel(9, "B-MAN 2X10", 0x16, 0x0A),
+    EffectModel(10, "B-MAN 4X10", 0x1E, 0x0A),
+    EffectModel(11, "JAZZ 2X12", 0x11, 0x0A),
+    EffectModel(12, "BRIT 1X12", 0x0E, 0x0A),
+    EffectModel(13, "BRIT GN 2X12", 0x13, 0x0A),
+    EffectModel(14, "BRIT LD 4X12", 0x1F, 0x0A),
+    EffectModel(15, "BRIT TD 4X12", 0x20, 0x0A),
+    EffectModel(16, "BRIT MD 4X12", 0x21, 0x0A),
+    EffectModel(17, "BRIT GN 4X12", 0x22, 0x0A),
+    EffectModel(18, "BRIT 75 4X12", 0x30, 0x0A),
+    EffectModel(19, "BRIT BK 4X12", 0x2B, 0x0A),
+    EffectModel(20, "VOKS 1X12", 0x08, 0x0A),
+    EffectModel(21, "VOKS 2X12", 0x0F, 0x0A),
+    EffectModel(22, "BOG SV 1X12", 0x06, 0x0A),
+    EffectModel(23, "CHIEF 2X12", 0x10, 0x0A),
+    EffectModel(24, "CALIF DUAL 4X12", 0x24, 0x0A),
+    EffectModel(25, "CALIF STAR 1X12", 0x09, 0x0A),
+    EffectModel(26, "CALIF STAR 2X12", 0x19, 0x0A),
+    EffectModel(27, "CALIF 1X12", 0x0C, 0x0A),
+    EffectModel(28, "SUPERO 2X12", 0x17, 0x0A),
+    EffectModel(29, "SUPERB 2X12", 0x18, 0x0A),
+    EffectModel(30, "BLUE 2X12", 0x1D, 0x0A),
+    EffectModel(31, "HALEN 4X12", 0x23, 0x0A),
+    EffectModel(32, "BOG 4X12", 0x25, 0x0A),
+    EffectModel(33, "ENG 4X12", 0x26, 0x0A),
+    EffectModel(34, "BOG UB 4X12", 0x27, 0x0A),
+    EffectModel(35, "SOL 4X12", 0x28, 0x0A),
+    EffectModel(36, "TANGER 4X12", 0x29, 0x0A),
+    EffectModel(37, "WATT 4X12", 0x2A, 0x0A),
+    EffectModel(38, "WAM 4X12", 0x2C, 0x0A),
+    EffectModel(39, "HUMBLE 4X12", 0x2D, 0x0A),
+    EffectModel(40, "DIZZY 4X12", 0x2E, 0x0A),
+    EffectModel(41, "CALIF 4X12", 0x31, 0x0A),
+    EffectModel(42, "DV 1X15", 0x32, 0x0A),
+    EffectModel(43, "DV 4X10", 0x37, 0x0A),
+    EffectModel(44, "WORK 1X15", 0x33, 0x0A),
+    EffectModel(45, "WORK 4X10", 0x39, 0x0A),
+    EffectModel(46, "CALIF 2X10", 0x35, 0x0A),
+    EffectModel(47, "MAK 2X10", 0x36, 0x0A),
+    EffectModel(48, "A BASS 1X15", 0x34, 0x0A),
+    EffectModel(49, "A BASS 4X10", 0x38, 0x0A),
+    EffectModel(50, "A BASS 8X10", 0x3B, 0x0A),
+    EffectModel(51, "HART 4X12", 0x3A, 0x0A),
+    EffectModel(52, "D 1", 0x3C, 0x0A),
+    EffectModel(53, "D 2", 0x3D, 0x0A),
+    EffectModel(54, "OM", 0x3E, 0x0A),
+    EffectModel(55, "JUMBO", 0x3F, 0x0A),
+    EffectModel(56, "BIRD", 0x40, 0x0A),
+    EffectModel(57, "GA", 0x41, 0x0A),
+    EffectModel(58, "CLASSICAL AC", 0x42, 0x0A),
+    EffectModel(59, "MANDOLIN", 0x43, 0x0A),
+    EffectModel(60, "FRETLESS BASS", 0x44, 0x0A),
+    EffectModel(61, "DOUBLE BASS", 0x45, 0x0A),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -202,6 +268,12 @@ EFFECT_CLASSES = (
         name="AMP",
         class_id=AMP_CLASS_ID,
         models=AMP_MODELS,
+    ),
+    EffectClass(
+        menu_number=6,
+        name="CAB",
+        class_id=CAB_CLASS_ID,
+        models=CAB_MODELS,
     ),
 )
 
