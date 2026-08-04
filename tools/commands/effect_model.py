@@ -9,6 +9,7 @@ from __future__ import annotations
 import mido
 
 from tools.commands.effect_chain import (
+    resolve_effect_instance_flag,
     split_into_nibbles,
     validate_effect_ids,
     validate_slot,
@@ -24,6 +25,7 @@ CLASS_HIGH_INDEX = 41
 CLASS_LOW_INDEX = 42
 MODEL_HIGH_INDEX = 43
 MODEL_LOW_INDEX = 44
+EFFECT_INSTANCE_FLAG_INDEX = 47
 SECONDARY_SELECTOR_INDEX = 50
 
 # Alias preservado para compatibilidade com os testes anteriores.
@@ -111,6 +113,11 @@ def build_set_effect_model_message(
     full_message[CLASS_LOW_INDEX] = class_low
     full_message[MODEL_HIGH_INDEX] = model_high
     full_message[MODEL_LOW_INDEX] = model_low
+    full_message[EFFECT_INSTANCE_FLAG_INDEX] = (
+        resolve_effect_instance_flag(
+            class_id
+        )
+    )
     full_message[SECONDARY_SELECTOR_INDEX] = secondary_selector
 
     full_message[CHECKSUM_INDEX] = calculate_checksum(

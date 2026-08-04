@@ -16,6 +16,7 @@ WAH_CLASS_ID = 0x02
 DRV_CLASS_ID = 0x03
 AMP_CLASS_ID = 0x04
 CAB_CLASS_ID = 0x05
+IR_CLASS_ID = 0x06
 
 
 @dataclass(frozen=True)
@@ -238,6 +239,30 @@ CAB_MODELS = (
 )
 
 
+IR_MODELS = (
+    EffectModel(1, "IR 1", 0x00, 0x0A),
+    EffectModel(2, "IR 2", 0x01, 0x0A),
+    EffectModel(3, "IR 3", 0x02, 0x0A),
+    EffectModel(4, "IR 4", 0x03, 0x0A),
+    EffectModel(5, "IR 5", 0x04, 0x0A),
+    EffectModel(6, "IR 6", 0x05, 0x0A),
+    EffectModel(7, "IR 7", 0x06, 0x0A),
+    EffectModel(8, "IR 8", 0x07, 0x0A),
+    EffectModel(9, "IR 9", 0x08, 0x0A),
+    EffectModel(10, "IR 10", 0x09, 0x0A),
+    EffectModel(11, "IR 11", 0x0A, 0x0A),
+    EffectModel(12, "IR 12", 0x0B, 0x0A),
+    EffectModel(13, "IR 13", 0x0C, 0x0A),
+    EffectModel(14, "IR 14", 0x0D, 0x0A),
+    EffectModel(15, "IR 15", 0x0E, 0x0A),
+    EffectModel(16, "IR 16", 0x0F, 0x0A),
+    EffectModel(17, "IR 17", 0x10, 0x0A),
+    EffectModel(18, "IR 18", 0x11, 0x0A),
+    EffectModel(19, "IR 19", 0x12, 0x0A),
+    EffectModel(20, "IR 20", 0x13, 0x0A),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -274,6 +299,12 @@ EFFECT_CLASSES = (
         name="CAB",
         class_id=CAB_CLASS_ID,
         models=CAB_MODELS,
+    ),
+    EffectClass(
+        menu_number=7,
+        name="IR",
+        class_id=IR_CLASS_ID,
+        models=IR_MODELS,
     ),
 )
 

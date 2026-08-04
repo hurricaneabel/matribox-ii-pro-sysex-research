@@ -18,6 +18,7 @@ from tools.commands.effect_catalog import (
     DYN_MODELS,
     EFFECT_CLASSES,
     FREQ_CLASS_ID,
+    IR_CLASS_ID,
     FREQ_MODELS,
     EffectClass,
     EffectModel,
@@ -38,6 +39,7 @@ CLASS_HIGH_INDEX = 43
 CLASS_LOW_INDEX = 44
 MODEL_HIGH_INDEX = 45
 MODEL_LOW_INDEX = 46
+EFFECT_INSTANCE_FLAG_INDEX = 49
 SECONDARY_SELECTOR_INDEX = 52
 
 # Alias preservado para compatibilidade com os testes e imports anteriores.
@@ -163,6 +165,19 @@ def find_freq_model(value: str) -> EffectModel:
     )
 
 
+def resolve_effect_instance_flag(
+    class_id: int,
+) -> int:
+    """Retorna a flag estrutural exigida pela classe no comando de escrita.
+
+    A classe IR usa 0x01. As classes mapeadas anteriormente usam 0x00.
+    """
+    if class_id == IR_CLASS_ID:
+        return 0x01
+
+    return 0x00
+
+
 def _resolve_secondary_selector(
     class_id: int,
     secondary_selector: int | None,
@@ -197,6 +212,11 @@ def _set_effect_fields(
     full_message[CLASS_LOW_INDEX] = class_low
     full_message[MODEL_HIGH_INDEX] = model_high
     full_message[MODEL_LOW_INDEX] = model_low
+    full_message[EFFECT_INSTANCE_FLAG_INDEX] = (
+        resolve_effect_instance_flag(
+            class_id
+        )
+    )
     full_message[SECONDARY_SELECTOR_INDEX] = resolved_selector
 
 
