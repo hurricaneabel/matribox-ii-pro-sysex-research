@@ -561,3 +561,63 @@ O comando `set_effect` seleciona automaticamente:
 mesma classe     = comando 0x16
 classe diferente = comando 0x17
 ```
+
+## Modelos confirmados da classe EQ
+
+A classe EQ foi confirmada com o identificador:
+
+```text
+EQ = 0x07
+```
+
+Os cinco modelos exibidos pelo editor oficial foram capturados e testados
+fisicamente no slot interno 11:
+
+```text
+GUITAR EQ 1 = 0x35
+GUITAR EQ 2 = 0x36
+BASS EQ 1   = 0x39
+BASS EQ 2   = 0x3A
+CALIF EQ    = 0x3C
+```
+
+Todos usam:
+
+```text
+seletor secundário = 0x01
+flag estrutural     = 0x00
+```
+
+Checksums confirmados para troca de modelo no slot interno 11:
+
+```text
+GUITAR EQ 1 = 0x3F
+GUITAR EQ 2 = 0x40
+BASS EQ 1   = 0x43
+BASS EQ 2   = 0x44
+CALIF EQ    = 0x46
+```
+
+A criação direta no slot interno 12 também foi validada:
+
+```text
+GUITAR EQ 1 = checksum 0x5F
+CALIF EQ    = checksum 0x66
+```
+
+A substituição direta por `GUITAR EQ 1` no slot interno 11 utiliza checksum
+`0x4A`. A remoção do slot 12 continua utilizando checksum `0x4F`.
+
+Os validadores físicos estão em:
+
+```text
+tools/experiments/validate_eq_models_slot_11.py
+tools/experiments/validate_add_eq_slot_12.py
+```
+
+O gerenciador flexível permite adicionar, substituir e excluir efeitos em
+qualquer slot interno entre 1 e 12:
+
+```text
+python -m tools.experiments.manage_effect_chain
+```

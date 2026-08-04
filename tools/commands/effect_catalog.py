@@ -17,6 +17,7 @@ DRV_CLASS_ID = 0x03
 AMP_CLASS_ID = 0x04
 CAB_CLASS_ID = 0x05
 IR_CLASS_ID = 0x06
+EQ_CLASS_ID = 0x07
 
 
 @dataclass(frozen=True)
@@ -263,6 +264,15 @@ IR_MODELS = (
 )
 
 
+EQ_MODELS = (
+    EffectModel(1, "GUITAR EQ 1", 0x35, 0x01),
+    EffectModel(2, "GUITAR EQ 2", 0x36, 0x01),
+    EffectModel(3, "BASS EQ 1", 0x39, 0x01),
+    EffectModel(4, "BASS EQ 2", 0x3A, 0x01),
+    EffectModel(5, "CALIF EQ", 0x3C, 0x01),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -305,6 +315,12 @@ EFFECT_CLASSES = (
         name="IR",
         class_id=IR_CLASS_ID,
         models=IR_MODELS,
+    ),
+    EffectClass(
+        menu_number=8,
+        name="EQ",
+        class_id=EQ_CLASS_ID,
+        models=EQ_MODELS,
     ),
 )
 
