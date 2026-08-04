@@ -208,3 +208,90 @@ Mensagem observada no início da comunicação do editor oficial:
 
 ```text
 F0 21 25 7E 47 50 2D 32 11 12 00 00 00 F7
+
+## Controle de estado de efeitos
+
+O comando de estado ligado/desligado utiliza uma mensagem SysEx de 62 bytes.
+
+Campos confirmados:
+
+```text
+índice 7: checksum
+índice 9: 0x18
+índices 39–40: slot interno, começando em zero
+índices 47–48: estado
+```
+
+Codificação do estado:
+
+```text
+00 00 = desligado
+00 01 = ligado
+```
+
+Exemplo para o slot interno 1:
+
+```text
+slot 1 = 00 00
+```
+
+A Matribox responde ao comando com uma mensagem de 62 bytes contendo os mesmos campos de slot e estado.
+
+Os slots internos de 1 até 12 já foram confirmados para o comando de estado.
+
+## Troca de modelo de efeito
+
+A troca de modelo utiliza uma mensagem SysEx de 58 bytes.
+
+Campos confirmados:
+
+```text
+índice 7: checksum
+índice 9: 0x16
+índices 39–40: slot interno
+índices 43–44: identificador do modelo em dois nibbles
+```
+
+O checksum é recalculado depois de alterar o slot ou o modelo.
+
+Nesta etapa, a troca de modelo foi validada diretamente no slot interno 1.
+
+## Modelos confirmados da classe FREQ
+
+Os seguintes modelos foram identificados por captura USB e posteriormente testados diretamente pelo programa Python:
+
+```text
+Filter       = 0x19
+Octaver      = 0x21
+Dual Melody  = 0x23
+Pitch        = 0x24
+Harmony D    = 0x4E
+Pitch S      = 0x55
+Ring Mod     = 0x2F
+Tape Mod     = 0x33
+```
+
+Codificação em nibbles:
+
+```text
+Filter       = 01 09
+Octaver      = 02 01
+Dual Melody  = 02 03
+Pitch        = 02 04
+Harmony D    = 04 0E
+Pitch S      = 05 05
+Ring Mod     = 02 0F
+Tape Mod     = 03 03
+```
+
+Os oito modelos foram trocados com sucesso pelo comando:
+
+```text
+python -m tools.commands.set_effect_model
+```
+
+A classe FREQ está completamente mapeada em relação aos modelos exibidos pelo editor oficial.
+
+Ainda não está confirmado qual campo identifica a classe do efeito.
+
+Também ainda não foi validado se o mesmo modelo de pacote pode trocar modelos em todos os slots internos.
