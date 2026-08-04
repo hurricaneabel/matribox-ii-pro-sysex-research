@@ -1,6 +1,6 @@
 import unittest
 
-from set_volume import (
+from tools.commands.set_volume import (
     CHECKSUM_INDEX,
     MESSAGE_TEMPLATE,
     VOLUME_HIGH_INDEX,

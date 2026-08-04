@@ -439,3 +439,226 @@ de:
 4. terem seus campos identificados;
 5. possuírem testes;
 6. estarem documentados.
+
+## Estrutura atual do projeto
+
+O projeto foi organizado por finalidade para separar comandos, ferramentas de
+captura, análise de dados e experimentos antigos.
+
+```text
+matribox-sysex/
+├── README.md
+├── requirements.txt
+├── .gitignore
+│
+├── data/
+│   └── dumps/
+│       ├── preset_dump_received.txt
+│       ├── preset_45B_original.bin
+│       └── preset_45B_original.hex
+│
+├── docs/
+│   └── protocol_findings.md
+│
+├── tests/
+│   ├── test_effect_slot_protocol.py
+│   └── test_volume_protocol.py
+│
+└── tools/
+    ├── __init__.py
+    │
+    ├── analysis/
+    │   ├── __init__.py
+    │   ├── analisar.py
+    │   ├── checksum_test.py
+    │   └── decode_preset_dump.py
+    │
+    ├── capture/
+    │   ├── __init__.py
+    │   ├── logger.py
+    │   └── teste_portas.py
+    │
+    ├── commands/
+    │   ├── __init__.py
+    │   ├── move_and_read_chain.py
+    │   ├── move_effect_position.py
+    │   ├── request_preset_dump.py
+    │   ├── set_effect_slot.py
+    │   └── set_volume.py
+    │
+    └── experiments/
+        ├── __init__.py
+        ├── enviar_teste.py
+        └── teste_escrita.py
+```
+
+## Ferramentas de captura
+
+### Verificar portas MIDI
+
+```powershell
+python tools\capture\teste_portas.py
+```
+
+### Capturar mensagens recebidas pela porta MIDI
+
+```powershell
+python tools\capture\logger.py
+```
+
+O logger observa mensagens entregues pela porta MIDI de entrada. Para
+interceptar os comandos enviados pelo editor oficial à pedaleira, continua
+sendo necessário utilizar o Wireshark com USBPcap.
+
+## Ferramentas de análise
+
+### Analisar mensagens
+
+```powershell
+python tools\analysis\analisar.py
+```
+
+### Testar hipóteses de checksum
+
+```powershell
+python tools\analysis\checksum_test.py
+```
+
+### Reconstruir o dump de preset
+
+```powershell
+python tools\analysis\decode_preset_dump.py
+```
+
+Esse script lê:
+
+```text
+data/dumps/preset_dump_received.txt
+```
+
+E gera:
+
+```text
+data/dumps/preset_45B_original.bin
+data/dumps/preset_45B_original.hex
+```
+
+O primeiro dump reconstruído possui:
+
+```text
+289 bytes decodificados
+```
+
+Ele foi recebido em dois fragmentos:
+
+```text
+Fragmento 1:
+185 bytes
+offset 0
+
+Fragmento 2:
+104 bytes
+offset 185
+```
+
+## Comandos SysEx confirmados
+
+### Alterar o volume do preset
+
+```powershell
+python tools\commands\set_volume.py
+```
+
+### Ligar ou desligar um slot interno
+
+```powershell
+python tools\commands\set_effect_slot.py
+```
+
+Foram testados os 12 slots internos disponíveis no preset.
+
+### Mover um efeito na cadeia visual
+
+```powershell
+python tools\commands\move_effect_position.py
+```
+
+Esse comando trabalha com posições visuais, não com os slots internos
+persistentes.
+
+### Mover e tentar ler a ordem devolvida
+
+```powershell
+python tools\commands\move_and_read_chain.py
+```
+
+A Matribox executa o movimento corretamente. Entretanto, a resposta da
+pedaleira depende de uma sessão de comunicação previamente inicializada pelo
+editor oficial.
+
+### Solicitar o dump do preset 45B
+
+```powershell
+python tools\commands\request_preset_dump.py
+```
+
+O fluxo confirmado é:
+
+```text
+Python → Matribox:
+seleciona o preset 45B
+
+Matribox → Python:
+confirma a seleção com uma mensagem SysEx de 54 bytes
+
+Python → Matribox:
+solicita a leitura do preset
+
+Matribox → Python:
+envia o dump em dois fragmentos
+```
+
+Atualmente, a pedaleira somente envia essas respostas depois que o editor
+oficial foi aberto e realizou sua sincronização inicial.
+
+Ainda é necessário descobrir e reproduzir a mensagem de inicialização dessa
+sessão para que o programa Python funcione sem depender do editor oficial.
+
+## Testes automáticos
+
+Para executar todos os testes:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+Estado atual:
+
+```text
+15 testes executados
+15 testes aprovados
+```
+
+Os testes cobrem:
+
+- codificação do volume em nibbles;
+- checksum do volume;
+- validação da faixa de volume;
+- codificação dos slots internos;
+- estado ligado e desligado;
+- checksum dos slots;
+- validação dos slots de 1 até 12.
+
+## Observação sobre presets com 12 efeitos
+
+O protocolo permite controlar os 12 slots internos.
+
+Entretanto, durante os testes, um preset preenchido com 12 efeitos apresentou
+instabilidade no editor oficial, incluindo travamentos e dificuldade para
+reabrir o programa.
+
+O preset de pesquisa `45B` foi reduzido para 11 efeitos para manter a
+estabilidade durante a investigação.
+
+Ainda não está confirmado se a quantidade de efeitos causou diretamente o
+problema ou se o editor oficial estava em um estado de sessão instável.

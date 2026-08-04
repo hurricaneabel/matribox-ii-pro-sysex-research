@@ -1,6 +1,6 @@
 import unittest
 
-from set_effect_slot import (
+from tools.commands.set_effect_slot import (
     CHECKSUM_INDEX,
     SLOT_HIGH_INDEX,
     SLOT_LOW_INDEX,
