@@ -1,14 +1,17 @@
-"""Adiciona um modelo FREQ a um slot vazio da cadeia visual."""
+"""Adiciona um efeito FREQ ou DRV a um slot vazio."""
 
 from __future__ import annotations
 
 import mido
 
+from tools.commands.effect_catalog import (
+    EFFECT_CLASSES,
+    find_effect_class,
+    find_effect_model,
+)
 from tools.commands.effect_chain import (
     CHECKSUM_INDEX,
-    FREQ_MODELS,
     build_add_effect_message,
-    find_freq_model,
     full_message_bytes,
 )
 
@@ -16,10 +19,39 @@ from tools.commands.effect_chain import (
 OUTPUT_PORT = "Matribox II Pro Subdevice 1"
 
 
+def print_classes() -> None:
+    """Exibe as classes atualmente mapeadas."""
+    print(
+        "Classes:"
+    )
+
+    for effect_class in EFFECT_CLASSES:
+        print(
+            f"{effect_class.menu_number}. "
+            f"{effect_class.name} "
+            f"(0x{effect_class.class_id:02X})"
+        )
+
+
+def print_models(effect_class) -> None:
+    """Exibe os modelos da classe escolhida."""
+    print(
+        f"\nModelos {effect_class.name}:"
+    )
+
+    for model in effect_class.models:
+        print(
+            f"{model.menu_number:2}. "
+            f"{model.name} "
+            f"(0x{model.model_id:02X})"
+        )
+
+
 def main() -> None:
+    """Solicita slot, classe e modelo e envia a criação."""
     try:
         print(
-            "Adicionar efeito FREQ à cadeia visual"
+            "Adicionar efeito à cadeia visual"
         )
         print(
             "ATENÇÃO: escolha somente um slot que esteja ausente."
@@ -32,27 +64,29 @@ def main() -> None:
             ).strip()
         )
 
-        print(
-            "\nModelos FREQ:"
+        print_classes()
+
+        class_value = input(
+            "\nEscolha a classe pelo número, nome ou ID: "
+        )
+        effect_class = find_effect_class(
+            class_value
         )
 
-        for model in FREQ_MODELS:
-            print(
-                f"{model.menu_number}. "
-                f"{model.name} "
-                f"(0x{model.model_id:02X})"
-            )
+        print_models(
+            effect_class
+        )
 
         model_value = input(
-            "\nEscolha pelo número, nome ou ID: "
+            "\nEscolha o modelo pelo número, nome ou ID: "
         )
-        model = find_freq_model(
-            model_value
+        model = find_effect_model(
+            effect_class,
+            model_value,
         )
 
         confirmation = input(
-            "\nO efeito será criado LIGADO. "
-            "Digite ADICIONAR para confirmar: "
+            "\nDigite ADICIONAR para confirmar: "
         ).strip()
 
         if confirmation != "ADICIONAR":
@@ -63,6 +97,7 @@ def main() -> None:
 
         message = build_add_effect_message(
             slot_number=slot_number,
+            class_id=effect_class.class_id,
             model_id=model.model_id,
         )
         packet = full_message_bytes(
@@ -76,11 +111,12 @@ def main() -> None:
             f"slot: {slot_number}"
         )
         print(
-            f"modelo: {model.name} "
-            f"(0x{model.model_id:02X})"
+            f"classe: {effect_class.name} "
+            f"(0x{effect_class.class_id:02X})"
         )
         print(
-            "estado inicial: ligado"
+            f"modelo: {model.name} "
+            f"(0x{model.model_id:02X})"
         )
         print(
             f"checksum: 0x{packet[CHECKSUM_INDEX]:02X}"

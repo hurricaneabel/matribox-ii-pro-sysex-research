@@ -1,20 +1,31 @@
-"""Builders para adicionar e remover efeitos da cadeia visual.
+"""Comandos para criar, remover e substituir efeitos na cadeia visual.
 
-O comando SysEx 0x17 foi validado fisicamente nos seguintes casos:
+O comando SysEx 0x17 foi validado fisicamente para:
 
-- remover Filter do slot interno 11;
-- adicionar Filter e Octaver ao slot interno 11;
-- adicionar e remover Filter no slot interno 12.
+- criar FREQ e DRV em slots ausentes;
+- remover slots existentes;
+- substituir FREQ / Filter por DRV / Skreamer;
+- substituir DRV / Skreamer por FREQ / Filter.
 
-Slots de interface usam 1 a 12. No protocolo, os slots usam 0 a 11.
+Slots apresentados ao usuário usam 1 a 12. O protocolo usa 0 a 11.
 O valor 0xFF, codificado como 0F 0F, representa uma posição vazia.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import mido
+
+from tools.commands.effect_catalog import (
+    DRV_CLASS_ID,
+    DRV_MODELS,
+    EFFECT_CLASSES,
+    FREQ_CLASS_ID,
+    FREQ_MODELS,
+    EffectClass,
+    EffectModel,
+    find_effect_class,
+    find_effect_model,
+)
 
 
 CHECKSUM_INDEX = 7
@@ -25,10 +36,16 @@ SOURCE_SLOT_LOW_INDEX = 40
 DESTINATION_SLOT_HIGH_INDEX = 41
 DESTINATION_SLOT_LOW_INDEX = 42
 
-ENABLED_HIGH_INDEX = 43
-ENABLED_LOW_INDEX = 44
+CLASS_HIGH_INDEX = 43
+CLASS_LOW_INDEX = 44
 MODEL_HIGH_INDEX = 45
 MODEL_LOW_INDEX = 46
+CLASS_MIRROR_INDEX = 52
+
+# Compatibilidade com os testes e imports anteriores. Esses campos foram
+# inicialmente interpretados como estado, mas agora estão confirmados como classe.
+ENABLED_HIGH_INDEX = CLASS_HIGH_INDEX
+ENABLED_LOW_INDEX = CLASS_LOW_INDEX
 
 MIN_SLOT = 1
 MAX_SLOT = 12
@@ -38,29 +55,12 @@ EXPECTED_MESSAGE_LENGTH = 60
 EXPECTED_COMMAND_TYPE = 0x17
 
 REMOVE_TEMPLATE_HEX = "f021254d5000004e12170000000001000000000100000f000000000000010c0001000000040001000a0f0f00000000000000000000010100000000f7"
+
 ADD_TEMPLATE_HEX = "f021254d5000005a12170000000001000000000100000f000000000000010c00010000000400010f0f000a00010109000000000001010100000000f7"
 
 
-@dataclass(frozen=True)
-class EffectModel:
-    menu_number: int
-    name: str
-    model_id: int
-
-
-FREQ_MODELS = (
-    EffectModel(1, "Filter", 0x19),
-    EffectModel(2, "Octaver", 0x21),
-    EffectModel(3, "Dual Melody", 0x23),
-    EffectModel(4, "Pitch", 0x24),
-    EffectModel(5, "Harmony D", 0x4E),
-    EffectModel(6, "Pitch S", 0x55),
-    EffectModel(7, "Ring Mod", 0x2F),
-    EffectModel(8, "Tape Mod", 0x33),
-)
-
-
 def split_into_nibbles(value: int) -> tuple[int, int]:
+    """Separa um byte em nibble alto e nibble baixo."""
     if not 0 <= value <= 0xFF:
         raise ValueError(
             "O valor deve estar entre 0x00 e 0xFF."
@@ -73,13 +73,31 @@ def split_into_nibbles(value: int) -> tuple[int, int]:
 
 
 def validate_slot(slot_number: int) -> None:
+    """Valida o slot apresentado ao usuário."""
     if not MIN_SLOT <= slot_number <= MAX_SLOT:
         raise ValueError(
             f"O slot deve estar entre {MIN_SLOT} e {MAX_SLOT}."
         )
 
 
+def validate_effect_ids(
+    class_id: int,
+    model_id: int,
+) -> None:
+    """Valida IDs de classe e modelo."""
+    if not 0 <= class_id <= 0xFF:
+        raise ValueError(
+            "O ID da classe deve estar entre 0x00 e 0xFF."
+        )
+
+    if not 0 <= model_id <= 0xFF:
+        raise ValueError(
+            "O ID do modelo deve estar entre 0x00 e 0xFF."
+        )
+
+
 def calculate_checksum(message: list[int]) -> int:
+    """Calcula o checksum observado nos comandos de escrita."""
     if len(message) != EXPECTED_MESSAGE_LENGTH:
         raise ValueError(
             "O comando de cadeia deve possuir "
@@ -100,6 +118,7 @@ def calculate_checksum(message: list[int]) -> int:
 
 
 def validate_message(message: list[int]) -> None:
+    """Valida a estrutura comum do comando 0x17."""
     if len(message) != EXPECTED_MESSAGE_LENGTH:
         raise RuntimeError(
             "O pacote deveria possuir "
@@ -120,36 +139,52 @@ def validate_message(message: list[int]) -> None:
 
 
 def find_freq_model(value: str) -> EffectModel:
-    normalized = value.strip().lower()
-
-    for model in FREQ_MODELS:
-        accepted_values = {
-            str(model.menu_number),
-            model.name.lower(),
-            f"{model.model_id:02x}",
-            f"0x{model.model_id:02x}",
-        }
-
-        if normalized in accepted_values:
-            return model
-
-    raise ValueError(
-        "Modelo FREQ não encontrado."
+    """Mantém compatibilidade com o comando FREQ anterior."""
+    freq_class = next(
+        item
+        for item in EFFECT_CLASSES
+        if item.class_id == FREQ_CLASS_ID
     )
+
+    return find_effect_model(
+        freq_class,
+        value,
+    )
+
+
+def _set_class_and_model_fields(
+    full_message: list[int],
+    class_id: int,
+    model_id: int,
+) -> None:
+    """Aplica classe, modelo e campo espelhado ao pacote."""
+    class_high, class_low = split_into_nibbles(
+        class_id
+    )
+    model_high, model_low = split_into_nibbles(
+        model_id
+    )
+
+    full_message[CLASS_HIGH_INDEX] = class_high
+    full_message[CLASS_LOW_INDEX] = class_low
+    full_message[MODEL_HIGH_INDEX] = model_high
+    full_message[MODEL_LOW_INDEX] = model_low
+    full_message[CLASS_MIRROR_INDEX] = class_id
 
 
 def build_add_effect_message(
     slot_number: int,
     model_id: int,
+    class_id: int = FREQ_CLASS_ID,
 ) -> mido.Message:
+    """Cria um efeito em um slot ausente da cadeia visual."""
     validate_slot(
         slot_number
     )
-
-    if not 0 <= model_id <= 0xFF:
-        raise ValueError(
-            "O ID do modelo deve estar entre 0x00 e 0xFF."
-        )
+    validate_effect_ids(
+        class_id,
+        model_id,
+    )
 
     full_message = list(
         bytes.fromhex(
@@ -167,18 +202,17 @@ def build_add_effect_message(
     slot_high, slot_low = split_into_nibbles(
         slot_number - 1
     )
-    model_high, model_low = split_into_nibbles(
-        model_id
-    )
 
     full_message[SOURCE_SLOT_HIGH_INDEX] = empty_high
     full_message[SOURCE_SLOT_LOW_INDEX] = empty_low
     full_message[DESTINATION_SLOT_HIGH_INDEX] = slot_high
     full_message[DESTINATION_SLOT_LOW_INDEX] = slot_low
-    full_message[ENABLED_HIGH_INDEX] = 0x00
-    full_message[ENABLED_LOW_INDEX] = 0x01
-    full_message[MODEL_HIGH_INDEX] = model_high
-    full_message[MODEL_LOW_INDEX] = model_low
+
+    _set_class_and_model_fields(
+        full_message,
+        class_id,
+        model_id,
+    )
 
     full_message[CHECKSUM_INDEX] = calculate_checksum(
         full_message
@@ -193,6 +227,7 @@ def build_add_effect_message(
 def build_remove_effect_message(
     slot_number: int,
 ) -> mido.Message:
+    """Remove um slot existente da cadeia visual."""
     validate_slot(
         slot_number
     )
@@ -229,7 +264,57 @@ def build_remove_effect_message(
     )
 
 
+def build_replace_effect_message(
+    slot_number: int,
+    class_id: int,
+    model_id: int,
+) -> mido.Message:
+    """Substitui classe e modelo mantendo o mesmo slot visual."""
+    validate_slot(
+        slot_number
+    )
+    validate_effect_ids(
+        class_id,
+        model_id,
+    )
+
+    full_message = list(
+        bytes.fromhex(
+            ADD_TEMPLATE_HEX
+        )
+    )
+
+    validate_message(
+        full_message
+    )
+
+    slot_high, slot_low = split_into_nibbles(
+        slot_number - 1
+    )
+
+    full_message[SOURCE_SLOT_HIGH_INDEX] = slot_high
+    full_message[SOURCE_SLOT_LOW_INDEX] = slot_low
+    full_message[DESTINATION_SLOT_HIGH_INDEX] = slot_high
+    full_message[DESTINATION_SLOT_LOW_INDEX] = slot_low
+
+    _set_class_and_model_fields(
+        full_message,
+        class_id,
+        model_id,
+    )
+
+    full_message[CHECKSUM_INDEX] = calculate_checksum(
+        full_message
+    )
+
+    return mido.Message(
+        "sysex",
+        data=full_message[1:-1],
+    )
+
+
 def full_message_bytes(message: mido.Message) -> bytes:
+    """Retorna a mensagem incluindo F0 e F7."""
     return bytes(
         message.bin()
     )

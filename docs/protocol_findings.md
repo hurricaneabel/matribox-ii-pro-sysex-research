@@ -413,3 +413,151 @@ O comando `remove_effect` retira um slot existente da cadeia visual.
 Os testes automatizados cobrem a codificação dos slots de 1 até 12. Os testes físicos confirmaram a criação e a remoção nos slots 11 e 12, além de testes adicionais realizados diretamente na pedaleira.
 
 Esses comandos alteram a cadeia carregada, mas não executam automaticamente o salvamento permanente do preset.
+
+## Classes de efeitos e substituição entre classes
+
+Foi confirmado que classe e modelo são identificadores separados no protocolo.
+
+Classes atualmente confirmadas:
+
+```text
+FREQ = 0x01
+DRV  = 0x03
+```
+
+A ordem em que as classes foram pesquisadas não representa necessariamente a ordem visual apresentada pelo editor oficial.
+
+A ordem de exibição será tratada separadamente no catálogo do aplicativo final.
+
+## Troca de modelo dentro da mesma classe
+
+A troca de modelo dentro de uma classe utiliza o comando SysEx `0x16`.
+
+Estrutura confirmada:
+
+```text
+tamanho total: 58 bytes
+índice 7: checksum
+índice 9: 0x16
+índices 39–40: slot interno
+índices 41–42: identificador da classe
+índices 43–44: identificador do modelo
+índice 50: segundo campo dependente da classe
+```
+
+Exemplo da classe DRV:
+
+```text
+classe DRV = 00 03
+índice 50  = 03
+```
+
+Todos os 24 modelos DRV foram testados fisicamente no slot interno 11.
+
+## Substituição entre classes
+
+A substituição completa de um efeito por outro de classe diferente utiliza o comando SysEx `0x17`.
+
+Quando o efeito permanece no mesmo slot:
+
+```text
+slot de origem = slot de destino
+```
+
+Estrutura confirmada:
+
+```text
+tamanho total: 60 bytes
+índice 7: checksum
+índice 9: 0x17
+índices 39–40: slot de origem
+índices 41–42: slot de destino
+índices 43–44: identificador da nova classe
+índices 45–46: identificador do novo modelo
+índice 52: segundo campo dependente da classe
+```
+
+Exemplo confirmado:
+
+```text
+slot interno 11
+FREQ / Filter → DRV / Skreamer
+
+origem  = 00 0A
+destino = 00 0A
+classe  = 00 03
+modelo  = 00 00
+índice 52 = 03
+checksum = 0x40
+```
+
+Retorno confirmado:
+
+```text
+slot interno 11
+DRV / Skreamer → FREQ / Filter
+
+origem  = 00 0A
+destino = 00 0A
+classe  = 00 01
+modelo  = 01 09
+índice 52 = 01
+checksum = 0x46
+```
+
+## Modelos confirmados da classe DRV
+
+```text
+Skreamer     = 0x00
+Skreamer9    = 0x01
+Butter OD    = 0x02
+Warm OD      = 0x04
+Super OD     = 0x06
+Blues OD     = 0x09
+Full OD      = 0x0A
+Breaker OD   = 0x0E
+Gerden OD    = 0x10
+Timmy OD     = 0x1E
+Master OD    = 0x0F
+Solar Fuzz   = 0x26
+Fuzz Cream   = 0x22
+Red Fuzz     = 0x24
+JP Dist      = 0x2A
+Dark Mouse   = 0x2B
+Plexi Dist   = 0x2D
+Master Dist  = 0x2E
+Dist Plus    = 0x29
+Shark        = 0x30
+Strive       = 0x32
+Sardar Dist  = 0x52
+Bass OD      = 0x3F
+Bass Dist    = 0x40
+```
+
+Os IDs não seguem a ordem visual apresentada no menu do editor.
+
+Foram confirmados fisicamente:
+
+```text
+troca individual dos 24 modelos DRV
+sequência automática com os 24 modelos
+criação de DRV / Skreamer em slot ausente
+criação de DRV / Sardar Dist em slot ausente
+substituição FREQ → DRV
+substituição DRV → FREQ
+```
+
+Comandos implementados:
+
+```text
+python -m tools.commands.add_effect
+python -m tools.commands.set_effect
+python -m tools.commands.remove_effect
+```
+
+O comando `set_effect` seleciona automaticamente:
+
+```text
+mesma classe     = comando 0x16
+classe diferente = comando 0x17
+```
