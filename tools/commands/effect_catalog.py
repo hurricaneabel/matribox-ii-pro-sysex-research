@@ -14,6 +14,7 @@ DYN_CLASS_ID = 0x00
 FREQ_CLASS_ID = 0x01
 WAH_CLASS_ID = 0x02
 DRV_CLASS_ID = 0x03
+AMP_CLASS_ID = 0x04
 
 
 @dataclass(frozen=True)
@@ -104,6 +105,73 @@ WAH_MODELS = (
 )
 
 
+AMP_MODELS = (
+    EffectModel(1, "TWD DELUXE", 0x01, 0x07),
+    EffectModel(2, "B-MAN N", 0x03, 0x07),
+    EffectModel(3, "B-MAN BRI", 0x24, 0x07),
+    EffectModel(4, "DARK DOUBLE", 0x04, 0x07),
+    EffectModel(5, "DARK DELUXE", 0x05, 0x07),
+    EffectModel(6, "SUPERO 2 CL", 0x0F, 0x07),
+    EffectModel(7, "SUPERO 2 OD", 0x28, 0x07),
+    EffectModel(8, "VOKS 15TB", 0x10, 0x07),
+    EffectModel(9, "VOKS 30N", 0x11, 0x07),
+    EffectModel(10, "VOKS 30TB", 0x27, 0x07),
+    EffectModel(11, "JAZZ 120", 0x14, 0x07),
+    EffectModel(12, "SUPERB CL", 0x15, 0x07),
+    EffectModel(13, "SUPERB OD", 0x48, 0x07),
+    EffectModel(14, "CALIF STAR CL", 0x19, 0x07),
+    EffectModel(15, "CALIF STAR OD", 0x4A, 0x07),
+    EffectModel(16, "BOG SV CL", 0x1A, 0x07),
+    EffectModel(17, "BOG SV OD", 0x3D, 0x07),
+    EffectModel(18, "BOG XT BLUE", 0x43, 0x07),
+    EffectModel(19, "BOG XT RED", 0x6E, 0x07),
+    EffectModel(20, "DOCTOR CL", 0x1B, 0x07),
+    EffectModel(21, "DOCTOR OD", 0x49, 0x07),
+    EffectModel(22, "DRAGON CL", 0x1F, 0x07),
+    EffectModel(23, "DRAGON CL B", 0x7B, 0x07),
+    EffectModel(24, "DRAGON OD", 0x7C, 0x07),
+    EffectModel(25, "SOL 100 CL", 0x23, 0x07),
+    EffectModel(26, "SOL 100 OD", 0x47, 0x07),
+    EffectModel(27, "SOL 100 LD", 0x59, 0x07),
+    EffectModel(28, "BRIT 45", 0x2A, 0x07),
+    EffectModel(29, "BRIT 45+", 0x2B, 0x07),
+    EffectModel(30, "BRIT 45JP", 0x2C, 0x07),
+    EffectModel(31, "BRIT 50", 0x2D, 0x07),
+    EffectModel(32, "BRIT 50+", 0x2E, 0x07),
+    EffectModel(33, "BRIT 50JP", 0x2F, 0x07),
+    EffectModel(34, "BRIT SLP", 0x30, 0x07),
+    EffectModel(35, "BRIT 800", 0x35, 0x07),
+    EffectModel(36, "BRIT 900", 0x4E, 0x07),
+    EffectModel(37, "FLYMAN 1", 0x40, 0x07),
+    EffectModel(38, "FLYMAN 2", 0x41, 0x07),
+    EffectModel(39, "FLYMAN+ 1", 0x5D, 0x07),
+    EffectModel(40, "FLYMAN+ 2", 0x5E, 0x07),
+    EffectModel(41, "CALIF IIC+ 1", 0x39, 0x07),
+    EffectModel(42, "CALIF IIC+ 2", 0x3A, 0x07),
+    EffectModel(43, "CALIF IIC+ 3", 0x3B, 0x07),
+    EffectModel(44, "CALIF IV LD 1", 0x55, 0x07),
+    EffectModel(45, "CALIF IV LD 2", 0x56, 0x07),
+    EffectModel(46, "CALIF IV LD 3", 0x57, 0x07),
+    EffectModel(47, "CALIF DUAL V", 0x68, 0x07),
+    EffectModel(48, "CALIF DUAL M", 0x69, 0x07),
+    EffectModel(49, "TANGER R100", 0x53, 0x07),
+    EffectModel(50, "HALEN 51", 0x5A, 0x07),
+    EffectModel(51, "ENG 120", 0x5F, 0x07),
+    EffectModel(52, "ENG 120+", 0x60, 0x07),
+    EffectModel(53, "DIZZY VH", 0x65, 0x07),
+    EffectModel(54, "DIZZY VH S", 0x66, 0x07),
+    EffectModel(55, "DIZZY VH+", 0x6A, 0x07),
+    EffectModel(56, "DIZZY VH+ S", 0x6B, 0x07),
+    EffectModel(57, "A BASSVT", 0x73, 0x07),
+    EffectModel(58, "VOKS BASS", 0x75, 0x07),
+    EffectModel(59, "CALI BASS", 0x77, 0x07),
+    EffectModel(60, "A BASSFT", 0x75, 0x08),
+    EffectModel(61, "F-2BASS", 0x76, 0x08),
+    EffectModel(62, "AC PREAMP", 0x7A, 0x08),
+    EffectModel(63, "AC PREAMP 2", 0x7B, 0x08),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -128,6 +196,12 @@ EFFECT_CLASSES = (
         name="WAH",
         class_id=WAH_CLASS_ID,
         models=WAH_MODELS,
+    ),
+    EffectClass(
+        menu_number=5,
+        name="AMP",
+        class_id=AMP_CLASS_ID,
+        models=AMP_MODELS,
     ),
 )
 
@@ -171,7 +245,7 @@ def find_effect_model(
 ) -> EffectModel:
     """Localiza um modelo por menu, nome ou ID hexadecimal.
 
-    Alguns modelos DYN compartilham o mesmo ID principal. Nesses casos, a
+    Alguns modelos de efeitos compartilham o mesmo ID principal. Nesses casos, a
     busca por ID é ambígua e o usuário deve selecionar pelo número do menu ou
     pelo nome.
     """
