@@ -35,7 +35,7 @@ Ele permite adicionar, substituir e excluir efeitos nos slots internos de
 
 ## Catálogo confirmado
 
-Até esta etapa foram catalogadas **11 classes** e **253 modelos**.
+Até esta etapa foram catalogadas **12 classes** e **263 posições/modelos**.
 
 A ordem abaixo é a ordem atual do utilitário de terminal. Ela não deve ser
 interpretada como a ordem oficial da interface da pedaleira.
@@ -53,6 +53,7 @@ interpretada como a ordem oficial da interface da pedaleira.
 | 9 | MOD | `0x08` | 23 |
 | 10 | DLY | `0x09` | 17 |
 | 11 | RVB | `0x0A` | 12 |
+| 12 | CLONE | `0x0B` | 10 posições |
 
 As listas completas de modelos, IDs, seletores e checksums ficam em:
 
@@ -61,43 +62,55 @@ tools/commands/effect_catalog.py
 docs/protocol_findings.md
 ```
 
-## Última classe concluída: RVB
+## Última classe concluída: CLONE
 
-A subclasse RVB foi capturada pelo Wireshark/USBPcap e validada fisicamente.
+A seleção das posições CLONE foi capturada pelo Wireshark/USBPcap e validada
+fisicamente. A importação dos arquivos NAM não faz parte desta integração.
 
 ```text
-classe RVB          = 0x0A
+classe CLONE        = 0x0B
 flag estrutural     = 0x00
-seletor secundário  = 0x0C
-quantidade          = 12 modelos
+seletor secundário  = 0x0F
+quantidade          = 10 posições
+IDs                 = 0x00 até 0x09
 ```
 
-Modelos na ordem do editor:
+Os nomes reais são definidos pelo usuário ao importar arquivos NAM. Até o
+protocolo de importação, leitura de metadados e nomes ser documentado, o
+catálogo usa nomes estáveis e provisórios:
 
 ```text
-STUDIO
-CLUB
-ROOM
-HALL
-CHURCH
-PLATE
-SPRING
-SKY
-SEA
-MOD REVERB
-SHIMMER
-HAZE
+CLONE 1
+CLONE 2
+CLONE 3
+CLONE 4
+CLONE 5
+CLONE 6
+CLONE 7
+CLONE 8
+CLONE 9
+CLONE 10
 ```
-
-O último modelo está registrado com o nome correto `HAZE`.
 
 Validador:
 
 ```powershell
-python -m tools.experiments.validate_rvb_models_slot_11
+python -m tools.experiments.validate_clone_slots_slot_11
 ```
 
-A opção `A` percorre os modelos e retorna ao `STUDIO`.
+A opção `A` percorre `CLONE 2` até `CLONE 10` e retorna ao `CLONE 1`.
+
+### Separação entre seleção e importação NAM
+
+A troca de posições CLONE usa os mesmos comandos estruturais da cadeia:
+
+- `0x17` para entrar na classe ou substituir outro efeito;
+- `0x16` para trocar entre as dez posições.
+
+Nenhum conteúdo NAM, nome de arquivo ou bloco de transferência apareceu nas
+capturas de seleção. A importação será investigada separadamente por envolver
+escrita permanente, metadados, possível divisão em blocos e confirmação da
+pedaleira.
 
 ## Comandos SysEx confirmados
 
@@ -185,6 +198,7 @@ exceções. Exemplos:
   `0x01`;
 - DLY usa `0x0B` nos 17 modelos;
 - RVB usa `0x0C` nos 12 modelos;
+- CLONE usa `0x0F` nas 10 posições;
 - WAH, DYN e AMP também possuem grupos com seletores diferentes.
 
 ## Metodologia de captura
@@ -248,11 +262,11 @@ Executar toda a suíte:
 python -m unittest discover -s tests -v
 ```
 
-Estado após a integração RVB:
+Estado após a integração CLONE:
 
 ```text
-138 testes executados
-138 testes aprovados
+148 testes executados
+148 testes aprovados
 ```
 
 Também é usado:
@@ -326,6 +340,7 @@ tools/experiments/validate_add_eq_slot_12.py
 tools/experiments/validate_mod_models_slot_11.py
 tools/experiments/validate_dly_models_slot_11.py
 tools/experiments/validate_rvb_models_slot_11.py
+tools/experiments/validate_clone_slots_slot_11.py
 tools/experiments/validate_unified_effect_chain_slot_12.py
 tools/experiments/validate_unified_replacement_slot_11.py
 ```
@@ -387,10 +402,14 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-Com as 11 classes principais catalogadas, a próxima etapa prevista é mapear
-os parâmetros internos dos efeitos, começando por uma classe pequena e já
-validada. Classe, índice do parâmetro, faixa, codificação e checksum somente
-serão registrados após captura e teste físico.
+Com as 12 classes atualmente mapeadas na cadeia, a próxima investigação
+sensível será o protocolo de importação e leitura das posições CLONE. Essa
+etapa deverá identificar o formato enviado à pedaleira, os nomes, metadados,
+endereços de destino, blocos, checksums e confirmações, sem misturar a seleção
+normal da cadeia com a escrita permanente de arquivos NAM.
+
+A importação de IR continuará como investigação separada, pois não há garantia
+de que utilize o mesmo formato ou os mesmos comandos do CLONE.
 
 ## Documentação técnica completa
 

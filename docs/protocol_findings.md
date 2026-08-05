@@ -21,12 +21,13 @@ Classes completamente catalogadas:
 | MOD | `0x08` | 23 | `0x04`; duas exceções em `0x01` |
 | DLY | `0x09` | 17 | `0x0B` |
 | RVB | `0x0A` | 12 | `0x0C` |
+| CLONE | `0x0B` | 10 posições | `0x0F` |
 
 Total confirmado no catálogo:
 
 ```text
-11 classes
-253 modelos
+12 classes
+263 posições/modelos
 ```
 
 Comandos estruturais principais:
@@ -38,11 +39,11 @@ Comandos estruturais principais:
 | `0x17` | 60 bytes | adição, substituição e remoção |
 | `0x18` | 62 bytes | estado ligado/desligado do slot |
 
-Estado da suíte após a integração RVB:
+Estado da suíte após a integração CLONE:
 
 ```text
-138 testes automáticos
-138 aprovados
+148 testes automáticos
+148 aprovados
 ```
 
 A captura dos comandos enviados pelo editor oficial é realizada com
@@ -73,7 +74,8 @@ O mesmo comando funcionou com diferentes categorias, incluindo:
 - CAB;
 - MOD;
 - FREQ;
-- RVB.
+- RVB;
+- CLONE.
 
 ## Diferença entre slot interno e posição visual
 
@@ -986,3 +988,124 @@ classe do utilitário. A integração acrescenta testes para:
 Após esta integração, o catálogo possui 11 classes e 253 modelos, com 138
 testes automáticos aprovados.
 
+## Classe CLONE: seleção das dez posições catalogada
+
+A seleção da classe CLONE foi confirmada por captura USB/Wireshark e validação
+física. Esta seção documenta somente a presença do CLONE na cadeia e a troca
+entre suas dez posições. A importação de arquivos NAM permanece fora desta
+integração.
+
+```text
+classe CLONE = 0x0B
+flag estrutural = 0x00
+seletor secundário = 0x0F
+quantidade de posições = 10
+IDs = 0x00 até 0x09
+```
+
+Os nomes reais são definidos pelo conteúdo importado pelo usuário. Para manter
+o catálogo estável antes de existir leitura de nomes e metadados, as posições
+foram registradas provisoriamente como:
+
+| # | Nome provisório | ID | Seletor | Checksum `0x16` no slot 11 |
+|---:|---|---:|---:|---:|
+| 1 | CLONE 1 | `0x00` | `0x0F` | `0x49` |
+| 2 | CLONE 2 | `0x01` | `0x0F` | `0x4A` |
+| 3 | CLONE 3 | `0x02` | `0x0F` | `0x4B` |
+| 4 | CLONE 4 | `0x03` | `0x0F` | `0x4C` |
+| 5 | CLONE 5 | `0x04` | `0x0F` | `0x4D` |
+| 6 | CLONE 6 | `0x05` | `0x0F` | `0x4E` |
+| 7 | CLONE 7 | `0x06` | `0x0F` | `0x4F` |
+| 8 | CLONE 8 | `0x07` | `0x0F` | `0x50` |
+| 9 | CLONE 9 | `0x08` | `0x0F` | `0x51` |
+| 10 | CLONE 10 | `0x09` | `0x0F` | `0x52` |
+
+### Captura entre classes
+
+A troca de `RVB / STUDIO` para a primeira posição CLONE foi capturada com o
+comando `0x17`:
+
+```text
+slot de origem  = 00 0A
+slot de destino = 00 0A
+classe          = 00 0B
+modelo          = 00 00
+flag            = 00
+seletor         = 0F
+checksum        = 0x54
+```
+
+A volta para `RVB / STUDIO` confirmou novamente os campos da classe RVB. A
+troca para CLONE apareceu repetidamente com a mesma estrutura.
+
+### Troca entre as posições
+
+A captura completa começou com a primeira posição já selecionada, percorreu:
+
+```text
+CLONE 2
+CLONE 3
+CLONE 4
+CLONE 5
+CLONE 6
+CLONE 7
+CLONE 8
+CLONE 9
+CLONE 10
+CLONE 1
+```
+
+As trocas internas usam o comando `0x16`, com IDs sequenciais de `0x00` a
+`0x09`, flag `0x00` e seletor `0x0F`. Toda a sequência foi testada fisicamente
+e funcionou corretamente.
+
+Validador físico:
+
+```text
+python -m tools.experiments.validate_clone_slots_slot_11
+```
+
+### Operações estruturais calculadas e cobertas por testes
+
+```text
+substituir slot 11 por CLONE 1 = checksum 0x54
+adicionar CLONE 1 no slot 12  = checksum 0x69
+adicionar CLONE 10 no slot 12 = checksum 0x72
+```
+
+O catálogo e o gerenciador flexível reconhecem CLONE como a décima segunda
+classe do utilitário. A integração acrescenta testes para:
+
+- ID e posição da classe;
+- quantidade e ordem das dez posições;
+- IDs sequenciais de `0x00` a `0x09`;
+- seletor `0x0F`;
+- checksums do comando `0x16`;
+- substituição por `CLONE 1` no slot 11;
+- adição de `CLONE 1` e `CLONE 10` no slot 12;
+- pesquisa por nome, número e ID.
+
+### Importação NAM ainda não investigada
+
+As capturas de seleção não contêm o arquivo NAM, nome do usuário, metadados ou
+transferência extensa. Isso confirma que selecionar uma posição CLONE e
+importar conteúdo são operações separadas.
+
+A futura investigação da importação deverá observar, sem reenviar dados antes
+da análise:
+
+- formato do conteúdo transmitido;
+- nome e metadados da posição;
+- índice de destino;
+- tamanho total;
+- possível divisão em blocos;
+- checksums por bloco ou da transferência;
+- comando de início e finalização;
+- respostas e confirmações da pedaleira;
+- comportamento de substituição e backup.
+
+A importação de IR deve permanecer separada, pois pode utilizar outro formato
+e outros comandos.
+
+Após esta integração, o catálogo possui 12 classes e 263 posições/modelos,
+com 148 testes automáticos aprovados.

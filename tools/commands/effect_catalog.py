@@ -21,6 +21,7 @@ EQ_CLASS_ID = 0x07
 MOD_CLASS_ID = 0x08
 DLY_CLASS_ID = 0x09
 RVB_CLASS_ID = 0x0A
+CLONE_CLASS_ID = 0x0B
 
 
 @dataclass(frozen=True)
@@ -340,6 +341,20 @@ RVB_MODELS = (
 )
 
 
+CLONE_MODELS = (
+    EffectModel(1, "CLONE 1", 0x00, 0x0F),
+    EffectModel(2, "CLONE 2", 0x01, 0x0F),
+    EffectModel(3, "CLONE 3", 0x02, 0x0F),
+    EffectModel(4, "CLONE 4", 0x03, 0x0F),
+    EffectModel(5, "CLONE 5", 0x04, 0x0F),
+    EffectModel(6, "CLONE 6", 0x05, 0x0F),
+    EffectModel(7, "CLONE 7", 0x06, 0x0F),
+    EffectModel(8, "CLONE 8", 0x07, 0x0F),
+    EffectModel(9, "CLONE 9", 0x08, 0x0F),
+    EffectModel(10, "CLONE 10", 0x09, 0x0F),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -406,6 +421,12 @@ EFFECT_CLASSES = (
         name="RVB",
         class_id=RVB_CLASS_ID,
         models=RVB_MODELS,
+    ),
+    EffectClass(
+        menu_number=12,
+        name="CLONE",
+        class_id=CLONE_CLASS_ID,
+        models=CLONE_MODELS,
     ),
 )
 
