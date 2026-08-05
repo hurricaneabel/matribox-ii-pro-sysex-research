@@ -1,3 +1,55 @@
+# Descobertas confirmadas do protocolo SysEx
+
+Este documento mantém o registro técnico acumulado da pesquisa. As seções
+históricas são preservadas mesmo quando descobertas posteriores ampliam ou
+corrigem interpretações anteriores.
+
+## Resumo consolidado atual
+
+Classes completamente catalogadas:
+
+| Classe | ID | Modelos | Observações de seletor |
+|---|---:|---:|---|
+| DYN | `0x00` | 14 | `0x00` e `0x01` |
+| FREQ | `0x01` | 8 | `0x01` |
+| WAH | `0x02` | 6 | `0x05` e `0x01` |
+| DRV | `0x03` | 24 | `0x03` |
+| AMP | `0x04` | 63 | `0x07` e `0x08` |
+| CAB | `0x05` | 61 | `0x0A` |
+| IR | `0x06` | 20 | `0x0A` |
+| EQ | `0x07` | 5 | `0x01` |
+| MOD | `0x08` | 23 | `0x04`; duas exceções em `0x01` |
+| DLY | `0x09` | 17 | `0x0B` |
+
+Total confirmado no catálogo:
+
+```text
+10 classes
+241 modelos
+```
+
+Comandos estruturais principais:
+
+| Comando | Tamanho | Uso |
+|---:|---:|---|
+| `0x14` | 54 bytes | volume do preset |
+| `0x16` | 58 bytes | troca de modelo na mesma classe |
+| `0x17` | 60 bytes | adição, substituição e remoção |
+| `0x18` | 62 bytes | estado ligado/desligado do slot |
+
+Estado da suíte após a integração DLY:
+
+```text
+128 testes automáticos
+128 aprovados
+```
+
+A captura dos comandos enviados pelo editor oficial é realizada com
+Wireshark/USBPcap. O logger MIDI em Python continua útil para mensagens
+recebidas, mas não substitui a interceptação USB do tráfego de saída.
+
+---
+
 ## Controle de efeitos pelos slots internos
 
 Foi confirmado um comando SysEx capaz de ligar e desligar um efeito de acordo
@@ -181,13 +233,19 @@ Os testes automáticos estão em:
 tests/test_effect_slot_protocol.py
 ```
 
-Atualmente existem:
+Na etapa inicial desta investigação existiam:
 
 ```text
 15 testes automáticos
 ```
 
-Todos estão passando.
+A suíte foi ampliada à medida que novas classes e operações foram
+confirmadas. Após a integração da classe DLY existem:
+
+```text
+128 testes automáticos
+128 aprovados
+```
 
 ## Interpretação atual
 
@@ -679,6 +737,150 @@ O validador físico da classe está em:
 tools/experiments/validate_mod_models_slot_11.py
 ```
 
-O catálogo e o gerenciador flexível reconhecem MOD como a nona classe. A
-criação de `MOD / E-CHORUS` no slot interno 12 é gerada com checksum `0x5C` e
-deve ser confirmada fisicamente antes do commit desta integração.
+O catálogo e o gerenciador flexível reconhecem MOD como a nona classe.
+
+A criação de `MOD / E-CHORUS` no slot interno 12 foi validada fisicamente com:
+
+```text
+classe   = 0x08
+modelo   = 0x01
+seletor  = 0x04
+checksum = 0x5C
+```
+
+A classe MOD foi integrada à `main` no commit:
+
+```text
+2a4059f feat: add validated MOD effect support
+```
+
+## Classe DLY completamente catalogada
+
+A classe de delays foi confirmada por captura USB/Wireshark e validação física.
+
+```text
+classe DLY = 0x09
+flag estrutural = 0x00
+seletor secundário = 0x0B
+quantidade de modelos = 17
+```
+
+Modelos confirmados, na ordem visual do editor oficial:
+
+| # | Modelo | ID | Seletor |
+|---:|---|---:|---:|
+| 1 | WARM | `0x01` | `0x0B` |
+| 2 | PURE | `0x00` | `0x0B` |
+| 3 | MAG | `0x02` | `0x0B` |
+| 4 | TUBE | `0x0B` | `0x0B` |
+| 5 | BBD | `0x1D` | `0x0B` |
+| 6 | PING PONG | `0x04` | `0x0B` |
+| 7 | SLAPBACK | `0x05` | `0x0B` |
+| 8 | SWEEP | `0x06` | `0x0B` |
+| 9 | RING | `0x09` | `0x0B` |
+| 10 | MULTI TAPE | `0x0C` | `0x0B` |
+| 11 | SWEET | `0x0D` | `0x0B` |
+| 12 | 999 ECHO | `0x12` | `0x0B` |
+| 13 | RACK | `0x14` | `0x0B` |
+| 14 | LO-FI | `0x26` | `0x0B` |
+| 15 | REVERSE | `0x28` | `0x0B` |
+| 16 | EKO D | `0x03` | `0x0B` |
+| 17 | ICE DELAY | `0x2C` | `0x0B` |
+
+A captura completa percorreu todos os modelos e terminou retornando para WARM.
+O modelo PURE apareceu como `0x00` no primeiro pacote da sequência e foi
+posteriormente confirmado fisicamente pelo validador.
+
+Validador físico:
+
+```text
+python -m tools.experiments.validate_dly_models_slot_11
+```
+
+A opção `A` percorre os 16 modelos seguintes e retorna ao WARM.
+
+### Checksums e validações físicas da classe DLY
+
+Checksums confirmados para comando `0x16` no slot interno 11, na ordem visual
+do editor:
+
+```text
+WARM       = 0x44
+PURE       = 0x43
+MAG        = 0x45
+TUBE       = 0x4E
+BBD        = 0x51
+PING PONG  = 0x47
+SLAPBACK   = 0x48
+SWEEP      = 0x49
+RING       = 0x4C
+MULTI TAPE = 0x4F
+SWEET      = 0x50
+999 ECHO   = 0x46
+RACK       = 0x48
+LO-FI      = 0x4B
+REVERSE    = 0x4D
+EKO D      = 0x46
+ICE DELAY  = 0x51
+```
+
+A primeira troca entre classes, de `MOD / E-CHORUS` para `DLY / WARM`, foi
+capturada com comando `0x17`:
+
+```text
+slot       = 00 0A
+classe     = 00 09
+modelo     = 00 01
+flag       = 00
+seletor    = 0B
+checksum   = 0x4F
+```
+
+A criação direta de `DLY / WARM` no slot interno 12 foi testada pelo
+gerenciador flexível:
+
+```text
+classe     = 0x09
+modelo     = 0x01
+seletor    = 0x0B
+checksum   = 0x64
+```
+
+A sequência automática do validador percorreu fisicamente:
+
+```text
+PURE
+MAG
+TUBE
+BBD
+PING PONG
+SLAPBACK
+SWEEP
+RING
+MULTI TAPE
+SWEET
+999 ECHO
+RACK
+LO-FI
+REVERSE
+EKO D
+ICE DELAY
+WARM
+```
+
+O pacote `modelo 0x00` foi inicialmente tratado como uma possível ação anterior
+à rodada. A revisão da ordem correta mostrou que ele correspondia ao `PURE`.
+A identificação foi confirmada na pedaleira pelo teste automático.
+
+O catálogo e o gerenciador reconhecem DLY como a décima classe do utilitário.
+A integração acrescenta testes para:
+
+- ID e posição da classe;
+- quantidade e ordem dos 17 modelos;
+- IDs dos modelos;
+- seletor `0x0B`;
+- checksums do comando `0x16`;
+- substituição por `WARM` no slot 11;
+- adição de `WARM` e `PURE` no slot 12;
+- pesquisa por nome, número e ID.
+

@@ -1,664 +1,411 @@
 # Matribox II Pro SysEx Research
 
-Projeto experimental para estudar, testar e documentar o protocolo SysEx da
-Sonicake Matribox II Pro.
+Pesquisa experimental e documentada do protocolo SysEx da **Sonicake
+Matribox II Pro**.
 
-Este projeto está separado do controlador principal. Apenas comandos
-confirmados em testes reais na pedaleira serão posteriormente integrados ao
-projeto principal.
+O objetivo é compreender a comunicação usada pelo editor oficial, reproduzir
+somente comandos confirmados em testes reais e construir uma base segura para
+um futuro controlador de computador e celular.
 
-## Objetivo
-
-Descobrir como o editor oficial da Matribox II Pro se comunica com a
-pedaleira por SysEx.
-
-Os principais objetivos são:
-
-- capturar mensagens SysEx reais;
-- identificar parâmetros e valores;
-- entender o formato dos pacotes;
-- descobrir o cálculo do checksum;
-- reproduzir comandos usando Python;
-- documentar cada descoberta confirmada;
-- criar futuramente um controlador para computador e celular.
+> Este repositório é de pesquisa. Nenhum comando é considerado suportado antes
+> de ser capturado, reproduzido na pedaleira, testado automaticamente e
+> documentado.
 
 ## Estado atual
 
-O primeiro comando SysEx de escrita foi confirmado com sucesso:
+A estrutura de efeitos da Matribox já pode ser controlada por Python para:
 
-- alteração do volume do preset;
-- funcionamento em diferentes presets;
-- funcionamento em diferentes bancos;
-- valores gerados automaticamente;
-- valor codificado em dois nibbles;
-- checksum recalculado automaticamente;
-- envio realizado com Mido e python-rtmidi.
+- adicionar um efeito em slot ausente;
+- substituir um efeito existente;
+- trocar modelos dentro da mesma classe;
+- remover um efeito;
+- ligar ou desligar um slot;
+- alterar o volume do preset;
+- movimentar efeitos na cadeia visual;
+- solicitar e reconstruir dumps de preset em condições já estudadas.
 
-O comando altera o volume do preset atualmente selecionado na Matribox II Pro.
+O gerenciador flexível principal é:
 
-## Ambiente utilizado
-
-Sistema operacional:
-
-```text
-Windows
+```powershell
+python -m tools.experiments.manage_effect_chain
 ```
 
-Linguagem:
+Ele permite adicionar, substituir e excluir efeitos nos slots internos de
+`1` a `12`.
+
+## Catálogo confirmado
+
+Até esta etapa foram catalogadas **10 classes** e **241 modelos**.
+
+A ordem abaixo é a ordem atual do utilitário de terminal. Ela não deve ser
+interpretada como a ordem oficial da interface da pedaleira.
+
+| Menu | Classe | ID SysEx | Modelos |
+|---:|---|---:|---:|
+| 1 | FREQ | `0x01` | 8 |
+| 2 | DRV | `0x03` | 24 |
+| 3 | DYN | `0x00` | 14 |
+| 4 | WAH | `0x02` | 6 |
+| 5 | AMP | `0x04` | 63 |
+| 6 | CAB | `0x05` | 61 |
+| 7 | IR | `0x06` | 20 |
+| 8 | EQ | `0x07` | 5 |
+| 9 | MOD | `0x08` | 23 |
+| 10 | DLY | `0x09` | 17 |
+
+As listas completas de modelos, IDs, seletores e checksums ficam em:
 
 ```text
-Python 3.12
+tools/commands/effect_catalog.py
+docs/protocol_findings.md
 ```
 
-Bibliotecas:
+## Última classe concluída: DLY
+
+A subclasse DLY foi capturada pelo Wireshark/USBPcap e validada fisicamente.
 
 ```text
-mido==1.3.3
-python-rtmidi==1.5.8
+classe DLY          = 0x09
+flag estrutural     = 0x00
+seletor secundário  = 0x0B
+quantidade          = 17 modelos
 ```
 
-## Portas MIDI utilizadas
-
-Entrada MIDI:
+Modelos na ordem do editor:
 
 ```text
-Matribox II Pro Subdevice 0
+WARM
+PURE
+MAG
+TUBE
+BBD
+PING PONG
+SLAPBACK
+SWEEP
+RING
+MULTI TAPE
+SWEET
+999 ECHO
+RACK
+LO-FI
+REVERSE
+EKO D
+ICE DELAY
 ```
 
-Saída MIDI:
+O modelo `PURE` utiliza ID `0x00`. Ele apareceu no primeiro pacote da captura
+completa e foi confirmado novamente no teste físico.
 
-```text
-Matribox II Pro Subdevice 1
+Validador:
+
+```powershell
+python -m tools.experiments.validate_dly_models_slot_11
 ```
 
-A porta de entrada é usada para capturar mensagens enviadas pela pedaleira.
+A opção `A` percorre os modelos e retorna ao `WARM`.
 
-A porta de saída é usada para enviar comandos para a pedaleira.
+## Comandos SysEx confirmados
 
-## Assinatura SysEx observada
+| Tipo | Tamanho total | Função principal |
+|---:|---:|---|
+| `0x14` | 54 bytes | alterar volume do preset |
+| `0x16` | 58 bytes | trocar modelo dentro da mesma classe |
+| `0x17` | 60 bytes | adicionar, substituir ou remover efeito |
+| `0x18` | 62 bytes | ligar ou desligar slot interno |
 
-As mensagens estudadas começam com:
+O checksum fica no índice `7`.
 
-```text
-F0 21 25 4D 50
-```
+Nos comandos estruturais e de modelo, os valores de classe e modelo são
+transmitidos em dois nibbles.
 
-E terminam com:
+## Slots internos
 
-```text
-F7
-```
+O programa apresenta os slots de `1` a `12`.
 
-O significado completo desses bytes ainda não foi confirmado.
-
-Os bytes:
-
-```text
-4D 50
-```
-
-correspondem às letras `MP` em ASCII, mas ainda não está confirmado se isso
-significa Matribox Pro.
-
-## Mensagens de notificação e escrita
-
-Nas mensagens enviadas pela pedaleira para o computador, o índice 8 foi
-observado como:
-
-```text
-00
-```
-
-Nas mensagens de escrita enviadas pelo editor oficial para a pedaleira, o
-índice 8 foi observado como:
-
-```text
-12
-```
-
-Hipótese atual:
-
-```text
-00 = notificação enviada pela pedaleira
-12 = comando de escrita enviado para a pedaleira
-```
-
-Essa interpretação ainda precisa ser validada com outros parâmetros.
-
-## Codificação do volume
-
-O volume do preset é convertido para hexadecimal e separado em dois
-nibbles.
-
-Exemplo:
-
-```text
-Volume 49 decimal = 0x31 hexadecimal
-Transmitido como: 03 01
-```
-
-Na mensagem SysEx completa:
-
-```text
-Índice 39 = nibble alto
-Índice 40 = nibble baixo
-```
-
-A fórmula utilizada pelo código é:
+O protocolo usa valores de `0` a `11`:
 
 ```python
-high_nibble = (volume >> 4) & 0x0F
-low_nibble = volume & 0x0F
+protocol_slot = slot_apresentado - 1
 ```
 
 Exemplos:
 
-| Volume | Hexadecimal | Bytes enviados |
-|---:|---:|---:|
-| 1 | 01 | 00 01 |
-| 35 | 23 | 02 03 |
-| 49 | 31 | 03 01 |
-| 59 | 3B | 03 0B |
-| 75 | 4B | 04 0B |
-| 100 | 64 | 06 04 |
+```text
+slot 1  -> 00 00
+slot 11 -> 00 0A
+slot 12 -> 00 0B
+```
 
-Exemplo com volume 75:
+Um slot interno é um endereço persistente dentro do preset e não é a mesma
+coisa que a posição visual atual do efeito na cadeia.
+
+## Adição, substituição e remoção
+
+O comando `0x17` usa:
 
 ```text
-75 decimal = 0x4B hexadecimal
-
-Nibble alto = 04
-Nibble baixo = 0B
+39–40 = slot de origem
+41–42 = slot de destino
+43–44 = classe
+45–46 = modelo
+49    = flag estrutural
+52    = seletor secundário
 ```
 
-Os bytes inseridos na mensagem são:
+O valor de slot vazio é:
 
 ```text
-04 0B
+0F 0F
 ```
 
-## Identificador do parâmetro de volume
-
-O trecho observado próximo ao valor do volume é:
+Regras confirmadas:
 
 ```text
-05 00 01
+adicionar:
+origem vazia, destino real
+
+substituir:
+origem igual ao destino
+
+remover:
+origem real, destino vazio
 ```
 
-Esse trecho é considerado atualmente o identificador do parâmetro
-Preset Volume.
+## Troca dentro da mesma classe
 
-A estrutura observada é:
+O comando `0x16` usa:
 
 ```text
-05 00 01 [nibble alto] [nibble baixo]
+39–40 = slot
+41–42 = classe
+43–44 = modelo
+47    = flag estrutural
+50    = seletor secundário
 ```
 
-Exemplo para volume 49:
+O catálogo armazena o seletor por modelo porque algumas classes possuem
+exceções. Exemplos:
+
+- MOD usa `0x04` na maioria dos modelos, mas `DETUNE` e `LOFI BIT` usam
+  `0x01`;
+- DLY usa `0x0B` nos 17 modelos;
+- WAH, DYN e AMP também possuem grupos com seletores diferentes.
+
+## Metodologia de captura
+
+Os comandos enviados pelo editor oficial são interceptados com:
 
 ```text
-05 00 01 03 01
+Wireshark + USBPcap
 ```
 
-Exemplo para volume 75:
+O logger Python observa mensagens entregues pela porta MIDI de entrada, mas
+não substitui a interceptação USB dos comandos do editor.
+
+Procedimento usado para catalogar uma classe:
+
+1. colocar um efeito conhecido em um slot de teste;
+2. capturar a troca entre classes com comando `0x17`;
+3. percorrer todos os modelos da nova classe;
+4. extrair os pacotes `0x16`;
+5. relacionar cada pacote com a ordem visual do editor;
+6. recalcular os checksums;
+7. criar um validador físico;
+8. testar a sequência completa na pedaleira;
+9. integrar ao catálogo;
+10. executar toda a suíte antes do commit.
+
+## Ambiente utilizado
 
 ```text
-05 00 01 04 0B
+Sistema operacional: Windows
+Python: 3.12
+MIDI: mido + python-rtmidi
 ```
 
-## Checksum
-
-O checksum fica no índice 7 da mensagem SysEx completa, contando o byte
-`F0` como índice zero.
-
-A fórmula confirmada para o comando de alteração do volume é:
-
-```python
-checksum = sum(message[14:49]) & 0x7F
-```
-
-O cálculo soma os bytes dos índices 14 até 48.
-
-Em Python, o índice final de um recorte não é incluído. Por isso:
-
-```python
-message[14:49]
-```
-
-representa os índices:
+Portas usadas:
 
 ```text
-14 até 48
+Entrada: Matribox II Pro Subdevice 0
+Saída:   Matribox II Pro Subdevice 1
 ```
 
-O operador:
+## Preparação
 
-```python
-& 0x7F
-```
-
-mantém o resultado entre 0 e 127, que é a faixa permitida para os bytes
-internos de uma mensagem SysEx MIDI.
-
-Essa fórmula foi confirmada para o pacote de alteração do Preset Volume.
-
-Ainda não está confirmado se outros tipos de mensagens utilizam exatamente
-a mesma faixa ou o mesmo cálculo.
-
-## Estrutura provisória do pacote de volume
-
-A mensagem completa possui 54 bytes, contando `F0` e `F7`.
-
-Estrutura provisória:
-
-| Índice | Conteúdo |
-|---:|---|
-| 0 | `F0`, início da mensagem SysEx |
-| 1–4 | assinatura observada `21 25 4D 50` |
-| 5–6 | valores fixos observados `00 00` |
-| 7 | checksum |
-| 8 | tipo de comando de escrita `12` |
-| 9 | valor observado `14` |
-| 10–38 | estrutura e identificação do parâmetro |
-| 39 | nibble alto do volume |
-| 40 | nibble baixo do volume |
-| 41–48 | restante do conteúdo incluído no checksum |
-| 49–52 | finalização fixa observada |
-| 53 | `F7`, final da mensagem SysEx |
-
-O significado completo dos campos fixos ainda não foi identificado.
-
-## Testes confirmados
-
-Foram confirmados os seguintes testes:
-
-- captura de mensagens SysEx enviadas pela Matribox;
-- captura de comandos enviados pelo editor oficial;
-- reenvio de uma mensagem original capturada;
-- alteração do volume usando uma mensagem capturada;
-- geração automática de novos valores;
-- separação correta do valor em dois nibbles;
-- cálculo automático do checksum;
-- alteração do volume em diferentes presets;
-- alteração do volume em diferentes bancos;
-- funcionamento sem depender do número do preset atual.
-
-## Arquivos principais
-
-### `logger.py`
-
-Captura mensagens MIDI recebidas pela porta de entrada da Matribox.
-
-As mensagens SysEx são exibidas em hexadecimal e registradas em arquivo.
-
-### `checksum_test.py`
-
-Testa diferentes fórmulas e faixas de checksum usando mensagens SysEx
-capturadas.
-
-### `set_volume.py`
-
-Gera e envia um comando SysEx válido para alterar o volume do preset
-atualmente selecionado.
-
-O programa:
-
-1. recebe um volume entre 0 e 100;
-2. separa o valor em dois nibbles;
-3. coloca os nibbles nos índices 39 e 40;
-4. recalcula o checksum;
-5. coloca o checksum no índice 7;
-6. envia a mensagem pela porta MIDI de saída.
-
-## Ativação do ambiente virtual
-
-No PowerShell:
+Ativar o ambiente virtual:
 
 ```powershell
-venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
-Quando o ambiente estiver ativo, o terminal deve começar com:
-
-```text
-(venv)
-```
-
-## Instalação das dependências
-
-Com o ambiente virtual ativo:
+Instalar dependências:
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-## Executar o controle de volume
+## Testes
 
-Com a Matribox conectada e ligada:
-
-```powershell
-python set_volume.py
-```
-
-O programa solicitará:
-
-```text
-Digite o volume entre 0 e 100:
-```
-
-Digite um valor e pressione Enter.
-
-Exemplo:
-
-```text
-75
-```
-
-O programa deverá mostrar informações semelhantes a:
-
-```text
-Checksum calculado: 32
-Valor codificado: 04 0B
-Comando enviado para volume 75.
-```
-
-## Executar o logger
-
-Para capturar mensagens enviadas pela Matribox:
-
-```powershell
-python logger.py
-```
-
-Para parar a captura:
-
-```text
-Ctrl+C
-```
-
-## Segurança dos testes
-
-Não serão enviados comandos desconhecidos relacionados a:
-
-- atualização de firmware;
-- restauração de fábrica;
-- apagamento de presets;
-- gravação em endereços de memória desconhecidos;
-- importação de arquivos desconhecidos;
-- alteração de configurações críticas.
-
-Os primeiros testes serão realizados apenas com parâmetros reversíveis,
-como:
-
-- volume;
-- valores de efeitos;
-- ligar e desligar módulos;
-- BPM;
-- posição do Looper;
-- parâmetros globais não destrutivos.
-
-## Próximas investigações
-
-Os próximos parâmetros a serem investigados são:
-
-- ligar e desligar um módulo de efeito;
-- identificar o número de cada módulo;
-- alterar parâmetros de um efeito;
-- descobrir comandos de leitura;
-- interpretar respostas da pedaleira;
-- identificar dumps completos de presets;
-- confirmar o checksum em outros tipos de mensagem;
-- entender a estrutura dos nomes de presets;
-- documentar comandos globais.
-
-## Pontos ainda desconhecidos
-
-Ainda não foram confirmados:
-
-- significado completo do cabeçalho;
-- significado exato de `21 25 4D 50`;
-- função de todos os campos fixos;
-- estrutura genérica de qualquer parâmetro;
-- formato de comandos de leitura;
-- formato de dumps completos;
-- mensagens de confirmação ou ACK;
-- checksum utilizado em outros comandos;
-- estrutura de módulos e algoritmos;
-- formato de salvamento de presets.
-
-## Projeto principal
-
-Este repositório é utilizado apenas para pesquisa e testes SysEx.
-
-Os comandos somente serão transferidos para o controlador principal depois
-de:
-
-1. serem capturados;
-2. serem reproduzidos;
-3. funcionarem em diferentes presets;
-4. terem seus campos identificados;
-5. possuírem testes;
-6. estarem documentados.
-
-## Estrutura atual do projeto
-
-O projeto foi organizado por finalidade para separar comandos, ferramentas de
-captura, análise de dados e experimentos antigos.
-
-```text
-matribox-sysex/
-├── README.md
-├── requirements.txt
-├── .gitignore
-│
-├── data/
-│   └── dumps/
-│       ├── preset_dump_received.txt
-│       ├── preset_45B_original.bin
-│       └── preset_45B_original.hex
-│
-├── docs/
-│   └── protocol_findings.md
-│
-├── tests/
-│   ├── test_effect_slot_protocol.py
-│   └── test_volume_protocol.py
-│
-└── tools/
-    ├── __init__.py
-    │
-    ├── analysis/
-    │   ├── __init__.py
-    │   ├── analisar.py
-    │   ├── checksum_test.py
-    │   └── decode_preset_dump.py
-    │
-    ├── capture/
-    │   ├── __init__.py
-    │   ├── logger.py
-    │   └── teste_portas.py
-    │
-    ├── commands/
-    │   ├── __init__.py
-    │   ├── move_and_read_chain.py
-    │   ├── move_effect_position.py
-    │   ├── request_preset_dump.py
-    │   ├── set_effect_slot.py
-    │   └── set_volume.py
-    │
-    └── experiments/
-        ├── __init__.py
-        ├── enviar_teste.py
-        └── teste_escrita.py
-```
-
-## Ferramentas de captura
-
-### Verificar portas MIDI
-
-```powershell
-python tools\capture\teste_portas.py
-```
-
-### Capturar mensagens recebidas pela porta MIDI
-
-```powershell
-python tools\capture\logger.py
-```
-
-O logger observa mensagens entregues pela porta MIDI de entrada. Para
-interceptar os comandos enviados pelo editor oficial à pedaleira, continua
-sendo necessário utilizar o Wireshark com USBPcap.
-
-## Ferramentas de análise
-
-### Analisar mensagens
-
-```powershell
-python tools\analysis\analisar.py
-```
-
-### Testar hipóteses de checksum
-
-```powershell
-python tools\analysis\checksum_test.py
-```
-
-### Reconstruir o dump de preset
-
-```powershell
-python tools\analysis\decode_preset_dump.py
-```
-
-Esse script lê:
-
-```text
-data/dumps/preset_dump_received.txt
-```
-
-E gera:
-
-```text
-data/dumps/preset_45B_original.bin
-data/dumps/preset_45B_original.hex
-```
-
-O primeiro dump reconstruído possui:
-
-```text
-289 bytes decodificados
-```
-
-Ele foi recebido em dois fragmentos:
-
-```text
-Fragmento 1:
-185 bytes
-offset 0
-
-Fragmento 2:
-104 bytes
-offset 185
-```
-
-## Comandos SysEx confirmados
-
-### Alterar o volume do preset
-
-```powershell
-python tools\commands\set_volume.py
-```
-
-### Ligar ou desligar um slot interno
-
-```powershell
-python tools\commands\set_effect_slot.py
-```
-
-Foram testados os 12 slots internos disponíveis no preset.
-
-### Mover um efeito na cadeia visual
-
-```powershell
-python tools\commands\move_effect_position.py
-```
-
-Esse comando trabalha com posições visuais, não com os slots internos
-persistentes.
-
-### Mover e tentar ler a ordem devolvida
-
-```powershell
-python tools\commands\move_and_read_chain.py
-```
-
-A Matribox executa o movimento corretamente. Entretanto, a resposta da
-pedaleira depende de uma sessão de comunicação previamente inicializada pelo
-editor oficial.
-
-### Solicitar o dump do preset 45B
-
-```powershell
-python tools\commands\request_preset_dump.py
-```
-
-O fluxo confirmado é:
-
-```text
-Python → Matribox:
-seleciona o preset 45B
-
-Matribox → Python:
-confirma a seleção com uma mensagem SysEx de 54 bytes
-
-Python → Matribox:
-solicita a leitura do preset
-
-Matribox → Python:
-envia o dump em dois fragmentos
-```
-
-Atualmente, a pedaleira somente envia essas respostas depois que o editor
-oficial foi aberto e realizou sua sincronização inicial.
-
-Ainda é necessário descobrir e reproduzir a mensagem de inicialização dessa
-sessão para que o programa Python funcione sem depender do editor oficial.
-
-## Testes automáticos
-
-Para executar todos os testes:
+Executar toda a suíte:
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
 
-Estado atual:
+Estado após a integração DLY:
 
 ```text
-15 testes executados
-15 testes aprovados
+128 testes executados
+128 testes aprovados
 ```
 
-Os testes cobrem:
+Também é usado:
 
-- codificação do volume em nibbles;
-- checksum do volume;
-- validação da faixa de volume;
-- codificação dos slots internos;
-- estado ligado e desligado;
-- checksum dos slots;
-- validação dos slots de 1 até 12.
+```powershell
+python -m compileall tools tests
+git diff --check
+```
 
-## Observação sobre presets com 12 efeitos
+## Ferramentas principais
 
-O protocolo permite controlar os 12 slots internos.
+### Gerenciar a cadeia
 
-Entretanto, durante os testes, um preset preenchido com 12 efeitos apresentou
-instabilidade no editor oficial, incluindo travamentos e dificuldade para
-reabrir o programa.
+```powershell
+python -m tools.experiments.manage_effect_chain
+```
 
-O preset de pesquisa `45B` foi reduzido para 11 efeitos para manter a
-estabilidade durante a investigação.
+### Alterar o volume
 
-Ainda não está confirmado se a quantidade de efeitos causou diretamente o
-problema ou se o editor oficial estava em um estado de sessão instável.
+```powershell
+python -m tools.commands.set_volume
+```
+
+### Ligar ou desligar slot
+
+```powershell
+python -m tools.commands.set_effect_slot
+```
+
+### Adicionar efeito
+
+```powershell
+python -m tools.commands.add_effect
+```
+
+### Substituir ou trocar efeito
+
+```powershell
+python -m tools.commands.set_effect
+```
+
+### Remover efeito
+
+```powershell
+python -m tools.commands.remove_effect
+```
+
+### Verificar portas MIDI
+
+```powershell
+python -m tools.capture.teste_portas
+```
+
+### Logger MIDI
+
+```powershell
+python -m tools.capture.logger
+```
+
+### Solicitar dump de preset
+
+```powershell
+python -m tools.commands.request_preset_dump
+```
+
+## Validadores físicos
+
+```text
+tools/experiments/validate_eq_models_slot_11.py
+tools/experiments/validate_add_eq_slot_12.py
+tools/experiments/validate_mod_models_slot_11.py
+tools/experiments/validate_dly_models_slot_11.py
+tools/experiments/validate_unified_effect_chain_slot_12.py
+tools/experiments/validate_unified_replacement_slot_11.py
+```
+
+## Estrutura do projeto
+
+```text
+matribox-sysex/
+├── README.md
+├── requirements.txt
+├── data/
+│   └── dumps/
+├── docs/
+│   └── protocol_findings.md
+├── tests/
+│   ├── test_effect_chain.py
+│   ├── test_effect_model.py
+│   ├── test_effect_slot_protocol.py
+│   ├── test_volume_protocol.py
+│   └── testes específicos por classe
+└── tools/
+    ├── analysis/
+    ├── capture/
+    ├── commands/
+    └── experiments/
+```
+
+## Dumps de preset
+
+O repositório contém capturas e reconstruções do preset de pesquisa `45B`.
+
+A pesquisa já confirmou:
+
+- dumps divididos em fragmentos;
+- reconstrução de dados binários;
+- comparação de dumps da mesma sessão;
+- variação de volume no dump;
+- comportamento de estado de slot;
+- dependência de inicialização da sessão para certas respostas da pedaleira.
+
+Os detalhes permanecem registrados em:
+
+```text
+data/dumps/
+docs/protocol_findings.md
+```
+
+## Segurança
+
+Não são enviados comandos desconhecidos relacionados a:
+
+- firmware;
+- restauração de fábrica;
+- apagamento em massa;
+- escrita em memória desconhecida;
+- configurações críticas não reversíveis.
+
+Os testes usam presets dedicados e alterações reversíveis.
+
+## Próxima investigação
+
+A próxima classe prevista é:
+
+```text
+RVB / Reverb
+```
+
+O ID, os modelos, seletores e flags somente serão registrados após captura e
+validação física.
+
+## Documentação técnica completa
+
+O histórico detalhado das descobertas, estruturas, exceções, pacotes e
+checksums está em:
+
+```text
+docs/protocol_findings.md
+```
+
+Esse arquivo é a fonte técnica principal da pesquisa.

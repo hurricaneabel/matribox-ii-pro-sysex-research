@@ -19,6 +19,7 @@ CAB_CLASS_ID = 0x05
 IR_CLASS_ID = 0x06
 EQ_CLASS_ID = 0x07
 MOD_CLASS_ID = 0x08
+DLY_CLASS_ID = 0x09
 
 
 @dataclass(frozen=True)
@@ -301,6 +302,27 @@ MOD_MODELS = (
 )
 
 
+DLY_MODELS = (
+    EffectModel(1, "WARM", 0x01, 0x0B),
+    EffectModel(2, "PURE", 0x00, 0x0B),
+    EffectModel(3, "MAG", 0x02, 0x0B),
+    EffectModel(4, "TUBE", 0x0B, 0x0B),
+    EffectModel(5, "BBD", 0x1D, 0x0B),
+    EffectModel(6, "PING PONG", 0x04, 0x0B),
+    EffectModel(7, "SLAPBACK", 0x05, 0x0B),
+    EffectModel(8, "SWEEP", 0x06, 0x0B),
+    EffectModel(9, "RING", 0x09, 0x0B),
+    EffectModel(10, "MULTI TAPE", 0x0C, 0x0B),
+    EffectModel(11, "SWEET", 0x0D, 0x0B),
+    EffectModel(12, "999 ECHO", 0x12, 0x0B),
+    EffectModel(13, "RACK", 0x14, 0x0B),
+    EffectModel(14, "LO-FI", 0x26, 0x0B),
+    EffectModel(15, "REVERSE", 0x28, 0x0B),
+    EffectModel(16, "EKO D", 0x03, 0x0B),
+    EffectModel(17, "ICE DELAY", 0x2C, 0x0B),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -355,6 +377,12 @@ EFFECT_CLASSES = (
         name="MOD",
         class_id=MOD_CLASS_ID,
         models=MOD_MODELS,
+    ),
+    EffectClass(
+        menu_number=10,
+        name="DLY",
+        class_id=DLY_CLASS_ID,
+        models=DLY_MODELS,
     ),
 )
 
