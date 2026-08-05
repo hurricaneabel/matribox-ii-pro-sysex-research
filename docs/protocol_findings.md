@@ -22,12 +22,16 @@ Classes completamente catalogadas:
 | DLY | `0x09` | 17 | `0x0B` |
 | RVB | `0x0A` | 12 | `0x0C` |
 | CLONE | `0x0B` | 10 posições | `0x0F` |
+| FX LOOP | `0x0C` | 1 | `0x06` |
+| FX SEND | `0x0D` | 1 | `0x06` |
+| FX RETURN | `0x0E` | 1 | `0x06` |
+| VOL | `0x0F` | 1 | `0x06` |
 
 Total confirmado no catálogo:
 
 ```text
-12 classes
-263 posições/modelos
+16 classes
+267 posições/modelos
 ```
 
 Comandos estruturais principais:
@@ -39,11 +43,11 @@ Comandos estruturais principais:
 | `0x17` | 60 bytes | adição, substituição e remoção |
 | `0x18` | 62 bytes | estado ligado/desligado do slot |
 
-Estado da suíte após a integração CLONE:
+Estado da suíte após a integração dos blocos especiais:
 
 ```text
-148 testes automáticos
-148 aprovados
+158 testes automáticos
+158 aprovados
 ```
 
 A captura dos comandos enviados pelo editor oficial é realizada com
@@ -1109,3 +1113,119 @@ e outros comandos.
 
 Após esta integração, o catálogo possui 12 classes e 263 posições/modelos,
 com 148 testes automáticos aprovados.
+
+## Classes especiais FX LOOP, FX SEND, FX RETURN e VOL
+
+As quatro últimas categorias exibidas pelo editor possuem apenas um item cada,
+mas as capturas confirmaram que são classes SysEx independentes. Todas foram
+validadas fisicamente no slot interno 11.
+
+| Menu | Classe | ID da classe | Item | ID do modelo | Seletor | Checksum `0x17` slot 11 |
+|---:|---|---:|---|---:|---:|---:|
+| 13 | FX LOOP | `0x0C` | FX LOOP | `0x00` | `0x06` | `0x4C` |
+| 14 | FX SEND | `0x0D` | SND | `0x01` | `0x06` | `0x4E` |
+| 15 | FX RETURN | `0x0E` | RTN | `0x02` | `0x06` | `0x50` |
+| 16 | VOL | `0x0F` | VOL | `0x03` | `0x06` | `0x52` |
+
+Todos usam flag estrutural `0x00`. A sequência observada é regular, mas os
+valores foram registrados a partir das capturas, não inferidos:
+
+```text
+classe 0x0C -> modelo 0x00
+classe 0x0D -> modelo 0x01
+classe 0x0E -> modelo 0x02
+classe 0x0F -> modelo 0x03
+```
+
+### Capturas entre classes
+
+A troca de `CLONE 1` para `FX LOOP` confirmou:
+
+```text
+classe   = 0x0C
+modelo   = 0x00
+flag     = 0x00
+seletor  = 0x06
+checksum = 0x4C
+```
+
+A troca de `FX LOOP` para `SND` confirmou:
+
+```text
+classe   = 0x0D
+modelo   = 0x01
+flag     = 0x00
+seletor  = 0x06
+checksum = 0x4E
+```
+
+A troca de `SND` para `RTN` confirmou:
+
+```text
+classe   = 0x0E
+modelo   = 0x02
+flag     = 0x00
+seletor  = 0x06
+checksum = 0x50
+```
+
+A troca de `RTN` para `VOL` confirmou:
+
+```text
+classe   = 0x0F
+modelo   = 0x03
+flag     = 0x00
+seletor  = 0x06
+checksum = 0x52
+```
+
+As voltas às classes anteriores reproduziram os campos já conhecidos. As
+sequências foram repetidas nas capturas e mantiveram os mesmos pacotes.
+
+### Validação física conjunta
+
+O validador está em:
+
+```text
+tools/experiments/validate_special_blocks_slot_11.py
+```
+
+A opção automática percorreu fisicamente:
+
+```text
+FX LOOP
+SND
+RTN
+VOL
+RTN
+```
+
+Todos os blocos foram selecionados corretamente. Como cada classe possui um
+único item, a validação usa substituições estruturais `0x17`; não existe troca
+interna entre modelos da mesma classe para esses quatro casos.
+
+### Adição em slot vazio calculada e coberta por testes
+
+```text
+adicionar FX LOOP no slot 12 = checksum 0x61
+adicionar SND no slot 12     = checksum 0x63
+adicionar RTN no slot 12     = checksum 0x65
+adicionar VOL no slot 12     = checksum 0x67
+```
+
+O gerenciador flexível reconhece automaticamente as quatro classes por ler o
+catálogo central. A integração acrescenta testes para:
+
+- IDs e posições de menu das classes;
+- presença de um único item em cada classe;
+- IDs de modelo `0x00`, `0x01`, `0x02` e `0x03`;
+- seletor comum `0x06`;
+- flag estrutural `0x00`;
+- checksums capturados das substituições no slot 11;
+- checksums calculados das adições no slot 12;
+- pesquisa por classe, nome e número de menu;
+- total consolidado do catálogo.
+
+Após esta integração, o catálogo possui 16 classes e 267 posições/modelos,
+com 158 testes automáticos aprovados.
+

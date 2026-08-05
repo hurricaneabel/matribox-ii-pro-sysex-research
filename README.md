@@ -35,7 +35,7 @@ Ele permite adicionar, substituir e excluir efeitos nos slots internos de
 
 ## Catálogo confirmado
 
-Até esta etapa foram catalogadas **12 classes** e **263 posições/modelos**.
+Até esta etapa foram catalogadas **16 classes** e **267 posições/modelos**.
 
 A ordem abaixo é a ordem atual do utilitário de terminal. Ela não deve ser
 interpretada como a ordem oficial da interface da pedaleira.
@@ -54,6 +54,10 @@ interpretada como a ordem oficial da interface da pedaleira.
 | 10 | DLY | `0x09` | 17 |
 | 11 | RVB | `0x0A` | 12 |
 | 12 | CLONE | `0x0B` | 10 posições |
+| 13 | FX LOOP | `0x0C` | 1 |
+| 14 | FX SEND | `0x0D` | 1 (`SND`) |
+| 15 | FX RETURN | `0x0E` | 1 (`RTN`) |
+| 16 | VOL | `0x0F` | 1 |
 
 As listas completas de modelos, IDs, seletores e checksums ficam em:
 
@@ -62,55 +66,42 @@ tools/commands/effect_catalog.py
 docs/protocol_findings.md
 ```
 
-## Última classe concluída: CLONE
+## Últimas classes concluídas: blocos especiais
 
-A seleção das posições CLONE foi capturada pelo Wireshark/USBPcap e validada
-fisicamente. A importação dos arquivos NAM não faz parte desta integração.
+Os quatro blocos finais exibidos pelo editor foram capturados por
+Wireshark/USBPcap e validados fisicamente. Embora cada bloco tenha somente um
+item, o protocolo os identifica como quatro classes independentes.
 
-```text
-classe CLONE        = 0x0B
-flag estrutural     = 0x00
-seletor secundário  = 0x0F
-quantidade          = 10 posições
-IDs                 = 0x00 até 0x09
-```
+| Classe | ID | Item | Modelo | Flag | Seletor |
+|---|---:|---|---:|---:|---:|
+| FX LOOP | `0x0C` | FX LOOP | `0x00` | `0x00` | `0x06` |
+| FX SEND | `0x0D` | SND | `0x01` | `0x00` | `0x06` |
+| FX RETURN | `0x0E` | RTN | `0x02` | `0x00` | `0x06` |
+| VOL | `0x0F` | VOL | `0x03` | `0x00` | `0x06` |
 
-Os nomes reais são definidos pelo usuário ao importar arquivos NAM. Até o
-protocolo de importação, leitura de metadados e nomes ser documentado, o
-catálogo usa nomes estáveis e provisórios:
+As capturas confirmaram que todos usam o comando estrutural `0x17`. Como cada
+classe possui apenas um item, não existe uma sequência interna de modelos a
+ser percorrida com `0x16`.
 
-```text
-CLONE 1
-CLONE 2
-CLONE 3
-CLONE 4
-CLONE 5
-CLONE 6
-CLONE 7
-CLONE 8
-CLONE 9
-CLONE 10
-```
-
-Validador:
+Validador conjunto:
 
 ```powershell
-python -m tools.experiments.validate_clone_slots_slot_11
+python -m tools.experiments.validate_special_blocks_slot_11
 ```
 
-A opção `A` percorre `CLONE 2` até `CLONE 10` e retorna ao `CLONE 1`.
+A opção `A` percorre:
 
-### Separação entre seleção e importação NAM
+```text
+FX LOOP
+SND
+RTN
+VOL
+RTN
+```
 
-A troca de posições CLONE usa os mesmos comandos estruturais da cadeia:
-
-- `0x17` para entrar na classe ou substituir outro efeito;
-- `0x16` para trocar entre as dez posições.
-
-Nenhum conteúdo NAM, nome de arquivo ou bloco de transferência apareceu nas
-capturas de seleção. A importação será investigada separadamente por envolver
-escrita permanente, metadados, possível divisão em blocos e confirmação da
-pedaleira.
+A classe CLONE continua com dez posições selecionáveis. A importação NAM e a
+importação de IR permanecem investigações separadas da seleção estrutural da
+cadeia.
 
 ## Comandos SysEx confirmados
 
@@ -199,6 +190,7 @@ exceções. Exemplos:
 - DLY usa `0x0B` nos 17 modelos;
 - RVB usa `0x0C` nos 12 modelos;
 - CLONE usa `0x0F` nas 10 posições;
+- FX LOOP, FX SEND, FX RETURN e VOL usam `0x06`;
 - WAH, DYN e AMP também possuem grupos com seletores diferentes.
 
 ## Metodologia de captura
@@ -262,11 +254,11 @@ Executar toda a suíte:
 python -m unittest discover -s tests -v
 ```
 
-Estado após a integração CLONE:
+Estado após a integração dos blocos especiais:
 
 ```text
-148 testes executados
-148 testes aprovados
+158 testes executados
+158 testes aprovados
 ```
 
 Também é usado:
@@ -341,6 +333,7 @@ tools/experiments/validate_mod_models_slot_11.py
 tools/experiments/validate_dly_models_slot_11.py
 tools/experiments/validate_rvb_models_slot_11.py
 tools/experiments/validate_clone_slots_slot_11.py
+tools/experiments/validate_special_blocks_slot_11.py
 tools/experiments/validate_unified_effect_chain_slot_12.py
 tools/experiments/validate_unified_replacement_slot_11.py
 ```
@@ -402,14 +395,17 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-Com as 12 classes atualmente mapeadas na cadeia, a próxima investigação
-sensível será o protocolo de importação e leitura das posições CLONE. Essa
-etapa deverá identificar o formato enviado à pedaleira, os nomes, metadados,
-endereços de destino, blocos, checksums e confirmações, sem misturar a seleção
-normal da cadeia com a escrita permanente de arquivos NAM.
+Com as 16 classes exibidas pelo editor catalogadas estruturalmente, a próxima
+fase será dividida em frentes independentes:
 
-A importação de IR continuará como investigação separada, pois não há garantia
-de que utilize o mesmo formato ou os mesmos comandos do CLONE.
+1. mapear parâmetros internos de efeitos fixos e reversíveis;
+2. investigar leitura de nomes e metadados das posições CLONE;
+3. analisar a importação NAM sem reenviar dados desconhecidos;
+4. investigar a importação de IR em captura separada.
+
+A seleção normal de CLONE e IR na cadeia já funciona, mas transferência de
+arquivos, escrita persistente e gerenciamento de nomes não serão misturados
+com os comandos estruturais confirmados.
 
 ## Documentação técnica completa
 

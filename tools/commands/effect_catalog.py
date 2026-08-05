@@ -22,6 +22,10 @@ MOD_CLASS_ID = 0x08
 DLY_CLASS_ID = 0x09
 RVB_CLASS_ID = 0x0A
 CLONE_CLASS_ID = 0x0B
+FX_LOOP_CLASS_ID = 0x0C
+FX_SEND_CLASS_ID = 0x0D
+FX_RETURN_CLASS_ID = 0x0E
+VOL_CLASS_ID = 0x0F
 
 
 @dataclass(frozen=True)
@@ -355,6 +359,26 @@ CLONE_MODELS = (
 )
 
 
+FX_LOOP_MODELS = (
+    EffectModel(1, "FX LOOP", 0x00, 0x06),
+)
+
+
+FX_SEND_MODELS = (
+    EffectModel(1, "SND", 0x01, 0x06),
+)
+
+
+FX_RETURN_MODELS = (
+    EffectModel(1, "RTN", 0x02, 0x06),
+)
+
+
+VOL_MODELS = (
+    EffectModel(1, "VOL", 0x03, 0x06),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -427,6 +451,30 @@ EFFECT_CLASSES = (
         name="CLONE",
         class_id=CLONE_CLASS_ID,
         models=CLONE_MODELS,
+    ),
+    EffectClass(
+        menu_number=13,
+        name="FX LOOP",
+        class_id=FX_LOOP_CLASS_ID,
+        models=FX_LOOP_MODELS,
+    ),
+    EffectClass(
+        menu_number=14,
+        name="FX SEND",
+        class_id=FX_SEND_CLASS_ID,
+        models=FX_SEND_MODELS,
+    ),
+    EffectClass(
+        menu_number=15,
+        name="FX RETURN",
+        class_id=FX_RETURN_CLASS_ID,
+        models=FX_RETURN_MODELS,
+    ),
+    EffectClass(
+        menu_number=16,
+        name="VOL",
+        class_id=VOL_CLASS_ID,
+        models=VOL_MODELS,
     ),
 )
 
