@@ -306,18 +306,6 @@ python -m tools.commands.set_effect
 python -m tools.commands.remove_effect
 ```
 
-### Verificar portas MIDI
-
-```powershell
-python -m tools.capture.teste_portas
-```
-
-### Logger MIDI
-
-```powershell
-python -m tools.capture.logger
-```
-
 ### Solicitar dump de preset
 
 ```powershell
@@ -326,7 +314,11 @@ python -m tools.commands.request_preset_dump
 
 ## Validadores físicos
 
+Os validadores abaixo são evidências reproduzíveis das descobertas já
+confirmadas na pedaleira. Eles não são executados pela suíte offline.
+
 ```text
+tools/experiments/validate_live_preset_monitor.py
 tools/experiments/validate_eq_models_slot_11.py
 tools/experiments/validate_add_eq_slot_12.py
 tools/experiments/validate_mod_models_slot_11.py
@@ -345,41 +337,31 @@ matribox-sysex/
 ├── README.md
 ├── requirements.txt
 ├── data/
-│   └── dumps/
-├── docs/
-│   └── protocol_findings.md
-├── tests/
-│   ├── test_effect_chain.py
-│   ├── test_effect_model.py
-│   ├── test_effect_slot_protocol.py
-│   ├── test_volume_protocol.py
-│   └── testes específicos por classe
+│   └── fixtures/       # amostras mínimas usadas pelos testes
+├── docs/               # protocolo e descobertas confirmadas
+├── tests/              # regressão offline
 └── tools/
-    ├── analysis/
-    ├── capture/
-    ├── commands/
-    └── experiments/
+    ├── analysis/       # decodificadores auxiliares ainda testados
+    ├── commands/       # protocolo reutilizável e comandos estáveis
+    └── experiments/    # validadores físicos preservados
 ```
 
-## Dumps de preset
+## Dados gerados e histórico de pesquisa
 
-O repositório contém capturas e reconstruções do preset de pesquisa `45B`.
+Dumps, capturas, relatórios e análises produzidos durante novas investigações
+são arquivos locais e ficam fora do Git por padrão. Os comandos podem recriar
+`data/dumps/` quando necessário, mas essa pasta é ignorada pelo repositório.
 
-A pesquisa já confirmou:
-
-- dumps divididos em fragmentos;
-- reconstrução de dados binários;
-- comparação de dumps da mesma sessão;
-- variação de volume no dump;
-- comportamento de estado de slot;
-- dependência de inicialização da sessão para certas respostas da pedaleira.
-
-Os detalhes permanecem registrados em:
+Somente amostras pequenas e necessárias para testes de regressão entram em:
 
 ```text
-data/dumps/
-docs/protocol_findings.md
+data/fixtures/
 ```
+
+As descobertas confirmadas permanecem consolidadas em
+`docs/protocol_findings.md`. O material bruto anterior à limpeza foi preservado
+no backup externo da Fase 1 e no histórico anterior à tag
+`cleanup-phase1-a8092cd`.
 
 ## Segurança
 

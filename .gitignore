@@ -25,22 +25,17 @@ captures/
 # Generated research and analysis artifacts
 data/analysis/
 data/research/
-data/dumps/preset_dump_received.txt
-data/dumps/preset_45B_*
-data/dumps/45B_*.txt
-data/dumps/*_report.txt
-data/dumps/preset_category_evidence/
-data/dumps/preset_metadata_sessions/
-data/dumps/preset_name_diagnostics/
-data/dumps/preset_name_diagnostics.zip
+data/dumps/
 preset_filter_analysis.zip
 
-# Temporary integration installers and packages
+# Temporary integration and maintenance packages
 apply_*.ps1
-cleanup_repository_phase1*.ps1
-cleanup_repository_phase1*.py
-CLEANUP_PHASE1*.md
+cleanup_repository_phase*.ps1
+cleanup_repository_phase*.py
+CLEANUP_PHASE*.md
+PHASE*_AUDIT.md
 cleanup/
+phase*_templates/
 *_integration.zip
 *_validation.zip
 *_fix.zip
