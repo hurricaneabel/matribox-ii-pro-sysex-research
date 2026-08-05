@@ -18,6 +18,7 @@ AMP_CLASS_ID = 0x04
 CAB_CLASS_ID = 0x05
 IR_CLASS_ID = 0x06
 EQ_CLASS_ID = 0x07
+MOD_CLASS_ID = 0x08
 
 
 @dataclass(frozen=True)
@@ -273,6 +274,33 @@ EQ_MODELS = (
 )
 
 
+MOD_MODELS = (
+    EffectModel(1, "E-CHORUS", 0x01, 0x04),
+    EffectModel(2, "D-CHORUS", 0x02, 0x04),
+    EffectModel(3, "B-CHORUS", 0x08, 0x04),
+    EffectModel(4, "M-CHORUS", 0x0F, 0x04),
+    EffectModel(5, "FLANGER", 0x11, 0x04),
+    EffectModel(6, "FLANGER N", 0x13, 0x04),
+    EffectModel(7, "TREM JET", 0x14, 0x04),
+    EffectModel(8, "BASS JET", 0x12, 0x04),
+    EffectModel(9, "VIBRATO", 0x17, 0x04),
+    EffectModel(10, "BBD ROTO", 0x15, 0x04),
+    EffectModel(11, "CE-ROTO", 0x16, 0x04),
+    EffectModel(12, "PHASER", 0x19, 0x04),
+    EffectModel(13, "BBD PHASER", 0x1A, 0x04),
+    EffectModel(14, "PHASER ST", 0x1B, 0x04),
+    EffectModel(15, "PAN PHASER", 0x1E, 0x04),
+    EffectModel(16, "VIBE", 0x1F, 0x04),
+    EffectModel(17, "U-VIBE", 0x20, 0x04),
+    EffectModel(18, "TREMOLO", 0x21, 0x04),
+    EffectModel(19, "SINE TREM", 0x26, 0x04),
+    EffectModel(20, "TRIANGULE TREM", 0x27, 0x04),
+    EffectModel(21, "BIAS TREM", 0x28, 0x04),
+    EffectModel(22, "DETUNE", 0x29, 0x01),
+    EffectModel(23, "LOFI BIT", 0x2E, 0x01),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -321,6 +349,12 @@ EFFECT_CLASSES = (
         name="EQ",
         class_id=EQ_CLASS_ID,
         models=EQ_MODELS,
+    ),
+    EffectClass(
+        menu_number=9,
+        name="MOD",
+        class_id=MOD_CLASS_ID,
+        models=MOD_MODELS,
     ),
 )
 

@@ -621,3 +621,64 @@ qualquer slot interno entre 1 e 12:
 ```text
 python -m tools.experiments.manage_effect_chain
 ```
+
+## Modelos confirmados da classe MOD
+
+A classe MOD foi confirmada com o identificador:
+
+```text
+MOD = 0x08
+```
+
+Foram capturados pelo Wireshark e testados fisicamente no slot interno 11 os
+23 modelos exibidos pelo editor oficial:
+
+```text
+E-CHORUS        = 0x01, seletor 0x04
+D-CHORUS        = 0x02, seletor 0x04
+B-CHORUS        = 0x08, seletor 0x04
+M-CHORUS        = 0x0F, seletor 0x04
+FLANGER         = 0x11, seletor 0x04
+FLANGER N       = 0x13, seletor 0x04
+TREM JET        = 0x14, seletor 0x04
+BASS JET        = 0x12, seletor 0x04
+VIBRATO         = 0x17, seletor 0x04
+BBD ROTO        = 0x15, seletor 0x04
+CE-ROTO         = 0x16, seletor 0x04
+PHASER          = 0x19, seletor 0x04
+BBD PHASER      = 0x1A, seletor 0x04
+PHASER ST       = 0x1B, seletor 0x04
+PAN PHASER      = 0x1E, seletor 0x04
+VIBE            = 0x1F, seletor 0x04
+U-VIBE          = 0x20, seletor 0x04
+TREMOLO         = 0x21, seletor 0x04
+SINE TREM       = 0x26, seletor 0x04
+TRIANGULE TREM  = 0x27, seletor 0x04
+BIAS TREM       = 0x28, seletor 0x04
+DETUNE          = 0x29, seletor 0x01
+LOFI BIT        = 0x2E, seletor 0x01
+```
+
+Todos usam flag estrutural `0x00`. Os primeiros 21 modelos usam seletor
+secundário `0x04`; `DETUNE` e `LOFI BIT` são exceções e usam `0x01`.
+
+Checksums confirmados para troca de modelo com comando `0x16` no slot interno
+11, na ordem visual do editor:
+
+```text
+3C 3D 43 4A 3D 3F 40 3E 43 41 42 45
+46 47 4A 4B 3D 3E 43 44 45 43 48
+```
+
+A substituição estrutural do slot interno 11 por `MOD / E-CHORUS`, usando o
+comando `0x17`, foi capturada com checksum `0x47`.
+
+O validador físico da classe está em:
+
+```text
+tools/experiments/validate_mod_models_slot_11.py
+```
+
+O catálogo e o gerenciador flexível reconhecem MOD como a nona classe. A
+criação de `MOD / E-CHORUS` no slot interno 12 é gerada com checksum `0x5C` e
+deve ser confirmada fisicamente antes do commit desta integração.
