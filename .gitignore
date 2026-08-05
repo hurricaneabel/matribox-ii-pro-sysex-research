@@ -1,16 +1,46 @@
+# Python environments and caches
 venv/
 .venv/
 __pycache__/
-*.pyc
-.vscode/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Runtime logs and packet captures
 log_matribox.txt
+logs/
+captures/
 *.pcap
 *.pcapng
 
-captures/
-logs/
-
-# Dumps e relatórios gerados durante experimentos
+# Generated research and analysis artifacts
+data/analysis/
+data/research/
+data/dumps/preset_dump_received.txt
 data/dumps/preset_45B_*
+data/dumps/45B_*.txt
 data/dumps/*_report.txt
+data/dumps/preset_category_evidence/
+data/dumps/preset_metadata_sessions/
+data/dumps/preset_name_diagnostics/
+data/dumps/preset_name_diagnostics.zip
+preset_filter_analysis.zip
+
+# Temporary integration installers and packages
+apply_*.ps1
+cleanup_repository_phase1*.ps1
+cleanup_repository_phase1*.py
+CLEANUP_PHASE1*.md
+cleanup/
+*_integration.zip
+*_validation.zip
+*_fix.zip
