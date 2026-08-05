@@ -20,12 +20,13 @@ Classes completamente catalogadas:
 | EQ | `0x07` | 5 | `0x01` |
 | MOD | `0x08` | 23 | `0x04`; duas exceções em `0x01` |
 | DLY | `0x09` | 17 | `0x0B` |
+| RVB | `0x0A` | 12 | `0x0C` |
 
 Total confirmado no catálogo:
 
 ```text
-10 classes
-241 modelos
+11 classes
+253 modelos
 ```
 
 Comandos estruturais principais:
@@ -37,11 +38,11 @@ Comandos estruturais principais:
 | `0x17` | 60 bytes | adição, substituição e remoção |
 | `0x18` | 62 bytes | estado ligado/desligado do slot |
 
-Estado da suíte após a integração DLY:
+Estado da suíte após a integração RVB:
 
 ```text
-128 testes automáticos
-128 aprovados
+138 testes automáticos
+138 aprovados
 ```
 
 A captura dos comandos enviados pelo editor oficial é realizada com
@@ -883,4 +884,105 @@ A integração acrescenta testes para:
 - substituição por `WARM` no slot 11;
 - adição de `WARM` e `PURE` no slot 12;
 - pesquisa por nome, número e ID.
+
+## Classe RVB completamente catalogada
+
+A classe de reverbs foi confirmada por captura USB/Wireshark e validação
+física.
+
+```text
+classe RVB = 0x0A
+flag estrutural = 0x00
+seletor secundário = 0x0C
+quantidade de modelos = 12
+```
+
+Modelos confirmados, na ordem visual do editor oficial:
+
+| # | Modelo | ID | Seletor | Checksum `0x16` no slot 11 |
+|---:|---|---:|---:|---:|
+| 1 | STUDIO | `0x0B` | `0x0C` | `0x50` |
+| 2 | CLUB | `0x0C` | `0x0C` | `0x51` |
+| 3 | ROOM | `0x00` | `0x0C` | `0x45` |
+| 4 | HALL | `0x01` | `0x0C` | `0x46` |
+| 5 | CHURCH | `0x02` | `0x0C` | `0x47` |
+| 6 | PLATE | `0x03` | `0x0C` | `0x48` |
+| 7 | SPRING | `0x04` | `0x0C` | `0x49` |
+| 8 | SKY | `0x06` | `0x0C` | `0x4B` |
+| 9 | SEA | `0x07` | `0x0C` | `0x4C` |
+| 10 | MOD REVERB | `0x08` | `0x0C` | `0x4D` |
+| 11 | SHIMMER | `0x09` | `0x0C` | `0x4E` |
+| 12 | HAZE | `0x15` | `0x0C` | `0x4B` |
+
+O último modelo foi confirmado com o nome `HAZE`.
+
+### Captura entre classes
+
+A troca de `DLY / WARM` para `RVB / STUDIO`, usando o comando `0x17`, foi
+capturada com:
+
+```text
+slot de origem  = 00 0A
+slot de destino = 00 0A
+classe          = 00 0A
+modelo          = 00 0B
+flag            = 00
+seletor         = 0C
+checksum        = 0x5B
+```
+
+A volta para `DLY / WARM` confirmou novamente os campos já catalogados da
+classe DLY.
+
+### Validação física
+
+O validador está em:
+
+```text
+tools/experiments/validate_rvb_models_slot_11.py
+```
+
+A sequência automática percorreu fisicamente:
+
+```text
+CLUB
+ROOM
+HALL
+CHURCH
+PLATE
+SPRING
+SKY
+SEA
+MOD REVERB
+SHIMMER
+HAZE
+STUDIO
+```
+
+Todos os modelos funcionaram corretamente e o estado final retornou ao
+`STUDIO`.
+
+### Operações estruturais calculadas e cobertas por testes
+
+```text
+substituir slot 11 por STUDIO = checksum 0x5B
+adicionar STUDIO no slot 12  = checksum 0x70
+adicionar ROOM no slot 12    = checksum 0x65
+adicionar HAZE no slot 12    = checksum 0x6B
+```
+
+O catálogo e o gerenciador flexível reconhecem RVB como a décima primeira
+classe do utilitário. A integração acrescenta testes para:
+
+- ID e posição da classe;
+- quantidade e ordem dos 12 modelos;
+- IDs dos modelos;
+- seletor `0x0C`;
+- checksums do comando `0x16`;
+- substituição por `STUDIO` no slot 11;
+- adição de `STUDIO`, `ROOM` e `HAZE` no slot 12;
+- pesquisa por nome, número e ID.
+
+Após esta integração, o catálogo possui 11 classes e 253 modelos, com 138
+testes automáticos aprovados.
 

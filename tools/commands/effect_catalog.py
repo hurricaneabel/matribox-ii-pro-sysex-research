@@ -20,6 +20,7 @@ IR_CLASS_ID = 0x06
 EQ_CLASS_ID = 0x07
 MOD_CLASS_ID = 0x08
 DLY_CLASS_ID = 0x09
+RVB_CLASS_ID = 0x0A
 
 
 @dataclass(frozen=True)
@@ -323,6 +324,22 @@ DLY_MODELS = (
 )
 
 
+RVB_MODELS = (
+    EffectModel(1, "STUDIO", 0x0B, 0x0C),
+    EffectModel(2, "CLUB", 0x0C, 0x0C),
+    EffectModel(3, "ROOM", 0x00, 0x0C),
+    EffectModel(4, "HALL", 0x01, 0x0C),
+    EffectModel(5, "CHURCH", 0x02, 0x0C),
+    EffectModel(6, "PLATE", 0x03, 0x0C),
+    EffectModel(7, "SPRING", 0x04, 0x0C),
+    EffectModel(8, "SKY", 0x06, 0x0C),
+    EffectModel(9, "SEA", 0x07, 0x0C),
+    EffectModel(10, "MOD REVERB", 0x08, 0x0C),
+    EffectModel(11, "SHIMMER", 0x09, 0x0C),
+    EffectModel(12, "HAZE", 0x15, 0x0C),
+)
+
+
 EFFECT_CLASSES = (
     EffectClass(
         menu_number=1,
@@ -383,6 +400,12 @@ EFFECT_CLASSES = (
         name="DLY",
         class_id=DLY_CLASS_ID,
         models=DLY_MODELS,
+    ),
+    EffectClass(
+        menu_number=11,
+        name="RVB",
+        class_id=RVB_CLASS_ID,
+        models=RVB_MODELS,
     ),
 )
 

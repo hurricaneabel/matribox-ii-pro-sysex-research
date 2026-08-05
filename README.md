@@ -35,7 +35,7 @@ Ele permite adicionar, substituir e excluir efeitos nos slots internos de
 
 ## Catálogo confirmado
 
-Até esta etapa foram catalogadas **10 classes** e **241 modelos**.
+Até esta etapa foram catalogadas **11 classes** e **253 modelos**.
 
 A ordem abaixo é a ordem atual do utilitário de terminal. Ela não deve ser
 interpretada como a ordem oficial da interface da pedaleira.
@@ -52,6 +52,7 @@ interpretada como a ordem oficial da interface da pedaleira.
 | 8 | EQ | `0x07` | 5 |
 | 9 | MOD | `0x08` | 23 |
 | 10 | DLY | `0x09` | 17 |
+| 11 | RVB | `0x0A` | 12 |
 
 As listas completas de modelos, IDs, seletores e checksums ficam em:
 
@@ -60,49 +61,43 @@ tools/commands/effect_catalog.py
 docs/protocol_findings.md
 ```
 
-## Última classe concluída: DLY
+## Última classe concluída: RVB
 
-A subclasse DLY foi capturada pelo Wireshark/USBPcap e validada fisicamente.
+A subclasse RVB foi capturada pelo Wireshark/USBPcap e validada fisicamente.
 
 ```text
-classe DLY          = 0x09
+classe RVB          = 0x0A
 flag estrutural     = 0x00
-seletor secundário  = 0x0B
-quantidade          = 17 modelos
+seletor secundário  = 0x0C
+quantidade          = 12 modelos
 ```
 
 Modelos na ordem do editor:
 
 ```text
-WARM
-PURE
-MAG
-TUBE
-BBD
-PING PONG
-SLAPBACK
-SWEEP
-RING
-MULTI TAPE
-SWEET
-999 ECHO
-RACK
-LO-FI
-REVERSE
-EKO D
-ICE DELAY
+STUDIO
+CLUB
+ROOM
+HALL
+CHURCH
+PLATE
+SPRING
+SKY
+SEA
+MOD REVERB
+SHIMMER
+HAZE
 ```
 
-O modelo `PURE` utiliza ID `0x00`. Ele apareceu no primeiro pacote da captura
-completa e foi confirmado novamente no teste físico.
+O último modelo está registrado com o nome correto `HAZE`.
 
 Validador:
 
 ```powershell
-python -m tools.experiments.validate_dly_models_slot_11
+python -m tools.experiments.validate_rvb_models_slot_11
 ```
 
-A opção `A` percorre os modelos e retorna ao `WARM`.
+A opção `A` percorre os modelos e retorna ao `STUDIO`.
 
 ## Comandos SysEx confirmados
 
@@ -189,6 +184,7 @@ exceções. Exemplos:
 - MOD usa `0x04` na maioria dos modelos, mas `DETUNE` e `LOFI BIT` usam
   `0x01`;
 - DLY usa `0x0B` nos 17 modelos;
+- RVB usa `0x0C` nos 12 modelos;
 - WAH, DYN e AMP também possuem grupos com seletores diferentes.
 
 ## Metodologia de captura
@@ -252,11 +248,11 @@ Executar toda a suíte:
 python -m unittest discover -s tests -v
 ```
 
-Estado após a integração DLY:
+Estado após a integração RVB:
 
 ```text
-128 testes executados
-128 testes aprovados
+138 testes executados
+138 testes aprovados
 ```
 
 Também é usado:
@@ -329,6 +325,7 @@ tools/experiments/validate_eq_models_slot_11.py
 tools/experiments/validate_add_eq_slot_12.py
 tools/experiments/validate_mod_models_slot_11.py
 tools/experiments/validate_dly_models_slot_11.py
+tools/experiments/validate_rvb_models_slot_11.py
 tools/experiments/validate_unified_effect_chain_slot_12.py
 tools/experiments/validate_unified_replacement_slot_11.py
 ```
@@ -390,14 +387,10 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-A próxima classe prevista é:
-
-```text
-RVB / Reverb
-```
-
-O ID, os modelos, seletores e flags somente serão registrados após captura e
-validação física.
+Com as 11 classes principais catalogadas, a próxima etapa prevista é mapear
+os parâmetros internos dos efeitos, começando por uma classe pequena e já
+validada. Classe, índice do parâmetro, faixa, codificação e checksum somente
+serão registrados após captura e teste físico.
 
 ## Documentação técnica completa
 
