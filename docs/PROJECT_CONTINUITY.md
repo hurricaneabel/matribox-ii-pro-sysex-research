@@ -3,8 +3,8 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026  
-> **Marco consolidado:** Fase 21 — monitor ao vivo com preset, metadados, cadeia,
-> ordem e bypass em tempo real  
+> **Marco consolidado:** Fase 22 — M-BOOST / GAIN isolado, preservado e
+> validado em tempo real com múltiplas instâncias
 > **Branch de trabalho:** `main`
 
 ## 1. Como usar este documento
@@ -66,7 +66,9 @@ O estado atual já permite:
 - acompanhar mudanças de ordem visual em tempo real;
 - acompanhar liga/desliga de efeitos em tempo real;
 - adicionar, substituir, remover e mover efeitos com comandos já validados;
-- alterar modelo, bypass e volume usando comandos conhecidos.
+- alterar modelo, bypass e volume usando comandos conhecidos;
+- reconhecer e decodificar em tempo real o parâmetro `GAIN` de qualquer
+  instância de `DYN / M-BOOST`, ainda por um validador isolado.
 
 ## 4. Programa principal atual
 
@@ -102,6 +104,20 @@ Efeitos:
   necessário encerrar e executar o monitor uma segunda vez.
 - O monitor é somente leitura durante a consulta da cadeia. Ele não move,
   substitui, liga/desliga nem salva efeitos.
+
+### Validador isolado de parâmetro
+
+O primeiro parâmetro interno fisicamente catalogado é o `GAIN` do
+`DYN / M-BOOST`:
+
+```powershell
+python -m tools.experiments.validate_mboost_gain_live
+```
+
+O validador reutiliza a inicialização e o dump não destrutivo do monitor, mas
+permanece separado do programa principal. Ele escuta respostas `0x1C`, cruza o
+slot interno com a cadeia atual e mostra GAIN e posição visual. Nenhum comando
+de escrita de parâmetro é enviado.
 
 ## 5. Ambiente validado
 
@@ -191,6 +207,34 @@ Arquivo principal:
 tools/commands/effect_slot_state.py
 ```
 
+### 6.4 Primeiro parâmetro interno isolado
+
+A Fase 22 acrescentou um parser puro e um validador ao vivo para o
+`DYN / M-BOOST / GAIN`:
+
+```text
+tools/commands/mboost_gain.py
+tools/experiments/validate_mboost_gain_live.py
+tests/test_mboost_gain.py
+tests/fixtures/mboost_gain/
+```
+
+Estrutura confirmada da resposta de 70 bytes:
+
+```text
+comando                  0x1C
+slot interno             índices 39–40, zero-based
+classe DYN               índices 41–42
+modelo M-BOOST 0x14      índices 21–22
+GAIN                     índices 59–62
+codec                     16 bits superiores de float32 little-endian em nibbles
+faixa                     0–100
+```
+
+A validação ao vivo aprovou múltiplas instâncias simultâneas e observou os
+slots internos 2, 8, 10 e 12. Os endereços esperados de 1 a 12 são aceitos
+pelo parser, enquanto a posição visual continua sendo resolvida pela cadeia.
+
 ## 7. Estrutura estrutural confirmada
 
 As respostas estruturais variáveis não usam offsets brutos variáveis para os
@@ -244,6 +288,7 @@ state.response_slot_marker
 | `0x16` | 58 bytes | trocar modelo na mesma classe |
 | `0x17` | 60 bytes | adicionar, substituir, remover ou mover efeito |
 | `0x18` | 62 bytes | ligar/desligar slot; resposta usada pelo monitor |
+| `0x1C` | 70 bytes | atualização de parâmetro; M-BOOST/GAIN validado |
 
 O protocolo usa slots internos de `0` a `11`, enquanto a interface Python
 apresenta slots de `1` a `12`:
@@ -271,7 +316,12 @@ docs/protocol_findings.md
 Alguns IDs de modelo se repetem dentro da mesma classe. O seletor secundário é
 necessário para desambiguar casos como modelos AMP distintos com o mesmo ID.
 
-## 10. Histórico consolidado das Fases 14–21
+Os efeitos ainda estão definidos em Python. A próxima fase migrará os dados
+estáticos para JSON versionado e multiplataforma, mantendo a API Python atual
+como fachada de compatibilidade. O único parâmetro interno concluído neste
+marco é `DYN / M-BOOST / GAIN`.
+
+## 10. Histórico consolidado das Fases 14–22
 
 ### Fase 14 — classe e modelo por slot
 
@@ -364,12 +414,29 @@ tools/commands/effect_slot_state.py
 tests/fixtures/effect_slot_state/
 ```
 
-## 11. Estado de validação no marco atual
+### Fase 22 — M-BOOST / GAIN isolado
 
-Suíte completa após a Fase 21:
+Isolou o comando `0x1C`, o slot interno e a codificação do GAIN usando quatro
+capturas controladas. Preservou 27 respostas SysEx físicas mínimas e criou um
+validador somente de leitura.
+
+A validação ao vivo aprovou múltiplos M-BOOSTs simultâneos nos slots internos
+2, 8, 10 e 12, incluindo valores até 100, sem confundir as instâncias.
 
 ```text
-Ran 306 tests
+MBOOST_GAIN_VALIDATION_PHASE22.md
+tools/commands/mboost_gain.py
+tools/experiments/validate_mboost_gain_live.py
+tests/test_mboost_gain.py
+tests/fixtures/mboost_gain/
+```
+
+## 11. Estado de validação no marco atual
+
+Suíte completa após a Fase 22:
+
+```text
+Ran 316 tests
 OK
 ```
 
@@ -381,7 +448,11 @@ Validação física aprovada pelo usuário:
 - identificação correta dos modelos exibidos;
 - mudança da ordem visual em tempo real;
 - liga/desliga em tempo real sem novo dump;
-- preservação da ordem durante atualização de bypass.
+- preservação da ordem durante atualização de bypass;
+- leitura do M-BOOST/GAIN em tempo real;
+- múltiplas instâncias simultâneas sem conflito;
+- reconhecimento físico nos slots internos 2, 8, 10 e 12;
+- independência entre slot interno e posição visual.
 
 Fixtures físicas de regressão ficam em:
 
@@ -389,6 +460,7 @@ Fixtures físicas de regressão ficam em:
 tests/fixtures/structural_effect_state/
 tests/fixtures/preset_dump_chain/
 tests/fixtures/effect_slot_state/
+tests/fixtures/mboost_gain/
 ```
 
 ## 12. Limitações e cuidados conhecidos
@@ -406,22 +478,34 @@ tests/fixtures/effect_slot_state/
   efeitos ativos da cadeia.
 - Não assumir offsets no SysEx comprimido; sempre trabalhar sobre o payload
   LZO1X descomprimido.
-- Mudanças em parâmetros internos de efeitos ainda não fazem parte do monitor.
+- Mudanças em parâmetros internos de efeitos ainda não fazem parte do monitor
+  principal. O M-BOOST/GAIN está aprovado em um validador isolado.
+- Não criar um parser Python separado para cada parâmetro. A expansão deve usar
+  catálogo JSON, codecs e perfis de protocolo genéricos.
+- O catálogo JSON futuro não deve conter caminhos absolutos do Windows nem
+  estruturas exclusivas de Python, pois será consumido por PC e Android.
 
 ## 13. Próximos passos recomendados
 
-O núcleo de monitoramento está estável. As próximas frentes devem ser tratadas
-separadamente e com novas capturas quando necessário:
+O núcleo de monitoramento e o primeiro parâmetro isolado estão estáveis. O
+próximo marco aprovado é a **Fase 23 — catálogo genérico em JSON**:
 
-1. verificar e, se necessário, integrar atualização ao vivo de troca de modelo
-   ou classe sem depender de nova troca de preset;
-2. mapear parâmetros internos dos efeitos e suas mensagens de atualização;
-3. criar uma camada de apresentação mais amigável sobre o monitor estável
-   (interface de terminal, desktop ou API), sem misturar UI com o protocolo;
-4. investigar nomes e metadados de posições CLONE;
-5. estudar importação NAM e IR sem reenviar comandos desconhecidos;
-6. revisar e organizar scripts experimentais antigos somente depois de manter
-   fixtures e evidências necessárias aos testes.
+1. definir schemas JSON versionados para classes, efeitos, parâmetros, codecs
+   e perfis de protocolo;
+2. exportar automaticamente as 16 classes e 267 posições/modelos de
+   `effect_catalog.py`, sem redigitação manual;
+3. comparar catálogo legado e JSON registro por registro;
+4. criar um carregador genérico e manter `effect_catalog.py` como fachada de
+   compatibilidade para não quebrar o monitor;
+5. cadastrar `DYN / M-BOOST / GAIN` como o primeiro parâmetro validado;
+6. preparar dados independentes de Python e Windows para uso futuro em Kotlin,
+   Android e desktop;
+7. depois retomar a captura dos demais efeitos DYN e, em seguida, FREQ;
+8. manter importação IR/CLONE como subsistema separado de arquivos externos,
+   sem misturar upload binário com parâmetros comuns.
+
+A futura interface ou API deve consumir esse núcleo sem conhecer offsets,
+nibbles, checksums ou detalhes MIDI.
 
 ## 14. Checklist obrigatório para o próximo commit
 

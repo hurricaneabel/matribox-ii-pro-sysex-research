@@ -34,6 +34,16 @@ Ele acompanha o preset atual, nome, etiqueta, cadeia de efeitos, ordem visual
 e estado ligado/desligado. A leitura da cadeia é não destrutiva e possui
 reenvios automáticos para a primeira comunicação após ligar a pedaleira.
 
+O primeiro parâmetro interno concluído é o `GAIN` do `DYN / M-BOOST`. Ele está
+preservado em um validador isolado e somente de leitura:
+
+```powershell
+python -m tools.experiments.validate_mboost_gain_live
+```
+
+A validação física aprovou múltiplas instâncias simultâneas e os slots internos
+2, 8, 10 e 12, incluindo valores de 0 a 100.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell
@@ -264,11 +274,11 @@ Executar toda a suíte:
 python -m unittest discover -s tests -v
 ```
 
-Estado após a integração do monitor em tempo real (Fase 21):
+Estado após a preservação do M-BOOST/GAIN (Fase 22):
 
 ```text
-306 testes executados
-306 testes aprovados
+316 testes executados
+316 testes aprovados
 ```
 
 Também é usado:
@@ -288,6 +298,15 @@ python -m tools.commands.matribox_monitor
 
 Mostra preset, nome, etiqueta e efeitos; acompanha mudanças de ordem e
 liga/desliga em tempo real.
+
+### Validar M-BOOST / GAIN
+
+```powershell
+python -m tools.experiments.validate_mboost_gain_live
+```
+
+Escuta o GAIN de qualquer M-BOOST da cadeia, mostra slot interno e posição
+visual e não envia alterações de parâmetro.
 
 ### Gerenciar a cadeia
 
@@ -338,6 +357,7 @@ confirmadas na pedaleira. Eles não são executados pela suíte offline.
 
 ```text
 tools/experiments/validate_live_preset_monitor.py
+tools/experiments/validate_mboost_gain_live.py
 tools/experiments/validate_eq_models_slot_11.py
 tools/experiments/validate_add_eq_slot_12.py
 tools/experiments/validate_mod_models_slot_11.py
@@ -396,18 +416,22 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-O monitor consolidado já lê preset, nome, etiqueta e cadeia, além de acompanhar
-ordem e bypass em tempo real. As próximas frentes devem permanecer separadas:
+O monitor consolidado e o M-BOOST/GAIN isolado estão aprovados. O próximo marco
+é criar um catálogo declarativo e multiplataforma em JSON antes de catalogar
+centenas de parâmetros:
 
-1. validar atualização ao vivo de troca de modelo ou classe;
-2. mapear parâmetros internos de efeitos fixos e reversíveis;
-3. criar uma camada de apresentação sobre o monitor estável;
-4. investigar nomes e metadados das posições CLONE;
-5. analisar importação NAM e IR sem reenviar comandos desconhecidos.
+1. definir schemas versionados para classes, efeitos e parâmetros;
+2. exportar automaticamente as 16 classes e 267 posições/modelos atualmente
+   definidas em `tools/commands/effect_catalog.py`;
+3. comparar o catálogo Python e o JSON registro por registro;
+4. manter `effect_catalog.py` como fachada de compatibilidade;
+5. cadastrar M-BOOST/GAIN como o primeiro parâmetro validado;
+6. criar codecs e perfis de protocolo reutilizáveis;
+7. retomar os demais efeitos DYN e depois a classe FREQ.
 
-A seleção normal de CLONE e IR na cadeia já funciona, mas transferência de
-arquivos, escrita persistente e gerenciamento de nomes não serão misturados
-com os comandos estruturais confirmados.
+O JSON será independente de Python e de caminhos do Windows para poder ser
+consumido futuramente por aplicativos Android e desktop. Importação de IR e
+CLONE continuará como subsistema separado de arquivos externos.
 
 ## Continuidade entre chats
 

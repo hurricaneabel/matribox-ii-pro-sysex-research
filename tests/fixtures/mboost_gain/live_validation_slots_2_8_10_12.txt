@@ -1,0 +1,474 @@
+(venv) PS C:\Users\Radamanthys\Documents\matribox-sysex> python -m tools.experiments.validate_mboost_gain_live
+FASE 22 — VALIDADOR M-BOOST / GAIN
+------------------------------------
+Somente leitura: o script não altera o GAIN.
+Entrada: Matribox II Pro Subdevice 0
+Saída:   Matribox II Pro Subdevice 1
+
+Inicializando sessão: tentativa 1/2
+Handshake enviado: 1/4
+Handshake enviado: 2/4
+Handshake enviado: 3/4
+Handshake enviado: 4/4
+Consulta global enviada.
+Consulta do preset atual enviada.
+Aguardando respostas...
+Fragmentos globais: 1 | 185/3172 bytes
+Fragmentos globais: 2 | 370/3172 bytes
+Fragmentos globais: 3 | 555/3172 bytes
+Fragmentos globais: 4 | 740/3172 bytes
+Fragmentos globais: 5 | 925/3172 bytes
+Fragmentos globais: 6 | 1110/3172 bytes
+Fragmentos globais: 7 | 1295/3172 bytes
+Fragmentos globais: 8 | 1480/3172 bytes
+Fragmentos globais: 9 | 1665/3172 bytes
+Fragmentos globais: 10 | 1850/3172 bytes
+Fragmentos globais: 11 | 2035/3172 bytes
+Preset atual ainda não respondeu; reenviando: 1/3
+Estado: metadados=não, preset=não, fragmentos=11, 2035/3172 bytes globais, lacunas=((0, 185), (2220, 3172))
+Fragmentos globais: 12 | 2220/3172 bytes
+Fragmentos globais: 13 | 2405/3172 bytes
+Fragmentos globais: 14 | 2590/3172 bytes
+Fragmentos globais: 15 | 2775/3172 bytes
+Fragmentos globais: 16 | 2960/3172 bytes
+Fragmentos globais: 17 | 2987/3172 bytes
+Evento de preset recebido: 56B
+Evento de preset recebido: 56B
+Consulta global sem avanço; reenviando: 1/3
+Estado: metadados=não, preset=sim, fragmentos=17, 2987/3172 bytes globais, lacunas=((0, 185),)
+Fragmentos globais: 18 | 3172/3172 bytes
+
+Lendo cadeia de efeitos de 56B...
+Pedido do dump: 1/3
+Dump do preset: 185/264 bytes
+Dump do preset: 264/264 bytes
+
+---------------------------------
+Preset atual: 56B
+Nome: Matribox II PRO
+Etiqueta: (vazia)
+Efeitos:
+  1. DRV / Skreamer — ligado
+  2. DYN / M-BOOST — ligado
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+Altere somente o GAIN de qualquer M-BOOST diretamente na pedaleira.
+O slot pode ser qualquer um entre 1 e 12.
+Pressione Ctrl+C para encerrar.
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 04 0C 04 02
+GAIN: 51
+Checksum observado: 0x16
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 05 00 04 02
+GAIN: 52
+Checksum observado: 0x7B
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 05 04 04 02
+GAIN: 53
+Checksum observado: 0x7F
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 05 08 04 02
+GAIN: 54
+Checksum observado: 0x13
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 05 0C 04 02
+GAIN: 55
+Checksum observado: 0x17
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 06 00 04 02
+GAIN: 56
+Checksum observado: 0x7E
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 05 0C 04 02
+GAIN: 55
+Checksum observado: 0x17
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 05 04 04 02
+GAIN: 53
+Checksum observado: 0x7F
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 05 00 04 02
+GAIN: 52
+Checksum observado: 0x7B
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 04 0C 04 02
+GAIN: 51
+Checksum observado: 0x16
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 2
+Posição visual: 2
+Valor bruto: 04 08 04 02
+GAIN: 50
+Checksum observado: 0x12
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 10 | posição visual 10
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 04 04 04 02
+GAIN: 49
+Checksum observado: 0x17
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 04 00 04 02
+GAIN: 48
+Checksum observado: 0x13
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 03 0C 04 02
+GAIN: 47
+Checksum observado: 0x1E
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 03 08 04 02
+GAIN: 46
+Checksum observado: 0x1A
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 03 04 04 02
+GAIN: 45
+Checksum observado: 0x16
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 03 00 04 02
+GAIN: 44
+Checksum observado: 0x12
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 02 0C 04 02
+GAIN: 43
+Checksum observado: 0x1F
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 02 08 04 02
+GAIN: 42
+Checksum observado: 0x1B
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 02 04 04 02
+GAIN: 41
+Checksum observado: 0x17
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 10
+Posição visual: 10
+Valor bruto: 02 00 04 02
+GAIN: 40
+Checksum observado: 0x13
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 10 | posição visual 10
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 10 | posição visual 10
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 8 | posição visual 8
+  slot interno 10 | posição visual 10
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 8
+Posição visual: 8
+Valor bruto: 04 04 04 02
+GAIN: 49
+Checksum observado: 0x33
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 8
+Posição visual: 8
+Valor bruto: 04 00 04 02
+GAIN: 48
+Checksum observado: 0x1F
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 8
+Posição visual: 8
+Valor bruto: 03 0C 04 02
+GAIN: 47
+Checksum observado: 0x3A
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 8
+Posição visual: 8
+Valor bruto: 03 08 04 02
+GAIN: 46
+Checksum observado: 0x36
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 8
+Posição visual: 8
+Valor bruto: 03 04 04 02
+GAIN: 45
+Checksum observado: 0x32
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 8
+Posição visual: 8
+Valor bruto: 03 00 04 02
+GAIN: 44
+Checksum observado: 0x1E
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 8
+Posição visual: 8
+Valor bruto: 02 0C 04 02
+GAIN: 43
+Checksum observado: 0x3B
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 8 | posição visual 8
+  slot interno 10 | posição visual 10
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 8 | posição visual 8
+  slot interno 10 | posição visual 10
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 8 | posição visual 8
+  slot interno 10 | posição visual 10
+  slot interno 12 | posição visual 12
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 8 | posição visual 8
+  slot interno 10 | posição visual 10
+
+M-BOOSTs reconhecidos na cadeia:
+  slot interno 2 | posição visual 2
+  slot interno 8 | posição visual 8
+  slot interno 10 | posição visual 10
+  slot interno 12 | posição visual 12
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 04 04 04 02
+GAIN: 49
+Checksum observado: 0x1F
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 04 00 04 02
+GAIN: 48
+Checksum observado: 0x1B
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 03 0C 04 02
+GAIN: 47
+Checksum observado: 0x36
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 04 00 04 02
+GAIN: 48
+Checksum observado: 0x1B
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 04 04 04 02
+GAIN: 49
+Checksum observado: 0x1F
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 04 08 04 02
+GAIN: 50
+Checksum observado: 0x33
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 04 0C 04 02
+GAIN: 51
+Checksum observado: 0x37
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 05 0C 04 02
+GAIN: 55
+Checksum observado: 0x36
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 08 00 04 02
+GAIN: 64
+Checksum observado: 0x1F
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 0A 0A 04 02
+GAIN: 85
+Checksum observado: 0x3B
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 0C 08 04 02
+GAIN: 100
+Checksum observado: 0x3B
+
+M-BOOST / GAIN detectado
+Preset: 56B
+Slot interno: 12
+Posição visual: 12
+Valor bruto: 0C 08 04 02
+GAIN: 100
+Checksum observado: 0x3B
+
+
+Validador encerrado pelo usuário.

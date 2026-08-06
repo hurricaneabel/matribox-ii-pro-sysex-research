@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "name": "M-BOOST",
+    "model_id": 20,
+    "secondary_selector": 0
+  },
+  "parameter": {
+    "name": "GAIN",
+    "command": 28,
+    "minimum": 0,
+    "maximum": 100,
+    "message_length": 70,
+    "slot_indices": [39, 40],
+    "value_indices": [59, 60, 61, 62],
+    "codec": "upper_float32_nibbles"
+  },
+  "controlled_capture_sources": [
+    "MBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "MBOOST_GAIN_SLOT2_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "MBOOST_GAIN_SLOT2_50_0_1_2_10_25_50_75_99_100_50_WITH_DRVSKREAMERONSLOT1.pcapng",
+    "MBOOST_GAIN_REORDERED_TO_POSITION1_WITH_SKREAMER_POSITION2.pcapng"
+  ],
+  "physical_binary_fixtures": 27,
+  "live_validation": {
+    "status": "approved",
+    "preset": "56B",
+    "internal_slots_observed": [2, 8, 10, 12],
+    "multiple_instances": true,
+    "chain_independent": true,
+    "visual_reordering_independent": true,
+    "read_only": true,
+    "evidence_log": "live_validation_slots_2_8_10_12.txt"
+  }
+}
