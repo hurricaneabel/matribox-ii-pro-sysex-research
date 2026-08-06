@@ -1,0 +1,419 @@
+{
+  "phase": "phase14",
+  "captures": [
+    {
+      "label": "BASELINE",
+      "file": "BASELINE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": null,
+      "model": null
+    },
+    {
+      "label": "S1_SAME_ALT",
+      "file": "S1_SAME_ALT.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 1,
+      "model": {
+        "class_name": "DYN",
+        "model_name": "GATE 2",
+        "class_id": 0,
+        "model_id": 29,
+        "secondary_selector": 0
+      }
+    },
+    {
+      "label": "S1_SAME_RESTORE",
+      "file": "S1_SAME_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 1,
+      "model": {
+        "class_name": "DYN",
+        "model_name": "GATE 3",
+        "class_id": 0,
+        "model_id": 33,
+        "secondary_selector": 0
+      }
+    },
+    {
+      "label": "S1_CROSS_FILTER",
+      "file": "S1_CROSS_FILTER.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 1,
+      "model": {
+        "class_name": "FREQ",
+        "model_name": "FILTER",
+        "class_id": 1,
+        "model_id": 25,
+        "secondary_selector": 1
+      }
+    },
+    {
+      "label": "S1_CROSS_RESTORE",
+      "file": "S1_CROSS_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 1,
+      "model": {
+        "class_name": "DYN",
+        "model_name": "GATE 3",
+        "class_id": 0,
+        "model_id": 33,
+        "secondary_selector": 0
+      }
+    },
+    {
+      "label": "S2_SAME_ALT",
+      "file": "S2_SAME_ALT.bin",
+      "message_length": 164,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 2,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "B-MAN N",
+        "class_id": 4,
+        "model_id": 3,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S2_SAME_RESTORE",
+      "file": "S2_SAME_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 2,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "TWD DELUXE",
+        "class_id": 4,
+        "model_id": 1,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S2_CROSS_FILTER",
+      "file": "S2_CROSS_FILTER.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 2,
+      "model": {
+        "class_name": "FREQ",
+        "model_name": "FILTER",
+        "class_id": 1,
+        "model_id": 25,
+        "secondary_selector": 1
+      }
+    },
+    {
+      "label": "S2_CROSS_RESTORE",
+      "file": "S2_CROSS_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 2,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "TWD DELUXE",
+        "class_id": 4,
+        "model_id": 1,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S3_SAME_ALT",
+      "file": "S3_SAME_ALT.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 3,
+      "model": {
+        "class_name": "DRV",
+        "model_name": "SKREAMER9",
+        "class_id": 3,
+        "model_id": 1,
+        "secondary_selector": 3
+      }
+    },
+    {
+      "label": "S3_SAME_RESTORE",
+      "file": "S3_SAME_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 3,
+      "model": {
+        "class_name": "DRV",
+        "model_name": "SKREAMER",
+        "class_id": 3,
+        "model_id": 0,
+        "secondary_selector": 3
+      }
+    },
+    {
+      "label": "S3_CROSS_FILTER",
+      "file": "S3_CROSS_FILTER.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 3,
+      "model": {
+        "class_name": "FREQ",
+        "model_name": "FILTER",
+        "class_id": 1,
+        "model_id": 25,
+        "secondary_selector": 1
+      }
+    },
+    {
+      "label": "S3_CROSS_RESTORE",
+      "file": "S3_CROSS_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 3,
+      "model": {
+        "class_name": "DRV",
+        "model_name": "SKREAMER",
+        "class_id": 3,
+        "model_id": 0,
+        "secondary_selector": 3
+      }
+    },
+    {
+      "label": "S4_SAME_ALT",
+      "file": "S4_SAME_ALT.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "MOD",
+        "model_name": "D-CHORUS",
+        "class_id": 8,
+        "model_id": 2,
+        "secondary_selector": 4
+      }
+    },
+    {
+      "label": "S4_SAME_RESTORE",
+      "file": "S4_SAME_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "MOD",
+        "model_name": "E-CHORUS",
+        "class_id": 8,
+        "model_id": 1,
+        "secondary_selector": 4
+      }
+    },
+    {
+      "label": "S4_CROSS_FILTER",
+      "file": "S4_CROSS_FILTER.bin",
+      "message_length": 176,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "FREQ",
+        "model_name": "FILTER",
+        "class_id": 1,
+        "model_id": 25,
+        "secondary_selector": 1
+      }
+    },
+    {
+      "label": "S4_CROSS_RESTORE",
+      "file": "S4_CROSS_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "MOD",
+        "model_name": "E-CHORUS",
+        "class_id": 8,
+        "model_id": 1,
+        "secondary_selector": 4
+      }
+    },
+    {
+      "label": "S5_SAME_ALT",
+      "file": "S5_SAME_ALT.bin",
+      "message_length": 176,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "DLY",
+        "model_name": "PURE",
+        "class_id": 9,
+        "model_id": 0,
+        "secondary_selector": 11
+      }
+    },
+    {
+      "label": "S5_SAME_RESTORE",
+      "file": "S5_SAME_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "DLY",
+        "model_name": "WARM",
+        "class_id": 9,
+        "model_id": 1,
+        "secondary_selector": 11
+      }
+    },
+    {
+      "label": "S5_CROSS_FILTER",
+      "file": "S5_CROSS_FILTER.bin",
+      "message_length": 166,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "FREQ",
+        "model_name": "FILTER",
+        "class_id": 1,
+        "model_id": 25,
+        "secondary_selector": 1
+      }
+    },
+    {
+      "label": "S5_CROSS_RESTORE",
+      "file": "S5_CROSS_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "DLY",
+        "model_name": "WARM",
+        "class_id": 9,
+        "model_id": 1,
+        "secondary_selector": 11
+      }
+    }
+  ]
+}

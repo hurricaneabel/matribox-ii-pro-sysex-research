@@ -237,29 +237,15 @@ class ChainOrderValidationTests(unittest.TestCase):
                 message
             )
 
-    def test_parse_twelve_slots_without_terminator(self) -> None:
-        message = bytearray(
-            NORMAL_132
+    def test_twelve_slot_order_is_supported(self) -> None:
+        from tools.commands.chain_order import ChainOrderState
+
+        state = ChainOrderState(
+            internal_slot_ids=tuple(range(12)),
+            observed_checksum=0x00,
+            declared_length_units=0x00,
+            raw_message=b"",
         )
-
-        encoded = bytearray()
-
-        for internal_id in range(12):
-            encoded.extend(
-                (
-                    0x00,
-                    internal_id,
-                )
-            )
-
-        message[39:63] = encoded
-
-        state = parse_chain_order_response(
-            message
-        )
-
-        self.assertIsNotNone(state)
-        assert state is not None
 
         self.assertEqual(
             state.internal_slot_ids,

@@ -12,6 +12,8 @@ from tools.commands.preset_monitor_core import (
     build_monitor_startup_plan,
 )
 from tools.commands.preset_monitor_live import (
+    DEFAULT_CURRENT_PRESET_QUERY_RETRIES,
+    DEFAULT_CURRENT_PRESET_RETRY_INTERVAL_SECONDS,
     DEFAULT_GLOBAL_QUERY_RETRIES,
     DEFAULT_GLOBAL_RETRY_INTERVAL_SECONDS,
     StartupTimeoutError,
@@ -20,6 +22,7 @@ from tools.commands.preset_monitor_live import (
     describe_startup_progress,
     iter_monitor_updates,
     process_mido_message,
+    send_current_preset_query,
     send_global_metadata_query,
     send_startup_sequence,
     wait_for_initial_snapshot,
@@ -257,6 +260,24 @@ class StartupTransmissionTests(unittest.TestCase):
             plan.global_metadata_query,
         )
 
+    def test_sends_current_preset_query_alone(self) -> None:
+        output = FakeOutputPort()
+
+        send_current_preset_query(
+            output
+        )
+
+        plan = build_monitor_startup_plan()
+
+        self.assertEqual(
+            len(output.messages),
+            1,
+        )
+        self.assertEqual(
+            bytes(output.messages[0].bin()),
+            plan.current_preset_query,
+        )
+
 
 class MessageProcessingTests(unittest.TestCase):
     def test_ignores_non_sysex(self) -> None:
@@ -452,6 +473,82 @@ class InitialSnapshotTests(unittest.TestCase):
         )
 
 
+class CurrentPresetQueryRetryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.fixture = FIXTURE_FILE.read_bytes()
+        cls.fragments = make_fixture_messages(
+            cls.fixture
+        )
+
+    def test_retry_recovers_first_query_lost_after_cold_boot(self) -> None:
+        core = PresetMonitorCore()
+        core.load_global_block(
+            self.fixture
+        )
+        clock = FakeClock()
+        input_port = FakeInputPort()
+        retry_calls = []
+
+        def retry_current() -> None:
+            retry_calls.append(1)
+            input_port.messages.append(
+                make_incoming_preset_event("45B")
+            )
+
+        result = wait_for_initial_snapshot(
+            input_port,
+            core,
+            timeout_seconds=1.0,
+            poll_interval_seconds=0.01,
+            monotonic=clock.monotonic,
+            sleeper=clock.sleep,
+            retry_current_preset_query=retry_current,
+            current_preset_retry_interval_seconds=0.03,
+            max_current_preset_query_retries=2,
+        )
+
+        self.assertEqual(retry_calls, [1])
+        self.assertEqual(
+            result.current_preset_query_retries,
+            1,
+        )
+        self.assertEqual(
+            result.snapshot.label,
+            "45B",
+        )
+
+    def test_current_preset_retry_limit_is_reported(self) -> None:
+        core = PresetMonitorCore()
+        core.load_global_block(
+            self.fixture
+        )
+        clock = FakeClock()
+        input_port = FakeInputPort()
+        retry_calls = []
+
+        with self.assertRaises(
+            StartupTimeoutError
+        ) as context:
+            wait_for_initial_snapshot(
+                input_port,
+                core,
+                timeout_seconds=0.11,
+                poll_interval_seconds=0.01,
+                monotonic=clock.monotonic,
+                sleeper=clock.sleep,
+                retry_current_preset_query=lambda: retry_calls.append(1),
+                current_preset_retry_interval_seconds=0.03,
+                max_current_preset_query_retries=2,
+            )
+
+        self.assertEqual(len(retry_calls), 2)
+        self.assertIn(
+            "reenvios do preset atual=2",
+            str(context.exception),
+        )
+
+
 class GlobalQueryRetryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -467,6 +564,14 @@ class GlobalQueryRetryTests(unittest.TestCase):
         )
         self.assertGreater(
             DEFAULT_GLOBAL_QUERY_RETRIES,
+            0,
+        )
+        self.assertGreater(
+            DEFAULT_CURRENT_PRESET_RETRY_INTERVAL_SECONDS,
+            0,
+        )
+        self.assertGreater(
+            DEFAULT_CURRENT_PRESET_QUERY_RETRIES,
             0,
         )
 

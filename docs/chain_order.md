@@ -1,92 +1,99 @@
-# Ordem visual da cadeia de efeitos
+# Estado estrutural da cadeia de efeitos
 
 ## Modelo confirmado
 
-A Matribox mantém duas estruturas distintas:
+A Matribox mantém duas estruturas relacionadas:
 
-1. slots internos, que preservam a identidade do efeito e seus parâmetros;
-2. uma lista separada que define a ordem visual e de processamento.
+1. slots internos, que preservam classe, modelo, parâmetros e bypass;
+2. uma lista que define a ordem visual e de processamento.
 
-Mover um efeito altera a lista de referências. O conteúdo dos slots internos
-não é copiado nem trocado.
+Mover um efeito altera a lista de referências. O conteúdo do slot interno não
+é copiado nem trocado.
 
 ## Resposta estrutural
 
-A resposta recebida depois de uma movimentação possui tamanho variável.
+A resposta recebida depois de uma alteração possui tamanho variável:
 
 ```text
 comprimento total = 14 + (byte[9] × 2)
 ```
 
-Capturas físicas confirmadas:
+A variação não é causada por índices móveis. A mensagem contém um contêiner
+LZO1X codificado em pares de nibbles:
 
 ```text
-2 efeitos: byte[9] = 0x3B, total = 132 bytes
-5 efeitos: byte[9] = 0x4F, total = 172 bytes
-5 efeitos: byte[9] = 0x4D, total = 168 bytes
+SysEx
+  → pares de nibbles
+  → contêiner 01 00 00 10
+  → fluxo LZO1X
+  → payload estrutural de 89 bytes
 ```
 
-O tamanho pode variar mesmo quando a quantidade de efeitos é a mesma. Portanto,
-o parser não deve depender de um tamanho fixo.
+O contêiner codificado começa no índice absoluto 13 e termina antes do `F7`.
+Após juntar os pares de nibbles, os quatro bytes seguintes à assinatura
+informam o tamanho comprimido em `uint32 little-endian`.
 
-## Lista da ordem
+## Layout descomprimido
 
-A lista começa no índice absoluto 39. Cada entrada ocupa dois nibbles:
+O payload de 89 bytes foi validado em 34 capturas físicas das Fases 14 e 15:
 
 ```text
-00 00 = slot interno 1
-00 01 = slot interno 2
-...
-00 0B = slot interno 12
-0F 0F = fim da lista ou posição vazia
+0–3     cabeçalho interno 00 00 04 01
+4–15    ordem visual dos 12 slots
+16–27   classe por slot interno
+28–75   12 registros de quatro bytes
+76–87   estado ligado/desligado por slot interno
+88      marcador do slot associado à resposta
 ```
 
-Os identificadores do protocolo começam em zero. A interface humana apresenta
-os slots começando em um.
-
-Exemplo:
+Cada registro de efeito contém:
 
 ```text
-00 01 00 00 0F 0F
+modelo | auxiliar 1 | auxiliar 2 | seletor secundário
 ```
 
-significa:
+Slots vazios usam `0xFF` na ordem e na tabela de classes. Os identificadores
+internos começam em zero; a interface humana apresenta os slots de 1 a 12.
+
+## API estável
+
+`tools.commands.chain_order.parse_chain_order_response()` preserva a API de
+ordem e bypass e acrescenta os registros estruturais:
+
+```python
+state.human_slots
+state.visual_enabled_states
+state.record_for_internal_slot(4)
+state.record_at_visual_position(1)
+state.class_ids_by_internal_slot
+state.model_ids_by_internal_slot
+state.secondary_selectors_by_internal_slot
+```
+
+O decodificador LZO1X está em:
 
 ```text
-posição visual 1 → slot interno 2
-posição visual 2 → slot interno 1
-fim
+tools/commands/structural_effect_state.py
+```
+
+O caminho experimental da Fase 16 continua disponível como fachada de
+compatibilidade:
+
+```text
+tools/analysis/structural_effect_state.py
 ```
 
 ## Evidência com cinco efeitos
 
-Ordem inicial:
+Preset original:
 
 ```text
-1. GATE 3
-2. TWD DELUXE
-3. SKREAMER
-4. E-CHORUS
-5. WARM
+slot 1: DYN / GATE 3       → classe 00, modelo 21, seletor 00
+slot 2: AMP / TWD DELUXE   → classe 04, modelo 01, seletor 07
+slot 3: DRV / SKREAMER     → classe 03, modelo 00, seletor 03
+slot 4: MOD / E-CHORUS     → classe 08, modelo 01, seletor 04
+slot 5: DLY / WARM         → classe 09, modelo 01, seletor 0B
 ```
 
-Os movimentos físicos produziram:
-
-```text
-1 → 5: (2, 3, 4, 5, 1)
-3 → 1: (4, 2, 3, 5, 1)
-5 → 2: (4, 1, 2, 3, 5)
-2 → 1: (1, 4, 2, 3, 5)
-2 → 4: (1, 2, 3, 4, 5)
-```
-
-A última resposta restaurou exatamente a ordem inicial.
-
-## Módulos
-
-```text
-tools/commands/chain_order.py
-tools/commands/move_and_read_chain.py
-tools/experiments/validate_chain_order_five_effects.py
-tests/test_chain_order.py
-```
+A Fase 15 também confirmou que `AMP / VOKS BASS` e `AMP / A BASSFT` usam o
+mesmo modelo `0x75` e são diferenciados pelos seletores `0x07` e `0x08`.

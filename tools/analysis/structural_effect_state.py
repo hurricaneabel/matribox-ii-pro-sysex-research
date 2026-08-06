@@ -1,0 +1,68 @@
+"""Compatibilidade com o caminho experimental usado na Fase 16.
+
+A implementação estável foi promovida para
+``tools.commands.structural_effect_state``. Este módulo preserva todos os
+imports públicos existentes sem duplicar o decodificador.
+"""
+
+from tools.commands.structural_effect_state import (
+    AUXILIARY_1_OFFSET,
+    AUXILIARY_2_OFFSET,
+    BYPASS_START_INDEX,
+    CLASS_START_INDEX,
+    CONTAINER_HEADER_SIZE,
+    CONTAINER_SIGNATURE,
+    DECOMPRESSED_PAYLOAD_SIZE,
+    DIRECTION_INCOMING,
+    DIRECTION_INDEX,
+    EFFECT_RECORDS_START_INDEX,
+    EFFECT_RECORD_SIZE,
+    EMPTY_SLOT_ID,
+    LENGTH_UNITS_INDEX,
+    MATRIBOX_HEADER,
+    MAX_DECOMPRESSED_PAYLOAD_SIZE,
+    MAX_INTERNAL_SLOTS,
+    MESSAGE_OVERHEAD,
+    MODEL_OFFSET,
+    NIBBLE_CONTAINER_START_INDEX,
+    ORDER_START_INDEX,
+    PAYLOAD_PREFIX,
+    RESPONSE_SLOT_MARKER_INDEX,
+    SECONDARY_SELECTOR_OFFSET,
+    StructuralEffectRecord,
+    StructuralEffectState,
+    StructuralEffectStateError,
+    calculate_declared_message_length,
+    parse_structural_effect_state,
+)
+
+__all__ = (
+    "AUXILIARY_1_OFFSET",
+    "AUXILIARY_2_OFFSET",
+    "BYPASS_START_INDEX",
+    "CLASS_START_INDEX",
+    "CONTAINER_HEADER_SIZE",
+    "CONTAINER_SIGNATURE",
+    "DECOMPRESSED_PAYLOAD_SIZE",
+    "DIRECTION_INCOMING",
+    "DIRECTION_INDEX",
+    "EFFECT_RECORDS_START_INDEX",
+    "EFFECT_RECORD_SIZE",
+    "EMPTY_SLOT_ID",
+    "LENGTH_UNITS_INDEX",
+    "MATRIBOX_HEADER",
+    "MAX_DECOMPRESSED_PAYLOAD_SIZE",
+    "MAX_INTERNAL_SLOTS",
+    "MESSAGE_OVERHEAD",
+    "MODEL_OFFSET",
+    "NIBBLE_CONTAINER_START_INDEX",
+    "ORDER_START_INDEX",
+    "PAYLOAD_PREFIX",
+    "RESPONSE_SLOT_MARKER_INDEX",
+    "SECONDARY_SELECTOR_OFFSET",
+    "StructuralEffectRecord",
+    "StructuralEffectState",
+    "StructuralEffectStateError",
+    "calculate_declared_message_length",
+    "parse_structural_effect_state",
+)

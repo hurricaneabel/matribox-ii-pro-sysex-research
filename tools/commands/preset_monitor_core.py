@@ -2,9 +2,10 @@
 
 Este módulo coordena os componentes estáveis já validados:
 
-- preset_state.py: consulta e eventos do preset atual;
-- global_metadata_collector.py: reconstrução dos fragmentos;
-- global_preset_metadata.py: nomes e etiquetas dos 240 presets.
+- ``preset_state.py``: consulta e eventos do preset atual;
+- ``global_metadata_collector.py``: reconstrução dos fragmentos globais;
+- ``global_preset_metadata.py``: nomes e etiquetas dos 240 presets;
+- ``chain_order.py``: ordem, classe, modelo, seletor e bypass dos efeitos.
 
 Ele trabalha exclusivamente com bytes. Não abre portas MIDI, não usa mido,
 não dorme entre mensagens e não envia nada para a pedaleira.
@@ -15,6 +16,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Final, Iterable
 
+from tools.commands.chain_order import (
+    ChainOrderProtocolError,
+    ChainOrderState,
+    parse_chain_order_response,
+)
+from tools.commands.effect_catalog import EFFECT_CLASSES
+from tools.commands.effect_slot_state import (
+    EffectSlotStateEvent,
+    EffectSlotStateProtocolError,
+    parse_effect_slot_state_response,
+)
 from tools.commands.global_metadata_collector import (
     CollectorUpdate,
     GlobalMetadataCollector,
@@ -52,7 +64,7 @@ SESSION_STABILIZATION_SECONDS: Final = 0.5
 
 @dataclass(frozen=True, slots=True)
 class MonitorStartupPlan:
-    """Mensagens e tempos que a futura camada MIDI deverá executar."""
+    """Mensagens e tempos que a camada MIDI deverá executar."""
 
     handshake_message: bytes
     handshake_repetitions: int
@@ -64,6 +76,7 @@ class MonitorStartupPlan:
     @property
     def ordered_messages(self) -> tuple[bytes, ...]:
         """Retorna a ordem lógica, sem representar os intervalos de tempo."""
+
         return (
             *(
                 self.handshake_message
@@ -75,6 +88,20 @@ class MonitorStartupPlan:
 
 
 @dataclass(frozen=True, slots=True)
+class PresetEffectSnapshot:
+    """Efeito resolvido para exibição no monitor."""
+
+    visual_position: int
+    internal_slot: int
+    class_id: int
+    class_name: str
+    model_id: int
+    model_name: str
+    secondary_selector: int
+    enabled: bool
+
+
+@dataclass(frozen=True, slots=True)
 class PresetMonitorSnapshot:
     """Visão enriquecida do preset atual."""
 
@@ -83,18 +110,29 @@ class PresetMonitorSnapshot:
     preset_id: int
     name: str
     filter_tag: str
+    effects: tuple[PresetEffectSnapshot, ...] = ()
+    effects_ready: bool = False
 
     @classmethod
     def from_metadata(
         cls,
         metadata: PresetMetadata,
+        chain_state: ChainOrderState | None = None,
     ) -> "PresetMonitorSnapshot":
+        effects = (
+            build_effect_snapshots(chain_state)
+            if chain_state is not None
+            else ()
+        )
+
         return cls(
             index=metadata.index,
             label=metadata.label,
             preset_id=metadata.preset_id,
             name=metadata.name,
             filter_tag=metadata.filter_tag,
+            effects=effects,
+            effects_ready=chain_state is not None,
         )
 
 
@@ -108,10 +146,14 @@ class PresetMonitorUpdate:
     metadata_loaded: bool
     snapshot: PresetMonitorSnapshot | None
     snapshot_changed: bool
+    chain_state: ChainOrderState | None = None
+    chain_changed: bool = False
+    bypass_event: EffectSlotStateEvent | None = None
 
 
 def build_global_metadata_query() -> bytes:
     """Retorna a consulta global capturada durante a inicialização."""
+
     query = GLOBAL_METADATA_QUERY
 
     if len(query) != 46:
@@ -136,6 +178,7 @@ def build_global_metadata_query() -> bytes:
 
 def build_monitor_startup_plan() -> MonitorStartupPlan:
     """Cria o plano puro que será executado pela camada MIDI."""
+
     return MonitorStartupPlan(
         handshake_message=SESSION_HANDSHAKE,
         handshake_repetitions=HANDSHAKE_REPETITIONS,
@@ -146,20 +189,133 @@ def build_monitor_startup_plan() -> MonitorStartupPlan:
     )
 
 
+def _find_effect_class(class_id: int):
+    return next(
+        (
+            effect_class
+            for effect_class in EFFECT_CLASSES
+            if effect_class.class_id == class_id
+        ),
+        None,
+    )
+
+
+def _resolve_effect_names(
+    class_id: int,
+    model_id: int,
+    secondary_selector: int,
+) -> tuple[str, str]:
+    effect_class = _find_effect_class(class_id)
+
+    if effect_class is None:
+        return (
+            f"CLASSE 0x{class_id:02X}",
+            f"MODELO 0x{model_id:02X}",
+        )
+
+    exact_matches = tuple(
+        model
+        for model in effect_class.models
+        if (
+            model.model_id == model_id
+            and model.secondary_selector == secondary_selector
+        )
+    )
+
+    if len(exact_matches) == 1:
+        model_name = exact_matches[0].name
+    else:
+        model_matches = tuple(
+            model
+            for model in effect_class.models
+            if model.model_id == model_id
+        )
+
+        if len(model_matches) == 1:
+            model_name = model_matches[0].name
+        else:
+            model_name = f"MODELO 0x{model_id:02X}"
+
+    return (
+        effect_class.name,
+        model_name,
+    )
+
+
+def build_effect_snapshots(
+    chain_state: ChainOrderState,
+) -> tuple[PresetEffectSnapshot, ...]:
+    """Converte os registros estruturais para nomes do catálogo."""
+
+    snapshots: list[PresetEffectSnapshot] = []
+
+    for visual_position, record in enumerate(
+        chain_state.visual_effect_records,
+        start=1,
+    ):
+        if (
+            record.class_id is None
+            or record.model_id is None
+            or record.secondary_selector is None
+            or record.enabled is None
+        ):
+            continue
+
+        class_name, model_name = _resolve_effect_names(
+            record.class_id,
+            record.model_id,
+            record.secondary_selector,
+        )
+
+        snapshots.append(
+            PresetEffectSnapshot(
+                visual_position=visual_position,
+                internal_slot=record.human_slot,
+                class_id=record.class_id,
+                class_name=class_name,
+                model_id=record.model_id,
+                model_name=model_name,
+                secondary_selector=record.secondary_selector,
+                enabled=record.enabled,
+            )
+        )
+
+    return tuple(snapshots)
+
+
 def format_monitor_snapshot(
     snapshot: PresetMonitorSnapshot,
 ) -> str:
-    """Formata o estado atual para exibição no terminal."""
+    """Formata preset, nome, etiqueta e cadeia para o terminal."""
+
     visible_name = snapshot.name or "(sem nome)"
     visible_filter = snapshot.filter_tag or "(vazia)"
 
-    return "\n".join(
-        (
-            f"Preset atual: {snapshot.label}",
-            f"Nome: {visible_name}",
-            f"Etiqueta: {visible_filter}",
+    lines = [
+        f"Preset atual: {snapshot.label}",
+        f"Nome: {visible_name}",
+        f"Etiqueta: {visible_filter}",
+    ]
+
+    if not snapshot.effects_ready:
+        lines.append("Efeitos: aguardando resposta estrutural.")
+        return "\n".join(lines)
+
+    lines.append("Efeitos:")
+
+    if not snapshot.effects:
+        lines.append("  (cadeia vazia)")
+        return "\n".join(lines)
+
+    for effect in snapshot.effects:
+        state_text = "ligado" if effect.enabled else "desligado"
+        lines.append(
+            f"  {effect.visual_position}. "
+            f"{effect.class_name} / {effect.model_name} "
+            f"— {state_text}"
         )
-    )
+
+    return "\n".join(lines)
 
 
 class PresetMonitorCore:
@@ -177,8 +333,10 @@ class PresetMonitorCore:
 
         self.metadata: GlobalPresetMetadata | None = None
         self.current_event: PresetEvent | None = None
+        self.current_chain: ChainOrderState | None = None
         self.global_block: bytes | None = None
         self._last_snapshot: PresetMonitorSnapshot | None = None
+        self._pending_bypass_by_internal_slot: dict[int, bool] = {}
 
     @property
     def metadata_ready(self) -> bool:
@@ -189,24 +347,27 @@ class PresetMonitorCore:
         return self.current_event is not None
 
     @property
+    def chain_ready(self) -> bool:
+        return self.current_chain is not None
+
+    @property
     def ready(self) -> bool:
-        return (
-            self.metadata_ready
-            and self.current_preset_known
-        )
+        """Nome/tag e endereço estão prontos; a cadeia pode chegar depois."""
+
+        return self.metadata_ready and self.current_preset_known
 
     @property
     def snapshot(self) -> PresetMonitorSnapshot | None:
-        """Cruza o evento atual com a tabela global, quando ambos existem."""
+        """Cruza o evento atual com metadados e eventual cadeia estrutural."""
+
         if self.metadata is None or self.current_event is None:
             return None
 
-        metadata = self.metadata.by_index(
-            self.current_event.index
-        )
+        metadata = self.metadata.by_index(self.current_event.index)
 
         return PresetMonitorSnapshot.from_metadata(
-            metadata
+            metadata,
+            self.current_chain,
         )
 
     @property
@@ -221,6 +382,7 @@ class PresetMonitorCore:
     @property
     def metadata_progress(self) -> tuple[int, int] | None:
         """Retorna bytes cobertos e tamanho total da melhor montagem."""
+
         assembly = self.collector.best_assembly()
 
         if assembly is None:
@@ -233,11 +395,14 @@ class PresetMonitorCore:
 
     def reset(self) -> None:
         """Descarta completamente o estado da sessão."""
+
         self.collector.reset()
         self.metadata = None
         self.current_event = None
+        self.current_chain = None
         self.global_block = None
         self._last_snapshot = None
+        self._pending_bypass_by_internal_slot.clear()
 
     def load_global_block(
         self,
@@ -247,48 +412,47 @@ class PresetMonitorCore:
 
         Retorna True apenas quando o conteúdo é novo para esta sessão.
         """
+
         raw_block = bytes(global_block)
 
         if raw_block == self.global_block:
             return False
 
-        decoded = decode_global_preset_metadata(
-            raw_block
-        )
+        decoded = decode_global_preset_metadata(raw_block)
 
         self.global_block = raw_block
         self.metadata = decoded
 
         return True
 
-    def feed(
+    def _merge_pending_bypass(
         self,
-        message: bytes | bytearray,
-    ) -> PresetMonitorUpdate:
-        """Processa uma mensagem recebida e atualiza o estado coordenado."""
-        raw_message = bytes(message)
-        previous_snapshot = self._last_snapshot
+        chain_state: ChainOrderState,
+    ) -> ChainOrderState:
+        """Aplica mudanças recebidas enquanto a cadeia ainda era carregada."""
 
-        preset_event = parse_preset_event(
-            raw_message
-        )
+        resolved_state = chain_state
 
-        if preset_event is not None:
-            self.current_event = preset_event
-
-        collector_update = self.collector.feed(
-            raw_message
-        )
-
-        metadata_loaded = False
-
-        if collector_update.global_block is not None:
-            metadata_loaded = self.load_global_block(
-                collector_update.global_block
+        for internal_slot_id, enabled in (
+            self._pending_bypass_by_internal_slot.items()
+        ):
+            resolved_state = resolved_state.with_internal_slot_enabled(
+                internal_slot_id + 1,
+                enabled,
             )
 
-        current_snapshot = self.snapshot
+        self._pending_bypass_by_internal_slot.clear()
+        return resolved_state
 
+    def apply_chain_state(
+        self,
+        chain_state: ChainOrderState,
+    ) -> tuple[PresetMonitorSnapshot | None, bool]:
+        """Aplica uma cadeia obtida por resposta imediata ou dump de preset."""
+
+        previous_snapshot = self._last_snapshot
+        self.current_chain = self._merge_pending_bypass(chain_state)
+        current_snapshot = self.snapshot
         snapshot_changed = (
             current_snapshot is not None
             and current_snapshot != previous_snapshot
@@ -297,8 +461,88 @@ class PresetMonitorCore:
         if current_snapshot is not None:
             self._last_snapshot = current_snapshot
 
+        return current_snapshot, snapshot_changed
+
+
+    def feed(
+        self,
+        message: bytes | bytearray,
+    ) -> PresetMonitorUpdate:
+        """Processa uma mensagem recebida e atualiza o estado coordenado."""
+
+        raw_message = bytes(message)
+        previous_snapshot = self._last_snapshot
+        previous_chain = self.current_chain
+
+        preset_event = parse_preset_event(raw_message)
+
+        if preset_event is not None:
+            preset_changed = (
+                self.current_event is None
+                or self.current_event.index != preset_event.index
+            )
+
+            self.current_event = preset_event
+
+            if preset_changed:
+                # Nunca exibe a cadeia do preset anterior junto do endereço novo.
+                self.current_chain = None
+                self._pending_bypass_by_internal_slot.clear()
+
+        try:
+            bypass_event = parse_effect_slot_state_response(raw_message)
+        except EffectSlotStateProtocolError:
+            # Uma resposta reconhecida, mas inválida, não deve derrubar a sessão.
+            bypass_event = None
+
+        if bypass_event is not None:
+            if self.current_chain is None:
+                # O dump pode estar em andamento. O evento mais recente deve
+                # prevalecer quando a cadeia completa chegar.
+                self._pending_bypass_by_internal_slot[
+                    bypass_event.internal_slot_id
+                ] = bypass_event.enabled
+            else:
+                self.current_chain = (
+                    self.current_chain.with_internal_slot_enabled(
+                        bypass_event.human_slot,
+                        bypass_event.enabled,
+                    )
+                )
+
+        try:
+            chain_state = parse_chain_order_response(raw_message)
+        except ChainOrderProtocolError:
+            # Mensagens auxiliares não devem derrubar o monitor ao vivo.
+            chain_state = None
+
+        if chain_state is not None:
+            self.current_chain = self._merge_pending_bypass(chain_state)
+            chain_state = self.current_chain
+
+        collector_update = self.collector.feed(raw_message)
+        metadata_loaded = False
+
+        if collector_update.global_block is not None:
+            metadata_loaded = self.load_global_block(
+                collector_update.global_block
+            )
+
+        current_snapshot = self.snapshot
+        snapshot_changed = (
+            current_snapshot is not None
+            and current_snapshot != previous_snapshot
+        )
+
+        if current_snapshot is not None:
+            self._last_snapshot = current_snapshot
+
+        chain_changed = self.current_chain != previous_chain
+
         handled = (
             preset_event is not None
+            or bypass_event is not None
+            or chain_state is not None
             or collector_update.accepted
             or metadata_loaded
         )
@@ -310,6 +554,9 @@ class PresetMonitorCore:
             metadata_loaded=metadata_loaded,
             snapshot=current_snapshot,
             snapshot_changed=snapshot_changed,
+            chain_state=chain_state,
+            chain_changed=chain_changed,
+            bypass_event=bypass_event,
         )
 
     def feed_many(
@@ -317,6 +564,7 @@ class PresetMonitorCore:
         messages: Iterable[bytes | bytearray],
     ) -> tuple[PresetMonitorUpdate, ...]:
         """Processa uma sequência preservando todas as atualizações."""
+
         return tuple(
             self.feed(message)
             for message in messages

@@ -1,0 +1,259 @@
+{
+  "phase": "phase15",
+  "captures": [
+    {
+      "label": "BASELINE",
+      "file": "BASELINE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": null,
+      "model": null
+    },
+    {
+      "label": "S5_DLY_MAG",
+      "file": "S5_DLY_MAG.bin",
+      "message_length": 176,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "DLY",
+        "model_name": "MAG",
+        "class_id": 9,
+        "model_id": 2,
+        "secondary_selector": 11
+      }
+    },
+    {
+      "label": "S5_DLY_RESTORE",
+      "file": "S5_DLY_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "DLY",
+        "model_name": "WARM",
+        "class_id": 9,
+        "model_id": 1,
+        "secondary_selector": 11
+      }
+    },
+    {
+      "label": "S4_AMP_SEL7",
+      "file": "S4_AMP_SEL7.bin",
+      "message_length": 176,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "VOKS BASS",
+        "class_id": 4,
+        "model_id": 117,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S4_AMP_SEL8",
+      "file": "S4_AMP_SEL8.bin",
+      "message_length": 176,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "A BASSFT",
+        "class_id": 4,
+        "model_id": 117,
+        "secondary_selector": 8
+      }
+    },
+    {
+      "label": "S4_AMP_SEL7_RESTORE",
+      "file": "S4_AMP_SEL7_RESTORE.bin",
+      "message_length": 176,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "VOKS BASS",
+        "class_id": 4,
+        "model_id": 117,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S4_AMP_MODEL03",
+      "file": "S4_AMP_MODEL03.bin",
+      "message_length": 176,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "B-MAN N",
+        "class_id": 4,
+        "model_id": 3,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S4_ORIGINAL_RESTORE",
+      "file": "S4_ORIGINAL_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 4,
+      "model": {
+        "class_name": "MOD",
+        "model_name": "E-CHORUS",
+        "class_id": 8,
+        "model_id": 1,
+        "secondary_selector": 4
+      }
+    },
+    {
+      "label": "S5_AMP_SEL7",
+      "file": "S5_AMP_SEL7.bin",
+      "message_length": 160,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "VOKS BASS",
+        "class_id": 4,
+        "model_id": 117,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S5_AMP_SEL8",
+      "file": "S5_AMP_SEL8.bin",
+      "message_length": 172,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "A BASSFT",
+        "class_id": 4,
+        "model_id": 117,
+        "secondary_selector": 8
+      }
+    },
+    {
+      "label": "S5_AMP_SEL7_RESTORE",
+      "file": "S5_AMP_SEL7_RESTORE.bin",
+      "message_length": 160,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "VOKS BASS",
+        "class_id": 4,
+        "model_id": 117,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S5_AMP_MODEL03",
+      "file": "S5_AMP_MODEL03.bin",
+      "message_length": 160,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "AMP",
+        "model_name": "B-MAN N",
+        "class_id": 4,
+        "model_id": 3,
+        "secondary_selector": 7
+      }
+    },
+    {
+      "label": "S5_ORIGINAL_RESTORE",
+      "file": "S5_ORIGINAL_RESTORE.bin",
+      "message_length": 168,
+      "order": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "slot_number": 5,
+      "model": {
+        "class_name": "DLY",
+        "model_name": "WARM",
+        "class_id": 9,
+        "model_id": 1,
+        "secondary_selector": 11
+      }
+    }
+  ]
+}

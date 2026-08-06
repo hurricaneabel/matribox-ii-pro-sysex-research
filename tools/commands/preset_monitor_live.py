@@ -21,6 +21,13 @@ from typing import Callable, Iterator, Protocol
 
 import mido
 
+from tools.commands.chain_order import ChainOrderState
+from tools.commands.preset_dump_state import (
+    PresetDumpCollector,
+    PresetDumpStateError,
+    build_preset_dump_query,
+    decode_chain_state_from_preset_dump,
+)
 from tools.commands.preset_monitor_core import (
     PresetMonitorCore,
     PresetMonitorSnapshot,
@@ -36,6 +43,11 @@ DEFAULT_STARTUP_TIMEOUT_SECONDS = 12.0
 DEFAULT_POLL_INTERVAL_SECONDS = 0.01
 DEFAULT_GLOBAL_RETRY_INTERVAL_SECONDS = 1.5
 DEFAULT_GLOBAL_QUERY_RETRIES = 3
+DEFAULT_CURRENT_PRESET_RETRY_INTERVAL_SECONDS = 1.0
+DEFAULT_CURRENT_PRESET_QUERY_RETRIES = 3
+DEFAULT_PRESET_LOAD_DELAY_SECONDS = 0.6
+DEFAULT_PRESET_DUMP_TIMEOUT_SECONDS = 4.0
+DEFAULT_PRESET_DUMP_QUERY_RETRIES = 2
 
 
 class InputPortProtocol(Protocol):
@@ -78,6 +90,26 @@ class InitialSnapshotResult:
     global_block_size: int
     metadata_count: int
     global_query_retries: int
+    current_preset_query_retries: int
+
+
+@dataclass(frozen=True, slots=True)
+class PresetChainReadResult:
+    """Resultado da leitura não destrutiva da cadeia pelo dump do preset."""
+
+    chain_state: ChainOrderState | None
+    query_retries: int
+    interrupted_by_preset_index: int | None
+    covered_bytes: int
+    total_size: int | None
+
+    @property
+    def complete(self) -> bool:
+        return self.chain_state is not None
+
+    @property
+    def interrupted(self) -> bool:
+        return self.interrupted_by_preset_index is not None
 
 
 def create_mido_sysex(
@@ -146,6 +178,19 @@ def send_current_preset_query(
     output_port.send(
         create_mido_sysex(
             plan.current_preset_query
+        )
+    )
+
+
+def send_preset_dump_query(
+    output_port: OutputPortProtocol,
+    preset: str | int,
+) -> None:
+    """Solicita o dump completo de um preset sem alterar seu conteúdo."""
+
+    output_port.send(
+        create_mido_sysex(
+            build_preset_dump_query(preset)
         )
     )
 
@@ -266,6 +311,17 @@ def wait_for_initial_snapshot(
         Callable[[int, int, str], None]
         | None
     ) = None,
+    retry_current_preset_query: Callable[[], None] | None = None,
+    current_preset_retry_interval_seconds: float = (
+        DEFAULT_CURRENT_PRESET_RETRY_INTERVAL_SECONDS
+    ),
+    max_current_preset_query_retries: int = (
+        DEFAULT_CURRENT_PRESET_QUERY_RETRIES
+    ),
+    on_current_preset_retry: (
+        Callable[[int, int, str], None]
+        | None
+    ) = None,
 ) -> InitialSnapshotResult:
     """Aguarda o estado inicial e recupera respostas globais incompletas.
 
@@ -293,18 +349,58 @@ def wait_for_initial_snapshot(
             "A quantidade de reenvios globais não pode ser negativa."
         )
 
+    if current_preset_retry_interval_seconds <= 0:
+        raise ValueError(
+            "O intervalo de reenvio do preset atual deve ser maior que zero."
+        )
+
+    if max_current_preset_query_retries < 0:
+        raise ValueError(
+            "A quantidade de reenvios do preset atual não pode ser negativa."
+        )
+
     started_at = monotonic()
     deadline = started_at + timeout_seconds
     next_global_retry = (
         started_at
         + global_retry_interval_seconds
     )
+    next_current_preset_retry = (
+        started_at
+        + current_preset_retry_interval_seconds
+    )
 
     retries = 0
+    current_preset_retries = 0
     last_covered_bytes = 0
 
     while monotonic() < deadline:
         now = monotonic()
+
+        if (
+            retry_current_preset_query is not None
+            and not core.current_preset_known
+            and current_preset_retries < max_current_preset_query_retries
+            and now >= next_current_preset_retry
+        ):
+            current_preset_retries += 1
+            diagnostic = describe_startup_progress(
+                core
+            )
+
+            retry_current_preset_query()
+
+            if on_current_preset_retry is not None:
+                on_current_preset_retry(
+                    current_preset_retries,
+                    max_current_preset_query_retries,
+                    diagnostic,
+                )
+
+            next_current_preset_retry = (
+                now
+                + current_preset_retry_interval_seconds
+            )
 
         if (
             retry_global_query is not None
@@ -379,12 +475,199 @@ def wait_for_initial_snapshot(
                     core.metadata.presets
                 ),
                 global_query_retries=retries,
+                current_preset_query_retries=current_preset_retries,
             )
 
     raise StartupTimeoutError(
         "Tempo esgotado aguardando o estado inicial: "
         + describe_startup_progress(core)
         + f", reenvios globais={retries}"
+        + f", reenvios do preset atual={current_preset_retries}"
+    )
+
+
+def read_preset_chain_state(
+    input_port: InputPortProtocol,
+    output_port: OutputPortProtocol,
+    core: PresetMonitorCore,
+    preset: str | int,
+    *,
+    load_delay_seconds: float = DEFAULT_PRESET_LOAD_DELAY_SECONDS,
+    timeout_seconds: float = DEFAULT_PRESET_DUMP_TIMEOUT_SECONDS,
+    max_query_retries: int = DEFAULT_PRESET_DUMP_QUERY_RETRIES,
+    poll_interval_seconds: float = DEFAULT_POLL_INTERVAL_SECONDS,
+    monotonic: Callable[[], float] = time.monotonic,
+    sleeper: Callable[[float], None] = time.sleep,
+    on_update: Callable[[PresetMonitorUpdate], None] | None = None,
+    on_query: Callable[[int, int], None] | None = None,
+    on_progress: Callable[[int, int], None] | None = None,
+) -> PresetChainReadResult:
+    """Solicita e reconstrói a cadeia atual sem executar escrita de efeito.
+
+    O dump é solicitado novamente quando um fragmento se perde. A montagem
+    parcial é preservada entre tentativas. Se outro preset for detectado
+    durante a leitura, o resultado informa a interrupção para que o chamador
+    inicie imediatamente uma nova consulta para o endereço mais recente.
+    """
+
+    if load_delay_seconds < 0:
+        raise ValueError("O atraso de carga não pode ser negativo.")
+
+    if timeout_seconds <= 0:
+        raise ValueError("O timeout do dump deve ser positivo.")
+
+    if max_query_retries < 0:
+        raise ValueError("A quantidade de reenvios não pode ser negativa.")
+
+    if poll_interval_seconds <= 0:
+        raise ValueError("O intervalo de polling deve ser positivo.")
+
+    from tools.commands.preset_state import normalize_preset
+
+    target_index, _target_label = normalize_preset(preset)
+
+    if load_delay_seconds:
+        sleeper(load_delay_seconds)
+
+    collector = PresetDumpCollector()
+    total_queries = max_query_retries + 1
+    query_number = 0
+    last_progress: tuple[int, int] | None = None
+
+    while query_number < total_queries:
+        query_number += 1
+        send_preset_dump_query(
+            output_port,
+            target_index,
+        )
+
+        if on_query is not None:
+            on_query(query_number, total_queries)
+
+        deadline = monotonic() + timeout_seconds
+
+        while monotonic() < deadline:
+            message = input_port.poll()
+
+            if message is None:
+                sleeper(poll_interval_seconds)
+                continue
+
+            if getattr(message, "type", None) != "sysex":
+                continue
+
+            raw_message = bytes(message.bin())
+            update = core.feed(raw_message)
+
+            if on_update is not None:
+                on_update(update)
+
+            if (
+                update.preset_event is not None
+                and update.preset_event.index != target_index
+            ):
+                assembly = collector.assembly
+                return PresetChainReadResult(
+                    chain_state=None,
+                    query_retries=query_number - 1,
+                    interrupted_by_preset_index=(
+                        update.preset_event.index
+                    ),
+                    covered_bytes=(
+                        assembly.covered_bytes
+                        if assembly is not None
+                        else 0
+                    ),
+                    total_size=(
+                        assembly.total_size
+                        if assembly is not None
+                        else None
+                    ),
+                )
+
+            if update.chain_state is not None:
+                core.apply_chain_state(update.chain_state)
+                return PresetChainReadResult(
+                    chain_state=update.chain_state,
+                    query_retries=query_number - 1,
+                    interrupted_by_preset_index=None,
+                    covered_bytes=0,
+                    total_size=None,
+                )
+
+            try:
+                dump_update = collector.feed(raw_message)
+            except PresetDumpStateError:
+                continue
+
+            if (
+                dump_update.accepted
+                and dump_update.total_size is not None
+            ):
+                progress = (
+                    dump_update.covered_bytes,
+                    dump_update.total_size,
+                )
+
+                if progress != last_progress:
+                    last_progress = progress
+
+                    if on_progress is not None:
+                        on_progress(*progress)
+
+            if dump_update.preset_dump is None:
+                continue
+
+            try:
+                chain_state = decode_chain_state_from_preset_dump(
+                    dump_update.preset_dump
+                )
+            except PresetDumpStateError:
+                continue
+
+            if (
+                core.current_event is None
+                or core.current_event.index != target_index
+            ):
+                interrupted_index = (
+                    core.current_event.index
+                    if core.current_event is not None
+                    else None
+                )
+                return PresetChainReadResult(
+                    chain_state=None,
+                    query_retries=query_number - 1,
+                    interrupted_by_preset_index=interrupted_index,
+                    covered_bytes=dump_update.covered_bytes,
+                    total_size=dump_update.total_size,
+                )
+
+            core.apply_chain_state(chain_state)
+
+            return PresetChainReadResult(
+                chain_state=chain_state,
+                query_retries=query_number - 1,
+                interrupted_by_preset_index=None,
+                covered_bytes=dump_update.covered_bytes,
+                total_size=dump_update.total_size,
+            )
+
+    assembly = collector.assembly
+
+    return PresetChainReadResult(
+        chain_state=None,
+        query_retries=max_query_retries,
+        interrupted_by_preset_index=None,
+        covered_bytes=(
+            assembly.covered_bytes
+            if assembly is not None
+            else 0
+        ),
+        total_size=(
+            assembly.total_size
+            if assembly is not None
+            else None
+        ),
     )
 
 

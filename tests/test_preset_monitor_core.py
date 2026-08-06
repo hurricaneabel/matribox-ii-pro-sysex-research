@@ -30,6 +30,15 @@ FIXTURE_FILE = (
 )
 FRAGMENT_PAYLOAD_SIZE = 185
 
+STRUCTURAL_BASELINE_FILE = (
+    PROJECT_ROOT
+    / "tests"
+    / "fixtures"
+    / "structural_effect_state"
+    / "phase15"
+    / "BASELINE.bin"
+)
+
 
 def encode_fragment_message(
     block: bytes,
@@ -468,9 +477,85 @@ class PresetMonitorCoreTests(unittest.TestCase):
             (
                 "Preset atual: 45B\n"
                 "Nome: NOME123456789\n"
-                "Etiqueta: TAG45A123"
+                "Etiqueta: TAG45A123\n"
+                "Efeitos: aguardando resposta estrutural."
             ),
         )
+
+
+    def test_structural_response_enriches_snapshot_with_effect_names(self) -> None:
+        core = PresetMonitorCore()
+        core.load_global_block(
+            self.fixture
+        )
+        core.feed(
+            make_incoming_preset_event("45B")
+        )
+
+        update = core.feed(
+            STRUCTURAL_BASELINE_FILE.read_bytes()
+        )
+
+        self.assertTrue(update.handled)
+        self.assertTrue(update.chain_changed)
+        self.assertTrue(update.snapshot_changed)
+        self.assertIsNotNone(update.snapshot)
+        assert update.snapshot is not None
+
+        self.assertTrue(update.snapshot.effects_ready)
+        self.assertEqual(
+            tuple(
+                (
+                    effect.class_name,
+                    effect.model_name,
+                    effect.enabled,
+                )
+                for effect in update.snapshot.effects
+            ),
+            (
+                ("DYN", "GATE 3", True),
+                ("AMP", "TWD DELUXE", True),
+                ("DRV", "Skreamer", True),
+                ("MOD", "E-CHORUS", True),
+                ("DLY", "WARM", True),
+            ),
+        )
+
+        formatted = format_monitor_snapshot(
+            update.snapshot
+        )
+
+        self.assertIn(
+            "1. DYN / GATE 3 — ligado",
+            formatted,
+        )
+        self.assertIn(
+            "5. DLY / WARM — ligado",
+            formatted,
+        )
+
+    def test_new_preset_event_discards_previous_chain(self) -> None:
+        core = PresetMonitorCore()
+        core.load_global_block(
+            self.fixture
+        )
+        core.feed(
+            make_incoming_preset_event("45B")
+        )
+        core.feed(
+            STRUCTURAL_BASELINE_FILE.read_bytes()
+        )
+
+        update = core.feed(
+            make_incoming_preset_event("45C")
+        )
+
+        self.assertIsNotNone(update.snapshot)
+        assert update.snapshot is not None
+        self.assertFalse(update.snapshot.effects_ready)
+        self.assertEqual(update.snapshot.effects, ())
+        self.assertFalse(core.chain_ready)
+
 
 
 if __name__ == "__main__":

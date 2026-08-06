@@ -24,7 +24,17 @@ A estrutura de efeitos da Matribox já pode ser controlada por Python para:
 - movimentar efeitos na cadeia visual;
 - solicitar e reconstruir dumps de preset em condições já estudadas.
 
-O gerenciador flexível principal é:
+O monitor consolidado principal é:
+
+```powershell
+python -m tools.commands.matribox_monitor
+```
+
+Ele acompanha o preset atual, nome, etiqueta, cadeia de efeitos, ordem visual
+e estado ligado/desligado. A leitura da cadeia é não destrutiva e possui
+reenvios automáticos para a primeira comunicação após ligar a pedaleira.
+
+O gerenciador flexível de escrita continua disponível em:
 
 ```powershell
 python -m tools.experiments.manage_effect_chain
@@ -254,11 +264,11 @@ Executar toda a suíte:
 python -m unittest discover -s tests -v
 ```
 
-Estado após a integração dos blocos especiais:
+Estado após a integração do monitor em tempo real (Fase 21):
 
 ```text
-158 testes executados
-158 testes aprovados
+306 testes executados
+306 testes aprovados
 ```
 
 Também é usado:
@@ -269,6 +279,15 @@ git diff --check
 ```
 
 ## Ferramentas principais
+
+### Monitor ao vivo
+
+```powershell
+python -m tools.commands.matribox_monitor
+```
+
+Mostra preset, nome, etiqueta e efeitos; acompanha mudanças de ordem e
+liga/desliga em tempo real.
 
 ### Gerenciar a cadeia
 
@@ -377,17 +396,30 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-Com as 16 classes exibidas pelo editor catalogadas estruturalmente, a próxima
-fase será dividida em frentes independentes:
+O monitor consolidado já lê preset, nome, etiqueta e cadeia, além de acompanhar
+ordem e bypass em tempo real. As próximas frentes devem permanecer separadas:
 
-1. mapear parâmetros internos de efeitos fixos e reversíveis;
-2. investigar leitura de nomes e metadados das posições CLONE;
-3. analisar a importação NAM sem reenviar dados desconhecidos;
-4. investigar a importação de IR em captura separada.
+1. validar atualização ao vivo de troca de modelo ou classe;
+2. mapear parâmetros internos de efeitos fixos e reversíveis;
+3. criar uma camada de apresentação sobre o monitor estável;
+4. investigar nomes e metadados das posições CLONE;
+5. analisar importação NAM e IR sem reenviar comandos desconhecidos.
 
 A seleção normal de CLONE e IR na cadeia já funciona, mas transferência de
 arquivos, escrita persistente e gerenciamento de nomes não serão misturados
 com os comandos estruturais confirmados.
+
+## Continuidade entre chats
+
+O ponto oficial de retomada do projeto, incluindo arquitetura, decisões,
+histórico das fases, testes e próximos passos, está em:
+
+```text
+docs/PROJECT_CONTINUITY.md
+```
+
+Esse arquivo deve ser atualizado antes de todo commit que consolide uma nova
+funcionalidade aprovada.
 
 ## Documentação técnica completa
 
