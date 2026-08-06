@@ -1,0 +1,11 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "vol",
+  "menu_number": 16,
+  "name": "VOL",
+  "class_id": 15,
+  "effect_files": [
+    "001_vol.json"
+  ]
+}

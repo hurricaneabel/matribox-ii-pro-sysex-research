@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.b_man_n",
+  "class_key": "amp",
+  "menu_number": 2,
+  "name": "B-MAN N",
+  "model_id": 3,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dyn.ac_boost",
+  "class_key": "dyn",
+  "menu_number": 6,
+  "name": "AC-BOOST",
+  "model_id": 10,
+  "secondary_selector": 0,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

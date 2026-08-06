@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.tanger_r100",
+  "class_key": "amp",
+  "menu_number": 49,
+  "name": "TANGER R100",
+  "model_id": 83,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

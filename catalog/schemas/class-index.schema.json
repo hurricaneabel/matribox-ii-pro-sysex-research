@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://matribox-syscon.local/schemas/class-index.schema.json",
+  "title": "Matribox effect class index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "key",
+    "menu_number",
+    "name",
+    "class_id",
+    "effect_files"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "menu_number": { "type": "integer", "minimum": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "class_id": { "type": "integer", "minimum": 0, "maximum": 127 },
+    "effect_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9]{3}_[a-z0-9_]+\\.json$"
+      }
+    }
+  }
+}

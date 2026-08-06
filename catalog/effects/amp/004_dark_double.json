@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.dark_double",
+  "class_key": "amp",
+  "menu_number": 4,
+  "name": "DARK DOUBLE",
+  "model_id": 4,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

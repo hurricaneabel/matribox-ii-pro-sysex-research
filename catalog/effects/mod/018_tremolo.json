@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.tremolo",
+  "class_key": "mod",
+  "menu_number": 18,
+  "name": "TREMOLO",
+  "model_id": 33,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

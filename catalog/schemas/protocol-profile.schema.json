@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://matribox-syscon.local/schemas/protocol-profile.schema.json",
+  "title": "Matribox protocol profile",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "key",
+    "direction",
+    "command",
+    "message_length",
+    "fields",
+    "validation"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "direction": { "enum": ["incoming", "outgoing", "bidirectional"] },
+    "command": { "type": "integer", "minimum": 0, "maximum": 127 },
+    "message_length": { "type": "integer", "minimum": 1 },
+    "fields": { "type": "object" },
+    "validation": { "type": "object" }
+  }
+}

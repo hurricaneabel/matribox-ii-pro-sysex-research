@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.cali_bass",
+  "class_key": "amp",
+  "menu_number": 59,
+  "name": "CALI BASS",
+  "model_id": 119,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

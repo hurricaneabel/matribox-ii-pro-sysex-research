@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "drv.timmy_od",
+  "class_key": "drv",
+  "menu_number": 10,
+  "name": "Timmy OD",
+  "model_id": 30,
+  "secondary_selector": 3,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

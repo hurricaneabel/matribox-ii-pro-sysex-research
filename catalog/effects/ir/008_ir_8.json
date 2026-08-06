@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "ir.ir_8",
+  "class_key": "ir",
+  "menu_number": 8,
+  "name": "IR 8",
+  "model_id": 7,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

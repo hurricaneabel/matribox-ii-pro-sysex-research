@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "rvb.studio",
+  "class_key": "rvb",
+  "menu_number": 1,
+  "name": "STUDIO",
+  "model_id": 11,
+  "secondary_selector": 12,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

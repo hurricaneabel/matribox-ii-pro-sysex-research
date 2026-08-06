@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "eq.bass_eq_1",
+  "class_key": "eq",
+  "menu_number": 3,
+  "name": "BASS EQ 1",
+  "model_id": 57,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

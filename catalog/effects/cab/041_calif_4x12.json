@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.calif_4x12",
+  "class_key": "cab",
+  "menu_number": 41,
+  "name": "CALIF 4X12",
+  "model_id": 49,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

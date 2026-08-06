@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "drv.breaker_od",
+  "class_key": "drv",
+  "menu_number": 8,
+  "name": "Breaker OD",
+  "model_id": 14,
+  "secondary_selector": 3,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

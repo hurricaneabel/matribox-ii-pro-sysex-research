@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dyn.rc_boost",
+  "class_key": "dyn",
+  "menu_number": 8,
+  "name": "RC-BOOST",
+  "model_id": 12,
+  "secondary_selector": 0,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

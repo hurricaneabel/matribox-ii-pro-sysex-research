@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.twd_2x10",
+  "class_key": "cab",
+  "menu_number": 4,
+  "name": "TWD 2X10",
+  "model_id": 20,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.voks_bass",
+  "class_key": "amp",
+  "menu_number": 58,
+  "name": "VOKS BASS",
+  "model_id": 117,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

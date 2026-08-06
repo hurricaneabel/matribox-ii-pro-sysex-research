@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dyn.comp3",
+  "class_key": "dyn",
+  "menu_number": 3,
+  "name": "COMP3",
+  "model_id": 3,
+  "secondary_selector": 0,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

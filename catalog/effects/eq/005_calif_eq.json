@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "eq.calif_eq",
+  "class_key": "eq",
+  "menu_number": 5,
+  "name": "CALIF EQ",
+  "model_id": 60,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

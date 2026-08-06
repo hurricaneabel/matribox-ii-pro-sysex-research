@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.flanger_n",
+  "class_key": "mod",
+  "menu_number": 6,
+  "name": "FLANGER N",
+  "model_id": 19,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://matribox-syscon.local/schemas/catalog.schema.json",
+  "title": "Matribox effect catalog manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "catalog_version",
+    "device",
+    "class_indexes",
+    "protocol_profiles",
+    "value_codecs"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "catalog_version": { "type": "integer", "minimum": 1 },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manufacturer", "model"],
+      "properties": {
+        "manufacturer": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 }
+      }
+    },
+    "class_indexes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/portableJsonPath" }
+    },
+    "protocol_profiles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/portableJsonPath" }
+    },
+    "value_codecs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/portableJsonPath" }
+    }
+  },
+  "$defs": {
+    "portableJsonPath": {
+      "type": "string",
+      "pattern": "^[a-z0-9_./-]+\\.json$"
+    }
+  }
+}

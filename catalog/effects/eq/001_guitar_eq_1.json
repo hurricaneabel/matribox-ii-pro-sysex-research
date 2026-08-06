@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "eq.guitar_eq_1",
+  "class_key": "eq",
+  "menu_number": 1,
+  "name": "GUITAR EQ 1",
+  "model_id": 53,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

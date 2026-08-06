@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.vibrato",
+  "class_key": "mod",
+  "menu_number": 9,
+  "name": "VIBRATO",
+  "model_id": 23,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

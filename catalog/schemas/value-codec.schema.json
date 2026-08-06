@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://matribox-syscon.local/schemas/value-codec.schema.json",
+  "title": "Matribox value codec",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "key",
+    "kind",
+    "encoded_length",
+    "description"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "kind": { "type": "string", "minLength": 1 },
+    "encoded_length": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "configuration": { "type": "object" }
+  }
+}

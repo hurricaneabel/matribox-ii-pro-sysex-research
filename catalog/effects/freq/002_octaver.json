@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "freq.octaver",
+  "class_key": "freq",
+  "menu_number": 2,
+  "name": "Octaver",
+  "model_id": 33,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

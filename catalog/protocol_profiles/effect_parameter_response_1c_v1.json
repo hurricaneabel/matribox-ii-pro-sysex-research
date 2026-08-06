@@ -1,0 +1,56 @@
+{
+  "$schema": "../schemas/protocol-profile.schema.json",
+  "schema_version": 1,
+  "key": "effect_parameter_response_1c_v1",
+  "direction": "incoming",
+  "command": 28,
+  "message_length": 70,
+  "fields": {
+    "checksum": {
+      "index": 7,
+      "encoding": "uint7",
+      "validation_role": "observed_only"
+    },
+    "direction": {
+      "index": 8,
+      "expected": 0
+    },
+    "command": {
+      "index": 9,
+      "expected": 28
+    },
+    "model_id": {
+      "indices": [21, 22],
+      "encoding": "nibble_pair"
+    },
+    "internal_slot": {
+      "indices": [39, 40],
+      "encoding": "nibble_pair",
+      "minimum": 0,
+      "maximum": 11
+    },
+    "class_id": {
+      "indices": [41, 42],
+      "encoding": "nibble_pair"
+    },
+    "value": {
+      "start_index": 59,
+      "end_index_exclusive": 63,
+      "encoding": "nibble_sequence"
+    },
+    "parameter_marker": {
+      "index": 63
+    },
+    "parameter_type": {
+      "index": 64
+    }
+  },
+  "validation": {
+    "status": "physically_validated_for_dyn_m_boost_gain",
+    "physical_fixture_count": 27,
+    "internal_slots_observed": [2, 8, 10, 12],
+    "multiple_instances": true,
+    "visual_reordering_independent": true,
+    "notes": "Outros efeitos e parâmetros podem exigir um perfil adicional até que novas capturas provem compatibilidade."
+  }
+}

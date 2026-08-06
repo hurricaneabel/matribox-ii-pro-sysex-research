@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.superb_cl",
+  "class_key": "amp",
+  "menu_number": 12,
+  "name": "SUPERB CL",
+  "model_id": 21,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

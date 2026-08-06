@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.dragon_cl",
+  "class_key": "amp",
+  "menu_number": 22,
+  "name": "DRAGON CL",
+  "model_id": 31,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "ir",
+  "menu_number": 7,
+  "name": "IR",
+  "class_id": 6,
+  "effect_files": [
+    "001_ir_1.json",
+    "002_ir_2.json",
+    "003_ir_3.json",
+    "004_ir_4.json",
+    "005_ir_5.json",
+    "006_ir_6.json",
+    "007_ir_7.json",
+    "008_ir_8.json",
+    "009_ir_9.json",
+    "010_ir_10.json",
+    "011_ir_11.json",
+    "012_ir_12.json",
+    "013_ir_13.json",
+    "014_ir_14.json",
+    "015_ir_15.json",
+    "016_ir_16.json",
+    "017_ir_17.json",
+    "018_ir_18.json",
+    "019_ir_19.json",
+    "020_ir_20.json"
+  ]
+}

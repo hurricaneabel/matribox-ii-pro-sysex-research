@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.f_2bass",
+  "class_key": "amp",
+  "menu_number": 61,
+  "name": "F-2BASS",
+  "model_id": 118,
+  "secondary_selector": 8,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

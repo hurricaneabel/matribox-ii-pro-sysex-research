@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "rvb.room",
+  "class_key": "rvb",
+  "menu_number": 3,
+  "name": "ROOM",
+  "model_id": 0,
+  "secondary_selector": 12,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

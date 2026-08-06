@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dly.slapback",
+  "class_key": "dly",
+  "menu_number": 7,
+  "name": "SLAPBACK",
+  "model_id": 5,
+  "secondary_selector": 11,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

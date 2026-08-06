@@ -1,0 +1,11 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "fx_loop",
+  "menu_number": 13,
+  "name": "FX LOOP",
+  "class_id": 12,
+  "effect_files": [
+    "001_fx_loop.json"
+  ]
+}

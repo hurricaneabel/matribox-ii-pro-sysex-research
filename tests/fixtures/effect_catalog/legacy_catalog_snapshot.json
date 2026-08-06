@@ -1,0 +1,1721 @@
+{
+  "schema_version": 1,
+  "class_count": 16,
+  "effect_count": 267,
+  "classes": [
+    {
+      "menu_number": 1,
+      "name": "FREQ",
+      "class_id": 1,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "Filter",
+          "model_id": 25,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 2,
+          "name": "Octaver",
+          "model_id": 33,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 3,
+          "name": "Dual Melody",
+          "model_id": 35,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 4,
+          "name": "Pitch",
+          "model_id": 36,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 5,
+          "name": "Harmony D",
+          "model_id": 78,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 6,
+          "name": "Pitch S",
+          "model_id": 85,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 7,
+          "name": "Ring Mod",
+          "model_id": 47,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 8,
+          "name": "Tape Mod",
+          "model_id": 51,
+          "secondary_selector": 1
+        }
+      ]
+    },
+    {
+      "menu_number": 2,
+      "name": "DRV",
+      "class_id": 3,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "Skreamer",
+          "model_id": 0,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 2,
+          "name": "Skreamer9",
+          "model_id": 1,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 3,
+          "name": "Butter OD",
+          "model_id": 2,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 4,
+          "name": "Warm OD",
+          "model_id": 4,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 5,
+          "name": "Super OD",
+          "model_id": 6,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 6,
+          "name": "Blues OD",
+          "model_id": 9,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 7,
+          "name": "Full OD",
+          "model_id": 10,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 8,
+          "name": "Breaker OD",
+          "model_id": 14,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 9,
+          "name": "Gerden OD",
+          "model_id": 16,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 10,
+          "name": "Timmy OD",
+          "model_id": 30,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 11,
+          "name": "Master OD",
+          "model_id": 15,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 12,
+          "name": "Solar Fuzz",
+          "model_id": 38,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 13,
+          "name": "Fuzz Cream",
+          "model_id": 34,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 14,
+          "name": "Red Fuzz",
+          "model_id": 36,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 15,
+          "name": "JP Dist",
+          "model_id": 42,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 16,
+          "name": "Dark Mouse",
+          "model_id": 43,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 17,
+          "name": "Plexi Dist",
+          "model_id": 45,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 18,
+          "name": "Master Dist",
+          "model_id": 46,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 19,
+          "name": "Dist Plus",
+          "model_id": 41,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 20,
+          "name": "Shark",
+          "model_id": 48,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 21,
+          "name": "Strive",
+          "model_id": 50,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 22,
+          "name": "Sardar Dist",
+          "model_id": 82,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 23,
+          "name": "Bass OD",
+          "model_id": 63,
+          "secondary_selector": 3
+        },
+        {
+          "menu_number": 24,
+          "name": "Bass Dist",
+          "model_id": 64,
+          "secondary_selector": 3
+        }
+      ]
+    },
+    {
+      "menu_number": 3,
+      "name": "DYN",
+      "class_id": 0,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "COMP1",
+          "model_id": 0,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 2,
+          "name": "COMP2",
+          "model_id": 1,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 3,
+          "name": "COMP3",
+          "model_id": 3,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 4,
+          "name": "M-BOOST",
+          "model_id": 20,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 5,
+          "name": "E-BOOST",
+          "model_id": 26,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 6,
+          "name": "AC-BOOST",
+          "model_id": 10,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 7,
+          "name": "BB-BOOST",
+          "model_id": 11,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 8,
+          "name": "RC-BOOST",
+          "model_id": 12,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 9,
+          "name": "FAT BOOST",
+          "model_id": 25,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 10,
+          "name": "AC WOODY",
+          "model_id": 0,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 11,
+          "name": "AC SIM",
+          "model_id": 1,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 12,
+          "name": "GATE 1",
+          "model_id": 27,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 13,
+          "name": "GATE 2",
+          "model_id": 29,
+          "secondary_selector": 0
+        },
+        {
+          "menu_number": 14,
+          "name": "GATE 3",
+          "model_id": 33,
+          "secondary_selector": 0
+        }
+      ]
+    },
+    {
+      "menu_number": 4,
+      "name": "WAH",
+      "class_id": 2,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "VOKS WAH",
+          "model_id": 1,
+          "secondary_selector": 5
+        },
+        {
+          "menu_number": 2,
+          "name": "CRY WAH",
+          "model_id": 8,
+          "secondary_selector": 5
+        },
+        {
+          "menu_number": 3,
+          "name": "RACK WAH",
+          "model_id": 10,
+          "secondary_selector": 5
+        },
+        {
+          "menu_number": 4,
+          "name": "BASS WAH",
+          "model_id": 7,
+          "secondary_selector": 5
+        },
+        {
+          "menu_number": 5,
+          "name": "TOUCH WAH",
+          "model_id": 15,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 6,
+          "name": "AUTO WAH",
+          "model_id": 21,
+          "secondary_selector": 1
+        }
+      ]
+    },
+    {
+      "menu_number": 5,
+      "name": "AMP",
+      "class_id": 4,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "TWD DELUXE",
+          "model_id": 1,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 2,
+          "name": "B-MAN N",
+          "model_id": 3,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 3,
+          "name": "B-MAN BRI",
+          "model_id": 36,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 4,
+          "name": "DARK DOUBLE",
+          "model_id": 4,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 5,
+          "name": "DARK DELUXE",
+          "model_id": 5,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 6,
+          "name": "SUPERO 2 CL",
+          "model_id": 15,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 7,
+          "name": "SUPERO 2 OD",
+          "model_id": 40,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 8,
+          "name": "VOKS 15TB",
+          "model_id": 16,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 9,
+          "name": "VOKS 30N",
+          "model_id": 17,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 10,
+          "name": "VOKS 30TB",
+          "model_id": 39,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 11,
+          "name": "JAZZ 120",
+          "model_id": 20,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 12,
+          "name": "SUPERB CL",
+          "model_id": 21,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 13,
+          "name": "SUPERB OD",
+          "model_id": 72,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 14,
+          "name": "CALIF STAR CL",
+          "model_id": 25,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 15,
+          "name": "CALIF STAR OD",
+          "model_id": 74,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 16,
+          "name": "BOG SV CL",
+          "model_id": 26,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 17,
+          "name": "BOG SV OD",
+          "model_id": 61,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 18,
+          "name": "BOG XT BLUE",
+          "model_id": 67,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 19,
+          "name": "BOG XT RED",
+          "model_id": 110,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 20,
+          "name": "DOCTOR CL",
+          "model_id": 27,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 21,
+          "name": "DOCTOR OD",
+          "model_id": 73,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 22,
+          "name": "DRAGON CL",
+          "model_id": 31,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 23,
+          "name": "DRAGON CL B",
+          "model_id": 123,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 24,
+          "name": "DRAGON OD",
+          "model_id": 124,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 25,
+          "name": "SOL 100 CL",
+          "model_id": 35,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 26,
+          "name": "SOL 100 OD",
+          "model_id": 71,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 27,
+          "name": "SOL 100 LD",
+          "model_id": 89,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 28,
+          "name": "BRIT 45",
+          "model_id": 42,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 29,
+          "name": "BRIT 45+",
+          "model_id": 43,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 30,
+          "name": "BRIT 45JP",
+          "model_id": 44,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 31,
+          "name": "BRIT 50",
+          "model_id": 45,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 32,
+          "name": "BRIT 50+",
+          "model_id": 46,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 33,
+          "name": "BRIT 50JP",
+          "model_id": 47,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 34,
+          "name": "BRIT SLP",
+          "model_id": 48,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 35,
+          "name": "BRIT 800",
+          "model_id": 53,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 36,
+          "name": "BRIT 900",
+          "model_id": 78,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 37,
+          "name": "FLYMAN 1",
+          "model_id": 64,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 38,
+          "name": "FLYMAN 2",
+          "model_id": 65,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 39,
+          "name": "FLYMAN+ 1",
+          "model_id": 93,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 40,
+          "name": "FLYMAN+ 2",
+          "model_id": 94,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 41,
+          "name": "CALIF IIC+ 1",
+          "model_id": 57,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 42,
+          "name": "CALIF IIC+ 2",
+          "model_id": 58,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 43,
+          "name": "CALIF IIC+ 3",
+          "model_id": 59,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 44,
+          "name": "CALIF IV LD 1",
+          "model_id": 85,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 45,
+          "name": "CALIF IV LD 2",
+          "model_id": 86,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 46,
+          "name": "CALIF IV LD 3",
+          "model_id": 87,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 47,
+          "name": "CALIF DUAL V",
+          "model_id": 104,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 48,
+          "name": "CALIF DUAL M",
+          "model_id": 105,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 49,
+          "name": "TANGER R100",
+          "model_id": 83,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 50,
+          "name": "HALEN 51",
+          "model_id": 90,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 51,
+          "name": "ENG 120",
+          "model_id": 95,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 52,
+          "name": "ENG 120+",
+          "model_id": 96,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 53,
+          "name": "DIZZY VH",
+          "model_id": 101,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 54,
+          "name": "DIZZY VH S",
+          "model_id": 102,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 55,
+          "name": "DIZZY VH+",
+          "model_id": 106,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 56,
+          "name": "DIZZY VH+ S",
+          "model_id": 107,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 57,
+          "name": "A BASSVT",
+          "model_id": 115,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 58,
+          "name": "VOKS BASS",
+          "model_id": 117,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 59,
+          "name": "CALI BASS",
+          "model_id": 119,
+          "secondary_selector": 7
+        },
+        {
+          "menu_number": 60,
+          "name": "A BASSFT",
+          "model_id": 117,
+          "secondary_selector": 8
+        },
+        {
+          "menu_number": 61,
+          "name": "F-2BASS",
+          "model_id": 118,
+          "secondary_selector": 8
+        },
+        {
+          "menu_number": 62,
+          "name": "AC PREAMP",
+          "model_id": 122,
+          "secondary_selector": 8
+        },
+        {
+          "menu_number": 63,
+          "name": "AC PREAMP 2",
+          "model_id": 123,
+          "secondary_selector": 8
+        }
+      ]
+    },
+    {
+      "menu_number": 6,
+      "name": "CAB",
+      "class_id": 5,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "SUPERO 1X6",
+          "model_id": 0,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 2,
+          "name": "CHAP 1X8",
+          "model_id": 1,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 3,
+          "name": "PRINCE 1X10",
+          "model_id": 2,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 4,
+          "name": "TWD 2X10",
+          "model_id": 20,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 5,
+          "name": "TWD LUX 1X12",
+          "model_id": 11,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 6,
+          "name": "DARK LUX 1X12",
+          "model_id": 3,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 7,
+          "name": "TWIN VERB 2X12",
+          "model_id": 18,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 8,
+          "name": "CUSTOM 2X12",
+          "model_id": 27,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 9,
+          "name": "B-MAN 2X10",
+          "model_id": 22,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 10,
+          "name": "B-MAN 4X10",
+          "model_id": 30,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 11,
+          "name": "JAZZ 2X12",
+          "model_id": 17,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 12,
+          "name": "BRIT 1X12",
+          "model_id": 14,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 13,
+          "name": "BRIT GN 2X12",
+          "model_id": 19,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 14,
+          "name": "BRIT LD 4X12",
+          "model_id": 31,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 15,
+          "name": "BRIT TD 4X12",
+          "model_id": 32,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 16,
+          "name": "BRIT MD 4X12",
+          "model_id": 33,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 17,
+          "name": "BRIT GN 4X12",
+          "model_id": 34,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 18,
+          "name": "BRIT 75 4X12",
+          "model_id": 48,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 19,
+          "name": "BRIT BK 4X12",
+          "model_id": 43,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 20,
+          "name": "VOKS 1X12",
+          "model_id": 8,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 21,
+          "name": "VOKS 2X12",
+          "model_id": 15,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 22,
+          "name": "BOG SV 1X12",
+          "model_id": 6,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 23,
+          "name": "CHIEF 2X12",
+          "model_id": 16,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 24,
+          "name": "CALIF DUAL 4X12",
+          "model_id": 36,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 25,
+          "name": "CALIF STAR 1X12",
+          "model_id": 9,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 26,
+          "name": "CALIF STAR 2X12",
+          "model_id": 25,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 27,
+          "name": "CALIF 1X12",
+          "model_id": 12,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 28,
+          "name": "SUPERO 2X12",
+          "model_id": 23,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 29,
+          "name": "SUPERB 2X12",
+          "model_id": 24,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 30,
+          "name": "BLUE 2X12",
+          "model_id": 29,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 31,
+          "name": "HALEN 4X12",
+          "model_id": 35,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 32,
+          "name": "BOG 4X12",
+          "model_id": 37,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 33,
+          "name": "ENG 4X12",
+          "model_id": 38,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 34,
+          "name": "BOG UB 4X12",
+          "model_id": 39,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 35,
+          "name": "SOL 4X12",
+          "model_id": 40,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 36,
+          "name": "TANGER 4X12",
+          "model_id": 41,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 37,
+          "name": "WATT 4X12",
+          "model_id": 42,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 38,
+          "name": "WAM 4X12",
+          "model_id": 44,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 39,
+          "name": "HUMBLE 4X12",
+          "model_id": 45,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 40,
+          "name": "DIZZY 4X12",
+          "model_id": 46,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 41,
+          "name": "CALIF 4X12",
+          "model_id": 49,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 42,
+          "name": "DV 1X15",
+          "model_id": 50,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 43,
+          "name": "DV 4X10",
+          "model_id": 55,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 44,
+          "name": "WORK 1X15",
+          "model_id": 51,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 45,
+          "name": "WORK 4X10",
+          "model_id": 57,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 46,
+          "name": "CALIF 2X10",
+          "model_id": 53,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 47,
+          "name": "MAK 2X10",
+          "model_id": 54,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 48,
+          "name": "A BASS 1X15",
+          "model_id": 52,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 49,
+          "name": "A BASS 4X10",
+          "model_id": 56,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 50,
+          "name": "A BASS 8X10",
+          "model_id": 59,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 51,
+          "name": "HART 4X12",
+          "model_id": 58,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 52,
+          "name": "D 1",
+          "model_id": 60,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 53,
+          "name": "D 2",
+          "model_id": 61,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 54,
+          "name": "OM",
+          "model_id": 62,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 55,
+          "name": "JUMBO",
+          "model_id": 63,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 56,
+          "name": "BIRD",
+          "model_id": 64,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 57,
+          "name": "GA",
+          "model_id": 65,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 58,
+          "name": "CLASSICAL AC",
+          "model_id": 66,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 59,
+          "name": "MANDOLIN",
+          "model_id": 67,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 60,
+          "name": "FRETLESS BASS",
+          "model_id": 68,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 61,
+          "name": "DOUBLE BASS",
+          "model_id": 69,
+          "secondary_selector": 10
+        }
+      ]
+    },
+    {
+      "menu_number": 7,
+      "name": "IR",
+      "class_id": 6,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "IR 1",
+          "model_id": 0,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 2,
+          "name": "IR 2",
+          "model_id": 1,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 3,
+          "name": "IR 3",
+          "model_id": 2,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 4,
+          "name": "IR 4",
+          "model_id": 3,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 5,
+          "name": "IR 5",
+          "model_id": 4,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 6,
+          "name": "IR 6",
+          "model_id": 5,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 7,
+          "name": "IR 7",
+          "model_id": 6,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 8,
+          "name": "IR 8",
+          "model_id": 7,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 9,
+          "name": "IR 9",
+          "model_id": 8,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 10,
+          "name": "IR 10",
+          "model_id": 9,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 11,
+          "name": "IR 11",
+          "model_id": 10,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 12,
+          "name": "IR 12",
+          "model_id": 11,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 13,
+          "name": "IR 13",
+          "model_id": 12,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 14,
+          "name": "IR 14",
+          "model_id": 13,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 15,
+          "name": "IR 15",
+          "model_id": 14,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 16,
+          "name": "IR 16",
+          "model_id": 15,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 17,
+          "name": "IR 17",
+          "model_id": 16,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 18,
+          "name": "IR 18",
+          "model_id": 17,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 19,
+          "name": "IR 19",
+          "model_id": 18,
+          "secondary_selector": 10
+        },
+        {
+          "menu_number": 20,
+          "name": "IR 20",
+          "model_id": 19,
+          "secondary_selector": 10
+        }
+      ]
+    },
+    {
+      "menu_number": 8,
+      "name": "EQ",
+      "class_id": 7,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "GUITAR EQ 1",
+          "model_id": 53,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 2,
+          "name": "GUITAR EQ 2",
+          "model_id": 54,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 3,
+          "name": "BASS EQ 1",
+          "model_id": 57,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 4,
+          "name": "BASS EQ 2",
+          "model_id": 58,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 5,
+          "name": "CALIF EQ",
+          "model_id": 60,
+          "secondary_selector": 1
+        }
+      ]
+    },
+    {
+      "menu_number": 9,
+      "name": "MOD",
+      "class_id": 8,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "E-CHORUS",
+          "model_id": 1,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 2,
+          "name": "D-CHORUS",
+          "model_id": 2,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 3,
+          "name": "B-CHORUS",
+          "model_id": 8,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 4,
+          "name": "M-CHORUS",
+          "model_id": 15,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 5,
+          "name": "FLANGER",
+          "model_id": 17,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 6,
+          "name": "FLANGER N",
+          "model_id": 19,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 7,
+          "name": "TREM JET",
+          "model_id": 20,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 8,
+          "name": "BASS JET",
+          "model_id": 18,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 9,
+          "name": "VIBRATO",
+          "model_id": 23,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 10,
+          "name": "BBD ROTO",
+          "model_id": 21,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 11,
+          "name": "CE-ROTO",
+          "model_id": 22,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 12,
+          "name": "PHASER",
+          "model_id": 25,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 13,
+          "name": "BBD PHASER",
+          "model_id": 26,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 14,
+          "name": "PHASER ST",
+          "model_id": 27,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 15,
+          "name": "PAN PHASER",
+          "model_id": 30,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 16,
+          "name": "VIBE",
+          "model_id": 31,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 17,
+          "name": "U-VIBE",
+          "model_id": 32,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 18,
+          "name": "TREMOLO",
+          "model_id": 33,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 19,
+          "name": "SINE TREM",
+          "model_id": 38,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 20,
+          "name": "TRIANGULE TREM",
+          "model_id": 39,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 21,
+          "name": "BIAS TREM",
+          "model_id": 40,
+          "secondary_selector": 4
+        },
+        {
+          "menu_number": 22,
+          "name": "DETUNE",
+          "model_id": 41,
+          "secondary_selector": 1
+        },
+        {
+          "menu_number": 23,
+          "name": "LOFI BIT",
+          "model_id": 46,
+          "secondary_selector": 1
+        }
+      ]
+    },
+    {
+      "menu_number": 10,
+      "name": "DLY",
+      "class_id": 9,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "WARM",
+          "model_id": 1,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 2,
+          "name": "PURE",
+          "model_id": 0,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 3,
+          "name": "MAG",
+          "model_id": 2,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 4,
+          "name": "TUBE",
+          "model_id": 11,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 5,
+          "name": "BBD",
+          "model_id": 29,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 6,
+          "name": "PING PONG",
+          "model_id": 4,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 7,
+          "name": "SLAPBACK",
+          "model_id": 5,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 8,
+          "name": "SWEEP",
+          "model_id": 6,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 9,
+          "name": "RING",
+          "model_id": 9,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 10,
+          "name": "MULTI TAPE",
+          "model_id": 12,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 11,
+          "name": "SWEET",
+          "model_id": 13,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 12,
+          "name": "999 ECHO",
+          "model_id": 18,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 13,
+          "name": "RACK",
+          "model_id": 20,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 14,
+          "name": "LO-FI",
+          "model_id": 38,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 15,
+          "name": "REVERSE",
+          "model_id": 40,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 16,
+          "name": "EKO D",
+          "model_id": 3,
+          "secondary_selector": 11
+        },
+        {
+          "menu_number": 17,
+          "name": "ICE DELAY",
+          "model_id": 44,
+          "secondary_selector": 11
+        }
+      ]
+    },
+    {
+      "menu_number": 11,
+      "name": "RVB",
+      "class_id": 10,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "STUDIO",
+          "model_id": 11,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 2,
+          "name": "CLUB",
+          "model_id": 12,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 3,
+          "name": "ROOM",
+          "model_id": 0,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 4,
+          "name": "HALL",
+          "model_id": 1,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 5,
+          "name": "CHURCH",
+          "model_id": 2,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 6,
+          "name": "PLATE",
+          "model_id": 3,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 7,
+          "name": "SPRING",
+          "model_id": 4,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 8,
+          "name": "SKY",
+          "model_id": 6,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 9,
+          "name": "SEA",
+          "model_id": 7,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 10,
+          "name": "MOD REVERB",
+          "model_id": 8,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 11,
+          "name": "SHIMMER",
+          "model_id": 9,
+          "secondary_selector": 12
+        },
+        {
+          "menu_number": 12,
+          "name": "HAZE",
+          "model_id": 21,
+          "secondary_selector": 12
+        }
+      ]
+    },
+    {
+      "menu_number": 12,
+      "name": "CLONE",
+      "class_id": 11,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "CLONE 1",
+          "model_id": 0,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 2,
+          "name": "CLONE 2",
+          "model_id": 1,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 3,
+          "name": "CLONE 3",
+          "model_id": 2,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 4,
+          "name": "CLONE 4",
+          "model_id": 3,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 5,
+          "name": "CLONE 5",
+          "model_id": 4,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 6,
+          "name": "CLONE 6",
+          "model_id": 5,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 7,
+          "name": "CLONE 7",
+          "model_id": 6,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 8,
+          "name": "CLONE 8",
+          "model_id": 7,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 9,
+          "name": "CLONE 9",
+          "model_id": 8,
+          "secondary_selector": 15
+        },
+        {
+          "menu_number": 10,
+          "name": "CLONE 10",
+          "model_id": 9,
+          "secondary_selector": 15
+        }
+      ]
+    },
+    {
+      "menu_number": 13,
+      "name": "FX LOOP",
+      "class_id": 12,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "FX LOOP",
+          "model_id": 0,
+          "secondary_selector": 6
+        }
+      ]
+    },
+    {
+      "menu_number": 14,
+      "name": "FX SEND",
+      "class_id": 13,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "SND",
+          "model_id": 1,
+          "secondary_selector": 6
+        }
+      ]
+    },
+    {
+      "menu_number": 15,
+      "name": "FX RETURN",
+      "class_id": 14,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "RTN",
+          "model_id": 2,
+          "secondary_selector": 6
+        }
+      ]
+    },
+    {
+      "menu_number": 16,
+      "name": "VOL",
+      "class_id": 15,
+      "models": [
+        {
+          "menu_number": 1,
+          "name": "VOL",
+          "model_id": 3,
+          "secondary_selector": 6
+        }
+      ]
+    }
+  ]
+}

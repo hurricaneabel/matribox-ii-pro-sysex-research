@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dly.ice_delay",
+  "class_key": "dly",
+  "menu_number": 17,
+  "name": "ICE DELAY",
+  "model_id": 44,
+  "secondary_selector": 11,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

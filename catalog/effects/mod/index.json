@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "mod",
+  "menu_number": 9,
+  "name": "MOD",
+  "class_id": 8,
+  "effect_files": [
+    "001_e_chorus.json",
+    "002_d_chorus.json",
+    "003_b_chorus.json",
+    "004_m_chorus.json",
+    "005_flanger.json",
+    "006_flanger_n.json",
+    "007_trem_jet.json",
+    "008_bass_jet.json",
+    "009_vibrato.json",
+    "010_bbd_roto.json",
+    "011_ce_roto.json",
+    "012_phaser.json",
+    "013_bbd_phaser.json",
+    "014_phaser_st.json",
+    "015_pan_phaser.json",
+    "016_vibe.json",
+    "017_u_vibe.json",
+    "018_tremolo.json",
+    "019_sine_trem.json",
+    "020_triangule_trem.json",
+    "021_bias_trem.json",
+    "022_detune.json",
+    "023_lofi_bit.json"
+  ]
+}

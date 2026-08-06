@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.sol_100_ld",
+  "class_key": "amp",
+  "menu_number": 27,
+  "name": "SOL 100 LD",
+  "model_id": 89,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

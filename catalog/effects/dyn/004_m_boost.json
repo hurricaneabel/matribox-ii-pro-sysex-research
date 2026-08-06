@@ -1,0 +1,57 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dyn.m_boost",
+  "class_key": "dyn",
+  "menu_number": 4,
+  "name": "M-BOOST",
+  "model_id": 20,
+  "secondary_selector": 0,
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_single_parameter_effect",
+        "message_match": {
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          2,
+          8,
+          10,
+          12
+        ],
+        "all_twelve_slot_addresses_supported": true,
+        "multiple_instances": true,
+        "visual_reordering_independent": true,
+        "physical_fixture_count": 27,
+        "evidence": "MBOOST_GAIN_VALIDATION_PHASE22.md"
+      }
+    }
+  ]
+}

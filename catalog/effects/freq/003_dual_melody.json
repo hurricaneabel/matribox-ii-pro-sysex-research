@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "freq.dual_melody",
+  "class_key": "freq",
+  "menu_number": 3,
+  "name": "Dual Melody",
+  "model_id": 35,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

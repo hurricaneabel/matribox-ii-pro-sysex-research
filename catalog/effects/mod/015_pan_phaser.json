@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.pan_phaser",
+  "class_key": "mod",
+  "menu_number": 15,
+  "name": "PAN PHASER",
+  "model_id": 30,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

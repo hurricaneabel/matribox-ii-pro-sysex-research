@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.brit_slp",
+  "class_key": "amp",
+  "menu_number": 34,
+  "name": "BRIT SLP",
+  "model_id": 48,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

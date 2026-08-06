@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.bbd_roto",
+  "class_key": "mod",
+  "menu_number": 10,
+  "name": "BBD ROTO",
+  "model_id": 21,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

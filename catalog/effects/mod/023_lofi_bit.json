@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.lofi_bit",
+  "class_key": "mod",
+  "menu_number": 23,
+  "name": "LOFI BIT",
+  "model_id": 46,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

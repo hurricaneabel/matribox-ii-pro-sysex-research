@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.eng_120_plus",
+  "class_key": "amp",
+  "menu_number": 52,
+  "name": "ENG 120+",
+  "model_id": 96,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

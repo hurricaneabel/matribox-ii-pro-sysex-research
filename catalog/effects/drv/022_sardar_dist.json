@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "drv.sardar_dist",
+  "class_key": "drv",
+  "menu_number": 22,
+  "name": "Sardar Dist",
+  "model_id": 82,
+  "secondary_selector": 3,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "vol.vol",
+  "class_key": "vol",
+  "menu_number": 1,
+  "name": "VOL",
+  "model_id": 3,
+  "secondary_selector": 6,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

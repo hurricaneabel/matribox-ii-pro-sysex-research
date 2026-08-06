@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.calif_dual_v",
+  "class_key": "amp",
+  "menu_number": 47,
+  "name": "CALIF DUAL V",
+  "model_id": 104,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

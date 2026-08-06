@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.b_man_bri",
+  "class_key": "amp",
+  "menu_number": 3,
+  "name": "B-MAN BRI",
+  "model_id": 36,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

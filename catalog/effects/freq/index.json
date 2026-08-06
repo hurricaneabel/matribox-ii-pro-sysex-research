@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "freq",
+  "menu_number": 1,
+  "name": "FREQ",
+  "class_id": 1,
+  "effect_files": [
+    "001_filter.json",
+    "002_octaver.json",
+    "003_dual_melody.json",
+    "004_pitch.json",
+    "005_harmony_d.json",
+    "006_pitch_s.json",
+    "007_ring_mod.json",
+    "008_tape_mod.json"
+  ]
+}

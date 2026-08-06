@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.jazz_120",
+  "class_key": "amp",
+  "menu_number": 11,
+  "name": "JAZZ 120",
+  "model_id": 20,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

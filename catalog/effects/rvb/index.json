@@ -1,0 +1,22 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "rvb",
+  "menu_number": 11,
+  "name": "RVB",
+  "class_id": 10,
+  "effect_files": [
+    "001_studio.json",
+    "002_club.json",
+    "003_room.json",
+    "004_hall.json",
+    "005_church.json",
+    "006_plate.json",
+    "007_spring.json",
+    "008_sky.json",
+    "009_sea.json",
+    "010_mod_reverb.json",
+    "011_shimmer.json",
+    "012_haze.json"
+  ]
+}

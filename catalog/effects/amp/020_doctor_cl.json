@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.doctor_cl",
+  "class_key": "amp",
+  "menu_number": 20,
+  "name": "DOCTOR CL",
+  "model_id": 27,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

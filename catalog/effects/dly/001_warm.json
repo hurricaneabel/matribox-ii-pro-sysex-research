@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dly.warm",
+  "class_key": "dly",
+  "menu_number": 1,
+  "name": "WARM",
+  "model_id": 1,
+  "secondary_selector": 11,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

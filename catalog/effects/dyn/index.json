@@ -1,0 +1,24 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "dyn",
+  "menu_number": 3,
+  "name": "DYN",
+  "class_id": 0,
+  "effect_files": [
+    "001_comp1.json",
+    "002_comp2.json",
+    "003_comp3.json",
+    "004_m_boost.json",
+    "005_e_boost.json",
+    "006_ac_boost.json",
+    "007_bb_boost.json",
+    "008_rc_boost.json",
+    "009_fat_boost.json",
+    "010_ac_woody.json",
+    "011_ac_sim.json",
+    "012_gate_1.json",
+    "013_gate_2.json",
+    "014_gate_3.json"
+  ]
+}

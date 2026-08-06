@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dly.reverse",
+  "class_key": "dly",
+  "menu_number": 15,
+  "name": "REVERSE",
+  "model_id": 40,
+  "secondary_selector": 11,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

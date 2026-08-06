@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "wah.auto_wah",
+  "class_key": "wah",
+  "menu_number": 6,
+  "name": "AUTO WAH",
+  "model_id": 21,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

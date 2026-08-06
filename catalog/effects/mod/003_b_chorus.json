@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.b_chorus",
+  "class_key": "mod",
+  "menu_number": 3,
+  "name": "B-CHORUS",
+  "model_id": 8,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

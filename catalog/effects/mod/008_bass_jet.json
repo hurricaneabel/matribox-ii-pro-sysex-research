@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.bass_jet",
+  "class_key": "mod",
+  "menu_number": 8,
+  "name": "BASS JET",
+  "model_id": 18,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

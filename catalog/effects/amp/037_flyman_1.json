@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.flyman_1",
+  "class_key": "amp",
+  "menu_number": 37,
+  "name": "FLYMAN 1",
+  "model_id": 64,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

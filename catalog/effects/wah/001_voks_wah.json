@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "wah.voks_wah",
+  "class_key": "wah",
+  "menu_number": 1,
+  "name": "VOKS WAH",
+  "model_id": 1,
+  "secondary_selector": 5,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

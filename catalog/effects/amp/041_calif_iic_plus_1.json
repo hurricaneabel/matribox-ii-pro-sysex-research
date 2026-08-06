@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.calif_iic_plus_1",
+  "class_key": "amp",
+  "menu_number": 41,
+  "name": "CALIF IIC+ 1",
+  "model_id": 57,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

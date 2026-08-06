@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "clone.clone_4",
+  "class_key": "clone",
+  "menu_number": 4,
+  "name": "CLONE 4",
+  "model_id": 3,
+  "secondary_selector": 15,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

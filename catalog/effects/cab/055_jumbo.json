@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.jumbo",
+  "class_key": "cab",
+  "menu_number": 55,
+  "name": "JUMBO",
+  "model_id": 63,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.fretless_bass",
+  "class_key": "cab",
+  "menu_number": 60,
+  "name": "FRETLESS BASS",
+  "model_id": 68,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

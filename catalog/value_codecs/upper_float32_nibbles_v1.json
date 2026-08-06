@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/value-codec.schema.json",
+  "schema_version": 1,
+  "key": "upper_float32_nibbles_v1",
+  "kind": "float32_upper_16_bits_as_nibbles",
+  "encoded_length": 4,
+  "description": "Reconstrói um float32 little-endian com bytes inferiores 00 00 e os dois bytes superiores transmitidos como quatro nibbles.",
+  "configuration": {
+    "byte_order": "little_endian",
+    "lower_bytes": [0, 0],
+    "nibble_order": "high_then_low_per_byte",
+    "require_finite": true,
+    "integer_tolerance": 0.000001
+  }
+}

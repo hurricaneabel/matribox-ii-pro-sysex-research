@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "drv.jp_dist",
+  "class_key": "drv",
+  "menu_number": 15,
+  "name": "JP Dist",
+  "model_id": 42,
+  "secondary_selector": 3,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

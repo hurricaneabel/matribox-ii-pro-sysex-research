@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "fx_return.rtn",
+  "class_key": "fx_return",
+  "menu_number": 1,
+  "name": "RTN",
+  "model_id": 2,
+  "secondary_selector": 6,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

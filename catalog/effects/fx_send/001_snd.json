@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "fx_send.snd",
+  "class_key": "fx_send",
+  "menu_number": 1,
+  "name": "SND",
+  "model_id": 1,
+  "secondary_selector": 6,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

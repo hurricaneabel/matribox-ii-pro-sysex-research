@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "rvb.hall",
+  "class_key": "rvb",
+  "menu_number": 4,
+  "name": "HALL",
+  "model_id": 1,
+  "secondary_selector": 12,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

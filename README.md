@@ -79,12 +79,19 @@ interpretada como a ordem oficial da interface da pedaleira.
 | 15 | FX RETURN | `0x0E` | 1 (`RTN`) |
 | 16 | VOL | `0x0F` | 1 |
 
-As listas completas de modelos, IDs, seletores e checksums ficam em:
+As listas completas de modelos, IDs, seletores e parâmetros ficam em:
 
 ```text
-tools/commands/effect_catalog.py
-docs/protocol_findings.md
+catalog/catalog.json
+catalog/effects/
+catalog/protocol_profiles/
+catalog/value_codecs/
 ```
+
+`tools/commands/effect_catalog.py` permanece como fachada compatível para os
+comandos antigos, mas os dados agora são carregados do catálogo JSON. O formato
+é versionado, usa caminhos relativos portáteis e foi preparado para consumo
+futuro por Python, Kotlin/Android e desktop.
 
 ## Últimas classes concluídas: blocos especiais
 
@@ -131,6 +138,7 @@ cadeia.
 | `0x16` | 58 bytes | trocar modelo dentro da mesma classe |
 | `0x17` | 60 bytes | adicionar, substituir ou remover efeito |
 | `0x18` | 62 bytes | ligar ou desligar slot interno |
+| `0x1C` | 70 bytes | atualização de parâmetro; M-BOOST/GAIN validado |
 
 O checksum fica no índice `7`.
 
@@ -274,11 +282,11 @@ Executar toda a suíte:
 python -m unittest discover -s tests -v
 ```
 
-Estado após a preservação do M-BOOST/GAIN (Fase 22):
+Estado após a migração do catálogo JSON (Fase 23A):
 
 ```text
-316 testes executados
-316 testes aprovados
+328 testes executados
+328 testes aprovados
 ```
 
 Também é usado:
@@ -375,14 +383,21 @@ tools/experiments/validate_unified_replacement_slot_11.py
 matribox-sysex/
 ├── README.md
 ├── requirements.txt
+├── catalog/
+│   ├── effects/        # 267 definições individuais
+│   ├── schemas/        # JSON Schema Draft 2020-12
+│   ├── protocol_profiles/
+│   └── value_codecs/
 ├── data/
 │   └── fixtures/       # amostras mínimas usadas pelos testes
 ├── docs/               # protocolo e descobertas confirmadas
 ├── tests/              # regressão offline
 └── tools/
     ├── analysis/       # decodificadores auxiliares ainda testados
+    ├── catalog/        # carregador e modelos do catálogo JSON
     ├── commands/       # protocolo reutilizável e comandos estáveis
-    └── experiments/    # validadores físicos preservados
+    ├── experiments/    # validadores físicos preservados
+    └── migrations/     # exportação reproduzível de dados legados
 ```
 
 ## Dados gerados e histórico de pesquisa
@@ -416,22 +431,27 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-O monitor consolidado e o M-BOOST/GAIN isolado estão aprovados. O próximo marco
-é criar um catálogo declarativo e multiplataforma em JSON antes de catalogar
-centenas de parâmetros:
+A Fase 23A concluiu o catálogo declarativo e multiplataforma em JSON:
 
-1. definir schemas versionados para classes, efeitos e parâmetros;
-2. exportar automaticamente as 16 classes e 267 posições/modelos atualmente
-   definidas em `tools/commands/effect_catalog.py`;
-3. comparar o catálogo Python e o JSON registro por registro;
-4. manter `effect_catalog.py` como fachada de compatibilidade;
-5. cadastrar M-BOOST/GAIN como o primeiro parâmetro validado;
-6. criar codecs e perfis de protocolo reutilizáveis;
+- 16 classes e 267 efeitos migrados sem redigitação manual;
+- equivalência comprovada contra o snapshot do catálogo Python;
+- `effect_catalog.py` preservado como fachada;
+- M-BOOST/GAIN registrado como primeiro parâmetro validado;
+- schemas, perfil `0x1C` e codec de valor versionados.
+
+O próximo marco é a **Fase 23B — motor genérico de parâmetros**:
+
+1. criar um evento genérico independente de efeito;
+2. implementar codecs reutilizáveis a partir do catálogo;
+3. interpretar perfis de protocolo sem condicionais exclusivas do M-BOOST;
+4. provar equivalência contra as 27 fixtures físicas existentes;
+5. manter o validador atual como compatibilidade até a nova camada ser aprovada;
+6. somente depois integrar parâmetros ao monitor principal;
 7. retomar os demais efeitos DYN e depois a classe FREQ.
 
-O JSON será independente de Python e de caminhos do Windows para poder ser
-consumido futuramente por aplicativos Android e desktop. Importação de IR e
-CLONE continuará como subsistema separado de arquivos externos.
+Importação de IR e CLONE continuará como subsistema separado de arquivos
+externos, usando a mesma base de catálogo sem misturar upload binário com
+parâmetros comuns.
 
 ## Continuidade entre chats
 

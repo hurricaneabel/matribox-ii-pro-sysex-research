@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.a_bassvt",
+  "class_key": "amp",
+  "menu_number": 57,
+  "name": "A BASSVT",
+  "model_id": 115,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

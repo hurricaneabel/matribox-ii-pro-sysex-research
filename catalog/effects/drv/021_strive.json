@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "drv.strive",
+  "class_key": "drv",
+  "menu_number": 21,
+  "name": "Strive",
+  "model_id": 50,
+  "secondary_selector": 3,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

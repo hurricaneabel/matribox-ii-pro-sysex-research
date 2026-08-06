@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.triangule_trem",
+  "class_key": "mod",
+  "menu_number": 20,
+  "name": "TRIANGULE TREM",
+  "model_id": 39,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

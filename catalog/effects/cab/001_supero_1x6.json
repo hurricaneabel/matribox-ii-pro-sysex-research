@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.supero_1x6",
+  "class_key": "cab",
+  "menu_number": 1,
+  "name": "SUPERO 1X6",
+  "model_id": 0,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.a_bass_1x15",
+  "class_key": "cab",
+  "menu_number": 48,
+  "name": "A BASS 1X15",
+  "model_id": 52,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

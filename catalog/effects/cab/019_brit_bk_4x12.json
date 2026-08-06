@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.brit_bk_4x12",
+  "class_key": "cab",
+  "menu_number": 19,
+  "name": "BRIT BK 4X12",
+  "model_id": 43,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

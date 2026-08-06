@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.bog_xt_red",
+  "class_key": "amp",
+  "menu_number": 19,
+  "name": "BOG XT RED",
+  "model_id": 110,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

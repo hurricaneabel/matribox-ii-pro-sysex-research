@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.dark_deluxe",
+  "class_key": "amp",
+  "menu_number": 5,
+  "name": "DARK DELUXE",
+  "model_id": 5,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

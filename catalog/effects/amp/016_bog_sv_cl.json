@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.bog_sv_cl",
+  "class_key": "amp",
+  "menu_number": 16,
+  "name": "BOG SV CL",
+  "model_id": 26,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.bog_ub_4x12",
+  "class_key": "cab",
+  "menu_number": 34,
+  "name": "BOG UB 4X12",
+  "model_id": 39,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

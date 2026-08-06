@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "freq.tape_mod",
+  "class_key": "freq",
+  "menu_number": 8,
+  "name": "Tape Mod",
+  "model_id": 51,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

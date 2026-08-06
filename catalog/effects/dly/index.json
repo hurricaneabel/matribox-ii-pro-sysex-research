@@ -1,0 +1,27 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "dly",
+  "menu_number": 10,
+  "name": "DLY",
+  "class_id": 9,
+  "effect_files": [
+    "001_warm.json",
+    "002_pure.json",
+    "003_mag.json",
+    "004_tube.json",
+    "005_bbd.json",
+    "006_ping_pong.json",
+    "007_slapback.json",
+    "008_sweep.json",
+    "009_ring.json",
+    "010_multi_tape.json",
+    "011_sweet.json",
+    "012_999_echo.json",
+    "013_rack.json",
+    "014_lo_fi.json",
+    "015_reverse.json",
+    "016_eko_d.json",
+    "017_ice_delay.json"
+  ]
+}

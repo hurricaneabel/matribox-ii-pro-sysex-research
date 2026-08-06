@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "drv.gerden_od",
+  "class_key": "drv",
+  "menu_number": 9,
+  "name": "Gerden OD",
+  "model_id": 16,
+  "secondary_selector": 3,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

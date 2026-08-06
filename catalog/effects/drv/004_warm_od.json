@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "drv.warm_od",
+  "class_key": "drv",
+  "menu_number": 4,
+  "name": "Warm OD",
+  "model_id": 4,
+  "secondary_selector": 3,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

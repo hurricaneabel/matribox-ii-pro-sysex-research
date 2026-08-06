@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "wah.cry_wah",
+  "class_key": "wah",
+  "menu_number": 2,
+  "name": "CRY WAH",
+  "model_id": 8,
+  "secondary_selector": 5,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

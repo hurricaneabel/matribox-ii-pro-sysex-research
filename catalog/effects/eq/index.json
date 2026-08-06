@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "eq",
+  "menu_number": 8,
+  "name": "EQ",
+  "class_id": 7,
+  "effect_files": [
+    "001_guitar_eq_1.json",
+    "002_guitar_eq_2.json",
+    "003_bass_eq_1.json",
+    "004_bass_eq_2.json",
+    "005_calif_eq.json"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "fx_return",
+  "menu_number": 15,
+  "name": "FX RETURN",
+  "class_id": 14,
+  "effect_files": [
+    "001_rtn.json"
+  ]
+}

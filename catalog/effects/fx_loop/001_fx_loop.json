@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "fx_loop.fx_loop",
+  "class_key": "fx_loop",
+  "menu_number": 1,
+  "name": "FX LOOP",
+  "model_id": 0,
+  "secondary_selector": 6,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "drv.fuzz_cream",
+  "class_key": "drv",
+  "menu_number": 13,
+  "name": "Fuzz Cream",
+  "model_id": 34,
+  "secondary_selector": 3,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

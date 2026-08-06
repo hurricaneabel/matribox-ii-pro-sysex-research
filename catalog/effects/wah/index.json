@@ -1,0 +1,16 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "wah",
+  "menu_number": 4,
+  "name": "WAH",
+  "class_id": 2,
+  "effect_files": [
+    "001_voks_wah.json",
+    "002_cry_wah.json",
+    "003_rack_wah.json",
+    "004_bass_wah.json",
+    "005_touch_wah.json",
+    "006_auto_wah.json"
+  ]
+}

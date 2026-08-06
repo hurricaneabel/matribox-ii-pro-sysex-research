@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dyn.bb_boost",
+  "class_key": "dyn",
+  "menu_number": 7,
+  "name": "BB-BOOST",
+  "model_id": 11,
+  "secondary_selector": 0,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

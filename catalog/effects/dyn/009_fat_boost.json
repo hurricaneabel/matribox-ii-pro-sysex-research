@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dyn.fat_boost",
+  "class_key": "dyn",
+  "menu_number": 9,
+  "name": "FAT BOOST",
+  "model_id": 25,
+  "secondary_selector": 0,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.voks_30tb",
+  "class_key": "amp",
+  "menu_number": 10,
+  "name": "VOKS 30TB",
+  "model_id": 39,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

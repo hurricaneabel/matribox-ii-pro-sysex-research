@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.phaser_st",
+  "class_key": "mod",
+  "menu_number": 14,
+  "name": "PHASER ST",
+  "model_id": 27,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

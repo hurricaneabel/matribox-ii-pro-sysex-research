@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.ce_roto",
+  "class_key": "mod",
+  "menu_number": 11,
+  "name": "CE-ROTO",
+  "model_id": 22,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

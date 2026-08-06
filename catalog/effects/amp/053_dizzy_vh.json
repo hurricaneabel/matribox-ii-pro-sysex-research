@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.dizzy_vh",
+  "class_key": "amp",
+  "menu_number": 53,
+  "name": "DIZZY VH",
+  "model_id": 101,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

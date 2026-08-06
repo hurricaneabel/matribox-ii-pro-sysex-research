@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.dragon_od",
+  "class_key": "amp",
+  "menu_number": 24,
+  "name": "DRAGON OD",
+  "model_id": 124,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

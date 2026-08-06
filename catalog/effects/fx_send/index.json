@@ -1,0 +1,11 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "fx_send",
+  "menu_number": 14,
+  "name": "FX SEND",
+  "class_id": 13,
+  "effect_files": [
+    "001_snd.json"
+  ]
+}

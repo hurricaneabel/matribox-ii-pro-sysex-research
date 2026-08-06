@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.m_chorus",
+  "class_key": "mod",
+  "menu_number": 4,
+  "name": "M-CHORUS",
+  "model_id": 15,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

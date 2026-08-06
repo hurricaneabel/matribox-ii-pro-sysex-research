@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.brit_45jp",
+  "class_key": "amp",
+  "menu_number": 30,
+  "name": "BRIT 45JP",
+  "model_id": 44,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

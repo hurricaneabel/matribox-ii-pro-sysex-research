@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.calif_iv_ld_2",
+  "class_key": "amp",
+  "menu_number": 45,
+  "name": "CALIF IV LD 2",
+  "model_id": 86,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

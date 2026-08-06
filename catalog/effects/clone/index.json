@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/class-index.schema.json",
+  "schema_version": 1,
+  "key": "clone",
+  "menu_number": 12,
+  "name": "CLONE",
+  "class_id": 11,
+  "effect_files": [
+    "001_clone_1.json",
+    "002_clone_2.json",
+    "003_clone_3.json",
+    "004_clone_4.json",
+    "005_clone_5.json",
+    "006_clone_6.json",
+    "007_clone_7.json",
+    "008_clone_8.json",
+    "009_clone_9.json",
+    "010_clone_10.json"
+  ]
+}

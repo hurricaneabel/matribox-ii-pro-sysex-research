@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dyn.gate_1",
+  "class_key": "dyn",
+  "menu_number": 12,
+  "name": "GATE 1",
+  "model_id": 27,
+  "secondary_selector": 0,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

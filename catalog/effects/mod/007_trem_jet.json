@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.trem_jet",
+  "class_key": "mod",
+  "menu_number": 7,
+  "name": "TREM JET",
+  "model_id": 20,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

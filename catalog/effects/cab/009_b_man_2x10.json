@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.b_man_2x10",
+  "class_key": "cab",
+  "menu_number": 9,
+  "name": "B-MAN 2X10",
+  "model_id": 22,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

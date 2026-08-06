@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "mod.u_vibe",
+  "class_key": "mod",
+  "menu_number": 17,
+  "name": "U-VIBE",
+  "model_id": 32,
+  "secondary_selector": 4,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

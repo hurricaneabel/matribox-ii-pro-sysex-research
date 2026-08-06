@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "cab.twin_verb_2x12",
+  "class_key": "cab",
+  "menu_number": 7,
+  "name": "TWIN VERB 2X12",
+  "model_id": 18,
+  "secondary_selector": 10,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

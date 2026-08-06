@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "dyn.ac_woody",
+  "class_key": "dyn",
+  "menu_number": 10,
+  "name": "AC WOODY",
+  "model_id": 0,
+  "secondary_selector": 1,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}

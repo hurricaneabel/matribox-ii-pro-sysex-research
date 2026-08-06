@@ -2,9 +2,9 @@
 
 > Documento oficial de retomada entre conversas.
 >
-> **Última atualização:** 6 de agosto de 2026  
-> **Marco consolidado:** Fase 22 — M-BOOST / GAIN isolado, preservado e
-> validado em tempo real com múltiplas instâncias
+> **Última atualização:** 6 de agosto de 2026
+> **Marco consolidado:** Fase 23A — catálogo de efeitos e parâmetros migrado
+> para JSON multiplataforma, mantendo compatibilidade com o núcleo Python
 > **Branch de trabalho:** `main`
 
 ## 1. Como usar este documento
@@ -68,7 +68,9 @@ O estado atual já permite:
 - adicionar, substituir, remover e mover efeitos com comandos já validados;
 - alterar modelo, bypass e volume usando comandos conhecidos;
 - reconhecer e decodificar em tempo real o parâmetro `GAIN` de qualquer
-  instância de `DYN / M-BOOST`, ainda por um validador isolado.
+  instância de `DYN / M-BOOST`, ainda por um validador isolado;
+- carregar as 16 classes, 267 efeitos e o primeiro parâmetro validado a partir
+  de um catálogo JSON versionado e independente de Python/Windows.
 
 ## 4. Programa principal atual
 
@@ -235,6 +237,34 @@ A validação ao vivo aprovou múltiplas instâncias simultâneas e observou os
 slots internos 2, 8, 10 e 12. Os endereços esperados de 1 a 12 são aceitos
 pelo parser, enquanto a posição visual continua sendo resolvida pela cadeia.
 
+### 6.5 Catálogo JSON multiplataforma
+
+A Fase 23A migrou todos os dados estáticos de `effect_catalog.py` para:
+
+```text
+catalog/catalog.json
+catalog/effects/<classe>/index.json
+catalog/effects/<classe>/<efeito>.json
+catalog/protocol_profiles/
+catalog/value_codecs/
+catalog/schemas/
+```
+
+O carregador fica em `tools/catalog/` e valida versão, chaves, menus, IDs,
+seletores, caminhos relativos, parâmetros, perfis e codecs. O arquivo
+`tools/commands/effect_catalog.py` agora é uma fachada: continua exportando os
+mesmos nomes usados pelo monitor e pelos comandos, mas deriva todos os dados do
+JSON.
+
+A equivalência foi comprovada contra um snapshot anterior à migração:
+
+```text
+tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
+```
+
+O M-BOOST é o único efeito com parâmetro preenchido neste marco. Os outros 266
+efeitos permanecem explicitamente `pending`, sem parâmetros presumidos.
+
 ## 7. Estrutura estrutural confirmada
 
 As respostas estruturais variáveis não usam offsets brutos variáveis para os
@@ -309,19 +339,27 @@ MOD, DLY, RVB, CLONE, FX LOOP, FX SEND, FX RETURN, VOL
 Fonte principal:
 
 ```text
+catalog/catalog.json
+catalog/effects/
+catalog/protocol_profiles/
+catalog/value_codecs/
+```
+
+Fachada compatível:
+
+```text
 tools/commands/effect_catalog.py
-docs/protocol_findings.md
 ```
 
 Alguns IDs de modelo se repetem dentro da mesma classe. O seletor secundário é
 necessário para desambiguar casos como modelos AMP distintos com o mesmo ID.
 
-Os efeitos ainda estão definidos em Python. A próxima fase migrará os dados
-estáticos para JSON versionado e multiplataforma, mantendo a API Python atual
-como fachada de compatibilidade. O único parâmetro interno concluído neste
-marco é `DYN / M-BOOST / GAIN`.
+O catálogo usa JSON Schema Draft 2020-12, caminhos relativos portáteis e
+versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
+futuro, por Kotlin/Android e desktop. O único parâmetro interno concluído neste
+marco é `DYN / M-BOOST / GAIN`; os demais permanecem sem dados inventados.
 
-## 10. Histórico consolidado das Fases 14–22
+## 10. Histórico consolidado das Fases 14–23A
 
 ### Fase 14 — classe e modelo por slot
 
@@ -431,14 +469,36 @@ tests/test_mboost_gain.py
 tests/fixtures/mboost_gain/
 ```
 
-## 11. Estado de validação no marco atual
+### Fase 23A — catálogo JSON multiplataforma
 
-Suíte completa após a Fase 22:
+Exportou automaticamente as 16 classes e 267 efeitos do catálogo Python para
+arquivos JSON individuais, criou schemas, carregador, perfil de protocolo e
+codec de valor. `effect_catalog.py` passou a funcionar como fachada compatível.
+
+A comparação contra o snapshot legado confirmou equivalência registro por
+registro. O M-BOOST/GAIN foi registrado como primeiro parâmetro validado; os
+outros 266 efeitos permanecem `pending`.
 
 ```text
-Ran 316 tests
+EFFECT_CATALOG_JSON_PHASE23A.md
+catalog/
+tools/catalog/
+tools/migrations/export_effect_catalog_to_json.py
+tests/test_effect_catalog_json.py
+tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
+```
+
+## 11. Estado de validação no marco atual
+
+Suíte completa após a Fase 23A:
+
+```text
+Ran 328 tests
 OK
 ```
+
+A Fase 23A não alterou mensagens MIDI e, por isso, não exigiu nova validação
+física. A validação física do M-BOOST permanece a da Fase 22.
 
 Validação física aprovada pelo usuário:
 
@@ -481,31 +541,31 @@ tests/fixtures/mboost_gain/
 - Mudanças em parâmetros internos de efeitos ainda não fazem parte do monitor
   principal. O M-BOOST/GAIN está aprovado em um validador isolado.
 - Não criar um parser Python separado para cada parâmetro. A expansão deve usar
-  catálogo JSON, codecs e perfis de protocolo genéricos.
-- O catálogo JSON futuro não deve conter caminhos absolutos do Windows nem
-  estruturas exclusivas de Python, pois será consumido por PC e Android.
+  o catálogo JSON, codecs e perfis de protocolo genéricos já criados.
+- Não colocar caminhos absolutos, objetos `pickle` ou estruturas exclusivas de
+  Python no catálogo. Os arquivos atuais já obedecem essa regra.
+- Não executar novamente a exportação com dados incompletos sem revisar o diff,
+  porque o catálogo passará a receber novos parâmetros manualmente validados.
 
 ## 13. Próximos passos recomendados
 
-O núcleo de monitoramento e o primeiro parâmetro isolado estão estáveis. O
-próximo marco aprovado é a **Fase 23 — catálogo genérico em JSON**:
+O catálogo JSON e o primeiro parâmetro isolado estão estáveis. O próximo marco
+aprovado é a **Fase 23B — motor genérico de parâmetros**:
 
-1. definir schemas JSON versionados para classes, efeitos, parâmetros, codecs
-   e perfis de protocolo;
-2. exportar automaticamente as 16 classes e 267 posições/modelos de
-   `effect_catalog.py`, sem redigitação manual;
-3. comparar catálogo legado e JSON registro por registro;
-4. criar um carregador genérico e manter `effect_catalog.py` como fachada de
-   compatibilidade para não quebrar o monitor;
-5. cadastrar `DYN / M-BOOST / GAIN` como o primeiro parâmetro validado;
-6. preparar dados independentes de Python e Windows para uso futuro em Kotlin,
-   Android e desktop;
-7. depois retomar a captura dos demais efeitos DYN e, em seguida, FREQ;
-8. manter importação IR/CLONE como subsistema separado de arquivos externos,
-   sem misturar upload binário com parâmetros comuns.
+1. criar um `ParameterEvent` genérico, independente do M-BOOST;
+2. implementar o codec `upper_float32_nibbles_v1` como componente reutilizável;
+3. interpretar o perfil `effect_parameter_response_1c_v1` consultando o
+   catálogo, sem condicionais específicas por efeito;
+4. provar equivalência contra as 27 fixtures físicas da Fase 22;
+5. manter `mboost_gain.py` e o validador atual como compatibilidade durante a
+   transição;
+6. criar um validador genérico isolado antes de tocar no monitor principal;
+7. somente após aprovação integrar parâmetros ao estado do monitor;
+8. retomar a captura dos demais efeitos DYN e depois FREQ;
+9. manter importação IR/CLONE como subsistema separado de arquivos externos.
 
-A futura interface ou API deve consumir esse núcleo sem conhecer offsets,
-nibbles, checksums ou detalhes MIDI.
+A futura interface ou API deve consumir eventos e definições do catálogo sem
+conhecer offsets, nibbles, checksums ou detalhes MIDI.
 
 ## 14. Checklist obrigatório para o próximo commit
 

@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://matribox-syscon.local/schemas/effect.schema.json",
+  "title": "Matribox effect definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "key",
+    "class_key",
+    "menu_number",
+    "name",
+    "model_id",
+    "secondary_selector",
+    "capabilities",
+    "parameter_catalog_status",
+    "parameters"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*\\.[a-z0-9_]+$"
+    },
+    "class_key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "menu_number": { "type": "integer", "minimum": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "model_id": { "type": "integer", "minimum": 0, "maximum": 127 },
+    "secondary_selector": { "type": "integer", "minimum": 0, "maximum": 127 },
+    "capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+    },
+    "parameter_catalog_status": {
+      "enum": ["pending", "partially_cataloged", "physically_validated"]
+    },
+    "parameters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/parameter" }
+    },
+    "external_asset": {
+      "$ref": "#/$defs/externalAsset"
+    }
+  },
+  "$defs": {
+    "number": { "type": "number" },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "name",
+        "display_order",
+        "value_type",
+        "unit",
+        "validation"
+      ],
+      "properties": {
+        "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "display_order": { "type": "integer", "minimum": 1 },
+        "value_type": {
+          "enum": ["integer", "number", "boolean", "enum", "string"]
+        },
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimum", "maximum", "step"],
+          "properties": {
+            "minimum": { "$ref": "#/$defs/number" },
+            "maximum": { "$ref": "#/$defs/number" },
+            "step": { "$ref": "#/$defs/number" }
+          }
+        },
+        "unit": { "type": ["string", "null"] },
+        "protocol": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profile",
+            "value_codec",
+            "identification_status",
+            "message_match"
+          ],
+          "properties": {
+            "profile": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+            "value_codec": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+            "identification_status": { "type": "string", "minLength": 1 },
+            "message_match": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 127
+              }
+            }
+          }
+        },
+        "validation": { "type": "object" }
+      }
+    },
+    "externalAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "protocol_status"],
+      "properties": {
+        "type": { "enum": ["impulse_response", "clone_model"] },
+        "protocol_status": {
+          "enum": ["pending", "partially_cataloged", "physically_validated"]
+        }
+      }
+    }
+  }
+}

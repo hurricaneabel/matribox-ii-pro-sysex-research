@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/effect.schema.json",
+  "schema_version": 1,
+  "key": "amp.supero_2_cl",
+  "class_key": "amp",
+  "menu_number": 6,
+  "name": "SUPERO 2 CL",
+  "model_id": 15,
+  "secondary_selector": 7,
+  "capabilities": [],
+  "parameter_catalog_status": "pending",
+  "parameters": []
+}
