@@ -54,6 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
+        self.assertEqual(self.catalog.catalog_version, 3)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -132,14 +133,49 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "validated_with_chain_effect_context",
             )
 
+    def test_e_boost_has_integer_and_boolean_parameters(self) -> None:
+        e_boost = self.catalog.effect_by_key("dyn.e_boost")
+        self.assertEqual(e_boost.name, "E-BOOST")
+        self.assertEqual(e_boost.model_id, 0x1A)
+        self.assertEqual(e_boost.parameter_catalog_status, "physically_validated")
+        self.assertEqual(e_boost.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in e_boost.parameters),
+            ("gain", "plus_3db", "bright"),
+        )
+        self.assertEqual(
+            tuple(parameter.value_type for parameter in e_boost.parameters),
+            ("integer", "boolean", "boolean"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in e_boost.parameters
+            ),
+            (0, 1, 2),
+        )
+        self.assertEqual(
+            (e_boost.parameters[0].minimum, e_boost.parameters[0].maximum),
+            (0, 100),
+        )
+        for parameter in e_boost.parameters[1:]:
+            self.assertEqual(
+                (parameter.minimum, parameter.maximum, parameter.step),
+                (0, 1, 1),
+            )
+            self.assertEqual(
+                dict(parameter.validation)["boolean_encoding"],
+                {"false": 0, "true": 1},
+            )
+
     def test_uncataloged_effects_do_not_invent_parameters(self) -> None:
         pending = [
             model
             for effect_class in self.catalog.classes
             for model in effect_class.models
-            if model.key not in {"dyn.m_boost", "dyn.comp1"}
+            if model.key not in {"dyn.m_boost", "dyn.comp1", "dyn.e_boost"}
         ]
-        self.assertEqual(len(pending), 265)
+        self.assertEqual(len(pending), 264)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -189,6 +225,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             )
             exported_mboost = exported.effect_by_key("dyn.m_boost")
             exported_comp1 = exported.effect_by_key("dyn.comp1")
+            exported_e_boost = exported.effect_by_key("dyn.e_boost")
             self.assertEqual(
                 exported_mboost.parameters,
                 self.catalog.effect_by_key("dyn.m_boost").parameters,
@@ -196,6 +233,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_comp1.parameters,
                 self.catalog.effect_by_key("dyn.comp1").parameters,
+            )
+            self.assertEqual(
+                exported_e_boost.parameters,
+                self.catalog.effect_by_key("dyn.e_boost").parameters,
             )
 
     def test_loader_rejects_effect_key_from_another_class(self) -> None:

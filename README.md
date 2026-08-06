@@ -55,6 +55,22 @@ Validador genérico para qualquer parâmetro presente no catálogo JSON:
 python -m tools.experiments.validate_effect_parameters_live
 ```
 
+A Fase 24 acrescentou `SUSTAIN` e `VOLUME` do `DYN / COMP1` e foi aprovada
+fisicamente com múltiplas instâncias, valores independentes e coexistência com
+M-BOOST. A Fase 25 acrescentou o `DYN / E-BOOST`:
+
+```text
+GAIN    → inteiro 0–100
++3dB    → booleano desligado/ligado
+BRIGHT  → booleano desligado/ligado
+```
+
+As cinco capturas controladas confirmaram os seletores `0`, `1` e `2`, os
+slots internos 1 e 2 e a codificação numérica `0/1` para os interruptores. A
+validação física no monitor principal aprovou a atualização independente dos
+três parâmetros, a apresentação `ligado/desligado`, duas instâncias de E-BOOST
+com estados separados e a coexistência com COMP1 e outros efeitos da cadeia.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell
@@ -392,8 +408,7 @@ matribox-sysex/
 ├── catalog/            # classes, efeitos, parâmetros, perfis e codecs JSON
 ├── data/
 │   └── fixtures/       # amostras mínimas usadas pelos testes
-├── docs/               # protocolo, continuidade e histórico
-│   └── phases/          # relatórios detalhados das fases concluídas
+├── docs/               # protocolo e continuidade
 ├── tests/              # regressão offline
 └── tools/
     ├── catalog/        # carregamento e validação do JSON
@@ -459,15 +474,6 @@ docs/PROJECT_CONTINUITY.md
 
 Esse arquivo deve ser atualizado antes de todo commit que consolide uma nova
 funcionalidade aprovada.
-
-Os relatórios históricos das fases ficam organizados em:
-
-```text
-docs/phases/
-```
-
-A raiz do repositório fica reservada para `README.md`, `requirements.txt`,
-arquivos do Git e os diretórios principais do projeto.
 
 ## Documentação técnica completa
 

@@ -32,36 +32,51 @@ def _decode_nibble_pair(high_nibble: int, low_nibble: int, *, label: str) -> int
 def _validate_numeric_value(
     value: int | float,
     parameter: ParameterDefinition,
-) -> int | float:
-    normalized: int | float = value
+) -> int | float | bool:
+    numeric_value = float(value)
+    tolerance = 1e-6
 
     if parameter.value_type == "integer":
-        rounded = round(float(value))
-        tolerance = 1e-6
-        if abs(float(value) - rounded) > tolerance:
+        rounded = round(numeric_value)
+        if abs(numeric_value - rounded) > tolerance:
             raise ParameterCodecError(
                 f"{parameter.name} deveria ser inteiro, mas resultou em {value}."
             )
-        normalized = int(rounded)
-    elif parameter.value_type != "number":
+        normalized: int | float | bool = int(rounded)
+        comparable_value: int | float = int(rounded)
+    elif parameter.value_type == "number":
+        normalized = value
+        comparable_value = numeric_value
+    elif parameter.value_type == "boolean":
+        rounded = round(numeric_value)
+        if abs(numeric_value - rounded) > tolerance or rounded not in (0, 1):
+            raise ParameterCodecError(
+                f"{parameter.name} deveria ser booleano 0/1, mas resultou em {value}."
+            )
+        normalized = bool(rounded)
+        comparable_value = int(rounded)
+    else:
         raise ParameterCodecError(
             f"Codec numérico não pode produzir value_type={parameter.value_type!r}."
         )
 
-    if parameter.minimum is not None and normalized < parameter.minimum:
+    if parameter.minimum is not None and comparable_value < parameter.minimum:
         raise ParameterCodecError(
-            f"{parameter.name} abaixo do mínimo {parameter.minimum}: {normalized}."
+            f"{parameter.name} abaixo do mínimo {parameter.minimum}: {comparable_value}."
         )
-    if parameter.maximum is not None and normalized > parameter.maximum:
+    if parameter.maximum is not None and comparable_value > parameter.maximum:
         raise ParameterCodecError(
-            f"{parameter.name} acima do máximo {parameter.maximum}: {normalized}."
+            f"{parameter.name} acima do máximo {parameter.maximum}: {comparable_value}."
         )
 
     if parameter.step is not None and parameter.minimum is not None:
-        steps = (float(normalized) - float(parameter.minimum)) / float(parameter.step)
-        if abs(steps - round(steps)) > 1e-6:
+        steps = (
+            float(comparable_value) - float(parameter.minimum)
+        ) / float(parameter.step)
+        if abs(steps - round(steps)) > tolerance:
             raise ParameterCodecError(
-                f"{parameter.name} não respeita o passo {parameter.step}: {normalized}."
+                f"{parameter.name} não respeita o passo {parameter.step}: "
+                f"{comparable_value}."
             )
 
     return normalized

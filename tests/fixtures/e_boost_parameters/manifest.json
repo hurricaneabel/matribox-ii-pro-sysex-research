@@ -1,0 +1,392 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.e_boost",
+    "name": "E-BOOST",
+    "model_id": 26,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "boolean_encoding": {
+      "off": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "on": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "semantic": "numeric_0_or_1_using_shared_float_codec"
+    },
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "plus_3db",
+      "name": "+3dB",
+      "selector": 1,
+      "value_type": "boolean",
+      "off": 0,
+      "on": 1
+    },
+    {
+      "key": "bright",
+      "name": "BRIGHT",
+      "selector": 2,
+      "value_type": "boolean",
+      "off": 0,
+      "on": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "EBOOST_PLUS3DB_SLOT1_OFF_ON_OFF_ON_OFF.pcapng",
+    "EBOOST_BRIGHT_SLOT1_OFF_ON_OFF_ON_OFF.pcapng",
+    "EBOOST_SWITCHES_SLOT1_OFFOFF_ONOFF_ONON_OFFON_OFFOFF.pcapng",
+    "EBOOST_SLOT2_GAIN_AND_SWITCHES_VALIDATION.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "EBOOST_SWITCHES_SLOT1_OFFOFF_ONOFF_ONON_OFFON_OFFOFF.pcapng",
+    "sequence": [
+      "plus_3db_on",
+      "bright_on",
+      "plus_3db_off",
+      "bright_off"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "physical_binary_fixtures": 19,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_gain_000.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "121256a5e00acdd7154d7343f168bce389de6883f3f4f1963fea20be074b3ee2"
+    },
+    {
+      "file": "slot1_gain_001.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "674ca9fa928f83728c5b3b1c7de4e27ddc274995be5492f3cc5090bb0db65ae1"
+    },
+    {
+      "file": "slot1_gain_010.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "13ead0a1ce662113efec3da38b3596c56953e53bba304e1ab5459876e1c696e3"
+    },
+    {
+      "file": "slot1_gain_100.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "2ff4fa2a312e093db76adfba58698673e994f2b1a4f2d6f4c797dbc5e3b34b44"
+    },
+    {
+      "file": "slot1_gain_002.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "30e35b8001009506518c9f40725d968292c2f85eaeb3c0c5611deac089213a07"
+    },
+    {
+      "file": "slot1_gain_025.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "31d6084fd2d0c7d78ef566869561acf0da2a79003e5266413c421371c032ae00"
+    },
+    {
+      "file": "slot1_gain_050.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "9c8ed86d9fa0733c15a976d4cff5536d00786b9d02380a9808231ff09c806f51"
+    },
+    {
+      "file": "slot1_gain_075.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "75ae0e64a551730c292bfeb5720a40dd97b63b658c443696f17bacdececea69d"
+    },
+    {
+      "file": "slot1_gain_099.bin",
+      "source": "EBOOST_GAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "8cb3542897853bfb14c43fe19d3f3962f43c4b6a03c99c4aca9ac39b8ad40239"
+    },
+    {
+      "file": "slot1_plus_3db_off.bin",
+      "source": "EBOOST_PLUS3DB_SLOT1_OFF_ON_OFF_ON_OFF.pcapng",
+      "slot": 1,
+      "parameter": "plus_3db",
+      "selector": 1,
+      "value": false,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "854e31acf4aef1fd0d753022238fbdab34a65cdd702ec1b11f33a1a0ea84c829"
+    },
+    {
+      "file": "slot1_plus_3db_on.bin",
+      "source": "EBOOST_PLUS3DB_SLOT1_OFF_ON_OFF_ON_OFF.pcapng",
+      "slot": 1,
+      "parameter": "plus_3db",
+      "selector": 1,
+      "value": true,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "c37b83309f8b140786014e4fbd87cf787b9665e683b3b5391c049b42946ac0ae"
+    },
+    {
+      "file": "slot1_bright_off.bin",
+      "source": "EBOOST_BRIGHT_SLOT1_OFF_ON_OFF_ON_OFF.pcapng",
+      "slot": 1,
+      "parameter": "bright",
+      "selector": 2,
+      "value": false,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "8598992992ef7bb379893a282c51c770083771f7fcb2cca29e15a297aa815855"
+    },
+    {
+      "file": "slot1_bright_on.bin",
+      "source": "EBOOST_BRIGHT_SLOT1_OFF_ON_OFF_ON_OFF.pcapng",
+      "slot": 1,
+      "parameter": "bright",
+      "selector": 2,
+      "value": true,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "04e5d0fa51a90cd5d4161843bf7c7a4184c828ac58d39d8d42833356ee743215"
+    },
+    {
+      "file": "slot2_gain_050.bin",
+      "source": "EBOOST_SLOT2_GAIN_AND_SWITCHES_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "34ce8bb478fc5d148f2de67228a7231bb954f45e67235d53a29264d55a9776a9"
+    },
+    {
+      "file": "slot2_gain_051.bin",
+      "source": "EBOOST_SLOT2_GAIN_AND_SWITCHES_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "59ada2f029fc6494dd09b8f353f796b0145029dded2b875f7dd985976d1d1535"
+    },
+    {
+      "file": "slot2_plus_3db_off.bin",
+      "source": "EBOOST_SLOT2_GAIN_AND_SWITCHES_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "plus_3db",
+      "selector": 1,
+      "value": false,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "74e306f192c95eb0040b77b8684cc2493a221f24bdb9a89b60f24ed2de8c8e5b"
+    },
+    {
+      "file": "slot2_plus_3db_on.bin",
+      "source": "EBOOST_SLOT2_GAIN_AND_SWITCHES_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "plus_3db",
+      "selector": 1,
+      "value": true,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "4f6231058f33ff5c218193a82870c134cf3dfa9d5fafcb0920073bfaffcf2220"
+    },
+    {
+      "file": "slot2_bright_off.bin",
+      "source": "EBOOST_SLOT2_GAIN_AND_SWITCHES_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "bright",
+      "selector": 2,
+      "value": false,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "b1c65c0bdfec4d88ae3ee8976aad16db139ce3d237562133eb35b7d4bccb3db8"
+    },
+    {
+      "file": "slot2_bright_on.bin",
+      "source": "EBOOST_SLOT2_GAIN_AND_SWITCHES_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "bright",
+      "selector": 2,
+      "value": true,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "86b769e171f4bb3d555e16e83d7a32948e596827f417e065c41ca4bebb8d9017"
+    }
+  ]
+}

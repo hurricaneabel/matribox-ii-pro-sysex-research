@@ -23,6 +23,7 @@ from tools.parameters import (
 
 MBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "mboost_gain"
 COMP1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "comp1_parameters"
+EBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "e_boost_parameters"
 
 
 def make_chain(*, internal_slot_id: int, effect_key: str) -> ChainOrderState:
@@ -126,6 +127,53 @@ class GenericParameterDecoderTests(unittest.TestCase):
                 self.assertEqual(event.effect_key, "dyn.comp1")
                 self.assertEqual(event.parameter_key, expected_parameter)
                 self.assertEqual(event.value, expected_value)
+
+    def test_all_physical_e_boost_fixtures_decode_by_effect_context(self) -> None:
+        fixtures = sorted(EBOOST_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 19)
+
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(),
+                    effect_key="dyn.e_boost",
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                parts = fixture.stem.split("_")
+                expected_slot = int(parts[0].removeprefix("slot"))
+                expected_parameter = "_".join(parts[1:-1])
+                expected_token = parts[-1]
+                self.assertEqual(event.human_slot, expected_slot)
+                self.assertEqual(event.effect_key, "dyn.e_boost")
+                self.assertEqual(event.parameter_key, expected_parameter)
+                if expected_token in {"on", "off"}:
+                    self.assertIs(event.value, expected_token == "on")
+                else:
+                    self.assertEqual(event.value, int(expected_token))
+
+    def test_e_boost_boolean_display_is_localized(self) -> None:
+        on_event = parse_effect_parameter_response(
+            (EBOOST_FIXTURE_ROOT / "slot1_plus_3db_on.bin").read_bytes(),
+            effect_key="dyn.e_boost",
+        )
+        off_event = parse_effect_parameter_response(
+            (EBOOST_FIXTURE_ROOT / "slot1_bright_off.bin").read_bytes(),
+            effect_key="dyn.e_boost",
+        )
+        assert on_event is not None and off_event is not None
+        self.assertIs(on_event.value, True)
+        self.assertEqual(on_event.display_value, "ligado")
+        self.assertIs(off_event.value, False)
+        self.assertEqual(off_event.display_value, "desligado")
+
+    def test_e_boost_boolean_rejects_numeric_value_two(self) -> None:
+        message = bytearray(
+            (EBOOST_FIXTURE_ROOT / "slot1_plus_3db_on.bin").read_bytes()
+        )
+        message[59:63] = bytes((0x00, 0x00, 0x04, 0x00))
+        with self.assertRaises(EffectParameterProtocolError):
+            parse_effect_parameter_response(message, effect_key="dyn.e_boost")
 
     def test_same_selector_zero_requires_chain_effect_context(self) -> None:
         message = (COMP1_FIXTURE_ROOT / "slot1_sustain_050.bin").read_bytes()
@@ -258,6 +306,41 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         self.assertIn("SUSTAIN: aguardando alteração", formatted)
         self.assertIn("VOLUME: aguardando alteração", formatted)
 
+    def test_monitor_lists_e_boost_parameters_in_catalog_order(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.e_boost"))
+        snapshot = core.snapshot
+        assert snapshot is not None
+        self.assertEqual(
+            tuple(parameter.name for parameter in snapshot.effects[0].parameters),
+            ("GAIN", "+3dB", "BRIGHT"),
+        )
+        formatted = format_monitor_snapshot(snapshot)
+        self.assertIn("GAIN: aguardando alteração", formatted)
+        self.assertIn("+3dB: aguardando alteração", formatted)
+        self.assertIn("BRIGHT: aguardando alteração", formatted)
+
+    def test_live_events_update_e_boost_parameters_independently(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.e_boost"))
+
+        for filename in (
+            "slot2_gain_051.bin",
+            "slot2_plus_3db_on.bin",
+            "slot2_bright_off.bin",
+        ):
+            update = core.feed((EBOOST_FIXTURE_ROOT / filename).read_bytes())
+            self.assertIsNotNone(update.parameter_event)
+
+        assert update.snapshot is not None
+        parameters = update.snapshot.effects[0].parameters
+        self.assertEqual(
+            tuple(parameter.value for parameter in parameters),
+            (51, True, False),
+        )
+        formatted = format_monitor_snapshot(update.snapshot)
+        self.assertIn("GAIN: 51", formatted)
+        self.assertIn("+3dB: ligado", formatted)
+        self.assertIn("BRIGHT: desligado", formatted)
+
     def test_live_events_update_comp1_parameters_independently(self) -> None:
         core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.comp1"))
 
@@ -337,6 +420,24 @@ class Comp1EvidenceManifestTests(unittest.TestCase):
         self.assertEqual(
             manifest["protocol"]["observed_parameter_address"]["value"],
             [1, 4],
+        )
+
+
+class EBoostEvidenceManifestTests(unittest.TestCase):
+    def test_manifest_preserves_boolean_and_combination_evidence(self) -> None:
+        manifest = json.loads(
+            (EBOOST_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["physical_binary_fixtures"], 19)
+        self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+        self.assertEqual(len(manifest["controlled_capture_sources"]), 5)
+        self.assertEqual(
+            manifest["protocol"]["boolean_encoding"]["semantic"],
+            "numeric_0_or_1_using_shared_float_codec",
+        )
+        self.assertEqual(
+            manifest["combination_capture_validation"]["result"],
+            "independent_messages_per_parameter",
         )
 
 

@@ -63,11 +63,12 @@
     }
   },
   "validation": {
-    "status": "physically_validated_for_dyn_m_boost_and_comp1",
-    "physical_fixture_count": 49,
+    "status": "physically_validated_for_dyn_m_boost_comp1_and_e_boost",
+    "physical_fixture_count": 68,
     "effects_observed": [
       "dyn.m_boost",
-      "dyn.comp1"
+      "dyn.comp1",
+      "dyn.e_boost"
     ],
     "internal_slots_observed": [
       1,
@@ -80,7 +81,12 @@
     "multiple_parameters": true,
     "visual_reordering_independent": true,
     "effect_identity_source": "current_chain",
-    "notes": "Os bytes 21–22 mantêm 01 04 no M-BOOST e no COMP1; portanto não identificam o model_id do efeito. O efeito deve ser resolvido pela cadeia atual no slot interno, e o parâmetro pelo seletor e demais campos message_match."
+    "notes": "Os bytes 21–22 mantêm 01 04 no M-BOOST, COMP1 e E-BOOST; portanto não identificam o model_id do efeito. O efeito deve ser resolvido pela cadeia atual no slot interno. O E-BOOST confirmou que o mesmo codec representa inteiros 0–100 e booleanos numéricos 0/1, interpretados pelo value_type do parâmetro.",
+    "multiple_value_types": true,
+    "boolean_values_observed": [
+      0,
+      1
+    ]
   },
   "fixed_segments": [
     {

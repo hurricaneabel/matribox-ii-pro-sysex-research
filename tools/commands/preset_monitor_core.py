@@ -112,7 +112,10 @@ class PresetParameterSnapshot:
     def display_value(self) -> str:
         if self.value is None:
             return "aguardando alteração"
-        value_text = str(self.value)
+        if isinstance(self.value, bool):
+            value_text = "ligado" if self.value else "desligado"
+        else:
+            value_text = str(self.value)
         return f"{value_text} {self.unit}" if self.unit else value_text
 
 

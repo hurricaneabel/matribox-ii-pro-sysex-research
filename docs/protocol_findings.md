@@ -1232,8 +1232,8 @@ com 158 testes automáticos aprovados.
 
 ## Parâmetros ao vivo — comando 0x1C
 
-As capturas de `DYN / M-BOOST` e `DYN / COMP1` confirmaram respostas SysEx de
-70 bytes para mudanças de parâmetros:
+As capturas de `DYN / M-BOOST`, `DYN / COMP1` e `DYN / E-BOOST`
+confirmaram respostas SysEx de 70 bytes para mudanças de parâmetros:
 
 ```text
 39–40  slot interno zero-based
@@ -1245,21 +1245,27 @@ As capturas de `DYN / M-BOOST` e `DYN / COMP1` confirmaram respostas SysEx de
 
 O valor usa o codec `upper_float32_nibbles_v1`: os dois bytes superiores de um
 float32 little-endian são transmitidos como quatro nibbles. As faixas 0–100 de
-M-BOOST/GAIN e COMP1/SUSTAIN/VOLUME usam esse mesmo codec.
+M-BOOST/GAIN, COMP1/SUSTAIN/VOLUME e E-BOOST/GAIN usam esse mesmo codec.
+O E-BOOST também confirmou que valores booleanos usam o mesmo formato:
+`0 → 00 00 00 00` e `1 → 08 00 03 0F`. A conversão para
+`desligado/ligado` é determinada pelo `value_type: boolean` do catálogo.
 
 Seletores confirmados:
 
 ```text
-M-BOOST / GAIN   = 0
-COMP1 / SUSTAIN  = 0
-COMP1 / VOLUME   = 1
+M-BOOST / GAIN    = 0
+COMP1 / SUSTAIN   = 0
+COMP1 / VOLUME    = 1
+E-BOOST / GAIN    = 0
+E-BOOST / +3dB    = 1
+E-BOOST / BRIGHT  = 2
 ```
 
 ### Identidade do efeito não vem do suposto model_id
 
-Os índices `21–22` permanecem `01 04` tanto no M-BOOST, cujo model_id
-estrutural é `0x14`, quanto no COMP1, cujo model_id estrutural é `0x00`.
-Portanto, esse campo não pode ser interpretado como model_id.
+Os índices `21–22` permanecem `01 04` no M-BOOST, no COMP1 e no E-BOOST,
+apesar de seus `model_id` estruturais serem diferentes. Portanto, esse campo
+não pode ser interpretado como model_id.
 
 A resolução correta é contextual:
 
@@ -1272,12 +1278,13 @@ slot recebido no 0x1C
 ```
 
 Sem a cadeia atual, uma mensagem com seletor `0` é ambígua: pode representar
-GAIN no M-BOOST ou SUSTAIN no COMP1. O motor deve exigir o efeito real do slot
-antes de produzir `EffectParameterEvent`.
+GAIN no M-BOOST, SUSTAIN no COMP1 ou GAIN no E-BOOST. O motor deve exigir o
+efeito real do slot antes de produzir `EffectParameterEvent`.
 
 Evidências mínimas:
 
 ```text
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
+tests/fixtures/e_boost_parameters/
 ```

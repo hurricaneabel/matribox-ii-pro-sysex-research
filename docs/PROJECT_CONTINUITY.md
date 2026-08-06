@@ -3,10 +3,9 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 24 — DYN / COMP1 com SUSTAIN e VOLUME,
-> motor genérico corrigido para resolver parâmetros pelo efeito real da cadeia,
-> aprovado offline e fisicamente no monitor principal
-> **Próxima frente:** escolher e catalogar o próximo efeito da classe DYN
+> **Marco aprovado para consolidação:** Fase 25 — DYN / E-BOOST com GAIN,
+> +3dB e BRIGHT, incluindo suporte genérico a valores booleanos, aprovado
+> offline e fisicamente no monitor principal com múltiplas instâncias
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/dyn-parameters`
 
@@ -81,11 +80,13 @@ O estado atual já permite:
   instância de `DYN / M-BOOST` por um motor genérico orientado pelo JSON;
 - reconhecer `SUSTAIN` e `VOLUME` do `DYN / COMP1`, mantendo os dois valores
   independentes no mesmo slot;
+- reconhecer `GAIN`, `+3dB` e `BRIGHT` do `DYN / E-BOOST`, incluindo
+  conversão física `0/1` para booleanos e exibição `ligado/desligado`;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e três parâmetros confirmados em dois
-  efeitos DYN a partir de um catálogo JSON versionado e independente de
-  Python/Windows.
+- carregar as 16 classes, 267 efeitos e seis parâmetros confirmados por
+  capturas em três efeitos DYN a partir de um catálogo JSON versionado e
+  independente de Python/Windows.
 
 ## 4. Programa principal atual
 
@@ -121,6 +122,11 @@ como:
   3. DYN / COMP1 — ligado
      SUSTAIN: aguardando alteração
      VOLUME: aguardando alteração
+
+  4. DYN / E-BOOST — ligado
+     GAIN: aguardando alteração
+     +3dB: aguardando alteração
+     BRIGHT: aguardando alteração
 ```
 
 Depois do primeiro evento `0x1C`, o valor real substitui o texto de espera.
@@ -247,7 +253,8 @@ tools/commands/effect_slot_state.py
 
 A Fase 22 isolou o `DYN / M-BOOST / GAIN`. A Fase 24 acrescentou
 `DYN / COMP1 / SUSTAIN` e `VOLUME` e revelou uma correção arquitetural
-essencial.
+essencial. A Fase 25 acrescenta `DYN / E-BOOST / GAIN`, `+3dB` e `BRIGHT`,
+validando o primeiro uso de `value_type: boolean`.
 
 Estrutura confirmada da resposta de 70 bytes:
 
@@ -267,12 +274,26 @@ Seletores catalogados:
 M-BOOST / GAIN      → 0
 COMP1 / SUSTAIN     → 0
 COMP1 / VOLUME      → 1
+E-BOOST / GAIN      → 0
+E-BOOST / +3dB      → 1
+E-BOOST / BRIGHT    → 2
 ```
 
-Os índices `21–22` permanecem `01 04` tanto no M-BOOST quanto no COMP1.
+Os índices `21–22` permanecem `01 04` no M-BOOST, COMP1 e E-BOOST.
 Portanto, eles não representam o `model_id` do efeito. A mensagem informa slot,
 seletor e valor; a identidade do efeito deve ser obtida da cadeia estrutural
 atual naquele slot.
+
+O E-BOOST confirmou que o codec `upper_float32_nibbles_v1` também representa
+booleanos numéricos:
+
+```text
+0 → 00 00 00 00 → desligado
+1 → 08 00 03 0F → ligado
+```
+
+A conversão para `False/True` e a apresentação humana são determinadas pelo
+`value_type: boolean` do parâmetro no catálogo.
 
 Fluxo correto:
 
@@ -290,6 +311,7 @@ Fixtures:
 ```text
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
+tests/fixtures/e_boost_parameters/
 ```
 
 ### 6.5 Catálogo JSON multiplataforma
@@ -317,9 +339,9 @@ A equivalência foi comprovada contra um snapshot anterior à migração:
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-M-BOOST e COMP1 são os dois efeitos com parâmetros preenchidos neste marco.
-Os outros 265 efeitos permanecem explicitamente `pending`, sem parâmetros
-presumidos.
+M-BOOST, COMP1 e E-BOOST são os três efeitos com parâmetros preenchidos no
+catálogo atual. Os outros 264 efeitos permanecem explicitamente `pending`,
+sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
 
@@ -617,12 +639,37 @@ A suíte offline passou com 349 testes. A validação física no preset `56B`
 aprovou o monitor com múltiplos COMP1, SUSTAIN e VOLUME independentes,
 coexistência com M-BOOST e substituição de efeito sem colisão do seletor `0`.
 
-## 11. Estado de validação no marco atual
+### Fase 25 — DYN / E-BOOST com inteiro e booleanos
 
-Suíte completa do marco da Fase 24:
+Capturou `GAIN`, `+3dB` e `BRIGHT` nos slots internos 1 e 2. O GAIN usa
+0–100, enquanto os dois interruptores usam `0/1` pelo mesmo codec de valor:
 
 ```text
-Ran 349 tests
+GAIN    → seletor 0
++3dB    → seletor 1
+BRIGHT  → seletor 2
+```
+
+A captura combinada confirmou mensagens independentes para os dois
+interruptores. Foram preservadas 19 respostas físicas únicas.
+
+```text
+docs/phases/DYN_EBOOST_PARAMETERS_PHASE25.md
+catalog/effects/dyn/005_e_boost.json
+tests/fixtures/e_boost_parameters/
+```
+
+A suíte offline passou com 356 testes. A validação física no preset `56B`
+aprovou a ordem dos três parâmetros, valores booleanos em português, atualização
+independente, duas instâncias simultâneas com estados separados e coexistência
+com COMP1 e outros efeitos da cadeia.
+
+## 11. Estado de validação no marco atual
+
+Suíte completa da Fase 25:
+
+```text
+Ran 356 tests
 OK
 ```
 
@@ -630,7 +677,11 @@ Validação offline aprovada:
 
 - 27 fixtures físicas do M-BOOST;
 - 22 fixtures físicas do COMP1;
+- 19 fixtures físicas únicas do E-BOOST;
 - SUSTAIN e VOLUME independentes no mesmo slot;
+- GAIN, +3dB e BRIGHT independentes no mesmo slot;
+- conversão booleana estrita `0/1 → False/True`;
+- exibição humana `desligado/ligado`;
 - resolução explícita pelo efeito real da cadeia;
 - detecção de ambiguidade quando o contexto da cadeia não é fornecido;
 - manutenção da compatibilidade com `mboost_gain.py`;
@@ -654,6 +705,17 @@ Validação física aprovada:
   COMP2, COMP3 e M-BOOST;
 - novo M-BOOST no slot substituído atualizando GAIN de forma independente.
 
+Validação física aprovada para a Fase 25:
+
+- E-BOOST exibindo GAIN, +3dB e BRIGHT na ordem do catálogo;
+- atualização independente dos três parâmetros;
+- apresentação dos interruptores como `ligado/desligado`;
+- bypass do efeito sem corromper o estado dos parâmetros;
+- duas instâncias simultâneas mantendo estados separados;
+- uma instância com GAIN 31 e outra com GAIN 21, sem contaminação cruzada;
+- coexistência com COMP1 e efeitos de outras classes sem colisão de seletores;
+- substituições estruturais em outro slot sem atribuição ao efeito incorreto.
+
 Fixtures físicas de regressão:
 
 ```text
@@ -662,6 +724,7 @@ tests/fixtures/preset_dump_chain/
 tests/fixtures/effect_slot_state/
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
+tests/fixtures/e_boost_parameters/
 ```
 
 ## 12. Limitações e cuidados conhecidos
@@ -684,7 +747,9 @@ tests/fixtures/comp1_parameters/
   voltar a usar os índices `21–22` como `model_id`; resolver sempre pela cadeia
   atual no slot interno.
 - Seletores podem se repetir entre efeitos diferentes: seletor `0` significa
-  GAIN no M-BOOST e SUSTAIN no COMP1.
+  GAIN no M-BOOST, SUSTAIN no COMP1 e GAIN no E-BOOST.
+- Booleanos do protocolo devem continuar restritos aos valores físicos `0/1`;
+  não aceitar outros números como verdadeiros.
 - O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
   alteração` até o primeiro evento ao vivo.
 - Não criar um parser Python separado para cada parâmetro. A expansão deve usar
@@ -697,13 +762,14 @@ tests/fixtures/comp1_parameters/
 ## 13. Próximos passos recomendados
 
 1. permanecer em `research/dyn-parameters`;
-2. aplicar esta atualização documental de aprovação física;
+2. extrair o pacote documental de aprovação física na raiz;
 3. repetir a suíte completa, `compileall` e `git diff --check`;
-4. consolidar a Fase 24 em um commit na branch de pesquisa;
-5. enviar a branch e promover o mesmo commit à `main` por fast-forward;
-6. retornar a `research/dyn-parameters`;
-7. escolher o próximo efeito DYN com poucos parâmetros;
-8. preservar a regra de capturas controladas antes de cadastrar novos campos.
+4. revisar o escopo com `git status --short` e `git diff --cached --check`;
+5. consolidar a Fase 25 na branch de pesquisa;
+6. promover o mesmo commit à `main` por fast-forward;
+7. retornar à branch `research/dyn-parameters` limpa;
+8. escolher o próximo efeito DYN de baixa complexidade e iniciar novas
+   capturas controladas.
 
 A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
 sem conhecer offsets, nibbles ou detalhes MIDI.

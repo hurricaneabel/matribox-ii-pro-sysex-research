@@ -17,3 +17,4 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 23A | `EFFECT_CATALOG_JSON_PHASE23A.md` | catálogo multiplataforma em JSON |
 | 23B | `EFFECT_PARAMETER_ENGINE_PHASE23B.md` | motor genérico de parâmetros |
 | 24 | `DYN_COMP1_PARAMETERS_PHASE24.md` | COMP1 com SUSTAIN/VOLUME e resolução pelo contexto da cadeia |
+| 25 | `DYN_EBOOST_PARAMETERS_PHASE25.md` | E-BOOST com GAIN e booleanos +3dB/BRIGHT |
