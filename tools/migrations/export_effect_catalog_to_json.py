@@ -71,7 +71,7 @@ MBOOST_GAIN_SEED: dict[str, Any] = {
         "multiple_instances": True,
         "visual_reordering_independent": True,
         "physical_fixture_count": 27,
-        "evidence": "MBOOST_GAIN_VALIDATION_PHASE22.md",
+        "evidence": "docs/phases/MBOOST_GAIN_VALIDATION_PHASE22.md",
     },
 }
 

@@ -3,11 +3,10 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 23A — catálogo de efeitos e parâmetros migrado
-> para JSON multiplataforma, mantendo compatibilidade com o núcleo Python
-> **Candidato em validação física:** Fase 23B — motor genérico de parâmetros
-> integrado ao monitor principal
-> **Branch de trabalho:** `main`
+> **Marco consolidado:** Fase 23B — motor genérico de parâmetros orientado pelo
+> catálogo JSON, aprovado offline e fisicamente no monitor principal
+> **Branch estável:** `main`
+> **Branch de pesquisa atual:** `research/dyn-parameters`
 
 ## 1. Como usar este documento
 
@@ -28,7 +27,9 @@ funcionalidade aprovada**. A atualização deve registrar:
 
 ## 2. Preferências permanentes de trabalho
 
-- Trabalhar na branch `main`, sem criar outra branch, salvo pedido explícito.
+- Manter a branch `main` somente com marcos estáveis e fisicamente aprovados.
+- Usar uma branch de pesquisa por classe de efeitos, começando por
+  `research/dyn-parameters`; não criar uma branch por efeito individual.
 - O usuário extrai pacotes ZIP manualmente; não é necessário fornecer comandos
   de extração.
 - A suíte oficial usa `unittest`, não `pytest`.
@@ -39,6 +40,11 @@ funcionalidade aprovada**. A atualização deve registrar:
 - Após a confirmação física, atualizar este documento, revisar o escopo,
   executar a suíte completa e então consolidar o commit.
 - Não enviar comandos desconhecidos ou potencialmente destrutivos à pedaleira.
+- Reservar a raiz do repositório para arquivos essenciais: `README.md`,
+  `requirements.txt`, arquivos do Git e diretórios principais.
+- Guardar relatórios históricos de fases em `docs/phases/`.
+- Manter `venv/`, caches e `data/dumps/` fora do Git; dumps brutos devem ser
+  arquivados externamente ou preservados apenas como ZIP local.
 
 Comando oficial da suíte:
 
@@ -310,7 +316,7 @@ mostra `aguardando alteração` até receber o primeiro evento ao vivo.
 Relatório:
 
 ```text
-EFFECT_PARAMETER_ENGINE_PHASE23B.md
+docs/phases/EFFECT_PARAMETER_ENGINE_PHASE23B.md
 ```
 
 ## 7. Estrutura estrutural confirmada
@@ -407,7 +413,7 @@ versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
 futuro, por Kotlin/Android e desktop. O único parâmetro interno concluído neste
 marco é `DYN / M-BOOST / GAIN`; os demais permanecem sem dados inventados.
 
-## 10. Histórico consolidado das Fases 14–23A
+## 10. Histórico consolidado das Fases 14–23B
 
 ### Fase 14 — classe e modelo por slot
 
@@ -418,7 +424,7 @@ estruturais variáveis.
 Arquivos relacionados:
 
 ```text
-STRUCTURAL_CLASS_MODEL_PHASE14.md
+docs/phases/STRUCTURAL_CLASS_MODEL_PHASE14.md
 tools/experiments/map_structural_class_model_all_slots.py
 ```
 
@@ -428,7 +434,7 @@ Separou mudanças de modelo e seletor nos slots 4 e 5. Confirmou que offsets
 brutos fixos não eram seguros e preservou 13 capturas aprovadas.
 
 ```text
-STRUCTURAL_MODEL_SELECTOR_PHASE15.md
+docs/phases/STRUCTURAL_MODEL_SELECTOR_PHASE15.md
 tools/experiments/map_structural_model_selector_slots4_5.py
 ```
 
@@ -438,7 +444,7 @@ Identificou o contêiner comprimido e normalizou todas as 34 capturas das Fases
 14 e 15 para o payload estrutural fixo de 89 bytes.
 
 ```text
-STRUCTURAL_EFFECT_STATE_PHASE16.md
+docs/phases/STRUCTURAL_EFFECT_STATE_PHASE16.md
 tools/analysis/structural_effect_state.py
 tests/fixtures/structural_effect_state/
 ```
@@ -449,7 +455,7 @@ Promoveu o decodificador para `tools/commands/` e adicionou classe, modelo,
 seletor e registros de efeito sem quebrar a API anterior de ordem e bypass.
 
 ```text
-STRUCTURAL_CHAIN_INTEGRATION_PHASE17.md
+docs/phases/STRUCTURAL_CHAIN_INTEGRATION_PHASE17.md
 ```
 
 ### Fase 18 — validação física estrutural
@@ -460,7 +466,7 @@ seletor, bypass e payload foram aprovados nas duas capturas.
 Também revelou que a primeira seleção após cold boot pode ser perdida.
 
 ```text
-STRUCTURAL_CHAIN_LIVE_VALIDATION_PHASE18.md
+docs/phases/STRUCTURAL_CHAIN_LIVE_VALIDATION_PHASE18.md
 tools/experiments/validate_structural_chain_live.py
 ```
 
@@ -474,7 +480,7 @@ A primeira versão ainda aguardava passivamente uma resposta estrutural que a
 pedaleira não enviava ao trocar de preset.
 
 ```text
-MATRIBOX_MONITOR_PHASE19.md
+docs/phases/MATRIBOX_MONITOR_PHASE19.md
 ```
 
 ### Fase 20 — dump não destrutivo
@@ -484,7 +490,7 @@ a cadeia do payload de 1.211 bytes. Foi validado offline contra 100 dumps
 físicos e fisicamente em vários presets.
 
 ```text
-MATRIBOX_MONITOR_PHASE20.md
+docs/phases/MATRIBOX_MONITOR_PHASE20.md
 tools/commands/preset_dump_state.py
 tests/fixtures/preset_dump_chain/
 ```
@@ -495,7 +501,7 @@ Passou a interpretar as respostas de 62 bytes emitidas ao ligar/desligar um
 efeito. Validou dez capturas físicas dos slots 1–5 e foi aprovado ao vivo.
 
 ```text
-MATRIBOX_MONITOR_PHASE21.md
+docs/phases/MATRIBOX_MONITOR_PHASE21.md
 tools/commands/effect_slot_state.py
 tests/fixtures/effect_slot_state/
 ```
@@ -510,7 +516,7 @@ A validação ao vivo aprovou múltiplos M-BOOSTs simultâneos nos slots interno
 2, 8, 10 e 12, incluindo valores até 100, sem confundir as instâncias.
 
 ```text
-MBOOST_GAIN_VALIDATION_PHASE22.md
+docs/phases/MBOOST_GAIN_VALIDATION_PHASE22.md
 tools/commands/mboost_gain.py
 tools/experiments/validate_mboost_gain_live.py
 tests/test_mboost_gain.py
@@ -528,7 +534,7 @@ registro. O M-BOOST/GAIN foi registrado como primeiro parâmetro validado; os
 outros 266 efeitos permanecem `pending`.
 
 ```text
-EFFECT_CATALOG_JSON_PHASE23A.md
+docs/phases/EFFECT_CATALOG_JSON_PHASE23A.md
 catalog/
 tools/catalog/
 tools/migrations/export_effect_catalog_to_json.py
@@ -536,15 +542,18 @@ tests/test_effect_catalog_json.py
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-### Fase 23B — motor genérico de parâmetros (candidato)
+### Fase 23B — motor genérico de parâmetros
 
 Criou codecs, decoder e estado genéricos orientados pelo catálogo JSON,
 preservou a API específica da Fase 22 e integrou parâmetros ao monitor. As 27
-fixtures físicas são decodificadas pelo novo motor. A validação física da
-integração ao monitor ainda é obrigatória antes do commit.
+fixtures físicas são decodificadas pelo novo motor.
+
+A validação física aprovou o validador genérico e o monitor principal com dois
+M-BOOSTs simultâneos nos slots internos 2 e 3, valores independentes e
+preservação da identidade interna após mudança de posição visual.
 
 ```text
-EFFECT_PARAMETER_ENGINE_PHASE23B.md
+docs/phases/EFFECT_PARAMETER_ENGINE_PHASE23B.md
 tools/parameters/
 tools/experiments/validate_effect_parameters_live.py
 tests/test_effect_parameters.py
@@ -552,7 +561,7 @@ tests/test_effect_parameters.py
 
 ## 11. Estado de validação no marco atual
 
-Suíte completa do candidato da Fase 23B:
+Suíte completa após a Fase 23B:
 
 ```text
 Ran 340 tests
@@ -569,20 +578,17 @@ Validação offline aprovada:
 - cruzamento de efeito e slot com a cadeia estrutural atual;
 - apresentação de valor pendente e valor recebido no snapshot do monitor.
 
-Validação física já aprovada em fases anteriores:
+Validação física aprovada:
 
 - inicialização e recuperação após cold boot;
 - leitura de preset, nome, etiqueta e cadeia;
 - mudança de ordem e bypass em tempo real;
 - leitura isolada do M-BOOST/GAIN;
-- múltiplas instâncias e slots 2, 8, 10 e 12.
-
-Validação física ainda pendente para a Fase 23B:
-
+- múltiplas instâncias nos slots 2, 8, 10 e 12 na Fase 22;
 - atualização do GAIN dentro do monitor principal;
-- duas ou mais instâncias com valores independentes no monitor;
-- preservação correta após movimento visual;
-- limpeza do valor ao trocar preset.
+- duas instâncias simultâneas com valores independentes nos slots 2 e 3;
+- preservação do slot interno após movimento visual;
+- limpeza do estado ao trocar preset, coberta por regressão offline.
 
 Fixtures físicas de regressão ficam em:
 
@@ -608,8 +614,7 @@ tests/fixtures/mboost_gain/
   efeitos ativos da cadeia.
 - Não assumir offsets no SysEx comprimido; sempre trabalhar sobre o payload
   LZO1X descomprimido.
-- Parâmetros catalogados fazem parte do monitor candidato da Fase 23B, mas a
-  integração ainda precisa de aprovação física antes do commit.
+- Parâmetros catalogados fazem parte do monitor estável desde a Fase 23B.
 - O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
   alteração` até o primeiro evento ao vivo.
 - Não criar um parser Python separado para cada parâmetro. A expansão deve usar
@@ -621,17 +626,15 @@ tests/fixtures/mboost_gain/
 
 ## 13. Próximos passos recomendados
 
-1. extrair o pacote da Fase 23B e executar a suíte completa;
-2. executar `tools.commands.matribox_monitor`;
-3. confirmar `GAIN: aguardando alteração` e a atualização ao vivo;
-4. testar duas ou mais instâncias de M-BOOST;
-5. mover uma instância e trocar de preset para validar retenção e limpeza;
-6. após aprovação física, atualizar este documento com o resultado final e
-   consolidar o commit;
-7. iniciar o próximo efeito DYN adicionando somente dados ao catálogo e novos
-   perfis/codecs quando as capturas exigirem;
-8. depois de concluir DYN, iniciar FREQ;
-9. manter importação IR/CLONE como subsistema separado.
+1. manter `main` no commit estável da Fase 23B;
+2. continuar a pesquisa na branch `research/dyn-parameters`;
+3. capturar o próximo efeito DYN com alterações controladas de cada parâmetro;
+4. adicionar definições ao catálogo, reutilizando perfis e codecs somente
+   quando as capturas comprovarem equivalência;
+5. validar múltiplas instâncias, slots e mudanças de posição visual;
+6. consolidar grupos aprovados na `main` por fast-forward ou pull request;
+7. depois de concluir DYN, abrir `research/freq-parameters`;
+8. manter importação IR/CLONE como subsistema separado.
 
 A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
 sem conhecer offsets, nibbles ou detalhes MIDI.

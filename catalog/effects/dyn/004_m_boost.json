@@ -50,7 +50,7 @@
         "multiple_instances": true,
         "visual_reordering_independent": true,
         "physical_fixture_count": 27,
-        "evidence": "MBOOST_GAIN_VALIDATION_PHASE22.md"
+        "evidence": "docs/phases/MBOOST_GAIN_VALIDATION_PHASE22.md"
       }
     }
   ]

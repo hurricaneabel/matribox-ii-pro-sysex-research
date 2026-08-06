@@ -1,0 +1,18 @@
+# Histórico das fases
+
+Esta pasta reúne os relatórios detalhados das etapas consolidadas. O estado
+atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
+
+| Fase | Documento | Resultado principal |
+|---:|---|---|
+| 14 | `STRUCTURAL_CLASS_MODEL_PHASE14.md` | classe e modelo por slot |
+| 15 | `STRUCTURAL_MODEL_SELECTOR_PHASE15.md` | modelo e seletor secundário |
+| 16 | `STRUCTURAL_EFFECT_STATE_PHASE16.md` | contêiner LZO1X estrutural |
+| 17 | `STRUCTURAL_CHAIN_INTEGRATION_PHASE17.md` | integração ao parser estável |
+| 18 | `STRUCTURAL_CHAIN_LIVE_VALIDATION_PHASE18.md` | validação física estrutural |
+| 19 | `MATRIBOX_MONITOR_PHASE19.md` | monitor consolidado e cold boot |
+| 20 | `MATRIBOX_MONITOR_PHASE20.md` | leitura não destrutiva do dump |
+| 21 | `MATRIBOX_MONITOR_PHASE21.md` | bypass em tempo real |
+| 22 | `MBOOST_GAIN_VALIDATION_PHASE22.md` | M-BOOST/GAIN isolado e validado |
+| 23A | `EFFECT_CATALOG_JSON_PHASE23A.md` | catálogo multiplataforma em JSON |
+| 23B | `EFFECT_PARAMETER_ENGINE_PHASE23B.md` | motor genérico de parâmetros |

@@ -392,7 +392,8 @@ matribox-sysex/
 ├── catalog/            # classes, efeitos, parâmetros, perfis e codecs JSON
 ├── data/
 │   └── fixtures/       # amostras mínimas usadas pelos testes
-├── docs/               # protocolo e continuidade
+├── docs/               # protocolo, continuidade e histórico
+│   └── phases/          # relatórios detalhados das fases concluídas
 ├── tests/              # regressão offline
 └── tools/
     ├── catalog/        # carregamento e validação do JSON
@@ -458,6 +459,15 @@ docs/PROJECT_CONTINUITY.md
 
 Esse arquivo deve ser atualizado antes de todo commit que consolide uma nova
 funcionalidade aprovada.
+
+Os relatórios históricos das fases ficam organizados em:
+
+```text
+docs/phases/
+```
+
+A raiz do repositório fica reservada para `README.md`, `requirements.txt`,
+arquivos do Git e os diretórios principais do projeto.
 
 ## Documentação técnica completa
 
