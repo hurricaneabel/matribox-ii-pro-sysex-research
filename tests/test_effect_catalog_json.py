@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 8)
+        self.assertEqual(self.catalog.catalog_version, 9)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -316,6 +316,59 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             )
             self.assertEqual(parameter.validation["physical_fixture_count"], 23)
 
+
+    def test_ac_sim_has_named_enum_mode(self) -> None:
+        ac_sim = self.catalog.effect_by_key("dyn.ac_sim")
+        self.assertEqual(ac_sim.name, "AC SIM")
+        self.assertEqual(ac_sim.model_id, 0x01)
+        self.assertEqual(ac_sim.secondary_selector, 0x01)
+        self.assertEqual(ac_sim.parameter_catalog_status, "physically_validated")
+        self.assertEqual(ac_sim.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in ac_sim.parameters),
+            ("body", "top", "volume", "mode"),
+        )
+        self.assertEqual(
+            tuple(parameter.value_type for parameter in ac_sim.parameters),
+            ("integer", "integer", "integer", "enum"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in ac_sim.parameters),
+            (0, 1, 2, 3),
+        )
+        self.assertEqual(
+            dict(ac_sim.parameters[3].choices),
+            {0: "STANDARD", 1: "JUMBO", 2: "ENHANCED", 3: "PIEZO"},
+        )
+        self.assertEqual(
+            (ac_sim.parameters[3].minimum, ac_sim.parameters[3].maximum, ac_sim.parameters[3].step),
+            (0, 3, 1),
+        )
+        for parameter in ac_sim.parameters:
+            self.assertEqual(parameter.validation["physical_fixture_count"], 30)
+
+    def test_loader_rejects_enum_without_choices(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            copied = Path(temporary_directory) / "catalog"
+            shutil.copytree(CATALOG_ROOT, copied)
+            effect_path = copied / "effects" / "dyn" / "011_ac_sim.json"
+            document = json.loads(effect_path.read_text(encoding="utf-8"))
+            del document["parameters"][3]["choices"]
+            effect_path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaises(CatalogValidationError):
+                load_effect_catalog(copied)
+
+    def test_loader_rejects_duplicate_enum_wire_value(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            copied = Path(temporary_directory) / "catalog"
+            shutil.copytree(CATALOG_ROOT, copied)
+            effect_path = copied / "effects" / "dyn" / "011_ac_sim.json"
+            document = json.loads(effect_path.read_text(encoding="utf-8"))
+            document["parameters"][3]["choices"][3]["value"] = 2
+            effect_path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaises(CatalogValidationError):
+                load_effect_catalog(copied)
+
     def test_e_boost_has_integer_and_boolean_parameters(self) -> None:
         e_boost = self.catalog.effect_by_key("dyn.e_boost")
         self.assertEqual(e_boost.name, "E-BOOST")
@@ -397,12 +450,13 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "dyn.rc_boost",
                 "dyn.fat_boost",
                 "dyn.gate_2",
+                "dyn.ac_sim",
                 "dyn.e_boost",
                 "dyn.ac_woody",
                 "dyn.gate_1",
             }
         ]
-        self.assertEqual(len(pending), 255)
+        self.assertEqual(len(pending), 254)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")

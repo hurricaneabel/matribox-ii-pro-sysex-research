@@ -22,7 +22,7 @@ Os 16 índices de classe e os 267 efeitos foram exportados do catálogo Python
 histórico. Todos preservam menu, nome, ID de classe, ID de modelo e seletor
 secundário.
 
-Doze efeitos DYN possuem parâmetros internos catalogados, totalizando 38
+Treze efeitos DYN possuem parâmetros internos catalogados, totalizando 42
 controles físicos:
 
 ```text
@@ -38,7 +38,12 @@ E-BOOST | GAIN, +3dB, BRIGHT                | inteiro + booleanos | seletores 0�
 AC WOODY| SHAPE                             | inteiro 0–100 | seletor 0
 GATE 1  | THRESHOLD                         | inteiro 0–100 | seletor 0
 GATE 2  | THRESHOLD, ATTACK, RELEASE         | inteiro 0–100 | seletores 0–2
+AC SIM  | BODY, TOP, VOLUME, MODE             | inteiros + enum nomeado | seletores 0–3
 ```
+
+No AC SIM, `MODE` usa os mesmos valores numéricos do codec compartilhado,
+mas o catálogo converte `0–3` para `STANDARD`, `JUMBO`, `ENHANCED` e `PIEZO`.
+O monitor permanece genérico: nenhum rótulo foi codificado diretamente nele.
 
 No E-BOOST, `+3dB` e `BRIGHT` usam o mesmo codec numérico dos controles
 contínuos, com `0 = desligado` e `1 = ligado`. O `value_type: boolean` do JSON
@@ -48,7 +53,7 @@ O comando `0x1C` não identifica sozinho o modelo do efeito. O slot recebido é
 cruzado com a cadeia estrutural atual; somente então o seletor é interpretado
 dentro do efeito correto.
 
-Os outros 255 efeitos permanecem com:
+Os outros 254 efeitos permanecem com:
 
 ```json
 "parameter_catalog_status": "pending",

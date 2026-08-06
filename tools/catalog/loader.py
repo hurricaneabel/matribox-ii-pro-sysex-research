@@ -154,6 +154,40 @@ def _parse_parameter(document: Mapping[str, Any], path: Path) -> ParameterDefini
     if unit is not None and not isinstance(unit, str):
         raise _fail(path, "campo 'unit' deve ser texto ou null")
 
+    raw_choices = document.get("choices")
+    normalized_choices: dict[int, str] = {}
+    if value_type == "enum":
+        if not isinstance(raw_choices, list) or not raw_choices:
+            raise _fail(path, "parâmetro enum deve declarar choices não vazias")
+        labels: set[str] = set()
+        for choice in raw_choices:
+            if not isinstance(choice, dict):
+                raise _fail(path, "cada item de choices deve ser objeto")
+            wire_value = choice.get("value")
+            label = choice.get("label")
+            if isinstance(wire_value, bool) or not isinstance(wire_value, int):
+                raise _fail(path, "choices.value deve ser inteiro")
+            if not isinstance(label, str) or not label.strip():
+                raise _fail(path, "choices.label deve ser texto não vazio")
+            if wire_value in normalized_choices:
+                raise _fail(path, f"choices possui valor duplicado: {wire_value}")
+            if label in labels:
+                raise _fail(path, f"choices possui label duplicado: {label!r}")
+            normalized_choices[wire_value] = label
+            labels.add(label)
+        if minimum is None or maximum is None or step is None:
+            raise _fail(path, "parâmetro enum deve declarar range numérico")
+        tolerance = 1e-9
+        for wire_value in normalized_choices:
+            if wire_value < minimum or wire_value > maximum:
+                raise _fail(path, f"choice {wire_value} fora do range declarado")
+            steps = (float(wire_value) - float(minimum)) / float(step)
+            if abs(steps - round(steps)) > tolerance:
+                raise _fail(path, f"choice {wire_value} não respeita range.step")
+    elif raw_choices is not None:
+        raise _fail(path, "campo choices é permitido somente para value_type enum")
+    choices = MappingProxyType(normalized_choices)
+
     protocol = document.get("protocol")
     protocol_profile: str | None = None
     value_codec: str | None = None
@@ -200,6 +234,7 @@ def _parse_parameter(document: Mapping[str, Any], path: Path) -> ParameterDefini
         maximum=maximum,
         step=step,
         unit=unit,
+        choices=choices,
         protocol_profile=protocol_profile,
         value_codec=value_codec,
         message_match=message_match,

@@ -30,6 +30,7 @@ BB_BOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "bb_boost_parameter
 RC_BOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "rc_boost_parameters"
 FAT_BOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "fat_boost_parameters"
 GATE2_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate2_parameters"
+AC_SIM_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_sim_parameters"
 EBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "e_boost_parameters"
 AC_WOODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_woody_parameters"
 GATE1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate1_parameters"
@@ -1078,6 +1079,107 @@ class EBoostEvidenceManifestTests(unittest.TestCase):
         self.assertEqual(
             manifest["combination_capture_validation"]["result"],
             "independent_messages_per_parameter",
+        )
+
+
+class AcSimEnumParameterTests(unittest.TestCase):
+    def test_all_physical_ac_sim_fixtures_decode_by_effect_context(self) -> None:
+        fixtures = sorted(AC_SIM_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 30)
+        manifest = json.loads(
+            (AC_SIM_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        expected = {item["file"]: item for item in manifest["fixtures"]}
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(), effect_key="dyn.ac_sim"
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                item = expected[fixture.name]
+                self.assertEqual(event.human_slot, item["slot"])
+                self.assertEqual(event.parameter_key, item["parameter"])
+                self.assertEqual(event.value, item["value"])
+
+    def test_mode_wire_values_decode_to_named_choices(self) -> None:
+        expected = {
+            "standard": "STANDARD",
+            "jumbo": "JUMBO",
+            "enhanced": "ENHANCED",
+            "piezo": "PIEZO",
+        }
+        for suffix, label in expected.items():
+            with self.subTest(mode=label):
+                event = parse_effect_parameter_response(
+                    (AC_SIM_FIXTURE_ROOT / f"slot1_mode_{suffix}.bin").read_bytes(),
+                    effect_key="dyn.ac_sim",
+                )
+                assert event is not None
+                self.assertEqual(event.value, label)
+                self.assertEqual(event.display_value, label)
+
+    def test_mode_rejects_uncataloged_wire_value(self) -> None:
+        message = bytearray(
+            (AC_SIM_FIXTURE_ROOT / "slot1_mode_piezo.bin").read_bytes()
+        )
+        # 4.0 encoded by the shared upper-float codec.
+        message[59:63] = bytes((0x08, 0x00, 0x04, 0x00))
+        with self.assertRaises(EffectParameterProtocolError):
+            parse_effect_parameter_response(message, effect_key="dyn.ac_sim")
+
+    def test_monitor_lists_and_updates_ac_sim_enum(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.ac_sim"))
+        snapshot = core.snapshot
+        assert snapshot is not None
+        self.assertEqual(
+            tuple(parameter.name for parameter in snapshot.effects[0].parameters),
+            ("BODY", "TOP", "VOLUME", "MODE"),
+        )
+        for filename in (
+            "slot2_body_051.bin",
+            "slot2_top_052.bin",
+            "slot2_volume_053.bin",
+            "slot2_mode_enhanced.bin",
+        ):
+            update = core.feed((AC_SIM_FIXTURE_ROOT / filename).read_bytes())
+            self.assertIsNotNone(update.parameter_event)
+        assert update.snapshot is not None
+        self.assertEqual(
+            tuple(parameter.value for parameter in update.snapshot.effects[0].parameters),
+            (51, 52, 53, "ENHANCED"),
+        )
+        formatted = format_monitor_snapshot(update.snapshot)
+        self.assertIn("BODY: 51", formatted)
+        self.assertIn("TOP: 52", formatted)
+        self.assertIn("VOLUME: 53", formatted)
+        self.assertIn("MODE: ENHANCED", formatted)
+
+
+class Phase31EvidenceManifestTests(unittest.TestCase):
+    def test_manifest_preserves_enum_order_and_two_slots(self) -> None:
+        manifest = json.loads(
+            (AC_SIM_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["effect"]["key"], "dyn.ac_sim")
+        self.assertEqual(manifest["physical_binary_fixtures"], 30)
+        self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+        self.assertEqual(len(manifest["controlled_capture_sources"]), 6)
+        self.assertEqual(
+            tuple(parameter["selector"] for parameter in manifest["parameters"]),
+            (0, 1, 2, 3),
+        )
+        self.assertEqual(
+            tuple(choice["label"] for choice in manifest["parameters"][3]["choices"]),
+            ("STANDARD", "JUMBO", "ENHANCED", "PIEZO"),
+        )
+        self.assertEqual(
+            manifest["mode_capture_validation"]["received_wire_values"],
+            [0, 1, 2, 3, 0],
+        )
+        self.assertEqual(
+            manifest["slot2_validation"]["result"],
+            "same_selectors_codec_and_enum_mapping_on_internal_slot_2",
         )
 
 

@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 8
+CATALOG_VERSION = 9
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -701,6 +701,84 @@ GATE2_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
 )
 
 
+AC_SIM_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    *(
+        {
+            "key": key,
+            "name": name,
+            "display_order": display_order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "range_validated": [0, 100],
+                "internal_slots_observed": [1, 2],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "multiple_parameters": True,
+                "physical_fixture_count": 30,
+                "evidence": "docs/phases/DYN_AC_SIM_ENUM_PARAMETERS_PHASE31.md",
+                "monitor_integration_physical_validation": "pending",
+            },
+        }
+        for display_order, (key, name, selector) in enumerate(
+            (("body", "BODY", 0), ("top", "TOP", 1), ("volume", "VOLUME", 2)),
+            start=1,
+        )
+    ),
+    {
+        "key": "mode",
+        "name": "MODE",
+        "display_order": 4,
+        "value_type": "enum",
+        "range": {"minimum": 0, "maximum": 3, "step": 1},
+        "choices": [
+            {"value": 0, "label": "STANDARD"},
+            {"value": 1, "label": "JUMBO"},
+            {"value": 2, "label": "ENHANCED"},
+            {"value": 3, "label": "PIEZO"},
+        ],
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 3,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "enum_wire_values_validated": [0, 1, 2, 3],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 3,
+            "multiple_parameters": True,
+            "physical_fixture_count": 30,
+            "evidence": "docs/phases/DYN_AC_SIM_ENUM_PARAMETERS_PHASE31.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+)
+
+
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
     {
         "key": "gain",
@@ -927,6 +1005,11 @@ def _parameter_document(parameter: ParameterDefinition) -> dict[str, Any]:
             "maximum": parameter.maximum,
             "step": parameter.step,
         }
+    if parameter.choices:
+        document["choices"] = [
+            {"value": value, "label": label}
+            for value, label in parameter.choices.items()
+        ]
     if parameter.protocol_profile is not None and parameter.value_codec is not None:
         document["protocol"] = {
             "profile": parameter.protocol_profile,
@@ -983,6 +1066,10 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "dyn.gate_2" and not parameters:
         parameters = list(GATE2_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.ac_sim" and not parameters:
+        parameters = list(AC_SIM_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.e_boost" and not parameters:

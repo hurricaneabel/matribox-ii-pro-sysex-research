@@ -32,7 +32,7 @@ def _decode_nibble_pair(high_nibble: int, low_nibble: int, *, label: str) -> int
 def _validate_numeric_value(
     value: int | float,
     parameter: ParameterDefinition,
-) -> int | float | bool:
+) -> int | float | bool | str:
     numeric_value = float(value)
     tolerance = 1e-6
 
@@ -42,7 +42,7 @@ def _validate_numeric_value(
             raise ParameterCodecError(
                 f"{parameter.name} deveria ser inteiro, mas resultou em {value}."
             )
-        normalized: int | float | bool = int(rounded)
+        normalized: int | float | bool | str = int(rounded)
         comparable_value: int | float = int(rounded)
     elif parameter.value_type == "number":
         normalized = value
@@ -55,6 +55,19 @@ def _validate_numeric_value(
             )
         normalized = bool(rounded)
         comparable_value = int(rounded)
+    elif parameter.value_type == "enum":
+        rounded = round(numeric_value)
+        if abs(numeric_value - rounded) > tolerance:
+            raise ParameterCodecError(
+                f"{parameter.name} deveria ser enum inteiro, mas resultou em {value}."
+            )
+        comparable_value = int(rounded)
+        try:
+            normalized = parameter.choices[comparable_value]
+        except KeyError as error:
+            raise ParameterCodecError(
+                f"{parameter.name} recebeu opção não catalogada: {comparable_value}."
+            ) from error
     else:
         raise ParameterCodecError(
             f"Codec numérico não pode produzir value_type={parameter.value_type!r}."
@@ -86,7 +99,7 @@ def decode_upper_float32_nibbles(
     encoded_value: bytes | bytearray,
     parameter: ParameterDefinition,
     codec: ValueCodec,
-) -> int | float:
+) -> ParameterValue:
     """Decodifica os 16 bits superiores de float32 enviados em quatro nibbles."""
 
     encoded = bytes(encoded_value)

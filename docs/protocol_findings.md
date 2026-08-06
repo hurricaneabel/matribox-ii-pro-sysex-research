@@ -1398,3 +1398,29 @@ tests/fixtures/gate2_parameters/
 
 O endereço opaco permanece `01 04`; portanto, a cadeia atual continua sendo a
 fonte obrigatória da identidade do efeito antes da interpretação do seletor.
+
+
+## Fase 31 — AC SIM e enum numérico nomeado
+
+As seis capturas de AC SIM confirmaram quatro seletores no comando `0x1C`:
+
+```text
+BODY = 0 | TOP = 1 | VOLUME = 2 | MODE = 3
+```
+
+BODY, TOP e VOLUME são inteiros de `0` a `100`. MODE usa o mesmo codec
+`upper_float32_nibbles_v1`, porém com domínio restrito e rótulos de catálogo:
+
+```text
+0 STANDARD | 1 JUMBO | 2 ENHANCED | 3 PIEZO
+```
+
+A sequência física começou no estado padrão ENHANCED e produziu os eventos
+`0, 1, 2, 3, 0` ao percorrer STANDARD, JUMBO, ENHANCED, PIEZO e STANDARD.
+Isso confirma que a ordem apresentada na pedaleira coincide com os valores
+numéricos. O monitor não contém tabela específica do efeito; o loader entrega
+as `choices` e o codec genérico converte o inteiro recebido para o rótulo.
+
+Foram observados os slots internos humanos 1 e 2. O endereço `01 04` continua
+compartilhado e opaco, portanto a cadeia estrutural permanece obrigatória para
+resolver o efeito antes do seletor.

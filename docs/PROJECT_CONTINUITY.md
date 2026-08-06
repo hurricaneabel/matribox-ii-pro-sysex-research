@@ -3,11 +3,11 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 30 — RC-BOOST, FAT BOOST e GATE 2 aprovados
-> offline e fisicamente, prontos para commit e promoção à `main`
-> **Trabalho candidato:** nenhum código adicional além da Fase 30 aprovada
-> **Próxima pesquisa:** Fase 31 — AC SIM com MODE categórico e GATE 3 com
-> parâmetros temporais em milissegundos/segundos
+> **Marco consolidado:** Fase 31 — AC SIM e MODE enum aprovados offline e
+> fisicamente, prontos para commit e promoção à `main`
+> **Trabalho candidato:** nenhum código adicional além da Fase 31 aprovada
+> **Próxima pesquisa:** Fase 32 — GATE 3 e parâmetros temporais em
+> milissegundos/segundos
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/dyn-parameters`
 
@@ -86,10 +86,12 @@ O estado atual já permite:
   conversão física `0/1` para booleanos e exibição `ligado/desligado`;
 - reconhecer `SHAPE` do `DYN / AC WOODY` e `THRESHOLD` do `DYN / GATE 1`,
   ambos inteiros de 0 a 100;
+- reconhecer `BODY`, `TOP`, `VOLUME` e o `MODE` enum nomeado do `DYN / AC SIM`,
+  convertendo 0–3 para STANDARD/JUMBO/ENHANCED/PIEZO pelo catálogo;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e 12 parâmetros confirmados por
-  capturas em seis efeitos DYN a partir de um catálogo JSON versionado e
+- carregar as 16 classes, 267 efeitos e 42 parâmetros confirmados por
+  capturas em treze efeitos DYN a partir de um catálogo JSON versionado e
   independente de Python/Windows.
 
 ## 4. Programa principal atual
@@ -336,6 +338,7 @@ tests/fixtures/comp2_parameters/
 tests/fixtures/comp3_parameters/
 tests/fixtures/ac_boost_parameters/
 tests/fixtures/bb_boost_parameters/
+tests/fixtures/ac_sim_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -493,9 +496,9 @@ necessário para desambiguar casos como modelos AMP distintos com o mesmo ID.
 
 O catálogo usa JSON Schema Draft 2020-12, caminhos relativos portáteis e
 versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
-futuro, por Kotlin/Android e desktop. Neste marco há 12 parâmetros fisicamente
-confirmados em seis efeitos DYN; os demais efeitos permanecem sem dados
-inventados.
+futuro, por Kotlin/Android e desktop. Neste marco há 42 parâmetros fisicamente confirmados em treze efeitos DYN.
+O AC SIM é o primeiro a usar `value_type: enum`, com escolhas numéricas e
+rótulos portáteis; os demais efeitos permanecem sem dados inventados.
 
 ## 10. Histórico consolidado das Fases 14–24
 
@@ -785,10 +788,10 @@ instâncias simultâneas com estados separados. A primeira manteve
 
 ## 11. Estado de validação no trabalho atual
 
-Suíte completa candidata da Fase 29:
+Suíte completa candidata da Fase 31:
 
 ```text
-Ran 382 tests
+Ran 394 tests
 OK
 ```
 
@@ -800,6 +803,7 @@ Validação offline aprovada:
 - 84 fixtures físicas únicas do COMP3;
 - 32 fixtures físicas únicas do AC-BOOST;
 - 32 fixtures físicas únicas do BB-BOOST;
+- 30 fixtures físicas únicas do AC SIM;
 - 19 fixtures físicas únicas do E-BOOST;
 - 11 fixtures físicas únicas do AC WOODY;
 - 11 fixtures físicas únicas do GATE 1;
@@ -820,7 +824,9 @@ Validação offline aprovada:
 - apresentação do COMP3 na ordem THRESHOLD, RATIO, VOLUME, ATTACK, RELEASE,
   TONE, BLEND;
 - apresentação de AC-BOOST e BB-BOOST na ordem GAIN, VOLUME, BASS, TREBLE;
-- atualização simulada independente dos quatro parâmetros dos dois boosts.
+- atualização simulada independente dos quatro parâmetros dos dois boosts;
+- enum MODE do AC SIM traduzido de 0–3 para STANDARD/JUMBO/ENHANCED/PIEZO;
+- rejeição de valores enum não catalogados e validação estrutural de `choices`.
 
 Validação física aprovada:
 
@@ -899,6 +905,7 @@ tests/fixtures/comp2_parameters/
 tests/fixtures/comp3_parameters/
 tests/fixtures/ac_boost_parameters/
 tests/fixtures/bb_boost_parameters/
+tests/fixtures/ac_sim_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -942,15 +949,13 @@ tests/fixtures/gate1_parameters/
 ## 13. Próximos passos recomendados
 
 1. permanecer em `research/dyn-parameters`;
-2. aplicar o pacote candidato da Fase 29;
-3. repetir os 382 testes, `compileall` e `git diff --check`;
-4. validar AC-BOOST e BB-BOOST no monitor principal;
-5. confirmar valores independentes, duas instâncias e mudança de posição;
+2. aplicar o pacote candidato da Fase 31;
+3. repetir os 394 testes, `compileall` e `git diff --check`;
+4. validar BODY, TOP, VOLUME e as quatro opções de MODE no monitor principal;
+5. confirmar duas instâncias de AC SIM com estados independentes;
 6. atualizar a documentação com o log físico aprovado;
-7. criar o commit estável da Fase 29 e promovê-lo por fast-forward à `main`;
-8. manter as capturas do AC SIM fora desse commit;
-9. reservar o AC SIM para fase própria, porque MODE exige suporte genérico a
-   valores categóricos e rótulos portáteis no catálogo.
+7. criar o commit estável da Fase 31 e promovê-lo por fast-forward à `main`;
+8. manter as capturas e qualquer implementação de GATE 3 fora desse commit.
 
 A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
 sem conhecer offsets, nibbles ou detalhes MIDI.
@@ -959,14 +964,14 @@ sem conhecer offsets, nibbles ou detalhes MIDI.
 
 ```text
 [x] A funcionalidade foi validada offline.
-[x] A integração da Fase 29 foi validada fisicamente no monitor principal.
-[x] A suíte unittest completa passou.
+[ ] A integração da Fase 31 ainda precisa ser validada fisicamente.
+[x] A suíte unittest completa passou: 394 testes.
 [x] python -m compileall tools tests passou.
 [x] git diff --check passou.
 [x] docs/PROJECT_CONTINUITY.md foi atualizado.
-[x] README.md foi atualizado se o uso público mudou.
-[ ] O escopo do git add ainda deve ser revisado; arquivos locais não relacionados devem ficar fora.
-[ ] O commit será feito na branch de pesquisa correta e só depois promovido à main.
+[x] README.md foi atualizado.
+[ ] O escopo do git add ainda deve ser revisado.
+[ ] O commit só será feito após a aprovação física.
 ```
 
 ## 15. Atualização atual — Fase 28 consolidada: DYN / COMP3
@@ -1200,13 +1205,81 @@ Limitações preservadas:
 - o log final não inclui duas instâncias do mesmo modelo, reordenação ou teste
   explícito de bypass.
 
+### Consolidação
+
+A Fase 30 foi aprovada fisicamente, documentada, consolidada e promovida à
+`main`. O trabalho ativo passou para a Fase 31, exclusivamente AC SIM.
+
+## 18. Atualização atual — Fase 31 aprovada: AC SIM e MODE enum
+
+A Fase 31 acrescenta o primeiro parâmetro categórico nomeado do catálogo:
+
+```text
+BODY   → seletor 0, inteiro 0–100
+TOP    → seletor 1, inteiro 0–100
+VOLUME → seletor 2, inteiro 0–100
+MODE   → seletor 3, enum numérico 0–3
+```
+
+Mapeamento confirmado:
+
+```text
+0 STANDARD | 1 JUMBO | 2 ENHANCED | 3 PIEZO
+```
+
+O MODE continua usando `upper_float32_nibbles_v1`. A tradução para texto é
+orientada pelas `choices` do JSON e permanece genérica. Não existe tabela ou
+condicional específica do AC SIM no monitor.
+
+Evidências preservadas:
+
+```text
+30 fixtures físicas
+slot humano 1 → 22
+slot humano 2 → 8
+```
+
+A implementação acrescentou suporte genérico a enumerações em:
+
+```text
+catalog/schemas/effect.schema.json
+tools/catalog/models.py
+tools/catalog/loader.py
+tools/parameters/codecs.py
+```
+
+Validação offline consolidada:
+
+```text
+Ran 394 tests
+OK
+```
+
+Também passaram `python -m compileall tools tests`, validação dos 291 arquivos
+JSON e `git diff --check`.
+
+Validação física consolidada:
+
+- o AC SIM foi reconhecido simultaneamente com RC-BOOST e FAT BOOST;
+- o monitor apresentou `BODY`, `TOP`, `VOLUME` e `MODE` na ordem correta;
+- MODE exibiu `PIEZO`, `ENHANCED`, `JUMBO` e `STANDARD` como rótulos;
+- VOLUME alternou entre `50` e `51`;
+- TOP alternou entre `49` e `50`;
+- BODY apresentou `47`, `48`, `49` e `52`;
+- os efeitos anteriores da cadeia permaneceram sem alteração.
+
+O log final não inclui duas instâncias simultâneas do AC SIM, reordenação ou
+bypass explícito. As capturas nos slots humanos 1 e 2 e a validação ao vivo de
+todos os rótulos sustentam a aprovação, preservando essas ausências como
+limitações de cobertura.
+
 ### Próximo passo exato
 
-1. aplicar `matribox_phase30_physical_approval_docs.zip`;
-2. executar novamente os 386 testes, `compileall` e `git diff --check`;
-3. revisar o escopo do `git add`;
-4. criar o commit `feat: add RC-BOOST FAT BOOST and GATE 2 parameters`;
+1. aplicar `matribox_phase31_physical_approval_docs.zip`;
+2. executar novamente os 394 testes, `compileall` e `git diff --check`;
+3. revisar o escopo do `git add` e manter `ac sim.zip` e capturas do GATE 3
+   fora do commit;
+4. criar o commit `feat: add AC SIM enum parameters`;
 5. enviar `research/dyn-parameters`;
 6. promover por fast-forward à `main`;
-7. iniciar a Fase 31 com AC SIM e GATE 3, preservando valores categóricos e
-   temporais como recursos genéricos do catálogo.
+7. iniciar a Fase 32 com o GATE 3 e seus parâmetros temporais.

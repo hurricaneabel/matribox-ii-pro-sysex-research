@@ -23,6 +23,7 @@ class ParameterDefinition:
     maximum: int | float | None = None
     step: int | float | None = None
     unit: str | None = None
+    choices: Mapping[int, str] = field(default_factory=_empty_mapping)
     protocol_profile: str | None = None
     value_codec: str | None = None
     message_match: Mapping[str, int] = field(default_factory=_empty_mapping)

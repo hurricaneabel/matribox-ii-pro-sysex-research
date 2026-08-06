@@ -161,6 +161,28 @@ foi apresentado corretamente como `desligado` e `ligado`. O log final não
 inclui duas instâncias do mesmo modelo nem teste explícito de bypass; essa
 limitação de cobertura física permanece documentada.
 
+A Fase 31 acrescenta o `DYN / AC SIM` e o primeiro parâmetro categórico
+nomeado do catálogo:
+
+```text
+BODY    → inteiro 0–100, seletor 0
+TOP     → inteiro 0–100, seletor 1
+VOLUME  → inteiro 0–100, seletor 2
+MODE    → enum nomeado, seletor 3
+          0 STANDARD | 1 JUMBO | 2 ENHANCED | 3 PIEZO
+```
+
+Seis capturas controladas confirmaram os slots internos humanos 1 e 2 e
+preservaram 30 respostas SysEx físicas únicas. O codec físico continua sendo
+`upper_float32_nibbles_v1`; a novidade é uma lista genérica de `choices` no
+catálogo, convertida para texto pelo motor de parâmetros. A integração passou
+com 394 testes offline e foi aprovada fisicamente no monitor principal. As
+quatro opções do MODE foram traduzidas corretamente para `STANDARD`, `JUMBO`,
+`ENHANCED` e `PIEZO`, enquanto `BODY`, `TOP` e `VOLUME` permaneceram
+independentes. O AC SIM coexistiu com RC-BOOST e FAT BOOST sem colisões. O
+log final não inclui duas instâncias simultâneas do AC SIM, reordenação ou
+bypass explícito; essa limitação de cobertura permanece documentada.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell

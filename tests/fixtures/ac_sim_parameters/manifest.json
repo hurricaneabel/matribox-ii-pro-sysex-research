@@ -1,0 +1,666 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.ac_sim",
+    "name": "AC SIM",
+    "model_id": 1,
+    "secondary_selector": 1
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    },
+    "enum_encoding": {
+      "semantic": "numeric_integer_using_shared_float_codec_with_catalog_labels",
+      "values": [
+        {
+          "wire_value": 0,
+          "label": "STANDARD"
+        },
+        {
+          "wire_value": 1,
+          "label": "JUMBO"
+        },
+        {
+          "wire_value": 2,
+          "label": "ENHANCED"
+        },
+        {
+          "wire_value": 3,
+          "label": "PIEZO"
+        }
+      ]
+    }
+  },
+  "parameters": [
+    {
+      "key": "body",
+      "name": "BODY",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "top",
+      "name": "TOP",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "mode",
+      "name": "MODE",
+      "selector": 3,
+      "value_type": "enum",
+      "minimum": 0,
+      "maximum": 3,
+      "step": 1,
+      "choices": [
+        {
+          "value": 0,
+          "label": "STANDARD"
+        },
+        {
+          "value": 1,
+          "label": "JUMBO"
+        },
+        {
+          "value": 2,
+          "label": "ENHANCED"
+        },
+        {
+          "value": 3,
+          "label": "PIEZO"
+        }
+      ]
+    }
+  ],
+  "controlled_capture_sources": [
+    "acsim_body_capture.pcapng",
+    "acsim_top_capture.pcapng",
+    "acsim_volume_capture.pcapng",
+    "acsim_mode_capture_enhanced - standard - jumbo - enhanced - piezo - standard.pcapng",
+    "AC_SIM_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+    "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng"
+  ],
+  "mode_capture_validation": {
+    "source": "acsim_mode_capture_enhanced - standard - jumbo - enhanced - piezo - standard.pcapng",
+    "initial_state_without_event": "ENHANCED",
+    "user_sequence": [
+      "ENHANCED",
+      "STANDARD",
+      "JUMBO",
+      "ENHANCED",
+      "PIEZO",
+      "STANDARD"
+    ],
+    "received_wire_values": [
+      0,
+      1,
+      2,
+      3,
+      0
+    ],
+    "result": "wire_values_0_to_3_match_pedal_display_order"
+  },
+  "combination_capture_validation": {
+    "source": "AC_SIM_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+    "sequence": [
+      "body_51",
+      "top_52",
+      "volume_53",
+      "mode_enhanced",
+      "body_50",
+      "top_50",
+      "volume_50",
+      "mode_standard"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "slot2_validation": {
+    "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+    "sequence": [
+      "body_51",
+      "body_50",
+      "top_52",
+      "top_50",
+      "volume_53",
+      "volume_50",
+      "mode_standard",
+      "mode_enhanced"
+    ],
+    "result": "same_selectors_codec_and_enum_mapping_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "O estado inicial ENHANCED não gera mensagem até o usuário alterar MODE.",
+    "MODE usa valores físicos inteiros 0, 1, 2 e 3 no mesmo codec dos parâmetros contínuos.",
+    "A apresentação humana depende exclusivamente das choices catalogadas."
+  ],
+  "physical_binary_fixtures": 30,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_body_000.bin",
+      "source": "acsim_body_capture.pcapng",
+      "slot": 1,
+      "parameter": "body",
+      "selector": 0,
+      "wire_value": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "a676f787e3b2ba6ff4112aae890d53397739a5a4ab8ea7fcb57fa19f7b3ca90e"
+    },
+    {
+      "file": "slot1_body_001.bin",
+      "source": "acsim_body_capture.pcapng",
+      "slot": 1,
+      "parameter": "body",
+      "selector": 0,
+      "wire_value": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "9b746f8c990b5c90e4bcc255f9372799362f8ae71a6863337d59e5bfe046430b"
+    },
+    {
+      "file": "slot1_body_050.bin",
+      "source": "acsim_body_capture.pcapng",
+      "slot": 1,
+      "parameter": "body",
+      "selector": 0,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "31047392a9cae046a244ffc20b3b782df131c7092c3b6a9e87f1822189549d3f"
+    },
+    {
+      "file": "slot1_body_051.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "body",
+      "selector": 0,
+      "wire_value": 51,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "4ed64b0952f80fc4e5f7354a1f1a2c7be562925f25da0f183a110d3485be9ba1"
+    },
+    {
+      "file": "slot1_body_099.bin",
+      "source": "acsim_body_capture.pcapng",
+      "slot": 1,
+      "parameter": "body",
+      "selector": 0,
+      "wire_value": 99,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "30e5fc582fb4c7cf3d16ebf98fcedab2f61f6b503f492daae784f7698ca2e9e8"
+    },
+    {
+      "file": "slot1_body_100.bin",
+      "source": "acsim_body_capture.pcapng",
+      "slot": 1,
+      "parameter": "body",
+      "selector": 0,
+      "wire_value": 100,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "412d59496cb8d125971d73a1ccc48b385860a6e838bdc9dfbd147af367fbc70c"
+    },
+    {
+      "file": "slot1_top_000.bin",
+      "source": "acsim_top_capture.pcapng",
+      "slot": 1,
+      "parameter": "top",
+      "selector": 1,
+      "wire_value": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "3122e27fd4688f98b994f4eaf45140645c5bf88bfd1b01fbd9909812bcccec20"
+    },
+    {
+      "file": "slot1_top_001.bin",
+      "source": "acsim_top_capture.pcapng",
+      "slot": 1,
+      "parameter": "top",
+      "selector": 1,
+      "wire_value": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "956dc017aaadd09dfcaae5d148a6f76aa7feeffbbdddc4db98e357a34e9530ff"
+    },
+    {
+      "file": "slot1_top_050.bin",
+      "source": "acsim_top_capture.pcapng",
+      "slot": 1,
+      "parameter": "top",
+      "selector": 1,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "c7712c9e9e6687ccb1aa7682fcebc823a49fa5a807870972b756349d5272e396"
+    },
+    {
+      "file": "slot1_top_052.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "top",
+      "selector": 1,
+      "wire_value": 52,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "45d0282679492c826f2fc400ae621d3ec5704419979506660051cdf206c3298f"
+    },
+    {
+      "file": "slot1_top_099.bin",
+      "source": "acsim_top_capture.pcapng",
+      "slot": 1,
+      "parameter": "top",
+      "selector": 1,
+      "wire_value": 99,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "2b529b41518b337c32f7f144c155da7706f2b2470f51273deb09158e5c4c2b68"
+    },
+    {
+      "file": "slot1_top_100.bin",
+      "source": "acsim_top_capture.pcapng",
+      "slot": 1,
+      "parameter": "top",
+      "selector": 1,
+      "wire_value": 100,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "cd7eee80f8424e7d97ce5b71d727f881a29a58556f51ddf7ae947ba5af394e4d"
+    },
+    {
+      "file": "slot1_volume_000.bin",
+      "source": "acsim_volume_capture.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "wire_value": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "62f0f53f9f9372a3678a8bded5b128a61a379ef91a59997c571e48c48f13d855"
+    },
+    {
+      "file": "slot1_volume_001.bin",
+      "source": "acsim_volume_capture.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "wire_value": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "b8de58fc9ce6f2924469e0a394b635aab0e7d8b0516e544e8ed17af844f7f291"
+    },
+    {
+      "file": "slot1_volume_050.bin",
+      "source": "acsim_volume_capture.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "f06859abf7606c91021e5153871caf250c70745d03051460404790664d27f0de"
+    },
+    {
+      "file": "slot1_volume_053.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "wire_value": 53,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "d3803f08f62643622d51db8bcf07607e6f09b316f523bfaa201378073866da64"
+    },
+    {
+      "file": "slot1_volume_099.bin",
+      "source": "acsim_volume_capture.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "wire_value": 99,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "10d9b62c944200f207d3070dfe8188ee02c76a67d2fb659bc59646d3d09a0aa8"
+    },
+    {
+      "file": "slot1_volume_100.bin",
+      "source": "acsim_volume_capture.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "wire_value": 100,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "28f547d4acc455be4b81164c1f3eae110bfec054c01296bc6a32f1e07e1bef5e"
+    },
+    {
+      "file": "slot1_mode_standard.bin",
+      "source": "acsim_mode_capture_enhanced - standard - jumbo - enhanced - piezo - standard.pcapng",
+      "slot": 1,
+      "parameter": "mode",
+      "selector": 3,
+      "wire_value": 0,
+      "value": "STANDARD",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "89204f553e5eb7f30ad7dc405e202cfd4b02997fdcab86135daf5e6b3db30b3e"
+    },
+    {
+      "file": "slot1_mode_jumbo.bin",
+      "source": "acsim_mode_capture_enhanced - standard - jumbo - enhanced - piezo - standard.pcapng",
+      "slot": 1,
+      "parameter": "mode",
+      "selector": 3,
+      "wire_value": 1,
+      "value": "JUMBO",
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "0e05c7e2cf4cc5867a8a90176eb416bfa3f994f6ed9309aaf7531e83569de786"
+    },
+    {
+      "file": "slot1_mode_enhanced.bin",
+      "source": "acsim_mode_capture_enhanced - standard - jumbo - enhanced - piezo - standard.pcapng",
+      "slot": 1,
+      "parameter": "mode",
+      "selector": 3,
+      "wire_value": 2,
+      "value": "ENHANCED",
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "e55e78998027990594596f1d378796e390d48d4e5b85a38b4268b8aa94ced999"
+    },
+    {
+      "file": "slot1_mode_piezo.bin",
+      "source": "acsim_mode_capture_enhanced - standard - jumbo - enhanced - piezo - standard.pcapng",
+      "slot": 1,
+      "parameter": "mode",
+      "selector": 3,
+      "wire_value": 3,
+      "value": "PIEZO",
+      "encoded_value": [
+        4,
+        0,
+        4,
+        0
+      ],
+      "sha256": "3bdcb55568de2a5c35a06969c49df8f6955ed36db223d9e2f93583ed36b185f8"
+    },
+    {
+      "file": "slot2_body_050.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+      "slot": 2,
+      "parameter": "body",
+      "selector": 0,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "60e1e3bd142728601e914f116be47e4374f8d1935af15de0f10a09f127fa3226"
+    },
+    {
+      "file": "slot2_body_051.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+      "slot": 2,
+      "parameter": "body",
+      "selector": 0,
+      "wire_value": 51,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "a9c4c58a2c2ed954969bbc419b48642ddc9f84310374f872b629045a6cbcf8c3"
+    },
+    {
+      "file": "slot2_top_050.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+      "slot": 2,
+      "parameter": "top",
+      "selector": 1,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d04f478b6318102c8bdf4ce70ad01a278fbb22ca9e4610ca4060c9b898133fcf"
+    },
+    {
+      "file": "slot2_top_052.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+      "slot": 2,
+      "parameter": "top",
+      "selector": 1,
+      "wire_value": 52,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "b99a8cc1fa794b9c6e34a591988c1a467d0a02c5a826ba652c0d5aad04315ed8"
+    },
+    {
+      "file": "slot2_volume_050.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 2,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "5f101e7a0d3f9677afb5666aa6f101d1e235c3640fd3e058743bc2a9c0d107dd"
+    },
+    {
+      "file": "slot2_volume_053.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 2,
+      "wire_value": 53,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "215526b27bc93245ffef0d14cd2f7f9abee463fb77c380c58852a9d9177deb3e"
+    },
+    {
+      "file": "slot2_mode_standard.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+      "slot": 2,
+      "parameter": "mode",
+      "selector": 3,
+      "wire_value": 0,
+      "value": "STANDARD",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "2cc6f0f0c932e2e287f3b1734d58bf0fbbf9c0663eba1365f7373cae53234dd4"
+    },
+    {
+      "file": "slot2_mode_enhanced.bin",
+      "source": "AC_SIM_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION_enhanced_standart_enhanced.pcapng",
+      "slot": 2,
+      "parameter": "mode",
+      "selector": 3,
+      "wire_value": 2,
+      "value": "ENHANCED",
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "f80d690c2deae510108143291772b86d2c6d26eefd126593c742e0c2fdd5ce92"
+    }
+  ]
+}
