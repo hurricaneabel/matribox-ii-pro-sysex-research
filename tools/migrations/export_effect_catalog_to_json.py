@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 1
+CATALOG_VERSION = 2
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -55,8 +55,9 @@ MBOOST_GAIN_SEED: dict[str, Any] = {
     "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "upper_float32_nibbles_v1",
-        "identification_status": "validated_single_parameter_effect",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
+            "parameter_selector": 0,
             "parameter_marker": 1,
             "parameter_type": 1,
         },
@@ -71,9 +72,83 @@ MBOOST_GAIN_SEED: dict[str, Any] = {
         "multiple_instances": True,
         "visual_reordering_independent": True,
         "physical_fixture_count": 27,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
         "evidence": "docs/phases/MBOOST_GAIN_VALIDATION_PHASE22.md",
     },
 }
+
+COMP1_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "sustain",
+        "name": "SUSTAIN",
+        "display_order": 1,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 0,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 0,
+            "multiple_parameters": True,
+            "physical_fixture_count": 22,
+            "evidence": "docs/phases/DYN_COMP1_PARAMETERS_PHASE24.md",
+        },
+    },
+    {
+        "key": "volume",
+        "name": "VOLUME",
+        "display_order": 2,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 1,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 1,
+            "multiple_parameters": True,
+            "physical_fixture_count": 22,
+            "evidence": "docs/phases/DYN_COMP1_PARAMETERS_PHASE24.md",
+        },
+    },
+)
+
 
 
 def slugify(value: str) -> str:
@@ -139,6 +214,10 @@ def _effect_document(
 
     if effect_key == "dyn.m_boost" and not parameters:
         parameters = [MBOOST_GAIN_SEED]
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.comp1" and not parameters:
+        parameters = list(COMP1_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
 

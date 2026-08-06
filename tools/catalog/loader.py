@@ -360,9 +360,7 @@ def _validate_profile_document(document: Mapping[str, Any], path: Path) -> None:
         "checksum",
         "direction",
         "command",
-        "model_id",
         "internal_slot",
-        "class_id",
         "value",
     }
     missing = sorted(required_fields.difference(fields))

@@ -1,7 +1,17 @@
 """Motor genérico de respostas de parâmetros da Matribox.
 
-A identificação de efeitos, parâmetros, campos e codecs vem integralmente do
-catálogo JSON. Este módulo é somente leitura e não envia SysEx.
+A mensagem ``0x1C`` informa o slot interno, o seletor do parâmetro e o valor,
+mas as capturas de M-BOOST e COMP1 provaram que os bytes 21–22 não são o
+``model_id`` do efeito: ambos usam o mesmo endereço ``01 04``. Portanto, a
+identidade do efeito deve vir da cadeia estrutural atual.
+
+Este módulo separa duas etapas:
+
+1. :class:`EffectParameterSignal` interpreta somente o envelope do protocolo;
+2. a resolução recebe a chave do efeito existente naquele slot e consulta o
+   catálogo JSON para identificar e decodificar o parâmetro correto.
+
+O módulo é somente leitura e não envia SysEx.
 """
 
 from __future__ import annotations
@@ -15,7 +25,6 @@ from tools.parameters.codecs import ParameterCodecError, ParameterValue, decode_
 
 
 MATRIBOX_HEADER = bytes.fromhex("F0 21 25 4D 50")
-CHECKSUM_INDEX_FALLBACK = 7
 
 
 class EffectParameterProtocolError(ValueError):
@@ -23,8 +32,26 @@ class EffectParameterProtocolError(ValueError):
 
 
 @dataclass(frozen=True, slots=True)
+class EffectParameterSignal:
+    """Envelope de parâmetro ainda não associado a um efeito específico."""
+
+    internal_slot_id: int
+    class_id: int | None
+    parameter_address: int | None
+    parameter_selector: int | None
+    encoded_value: bytes
+    observed_checksum: int
+    protocol_profile: str
+    raw_message: bytes
+
+    @property
+    def human_slot(self) -> int:
+        return self.internal_slot_id + 1
+
+
+@dataclass(frozen=True, slots=True)
 class EffectParameterEvent:
-    """Evento genérico de alteração de parâmetro recebido da pedaleira."""
+    """Evento de parâmetro resolvido contra o efeito real da cadeia."""
 
     internal_slot_id: int
     class_id: int
@@ -63,6 +90,25 @@ def _field_document(profile: ProtocolProfile, field_name: str) -> Mapping[str, A
     if not isinstance(field, dict):
         raise EffectParameterProtocolError(
             f"Perfil {profile.key} não define o campo {field_name!r}."
+        )
+    return field
+
+
+def _optional_field_document(
+    profile: ProtocolProfile,
+    field_name: str,
+) -> Mapping[str, Any] | None:
+    fields = profile.document.get("fields")
+    if not isinstance(fields, dict):
+        raise EffectParameterProtocolError(
+            f"Perfil {profile.key} não possui objeto fields válido."
+        )
+    field = fields.get(field_name)
+    if field is None:
+        return None
+    if not isinstance(field, dict):
+        raise EffectParameterProtocolError(
+            f"Perfil {profile.key} possui campo {field_name!r} inválido."
         )
     return field
 
@@ -106,6 +152,37 @@ def _decode_nibble_pair(raw_message: bytes, profile: ProtocolProfile, field_name
                 f"Nibble {label} inválido em {field_name}: 0x{value:02X}."
             )
     return (high << 4) | low
+
+
+def _decode_optional_nibble_pair(
+    raw_message: bytes,
+    profile: ProtocolProfile,
+    field_name: str,
+) -> int | None:
+    if _optional_field_document(profile, field_name) is None:
+        return None
+    return _decode_nibble_pair(raw_message, profile, field_name)
+
+
+def _read_optional_indexed_field(
+    raw_message: bytes,
+    profile: ProtocolProfile,
+    field_name: str,
+) -> int | None:
+    field = _optional_field_document(profile, field_name)
+    if field is None:
+        return None
+    index = field.get("index")
+    if isinstance(index, bool) or not isinstance(index, int):
+        raise EffectParameterProtocolError(
+            f"Campo {field_name!r} do perfil {profile.key} não possui index inteiro."
+        )
+    try:
+        return raw_message[index]
+    except IndexError as error:
+        raise EffectParameterProtocolError(
+            f"Campo {field_name!r} excede a mensagem do perfil {profile.key}."
+        ) from error
 
 
 def _extract_value(raw_message: bytes, profile: ProtocolProfile) -> bytes:
@@ -164,13 +241,13 @@ def _read_match_field(raw_message: bytes, profile: ProtocolProfile, field_name: 
 
 
 class EffectParameterDecoder:
-    """Decodifica mensagens usando perfis, efeitos e codecs do catálogo."""
+    """Decodifica o envelope e resolve o parâmetro usando o contexto da cadeia."""
 
     def __init__(self, catalog: EffectCatalog | None = None) -> None:
         self.catalog = catalog if catalog is not None else load_effect_catalog()
         self._profiles = self.catalog.protocol_profiles
+        self._profiles_by_key = {profile.key: profile for profile in self._profiles}
         self._codecs = {codec.key: codec for codec in self.catalog.value_codecs}
-        self._classes_by_id = {item.class_id: item for item in self.catalog.classes}
 
     def _profile_matches_envelope(self, raw_message: bytes, profile: ProtocolProfile) -> bool:
         document = profile.document
@@ -209,95 +286,165 @@ class EffectParameterDecoder:
             for field_name, expected in parameter.message_match.items()
         )
 
-    def _candidate_parameters(
+    def parse_signal(
         self,
-        raw_message: bytes,
-        profile: ProtocolProfile,
-        effect_models: tuple[EffectModel, ...],
-    ) -> tuple[tuple[EffectModel, ParameterDefinition], ...]:
-        result: list[tuple[EffectModel, ParameterDefinition]] = []
-        for effect in effect_models:
-            for parameter in effect.parameters:
-                if self._parameter_matches(raw_message, profile, parameter):
-                    result.append((effect, parameter))
-        return tuple(result)
+        message: bytes | bytearray,
+    ) -> EffectParameterSignal | None:
+        raw_message = bytes(message)
+        for profile in self._profiles:
+            if not self._profile_matches_envelope(raw_message, profile):
+                continue
 
-    def _decode_with_profile(
-        self,
-        raw_message: bytes,
-        profile: ProtocolProfile,
-    ) -> EffectParameterEvent | None:
-        internal_slot_id = _decode_nibble_pair(raw_message, profile, "internal_slot")
-        slot_field = _field_document(profile, "internal_slot")
-        minimum_slot = slot_field.get("minimum", 0)
-        maximum_slot = slot_field.get("maximum", 11)
-        if not minimum_slot <= internal_slot_id <= maximum_slot:
-            raise EffectParameterProtocolError(
-                f"Slot interno fora da faixa do perfil {profile.key}: {internal_slot_id + 1}."
+            internal_slot_id = _decode_nibble_pair(
+                raw_message,
+                profile,
+                "internal_slot",
             )
+            slot_field = _field_document(profile, "internal_slot")
+            minimum_slot = slot_field.get("minimum", 0)
+            maximum_slot = slot_field.get("maximum", 11)
+            if not minimum_slot <= internal_slot_id <= maximum_slot:
+                raise EffectParameterProtocolError(
+                    f"Slot interno fora da faixa do perfil {profile.key}: "
+                    f"{internal_slot_id + 1}."
+                )
 
-        class_id = _decode_nibble_pair(raw_message, profile, "class_id")
-        model_id = _decode_nibble_pair(raw_message, profile, "model_id")
-        effect_class = self._classes_by_id.get(class_id)
-        if effect_class is None:
-            return None
+            checksum_index = _field_index(profile, "checksum")
+            return EffectParameterSignal(
+                internal_slot_id=internal_slot_id,
+                class_id=_decode_optional_nibble_pair(
+                    raw_message,
+                    profile,
+                    "class_id",
+                ),
+                parameter_address=_decode_optional_nibble_pair(
+                    raw_message,
+                    profile,
+                    "parameter_address",
+                ),
+                parameter_selector=_read_optional_indexed_field(
+                    raw_message,
+                    profile,
+                    "parameter_selector",
+                ),
+                encoded_value=_extract_value(raw_message, profile),
+                observed_checksum=raw_message[checksum_index],
+                protocol_profile=profile.key,
+                raw_message=raw_message,
+            )
+        return None
 
-        effect_models = tuple(
-            effect for effect in effect_class.models if effect.model_id == model_id
+    def _candidate_parameters_for_effect(
+        self,
+        signal: EffectParameterSignal,
+        effect: EffectModel,
+    ) -> tuple[ParameterDefinition, ...]:
+        profile = self._profiles_by_key.get(signal.protocol_profile)
+        if profile is None:
+            raise EffectParameterProtocolError(
+                f"Perfil ausente durante a resolução: {signal.protocol_profile}."
+            )
+        return tuple(
+            parameter
+            for parameter in effect.parameters
+            if self._parameter_matches(signal.raw_message, profile, parameter)
         )
-        if not effect_models:
+
+    def resolve_signal(
+        self,
+        signal: EffectParameterSignal,
+        effect_key: str,
+    ) -> EffectParameterEvent | None:
+        try:
+            effect = self.catalog.effect_by_key(effect_key)
+            effect_class = self.catalog.class_by_key(effect.class_key)
+        except KeyError:
             return None
 
-        candidates = self._candidate_parameters(raw_message, profile, effect_models)
+        if signal.class_id is not None and signal.class_id != effect_class.class_id:
+            return None
+
+        candidates = self._candidate_parameters_for_effect(signal, effect)
         if not candidates:
             return None
         if len(candidates) > 1:
             labels = ", ".join(
-                f"{effect.key}.{parameter.key}" for effect, parameter in candidates
+                f"{effect.key}.{parameter.key}" for parameter in candidates
             )
             raise EffectParameterProtocolError(
-                "Mensagem de parâmetro ambígua no catálogo: " + labels
+                "Mensagem de parâmetro ambígua dentro do efeito: " + labels
             )
 
-        effect, parameter = candidates[0]
+        parameter = candidates[0]
         codec = self._codecs.get(parameter.value_codec or "")
         if codec is None:
             raise EffectParameterProtocolError(
                 f"Codec não encontrado para {effect.key}.{parameter.key}."
             )
 
-        encoded_value = _extract_value(raw_message, profile)
         try:
-            value = decode_parameter_value(encoded_value, parameter, codec)
+            value = decode_parameter_value(signal.encoded_value, parameter, codec)
         except ParameterCodecError as error:
             raise EffectParameterProtocolError(str(error)) from error
 
-        checksum_index = _field_index(profile, "checksum")
         return EffectParameterEvent(
-            internal_slot_id=internal_slot_id,
-            class_id=class_id,
+            internal_slot_id=signal.internal_slot_id,
+            class_id=effect_class.class_id,
             class_key=effect_class.key,
             class_name=effect_class.name,
-            model_id=model_id,
+            model_id=effect.model_id,
             effect_key=effect.key,
             effect_name=effect.name,
             parameter_key=parameter.key,
             parameter_name=parameter.name,
             value=value,
             unit=parameter.unit,
-            encoded_value=encoded_value,
-            observed_checksum=raw_message[checksum_index],
-            protocol_profile=profile.key,
+            encoded_value=signal.encoded_value,
+            observed_checksum=signal.observed_checksum,
+            protocol_profile=signal.protocol_profile,
             value_codec=codec.key,
-            raw_message=raw_message,
+            raw_message=signal.raw_message,
         )
 
-    def parse(self, message: bytes | bytearray) -> EffectParameterEvent | None:
-        raw_message = bytes(message)
-        for profile in self._profiles:
-            if self._profile_matches_envelope(raw_message, profile):
-                return self._decode_with_profile(raw_message, profile)
-        return None
+    def parse(
+        self,
+        message: bytes | bytearray,
+        *,
+        effect_key: str | None = None,
+    ) -> EffectParameterEvent | None:
+        """Decodifica com contexto explícito ou exige identificação não ambígua.
+
+        A aplicação ao vivo deve sempre fornecer ``effect_key`` obtido da cadeia
+        atual. A resolução global sem contexto é mantida apenas para análises e
+        falha explicitamente quando mais de um efeito aceita a mesma mensagem.
+        """
+
+        signal = self.parse_signal(message)
+        if signal is None:
+            return None
+        if effect_key is not None:
+            return self.resolve_signal(signal, effect_key)
+
+        resolved: list[EffectParameterEvent] = []
+        for effect_class in self.catalog.classes:
+            if signal.class_id is not None and effect_class.class_id != signal.class_id:
+                continue
+            for effect in effect_class.models:
+                event = self.resolve_signal(signal, effect.key)
+                if event is not None:
+                    resolved.append(event)
+
+        if not resolved:
+            return None
+        if len(resolved) > 1:
+            labels = ", ".join(
+                f"{event.effect_key}.{event.parameter_key}" for event in resolved
+            )
+            raise EffectParameterProtocolError(
+                "A mensagem exige contexto da cadeia para identificar o efeito: "
+                + labels
+            )
+        return resolved[0]
 
 
 _DEFAULT_DECODER: EffectParameterDecoder | None = None
@@ -310,9 +457,28 @@ def get_default_parameter_decoder() -> EffectParameterDecoder:
     return _DEFAULT_DECODER
 
 
+def parse_effect_parameter_signal(
+    message: bytes | bytearray,
+) -> EffectParameterSignal | None:
+    """Interpreta o envelope sem presumir qual efeito ocupa o slot."""
+
+    return get_default_parameter_decoder().parse_signal(message)
+
+
+def resolve_effect_parameter_signal(
+    signal: EffectParameterSignal,
+    effect_key: str,
+) -> EffectParameterEvent | None:
+    """Resolve um sinal usando a identidade estrutural do efeito no slot."""
+
+    return get_default_parameter_decoder().resolve_signal(signal, effect_key)
+
+
 def parse_effect_parameter_response(
     message: bytes | bytearray,
+    *,
+    effect_key: str | None = None,
 ) -> EffectParameterEvent | None:
-    """Atalho para o decodificador do catálogo padrão."""
+    """Atalho compatível para decodificação com contexto opcional."""
 
-    return get_default_parameter_decoder().parse(message)
+    return get_default_parameter_decoder().parse(message, effect_key=effect_key)

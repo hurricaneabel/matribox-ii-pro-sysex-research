@@ -1229,3 +1229,55 @@ catálogo central. A integração acrescenta testes para:
 Após esta integração, o catálogo possui 16 classes e 267 posições/modelos,
 com 158 testes automáticos aprovados.
 
+
+## Parâmetros ao vivo — comando 0x1C
+
+As capturas de `DYN / M-BOOST` e `DYN / COMP1` confirmaram respostas SysEx de
+70 bytes para mudanças de parâmetros:
+
+```text
+39–40  slot interno zero-based
+41–42  classe observada (DYN = 00 00 nas capturas atuais)
+48     seletor do parâmetro
+59–62  valor em quatro nibbles
+63–64  marcador/tipo = 01 01
+```
+
+O valor usa o codec `upper_float32_nibbles_v1`: os dois bytes superiores de um
+float32 little-endian são transmitidos como quatro nibbles. As faixas 0–100 de
+M-BOOST/GAIN e COMP1/SUSTAIN/VOLUME usam esse mesmo codec.
+
+Seletores confirmados:
+
+```text
+M-BOOST / GAIN   = 0
+COMP1 / SUSTAIN  = 0
+COMP1 / VOLUME   = 1
+```
+
+### Identidade do efeito não vem do suposto model_id
+
+Os índices `21–22` permanecem `01 04` tanto no M-BOOST, cujo model_id
+estrutural é `0x14`, quanto no COMP1, cujo model_id estrutural é `0x00`.
+Portanto, esse campo não pode ser interpretado como model_id.
+
+A resolução correta é contextual:
+
+```text
+slot recebido no 0x1C
+  → registro estrutural atual daquele slot
+  → efeito do catálogo JSON
+  → seletor do parâmetro no índice 48
+  → codec e valor
+```
+
+Sem a cadeia atual, uma mensagem com seletor `0` é ambígua: pode representar
+GAIN no M-BOOST ou SUSTAIN no COMP1. O motor deve exigir o efeito real do slot
+antes de produzir `EffectParameterEvent`.
+
+Evidências mínimas:
+
+```text
+tests/fixtures/mboost_gain/
+tests/fixtures/comp1_parameters/
+```

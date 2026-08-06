@@ -103,7 +103,7 @@ def main() -> int:
     arguments = parse_arguments()
     core = PresetMonitorCore()
 
-    print("FASE 23B — VALIDADOR GENÉRICO DE PARÂMETROS")
+    print("MATRIBOX — VALIDADOR GENÉRICO DE PARÂMETROS")
     print("------------------------------------------------")
     print("Somente leitura: nenhum parâmetro será alterado.")
     print(f"Entrada: {arguments.input_port}")

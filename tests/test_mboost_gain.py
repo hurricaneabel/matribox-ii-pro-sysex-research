@@ -8,8 +8,8 @@ import unittest
 from tools.commands.mboost_gain import (
     COMMAND_INDEX,
     EXPECTED_MESSAGE_LENGTH,
-    MODEL_HIGH_INDEX,
-    MODEL_LOW_INDEX,
+    PARAMETER_ADDRESS_HIGH_INDEX,
+    PARAMETER_ADDRESS_LOW_INDEX,
     MBoostGainProtocolError,
     SLOT_HIGH_INDEX,
     SLOT_LOW_INDEX,
@@ -128,9 +128,9 @@ class MBoostGainValidationTests(unittest.TestCase):
         self.message[COMMAND_INDEX] = 0x1B
         self.assertIsNone(parse_mboost_gain_response(self.message))
 
-    def test_other_model_is_ignored(self) -> None:
-        self.message[MODEL_HIGH_INDEX] = 0x01
-        self.message[MODEL_LOW_INDEX] = 0x05
+    def test_other_parameter_address_is_ignored(self) -> None:
+        self.message[PARAMETER_ADDRESS_HIGH_INDEX] = 0x01
+        self.message[PARAMETER_ADDRESS_LOW_INDEX] = 0x05
         self.assertIsNone(parse_mboost_gain_response(self.message))
 
     def test_out_of_range_gain_is_rejected(self) -> None:

@@ -82,7 +82,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 self.assertFalse(Path(relative).is_absolute())
                 self.assertNotIn("..", Path(relative).parts)
 
-    def test_mboost_gain_is_the_first_validated_parameter(self) -> None:
+    def test_mboost_gain_remains_physically_validated(self) -> None:
         mboost = self.catalog.effect_by_key("dyn.m_boost")
         self.assertEqual(mboost.name, "M-BOOST")
         self.assertEqual(mboost.model_id, 0x14)
@@ -96,18 +96,50 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         self.assertEqual((gain.minimum, gain.maximum, gain.step), (0, 100, 1))
         self.assertEqual(gain.protocol_profile, "effect_parameter_response_1c_v1")
         self.assertEqual(gain.value_codec, "upper_float32_nibbles_v1")
-        self.assertEqual(dict(gain.message_match), {"parameter_marker": 1, "parameter_type": 1})
+        self.assertEqual(
+            dict(gain.message_match),
+            {
+                "parameter_selector": 0,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        )
         self.assertTrue(gain.validation["physical"])
         self.assertTrue(gain.validation["multiple_instances"])
+
+
+    def test_comp1_has_two_physically_validated_parameters(self) -> None:
+        comp1 = self.catalog.effect_by_key("dyn.comp1")
+        self.assertEqual(comp1.name, "COMP1")
+        self.assertEqual(comp1.model_id, 0x00)
+        self.assertEqual(comp1.parameter_catalog_status, "physically_validated")
+        self.assertEqual(comp1.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in comp1.parameters),
+            ("sustain", "volume"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in comp1.parameters),
+            (0, 1),
+        )
+        for parameter in comp1.parameters:
+            self.assertEqual(
+                (parameter.minimum, parameter.maximum, parameter.step),
+                (0, 100, 1),
+            )
+            self.assertEqual(
+                parameter.identification_status,
+                "validated_with_chain_effect_context",
+            )
 
     def test_uncataloged_effects_do_not_invent_parameters(self) -> None:
         pending = [
             model
             for effect_class in self.catalog.classes
             for model in effect_class.models
-            if model.key != "dyn.m_boost"
+            if model.key not in {"dyn.m_boost", "dyn.comp1"}
         ]
-        self.assertEqual(len(pending), 266)
+        self.assertEqual(len(pending), 265)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -122,6 +154,9 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         self.assertEqual(profile["command"], 0x1C)
         self.assertEqual(profile["message_length"], 70)
         self.assertEqual(profile["fields"]["internal_slot"]["indices"], [39, 40])
+        self.assertEqual(profile["fields"]["parameter_selector"]["index"], 48)
+        self.assertEqual(profile["fields"]["parameter_address"]["indices"], [21, 22])
+        self.assertNotIn("model_id", profile["fields"])
         self.assertEqual(profile["fields"]["value"]["start_index"], 59)
         self.assertEqual(profile["fields"]["value"]["end_index_exclusive"], 63)
         self.assertEqual(codec["encoded_length"], 4)
@@ -153,7 +188,15 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 structural_snapshot(self.catalog.classes),
             )
             exported_mboost = exported.effect_by_key("dyn.m_boost")
-            self.assertEqual(exported_mboost.parameters, self.catalog.effect_by_key("dyn.m_boost").parameters)
+            exported_comp1 = exported.effect_by_key("dyn.comp1")
+            self.assertEqual(
+                exported_mboost.parameters,
+                self.catalog.effect_by_key("dyn.m_boost").parameters,
+            )
+            self.assertEqual(
+                exported_comp1.parameters,
+                self.catalog.effect_by_key("dyn.comp1").parameters,
+            )
 
     def test_loader_rejects_effect_key_from_another_class(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

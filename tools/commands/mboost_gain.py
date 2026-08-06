@@ -26,8 +26,12 @@ COMMAND_INDEX: Final = 9
 DIRECTION_INCOMING: Final = 0x00
 COMMAND_PARAMETER: Final = 0x1C
 
-MODEL_HIGH_INDEX: Final = 21
-MODEL_LOW_INDEX: Final = 22
+PARAMETER_ADDRESS_HIGH_INDEX: Final = 21
+PARAMETER_ADDRESS_LOW_INDEX: Final = 22
+# Aliases históricos da Fase 22. As capturas do COMP1 provaram que esses bytes
+# não representam o model_id do efeito.
+MODEL_HIGH_INDEX: Final = PARAMETER_ADDRESS_HIGH_INDEX
+MODEL_LOW_INDEX: Final = PARAMETER_ADDRESS_LOW_INDEX
 SLOT_HIGH_INDEX: Final = 39
 SLOT_LOW_INDEX: Final = 40
 CLASS_HIGH_INDEX: Final = 41
@@ -93,7 +97,10 @@ def parse_mboost_gain_response(
     """Adapta o evento genérico para a API histórica do M-BOOST."""
 
     try:
-        event = parse_effect_parameter_response(message)
+        event = parse_effect_parameter_response(
+            message,
+            effect_key="dyn.m_boost",
+        )
     except EffectParameterProtocolError as error:
         raise MBoostGainProtocolError(str(error)) from error
 

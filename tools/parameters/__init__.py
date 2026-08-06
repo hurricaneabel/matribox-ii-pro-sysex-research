@@ -10,7 +10,10 @@ from tools.parameters.decoder import (
     EffectParameterDecoder,
     EffectParameterEvent,
     EffectParameterProtocolError,
+    EffectParameterSignal,
     parse_effect_parameter_response,
+    parse_effect_parameter_signal,
+    resolve_effect_parameter_signal,
 )
 from tools.parameters.state import EffectParameterState
 
@@ -18,10 +21,13 @@ __all__ = (
     "EffectParameterDecoder",
     "EffectParameterEvent",
     "EffectParameterProtocolError",
+    "EffectParameterSignal",
     "EffectParameterState",
     "ParameterCodecError",
     "ParameterValue",
     "decode_parameter_value",
     "decode_upper_float32_nibbles",
     "parse_effect_parameter_response",
+    "parse_effect_parameter_signal",
+    "resolve_effect_parameter_signal",
 )

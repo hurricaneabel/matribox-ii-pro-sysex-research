@@ -16,3 +16,4 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 22 | `MBOOST_GAIN_VALIDATION_PHASE22.md` | M-BOOST/GAIN isolado e validado |
 | 23A | `EFFECT_CATALOG_JSON_PHASE23A.md` | catálogo multiplataforma em JSON |
 | 23B | `EFFECT_PARAMETER_ENGINE_PHASE23B.md` | motor genérico de parâmetros |
+| 24 | `DYN_COMP1_PARAMETERS_PHASE24.md` | COMP1 com SUSTAIN/VOLUME e resolução pelo contexto da cadeia |

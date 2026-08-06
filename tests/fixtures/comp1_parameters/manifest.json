@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.comp1",
+    "name": "COMP1",
+    "model_id": 0,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Não representa o model_id do efeito; COMP1 e M-BOOST usam o mesmo valor."
+    }
+  },
+  "parameters": [
+    {
+      "key": "sustain",
+      "name": "SUSTAIN",
+      "selector": 0,
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "selector": 1,
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "COMP1_SLOT2_SUSTAIN_AND_VOLUME_50_51_50.pcapng"
+  ],
+  "physical_binary_fixtures": 22,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_sustain_000.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 0,
+      "sha256": "43bb8d44e0d83fed7584f9db4cd7ba960ab49805448d01cb216fc8e48cae3f46"
+    },
+    {
+      "file": "slot1_sustain_001.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 1,
+      "sha256": "d3596d9ff6a43abe789a4db28a200a24bfdab6530a4cce1584cf1cd0dafa6616"
+    },
+    {
+      "file": "slot1_sustain_002.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 2,
+      "sha256": "51ab3d3f61424a0bdec3bbb89e1ceeff030df04d83c7d62b8e26a4619d395553"
+    },
+    {
+      "file": "slot1_sustain_010.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 10,
+      "sha256": "806bee3aa5e0e95cec9a2134a395685f58402d03192500a943a63eaa277b7287"
+    },
+    {
+      "file": "slot1_sustain_025.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 25,
+      "sha256": "70f9b4481cd307d454d5bd61636a3f6d59dd958b41369760c83a9e889e587a37"
+    },
+    {
+      "file": "slot1_sustain_050.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 50,
+      "sha256": "bd16d5f7137688347d1b831218af6b4f59b20b0f63c12f52b6d8d741a33d75e8"
+    },
+    {
+      "file": "slot1_sustain_075.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 75,
+      "sha256": "6c8d0642b0cdf25485b7cb2cc3c406c23658bd1024b2c59e10682f897c3887bc"
+    },
+    {
+      "file": "slot1_sustain_099.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 99,
+      "sha256": "8b2a88c6fd2a59cb239d075f214b4fe1b0804b673a18dd1384416fc4ecd61e4a"
+    },
+    {
+      "file": "slot1_sustain_100.bin",
+      "source": "COMP1_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 100,
+      "sha256": "11f1f88b686b7f18425eb251912777248970ecca506b22975ad305bca743ace9"
+    },
+    {
+      "file": "slot1_volume_000.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 0,
+      "sha256": "5b542ec3410cbed15e12dac93f5ca9a502d3afcca12b023b5f50f9e907bed3f9"
+    },
+    {
+      "file": "slot1_volume_001.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 1,
+      "sha256": "efc92bd87bfd42cb60a12a708031523b38b8056d6e6fa7f5094c4cffa6874b58"
+    },
+    {
+      "file": "slot1_volume_002.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 2,
+      "sha256": "3c1231fc6953a20968ce46af7abc3b65d3952946b7771cbb21dfba9107b9722d"
+    },
+    {
+      "file": "slot1_volume_010.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 10,
+      "sha256": "2ddd16b6d8b75b1fa6f98070f005778857b3fa318c0dd407e9ce45aa44dfdc24"
+    },
+    {
+      "file": "slot1_volume_025.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 25,
+      "sha256": "b807a62de5623f4241ca6c03a561145d9ca6f5d1a3ef25f980837728e30ec0aa"
+    },
+    {
+      "file": "slot1_volume_050.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 50,
+      "sha256": "b6fd604bb81101b91f927cfbd5f30c1515314ffdf7b265c82bc2e021cbdc6d7b"
+    },
+    {
+      "file": "slot1_volume_075.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 75,
+      "sha256": "7d3beae66237f3882ba159fde42a8f9168c9684df84e748541ab7d133bbf7398"
+    },
+    {
+      "file": "slot1_volume_099.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 99,
+      "sha256": "ab10666544f67751cb91abf1c05df7449d9222a3ce06516203bf52c31903b60e"
+    },
+    {
+      "file": "slot1_volume_100.bin",
+      "source": "COMP1_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 100,
+      "sha256": "c28aef33efd7f7150b75c34014f43aeb5989d5ff2d5cb8cb0ab7fe4d177527ef"
+    },
+    {
+      "file": "slot2_sustain_051.bin",
+      "source": "COMP1_SLOT2_SUSTAIN_AND_VOLUME_50_51_50.pcapng",
+      "slot": 2,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 51,
+      "sha256": "59ada2f029fc6494dd09b8f353f796b0145029dded2b875f7dd985976d1d1535"
+    },
+    {
+      "file": "slot2_sustain_050.bin",
+      "source": "COMP1_SLOT2_SUSTAIN_AND_VOLUME_50_51_50.pcapng",
+      "slot": 2,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 50,
+      "sha256": "34ce8bb478fc5d148f2de67228a7231bb954f45e67235d53a29264d55a9776a9"
+    },
+    {
+      "file": "slot2_volume_051.bin",
+      "source": "COMP1_SLOT2_SUSTAIN_AND_VOLUME_50_51_50.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 51,
+      "sha256": "b077c77537b27e32e3feacbf657ae3ac3d85933b4768f0d8fa9baa618cd825be"
+    },
+    {
+      "file": "slot2_volume_050.bin",
+      "source": "COMP1_SLOT2_SUSTAIN_AND_VOLUME_50_51_50.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 50,
+      "sha256": "c63f1fd080224b7de1107ff8b14bc35756832bfcb075688e16c4bd1a2c5ce2d3"
+    }
+  ],
+  "monitor_validation": {
+    "status": "pending",
+    "read_only": true
+  }
+}

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 import unittest
 
 from tools.commands.chain_order import ChainOrderState
@@ -15,10 +16,13 @@ from tools.parameters import (
     EffectParameterProtocolError,
     EffectParameterState,
     parse_effect_parameter_response,
+    parse_effect_parameter_signal,
+    resolve_effect_parameter_signal,
 )
 
 
-FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "mboost_gain"
+MBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "mboost_gain"
+COMP1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "comp1_parameters"
 
 
 def make_chain(*, internal_slot_id: int, effect_key: str) -> ChainOrderState:
@@ -85,12 +89,15 @@ def prepare_core(chain: ChainOrderState) -> PresetMonitorCore:
 
 class GenericParameterDecoderTests(unittest.TestCase):
     def test_all_physical_mboost_fixtures_are_catalog_driven(self) -> None:
-        fixtures = sorted(FIXTURE_ROOT.glob("*.bin"))
+        fixtures = sorted(MBOOST_FIXTURE_ROOT.glob("*.bin"))
         self.assertEqual(len(fixtures), 27)
 
         for fixture in fixtures:
             with self.subTest(fixture=fixture.name):
-                event = parse_effect_parameter_response(fixture.read_bytes())
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(),
+                    effect_key="dyn.m_boost",
+                )
                 self.assertIsNotNone(event)
                 assert event is not None
                 self.assertEqual(event.effect_key, "dyn.m_boost")
@@ -99,20 +106,79 @@ class GenericParameterDecoderTests(unittest.TestCase):
                 self.assertEqual(event.value_codec, "upper_float32_nibbles_v1")
                 self.assertEqual(event.parameter_name, "GAIN")
 
-    def test_fixed_segment_mismatch_is_ignored(self) -> None:
-        message = bytearray((FIXTURE_ROOT / "slot1_gain_050.bin").read_bytes())
-        message[30] ^= 0x01
-        self.assertIsNone(parse_effect_parameter_response(message))
+    def test_all_physical_comp1_fixtures_resolve_by_effect_context(self) -> None:
+        fixtures = sorted(COMP1_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 22)
 
-    def test_invalid_cataloged_value_is_rejected(self) -> None:
-        message = bytearray((FIXTURE_ROOT / "slot1_gain_100.bin").read_bytes())
-        message[59:63] = bytes((0x0C, 0x0A, 0x04, 0x02))  # float superior de 101
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(),
+                    effect_key="dyn.comp1",
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                parts = fixture.stem.split("_")
+                expected_slot = int(parts[0].removeprefix("slot"))
+                expected_parameter = parts[1]
+                expected_value = int(parts[2])
+                self.assertEqual(event.human_slot, expected_slot)
+                self.assertEqual(event.effect_key, "dyn.comp1")
+                self.assertEqual(event.parameter_key, expected_parameter)
+                self.assertEqual(event.value, expected_value)
+
+    def test_same_selector_zero_requires_chain_effect_context(self) -> None:
+        message = (COMP1_FIXTURE_ROOT / "slot1_sustain_050.bin").read_bytes()
+
         with self.assertRaises(EffectParameterProtocolError):
             parse_effect_parameter_response(message)
 
+        comp1 = parse_effect_parameter_response(message, effect_key="dyn.comp1")
+        mboost = parse_effect_parameter_response(message, effect_key="dyn.m_boost")
+        assert comp1 is not None and mboost is not None
+        self.assertEqual(comp1.parameter_key, "sustain")
+        self.assertEqual(mboost.parameter_key, "gain")
+        self.assertEqual(comp1.value, 50)
+        self.assertEqual(mboost.value, 50)
+
+    def test_signal_exposes_slot_selector_and_shared_parameter_address(self) -> None:
+        signal = parse_effect_parameter_signal(
+            (COMP1_FIXTURE_ROOT / "slot2_volume_051.bin").read_bytes()
+        )
+        self.assertIsNotNone(signal)
+        assert signal is not None
+        self.assertEqual(signal.human_slot, 2)
+        self.assertEqual(signal.class_id, 0)
+        self.assertEqual(signal.parameter_address, 0x14)
+        self.assertEqual(signal.parameter_selector, 1)
+
+    def test_signal_can_be_resolved_after_chain_lookup(self) -> None:
+        signal = parse_effect_parameter_signal(
+            (COMP1_FIXTURE_ROOT / "slot2_sustain_051.bin").read_bytes()
+        )
+        assert signal is not None
+        event = resolve_effect_parameter_signal(signal, "dyn.comp1")
+        self.assertIsNotNone(event)
+        assert event is not None
+        self.assertEqual(event.parameter_key, "sustain")
+        self.assertEqual(event.value, 51)
+        self.assertEqual(event.model_id, 0)
+
+    def test_fixed_segment_mismatch_is_ignored(self) -> None:
+        message = bytearray((MBOOST_FIXTURE_ROOT / "slot1_gain_050.bin").read_bytes())
+        message[30] ^= 0x01
+        self.assertIsNone(parse_effect_parameter_signal(message))
+
+    def test_invalid_cataloged_value_is_rejected_after_context_resolution(self) -> None:
+        message = bytearray((MBOOST_FIXTURE_ROOT / "slot1_gain_100.bin").read_bytes())
+        message[59:63] = bytes((0x0C, 0x0A, 0x04, 0x02))  # float superior de 101
+        with self.assertRaises(EffectParameterProtocolError):
+            parse_effect_parameter_response(message, effect_key="dyn.m_boost")
+
     def test_event_exposes_portable_human_fields(self) -> None:
         event = parse_effect_parameter_response(
-            (FIXTURE_ROOT / "slot2_skreamer_gain_050.bin").read_bytes()
+            (MBOOST_FIXTURE_ROOT / "slot2_skreamer_gain_050.bin").read_bytes(),
+            effect_key="dyn.m_boost",
         )
         assert event is not None
         self.assertEqual(event.human_slot, 2)
@@ -127,10 +193,12 @@ class ParameterStateTests(unittest.TestCase):
     def test_multiple_instances_keep_independent_values(self) -> None:
         state = EffectParameterState()
         first = parse_effect_parameter_response(
-            (FIXTURE_ROOT / "slot1_gain_050.bin").read_bytes()
+            (MBOOST_FIXTURE_ROOT / "slot1_gain_050.bin").read_bytes(),
+            effect_key="dyn.m_boost",
         )
         second = parse_effect_parameter_response(
-            (FIXTURE_ROOT / "slot2_skreamer_gain_075.bin").read_bytes()
+            (MBOOST_FIXTURE_ROOT / "slot2_skreamer_gain_075.bin").read_bytes(),
+            effect_key="dyn.m_boost",
         )
         assert first is not None and second is not None
 
@@ -140,10 +208,27 @@ class ParameterStateTests(unittest.TestCase):
         self.assertEqual(state.event_for(0, "dyn.m_boost", "gain").value, 50)
         self.assertEqual(state.event_for(1, "dyn.m_boost", "gain").value, 75)
 
+    def test_multiple_parameters_in_same_effect_keep_independent_values(self) -> None:
+        state = EffectParameterState()
+        sustain = parse_effect_parameter_response(
+            (COMP1_FIXTURE_ROOT / "slot2_sustain_051.bin").read_bytes(),
+            effect_key="dyn.comp1",
+        )
+        volume = parse_effect_parameter_response(
+            (COMP1_FIXTURE_ROOT / "slot2_volume_050.bin").read_bytes(),
+            effect_key="dyn.comp1",
+        )
+        assert sustain is not None and volume is not None
+        state.apply(sustain)
+        state.apply(volume)
+        self.assertEqual(state.event_for(1, "dyn.comp1", "sustain").value, 51)
+        self.assertEqual(state.event_for(1, "dyn.comp1", "volume").value, 50)
+
     def test_retain_effects_discards_stale_slot_value(self) -> None:
         state = EffectParameterState()
         event = parse_effect_parameter_response(
-            (FIXTURE_ROOT / "slot1_gain_050.bin").read_bytes()
+            (MBOOST_FIXTURE_ROOT / "slot1_gain_050.bin").read_bytes(),
+            effect_key="dyn.m_boost",
         )
         assert event is not None
         state.apply(event)
@@ -161,22 +246,56 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         self.assertIn("DYN / M-BOOST — ligado", formatted)
         self.assertIn("GAIN: aguardando alteração", formatted)
 
-    def test_live_event_updates_gain_in_main_snapshot(self) -> None:
-        core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.m_boost"))
-        update = core.feed(
-            (FIXTURE_ROOT / "slot2_skreamer_gain_050.bin").read_bytes()
+    def test_monitor_lists_two_comp1_parameters_in_catalog_order(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.comp1"))
+        snapshot = core.snapshot
+        assert snapshot is not None
+        self.assertEqual(
+            tuple(parameter.name for parameter in snapshot.effects[0].parameters),
+            ("SUSTAIN", "VOLUME"),
         )
+        formatted = format_monitor_snapshot(snapshot)
+        self.assertIn("SUSTAIN: aguardando alteração", formatted)
+        self.assertIn("VOLUME: aguardando alteração", formatted)
 
+    def test_live_events_update_comp1_parameters_independently(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.comp1"))
+
+        sustain_update = core.feed(
+            (COMP1_FIXTURE_ROOT / "slot2_sustain_051.bin").read_bytes()
+        )
+        self.assertIsNotNone(sustain_update.parameter_event)
+        assert sustain_update.snapshot is not None
+        parameters = sustain_update.snapshot.effects[0].parameters
+        self.assertEqual(parameters[0].value, 51)
+        self.assertIsNone(parameters[1].value)
+
+        volume_update = core.feed(
+            (COMP1_FIXTURE_ROOT / "slot2_volume_050.bin").read_bytes()
+        )
+        self.assertIsNotNone(volume_update.parameter_event)
+        assert volume_update.snapshot is not None
+        parameters = volume_update.snapshot.effects[0].parameters
+        self.assertEqual(parameters[0].value, 51)
+        self.assertEqual(parameters[1].value, 50)
+        formatted = format_monitor_snapshot(volume_update.snapshot)
+        self.assertIn("SUSTAIN: 51", formatted)
+        self.assertIn("VOLUME: 50", formatted)
+
+    def test_chain_context_resolves_selector_zero_as_mboost_gain(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.m_boost"))
+        update = core.feed(
+            (COMP1_FIXTURE_ROOT / "slot1_sustain_050.bin").read_bytes()
+        )
         self.assertIsNotNone(update.parameter_event)
-        self.assertTrue(update.snapshot_changed)
-        assert update.snapshot is not None
-        self.assertEqual(update.snapshot.effects[0].parameters[0].value, 50)
-        self.assertIn("GAIN: 50", format_monitor_snapshot(update.snapshot))
+        assert update.parameter_event is not None
+        self.assertEqual(update.parameter_event.effect_key, "dyn.m_boost")
+        self.assertEqual(update.parameter_event.parameter_key, "gain")
 
     def test_event_for_other_effect_in_same_slot_is_ignored(self) -> None:
         core = prepare_core(make_chain(internal_slot_id=1, effect_key="drv.skreamer"))
         update = core.feed(
-            (FIXTURE_ROOT / "slot2_skreamer_gain_050.bin").read_bytes()
+            (MBOOST_FIXTURE_ROOT / "slot2_skreamer_gain_050.bin").read_bytes()
         )
 
         self.assertIsNone(update.parameter_event)
@@ -185,9 +304,10 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         self.assertEqual(update.snapshot.effects[0].parameters, ())
 
     def test_preset_change_clears_known_parameter_values(self) -> None:
-        chain = make_chain(internal_slot_id=1, effect_key="dyn.m_boost")
+        chain = make_chain(internal_slot_id=1, effect_key="dyn.comp1")
         core = prepare_core(chain)
-        core.feed((FIXTURE_ROOT / "slot2_skreamer_gain_050.bin").read_bytes())
+        core.feed((COMP1_FIXTURE_ROOT / "slot2_sustain_051.bin").read_bytes())
+        core.feed((COMP1_FIXTURE_ROOT / "slot2_volume_050.bin").read_bytes())
 
         preset_message = bytearray(build_select_preset("01B"))
         preset_message[8] = 0x00
@@ -197,7 +317,27 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         core.apply_chain_state(chain)
         snapshot = core.snapshot
         assert snapshot is not None
-        self.assertIsNone(snapshot.effects[0].parameters[0].value)
+        self.assertTrue(
+            all(parameter.value is None for parameter in snapshot.effects[0].parameters)
+        )
+
+
+class Comp1EvidenceManifestTests(unittest.TestCase):
+    def test_manifest_preserves_capture_sources_and_protocol_finding(self) -> None:
+        manifest = json.loads(
+            (COMP1_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["physical_binary_fixtures"], 22)
+        self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+        self.assertEqual(len(manifest["controlled_capture_sources"]), 3)
+        self.assertEqual(
+            manifest["protocol"]["effect_identity_source"],
+            "current_chain",
+        )
+        self.assertEqual(
+            manifest["protocol"]["observed_parameter_address"]["value"],
+            [1, 4],
+        )
 
 
 if __name__ == "__main__":

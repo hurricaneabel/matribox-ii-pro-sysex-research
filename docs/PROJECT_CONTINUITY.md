@@ -3,8 +3,10 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 23B — motor genérico de parâmetros orientado pelo
-> catálogo JSON, aprovado offline e fisicamente no monitor principal
+> **Marco consolidado:** Fase 24 — DYN / COMP1 com SUSTAIN e VOLUME,
+> motor genérico corrigido para resolver parâmetros pelo efeito real da cadeia,
+> aprovado offline e fisicamente no monitor principal
+> **Próxima frente:** escolher e catalogar o próximo efeito da classe DYN
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/dyn-parameters`
 
@@ -77,10 +79,13 @@ O estado atual já permite:
 - alterar modelo, bypass e volume usando comandos conhecidos;
 - reconhecer e decodificar em tempo real o parâmetro `GAIN` de qualquer
   instância de `DYN / M-BOOST` por um motor genérico orientado pelo JSON;
+- reconhecer `SUSTAIN` e `VOLUME` do `DYN / COMP1`, mantendo os dois valores
+  independentes no mesmo slot;
 - apresentar parâmetros catalogados no monitor principal e manter valores
-  separados por slot interno e instância;
-- carregar as 16 classes, 267 efeitos e o primeiro parâmetro validado a partir
-  de um catálogo JSON versionado e independente de Python/Windows.
+  separados por slot interno, efeito e parâmetro;
+- carregar as 16 classes, 267 efeitos e três parâmetros confirmados em dois
+  efeitos DYN a partir de um catálogo JSON versionado e independente de
+  Python/Windows.
 
 ## 4. Programa principal atual
 
@@ -112,6 +117,10 @@ como:
 ```text
   2. DYN / M-BOOST — ligado
      GAIN: aguardando alteração
+
+  3. DYN / COMP1 — ligado
+     SUSTAIN: aguardando alteração
+     VOLUME: aguardando alteração
 ```
 
 Depois do primeiro evento `0x1C`, o valor real substitui o texto de espera.
@@ -234,33 +243,54 @@ Arquivo principal:
 tools/commands/effect_slot_state.py
 ```
 
-### 6.4 Primeiro parâmetro interno isolado
+### 6.4 Parâmetros internos e identidade pelo contexto da cadeia
 
-A Fase 22 acrescentou um parser puro e um validador ao vivo para o
-`DYN / M-BOOST / GAIN`:
-
-```text
-tools/commands/mboost_gain.py
-tools/experiments/validate_mboost_gain_live.py
-tests/test_mboost_gain.py
-tests/fixtures/mboost_gain/
-```
+A Fase 22 isolou o `DYN / M-BOOST / GAIN`. A Fase 24 acrescentou
+`DYN / COMP1 / SUSTAIN` e `VOLUME` e revelou uma correção arquitetural
+essencial.
 
 Estrutura confirmada da resposta de 70 bytes:
 
 ```text
 comando                  0x1C
 slot interno             índices 39–40, zero-based
-classe DYN               índices 41–42
-modelo M-BOOST 0x14      índices 21–22
-GAIN                     índices 59–62
+classe DYN observada     índices 41–42
+seletor do parâmetro     índice 48
+valor                    índices 59–62
+marcador/tipo            índices 63–64 = 01 01
 codec                     16 bits superiores de float32 little-endian em nibbles
-faixa                     0–100
 ```
 
-A validação ao vivo aprovou múltiplas instâncias simultâneas e observou os
-slots internos 2, 8, 10 e 12. Os endereços esperados de 1 a 12 são aceitos
-pelo parser, enquanto a posição visual continua sendo resolvida pela cadeia.
+Seletores catalogados:
+
+```text
+M-BOOST / GAIN      → 0
+COMP1 / SUSTAIN     → 0
+COMP1 / VOLUME      → 1
+```
+
+Os índices `21–22` permanecem `01 04` tanto no M-BOOST quanto no COMP1.
+Portanto, eles não representam o `model_id` do efeito. A mensagem informa slot,
+seletor e valor; a identidade do efeito deve ser obtida da cadeia estrutural
+atual naquele slot.
+
+Fluxo correto:
+
+```text
+EffectParameterSignal
+  → slot interno
+  → efeito real na cadeia
+  → parâmetros daquele efeito no JSON
+  → message_match
+  → EffectParameterEvent
+```
+
+Fixtures:
+
+```text
+tests/fixtures/mboost_gain/
+tests/fixtures/comp1_parameters/
+```
 
 ### 6.5 Catálogo JSON multiplataforma
 
@@ -287,8 +317,9 @@ A equivalência foi comprovada contra um snapshot anterior à migração:
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-O M-BOOST é o único efeito com parâmetro preenchido neste marco. Os outros 266
-efeitos permanecem explicitamente `pending`, sem parâmetros presumidos.
+M-BOOST e COMP1 são os dois efeitos com parâmetros preenchidos neste marco.
+Os outros 265 efeitos permanecem explicitamente `pending`, sem parâmetros
+presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
 
@@ -302,13 +333,15 @@ tools/experiments/validate_effect_parameters_live.py
 tests/test_effect_parameters.py
 ```
 
-O decoder consulta o perfil, o codec, o efeito e o `message_match` declarados
-no catálogo. Ele produz `EffectParameterEvent` sem condicionais específicas
-para M-BOOST. `mboost_gain.py` agora é apenas uma fachada de compatibilidade.
+O decoder consulta o perfil, o codec e o `message_match` declarados no
+catálogo. Desde a correção da Fase 24, ele primeiro produz
+`EffectParameterSignal`, sem presumir o efeito. O núcleo do monitor consulta a
+cadeia estrutural e então resolve `EffectParameterEvent` contra o efeito real
+do slot. `mboost_gain.py` permanece como fachada de compatibilidade.
 
 O estado guarda o último valor por slot interno, efeito e parâmetro. Eventos
-são rejeitados quando a cadeia atual identifica outro efeito no slot. Valores
-são descartados ao trocar preset ou substituir o efeito.
+são rejeitados quando o seletor não pertence ao efeito atual. Valores são
+descartados ao trocar preset ou substituir o efeito.
 
 O valor inicial ainda não é extraído do dump. Após carregar o preset, o monitor
 mostra `aguardando alteração` até receber o primeiro evento ao vivo.
@@ -413,7 +446,7 @@ versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
 futuro, por Kotlin/Android e desktop. O único parâmetro interno concluído neste
 marco é `DYN / M-BOOST / GAIN`; os demais permanecem sem dados inventados.
 
-## 10. Histórico consolidado das Fases 14–23B
+## 10. Histórico consolidado das Fases 14–24
 
 ### Fase 14 — classe e modelo por slot
 
@@ -559,44 +592,76 @@ tools/experiments/validate_effect_parameters_live.py
 tests/test_effect_parameters.py
 ```
 
-## 11. Estado de validação no marco atual
 
-Suíte completa após a Fase 23B:
+### Fase 24 — DYN / COMP1 com dois parâmetros
+
+Capturou `SUSTAIN` e `VOLUME` nos slots internos 1 e 2, ambos de 0 a 100,
+preservando 22 respostas físicas. Confirmou o seletor no índice 48:
 
 ```text
-Ran 340 tests
+SUSTAIN → 0
+VOLUME  → 1
+```
+
+Também provou que os índices `21–22` não são o model_id, pois M-BOOST e COMP1
+usam o mesmo endereço `01 04`. O motor foi corrigido para resolver o efeito
+pela cadeia atual antes de interpretar o seletor.
+
+```text
+docs/phases/DYN_COMP1_PARAMETERS_PHASE24.md
+catalog/effects/dyn/001_comp1.json
+tests/fixtures/comp1_parameters/
+```
+
+A suíte offline passou com 349 testes. A validação física no preset `56B`
+aprovou o monitor com múltiplos COMP1, SUSTAIN e VOLUME independentes,
+coexistência com M-BOOST e substituição de efeito sem colisão do seletor `0`.
+
+## 11. Estado de validação no marco atual
+
+Suíte completa do marco da Fase 24:
+
+```text
+Ran 349 tests
 OK
 ```
 
 Validação offline aprovada:
 
-- 27 fixtures físicas decodificadas pelo motor genérico;
-- compatibilidade integral com `mboost_gain.py`;
+- 27 fixtures físicas do M-BOOST;
+- 22 fixtures físicas do COMP1;
+- SUSTAIN e VOLUME independentes no mesmo slot;
+- resolução explícita pelo efeito real da cadeia;
+- detecção de ambiguidade quando o contexto da cadeia não é fornecido;
+- manutenção da compatibilidade com `mboost_gain.py`;
 - múltiplas instâncias com valores independentes;
 - descarte de estado antigo ao substituir efeito ou trocar preset;
-- rejeição de mensagens incompatíveis e valores fora da faixa;
-- cruzamento de efeito e slot com a cadeia estrutural atual;
-- apresentação de valor pendente e valor recebido no snapshot do monitor.
+- apresentação dos parâmetros na ordem SUSTAIN, VOLUME.
 
 Validação física aprovada:
 
-- inicialização e recuperação após cold boot;
-- leitura de preset, nome, etiqueta e cadeia;
+- inicialização, preset, metadados e cadeia;
 - mudança de ordem e bypass em tempo real;
-- leitura isolada do M-BOOST/GAIN;
-- múltiplas instâncias nos slots 2, 8, 10 e 12 na Fase 22;
-- atualização do GAIN dentro do monitor principal;
-- duas instâncias simultâneas com valores independentes nos slots 2 e 3;
-- preservação do slot interno após movimento visual;
-- limpeza do estado ao trocar preset, coberta por regressão offline.
+- M-BOOST/GAIN no validador e monitor;
+- capturas controladas do COMP1 nos slots internos 1 e 2;
+- seletores `0` para SUSTAIN e `1` para VOLUME;
+- faixa controlada 0–100;
+- COMP1 exibido no monitor principal;
+- SUSTAIN e VOLUME atualizados independentemente;
+- múltiplas instâncias de COMP1 com estados separados;
+- COMP1 e M-BOOST simultâneos sem colisão do seletor `0`;
+- preservação do estado de um COMP1 enquanto outro slot foi substituído por
+  COMP2, COMP3 e M-BOOST;
+- novo M-BOOST no slot substituído atualizando GAIN de forma independente.
 
-Fixtures físicas de regressão ficam em:
+Fixtures físicas de regressão:
 
 ```text
 tests/fixtures/structural_effect_state/
 tests/fixtures/preset_dump_chain/
 tests/fixtures/effect_slot_state/
 tests/fixtures/mboost_gain/
+tests/fixtures/comp1_parameters/
 ```
 
 ## 12. Limitações e cuidados conhecidos
@@ -615,6 +680,11 @@ tests/fixtures/mboost_gain/
 - Não assumir offsets no SysEx comprimido; sempre trabalhar sobre o payload
   LZO1X descomprimido.
 - Parâmetros catalogados fazem parte do monitor estável desde a Fase 23B.
+- A mensagem `0x1C` não identifica de forma confiável o modelo do efeito. Não
+  voltar a usar os índices `21–22` como `model_id`; resolver sempre pela cadeia
+  atual no slot interno.
+- Seletores podem se repetir entre efeitos diferentes: seletor `0` significa
+  GAIN no M-BOOST e SUSTAIN no COMP1.
 - O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
   alteração` até o primeiro evento ao vivo.
 - Não criar um parser Python separado para cada parâmetro. A expansão deve usar
@@ -626,15 +696,14 @@ tests/fixtures/mboost_gain/
 
 ## 13. Próximos passos recomendados
 
-1. manter `main` no commit estável da Fase 23B;
-2. continuar a pesquisa na branch `research/dyn-parameters`;
-3. capturar o próximo efeito DYN com alterações controladas de cada parâmetro;
-4. adicionar definições ao catálogo, reutilizando perfis e codecs somente
-   quando as capturas comprovarem equivalência;
-5. validar múltiplas instâncias, slots e mudanças de posição visual;
-6. consolidar grupos aprovados na `main` por fast-forward ou pull request;
-7. depois de concluir DYN, abrir `research/freq-parameters`;
-8. manter importação IR/CLONE como subsistema separado.
+1. permanecer em `research/dyn-parameters`;
+2. aplicar esta atualização documental de aprovação física;
+3. repetir a suíte completa, `compileall` e `git diff --check`;
+4. consolidar a Fase 24 em um commit na branch de pesquisa;
+5. enviar a branch e promover o mesmo commit à `main` por fast-forward;
+6. retornar a `research/dyn-parameters`;
+7. escolher o próximo efeito DYN com poucos parâmetros;
+8. preservar a regra de capturas controladas antes de cadastrar novos campos.
 
 A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
 sem conhecer offsets, nibbles ou detalhes MIDI.
@@ -650,5 +719,5 @@ sem conhecer offsets, nibbles ou detalhes MIDI.
 [ ] docs/PROJECT_CONTINUITY.md foi atualizado.
 [ ] README.md foi atualizado se o uso público mudou.
 [ ] O escopo do git add foi revisado; arquivos locais não relacionados ficaram fora.
-[ ] O commit será feito na main, salvo pedido explícito em contrário.
+[ ] O commit será feito na branch de pesquisa correta e só depois promovido à main.
 ```

@@ -26,10 +26,11 @@
       "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "upper_float32_nibbles_v1",
-        "identification_status": "validated_single_parameter_effect",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
           "parameter_marker": 1,
-          "parameter_type": 1
+          "parameter_type": 1,
+          "parameter_selector": 0
         }
       },
       "validation": {
@@ -50,7 +51,9 @@
         "multiple_instances": true,
         "visual_reordering_independent": true,
         "physical_fixture_count": 27,
-        "evidence": "docs/phases/MBOOST_GAIN_VALIDATION_PHASE22.md"
+        "evidence": "docs/phases/MBOOST_GAIN_VALIDATION_PHASE22.md",
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0
       }
     }
   ]

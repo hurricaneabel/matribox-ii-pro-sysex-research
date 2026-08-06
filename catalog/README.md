@@ -16,19 +16,24 @@ por aplicações Kotlin para Android e desktop.
 Os arquivos não contêm caminhos absolutos, objetos Python serializados ou
 outros dados exclusivos do Windows.
 
-## Estado inicial da Fase 23A
+## Estado atual do catálogo
 
 Os 16 índices de classe e os 267 efeitos foram exportados do catálogo Python
 histórico. Todos preservam menu, nome, ID de classe, ID de modelo e seletor
 secundário.
 
-Somente `DYN / M-BOOST` possui parâmetro interno catalogado nesta fase:
+Dois efeitos DYN possuem parâmetros internos catalogados:
 
 ```text
-GAIN | 0–100 | comando 0x1C | leitura física aprovada
+M-BOOST | GAIN              | 0–100 | seletor 0
+COMP1   | SUSTAIN, VOLUME   | 0–100 | seletores 0 e 1
 ```
 
-Os outros efeitos permanecem com:
+O comando `0x1C` não identifica sozinho o modelo do efeito. O slot recebido é
+cruzado com a cadeia estrutural atual; somente então o seletor é interpretado
+dentro do efeito correto.
+
+Os outros 265 efeitos permanecem com:
 
 ```json
 "parameter_catalog_status": "pending",

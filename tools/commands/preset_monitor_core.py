@@ -40,7 +40,8 @@ from tools.commands.global_preset_metadata import (
 from tools.parameters.decoder import (
     EffectParameterEvent,
     EffectParameterProtocolError,
-    parse_effect_parameter_response,
+    parse_effect_parameter_signal,
+    resolve_effect_parameter_signal,
 )
 from tools.parameters.state import EffectParameterState
 from tools.commands.preset_state import (
@@ -539,29 +540,45 @@ class PresetMonitorCore:
                 result[internal_slot_id] = effect.key
         return result
 
-    def _parameter_event_matches_current_chain(
+    def _resolve_parameter_signal_for_current_chain(
         self,
-        event: EffectParameterEvent,
-    ) -> bool:
+        raw_message: bytes,
+    ) -> EffectParameterEvent | None:
+        """Resolve o parâmetro pelo efeito realmente presente no slot.
+
+        Capturas de M-BOOST e COMP1 provaram que a mensagem ``0x1C`` não traz
+        um ``model_id`` confiável. Por isso, a cadeia estrutural é a fonte de
+        identidade do efeito e o pacote fornece apenas slot, seletor e valor.
+        """
+
         if self.current_chain is None:
-            return True
-        if event.internal_slot_id not in self.current_chain.internal_slot_ids:
-            return False
+            return None
+
+        signal = parse_effect_parameter_signal(raw_message)
+        if signal is None:
+            return None
+        if signal.internal_slot_id not in self.current_chain.internal_slot_ids:
+            return None
+
         record = self.current_chain.effect_records_by_internal_slot[
-            event.internal_slot_id
+            signal.internal_slot_id
         ]
         if (
             record.class_id is None
             or record.model_id is None
             or record.secondary_selector is None
         ):
-            return False
+            return None
+
         _, effect = _resolve_effect_definition(
             record.class_id,
             record.model_id,
             record.secondary_selector,
         )
-        return effect is not None and effect.key == event.effect_key
+        if effect is None:
+            return None
+
+        return resolve_effect_parameter_signal(signal, effect.key)
 
     def apply_chain_state(
         self,
@@ -612,17 +629,14 @@ class PresetMonitorCore:
                 self.parameter_state.clear()
 
         try:
-            parameter_event = parse_effect_parameter_response(raw_message)
+            parameter_event = self._resolve_parameter_signal_for_current_chain(
+                raw_message
+            )
         except EffectParameterProtocolError:
             parameter_event = None
 
-        if (
-            parameter_event is not None
-            and self._parameter_event_matches_current_chain(parameter_event)
-        ):
+        if parameter_event is not None:
             self.parameter_state.apply(parameter_event)
-        else:
-            parameter_event = None
 
         try:
             bypass_event = parse_effect_slot_state_response(raw_message)

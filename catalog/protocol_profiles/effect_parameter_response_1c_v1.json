@@ -19,13 +19,6 @@
       "index": 9,
       "expected": 28
     },
-    "model_id": {
-      "indices": [
-        21,
-        22
-      ],
-      "encoding": "nibble_pair"
-    },
     "internal_slot": {
       "indices": [
         39,
@@ -52,20 +45,42 @@
     },
     "parameter_type": {
       "index": 64
+    },
+    "parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "encoding": "nibble_pair",
+      "expected": 20,
+      "semantic_status": "opaque_shared_address_not_effect_model"
+    },
+    "parameter_selector": {
+      "index": 48,
+      "encoding": "uint7",
+      "minimum": 0,
+      "maximum": 127
     }
   },
   "validation": {
-    "status": "physically_validated_for_dyn_m_boost_gain",
-    "physical_fixture_count": 27,
+    "status": "physically_validated_for_dyn_m_boost_and_comp1",
+    "physical_fixture_count": 49,
+    "effects_observed": [
+      "dyn.m_boost",
+      "dyn.comp1"
+    ],
     "internal_slots_observed": [
+      1,
       2,
       8,
       10,
       12
     ],
     "multiple_instances": true,
+    "multiple_parameters": true,
     "visual_reordering_independent": true,
-    "notes": "Outros efeitos e parâmetros podem exigir um perfil adicional até que novas capturas provem compatibilidade."
+    "effect_identity_source": "current_chain",
+    "notes": "Os bytes 21–22 mantêm 01 04 no M-BOOST e no COMP1; portanto não identificam o model_id do efeito. O efeito deve ser resolvido pela cadeia atual no slot interno, e o parâmetro pelo seletor e demais campos message_match."
   },
   "fixed_segments": [
     {
@@ -89,6 +104,13 @@
         0,
         1,
         0
+      ]
+    },
+    {
+      "start_index": 21,
+      "bytes": [
+        1,
+        4
       ]
     },
     {
@@ -119,8 +141,12 @@
         0,
         0,
         0,
-        0,
-        0,
+        0
+      ]
+    },
+    {
+      "start_index": 49,
+      "bytes": [
         0,
         0,
         0,

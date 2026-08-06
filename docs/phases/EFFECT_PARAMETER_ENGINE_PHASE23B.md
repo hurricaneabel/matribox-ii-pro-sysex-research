@@ -8,6 +8,11 @@ orientada pelo catálogo JSON, reutilizável por todas as classes e efeitos.
 A fase permanece somente de leitura: nenhum comando de escrita `0x1C` foi
 implementado ou enviado.
 
+> **Correção posterior da Fase 24:** as capturas do COMP1 provaram que a
+> mensagem `0x1C` não contém um `model_id` confiável nos índices `21–22`.
+> O decoder atual primeiro produz `EffectParameterSignal`; a cadeia estrutural
+> identifica o efeito do slot e só então é produzido `EffectParameterEvent`.
+
 ## Arquitetura implementada
 
 ```text
@@ -61,9 +66,11 @@ EffectParameterEvent(
 )
 ```
 
-O decoder não contém condicionais como `if effect == "M-BOOST"`. Ele consulta:
+O decoder não contém condicionais como `if effect == "M-BOOST"`. Na versão
+corrigida pela Fase 24, ele consulta:
 
-- classe e modelo recebidos;
+- slot e seletor recebidos;
+- efeito real identificado pela cadeia estrutural;
 - parâmetros cadastrados naquele efeito;
 - perfil de mensagem;
 - campos `message_match`;
