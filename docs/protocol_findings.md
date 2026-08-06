@@ -1303,3 +1303,28 @@ tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
 ```
+
+## Fase 28 — COMP3 com sete seletores contínuos
+
+As nove capturas controladas do `DYN / COMP3` confirmaram sete parâmetros
+inteiros de 0 a 100 no mesmo perfil `effect_parameter_response_1c_v1`:
+
+```text
+COMP3 / THRESHOLD  = seletor 0
+COMP3 / RATIO      = seletor 1
+COMP3 / VOLUME     = seletor 2
+COMP3 / ATTACK     = seletor 3
+COMP3 / RELEASE    = seletor 4
+COMP3 / TONE       = seletor 5
+COMP3 / BLEND      = seletor 6
+```
+
+Todos reutilizam `upper_float32_nibbles_v1`, marcador/tipo `01 01` e o endereço
+opaco `01 04`. Os slots internos humanos 1 e 2 foram observados. A captura
+combinada provou mensagens independentes para os valores 51 a 57, e a captura
+curta no slot 2 repetiu os mesmos seletores e codec.
+
+Foram preservadas 84 respostas físicas em
+`tests/fixtures/comp3_parameters/`. A identidade do efeito continua vindo da
+cadeia atual do slot; a mensagem `0x1C` isolada não diferencia COMP3 dos demais
+efeitos DYN que reutilizam os mesmos endereços e seletores.

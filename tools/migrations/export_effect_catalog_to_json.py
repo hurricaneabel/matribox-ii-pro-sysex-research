@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 5
+CATALOG_VERSION = 6
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -294,6 +294,255 @@ COMP2_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
 )
 
 
+COMP3_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "threshold",
+        "name": "THRESHOLD",
+        "display_order": 1,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 0,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 0,
+            "multiple_parameters": True,
+            "physical_fixture_count": 84,
+            "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    {
+        "key": "ratio",
+        "name": "RATIO",
+        "display_order": 2,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 1,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 1,
+            "multiple_parameters": True,
+            "physical_fixture_count": 84,
+            "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    {
+        "key": "volume",
+        "name": "VOLUME",
+        "display_order": 3,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 2,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 2,
+            "multiple_parameters": True,
+            "physical_fixture_count": 84,
+            "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    {
+        "key": "attack",
+        "name": "ATTACK",
+        "display_order": 4,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 3,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 3,
+            "multiple_parameters": True,
+            "physical_fixture_count": 84,
+            "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    {
+        "key": "release",
+        "name": "RELEASE",
+        "display_order": 5,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 4,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 4,
+            "multiple_parameters": True,
+            "physical_fixture_count": 84,
+            "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    {
+        "key": "tone",
+        "name": "TONE",
+        "display_order": 6,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 5,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 5,
+            "multiple_parameters": True,
+            "physical_fixture_count": 84,
+            "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    {
+        "key": "blend",
+        "name": "BLEND",
+        "display_order": 7,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 6,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 6,
+            "multiple_parameters": True,
+            "physical_fixture_count": 84,
+            "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    }
+)
+
+
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
     {
         "key": "gain",
@@ -552,6 +801,10 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "dyn.comp2" and not parameters:
         parameters = list(COMP2_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.comp3" and not parameters:
+        parameters = list(COMP3_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.e_boost" and not parameters:

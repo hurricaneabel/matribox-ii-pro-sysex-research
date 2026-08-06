@@ -101,6 +101,26 @@ física no monitor principal aprovou a apresentação dos quatro controles, a
 atualização independente, duas instâncias simultâneas com estados separados e
 a coexistência com COMP1, COMP3, M-BOOST, E-BOOST, AC-BOOST e BB-BOOST.
 
+A Fase 28 acrescenta os sete controles contínuos do `DYN / COMP3`:
+
+```text
+THRESHOLD → inteiro 0–100, seletor 0
+RATIO     → inteiro 0–100, seletor 1
+VOLUME    → inteiro 0–100, seletor 2
+ATTACK    → inteiro 0–100, seletor 3
+RELEASE   → inteiro 0–100, seletor 4
+TONE      → inteiro 0–100, seletor 5
+BLEND     → inteiro 0–100, seletor 6
+```
+
+Nove capturas controladas confirmaram os slots internos 1 e 2 e preservaram
+84 respostas SysEx físicas únicas. O monitor genérico não recebeu código
+específico para o efeito: a ordem, a resolução e os valores vêm do catálogo
+JSON e do contexto da cadeia. A integração passou com 376 testes e foi
+aprovada fisicamente no monitor principal com os sete controles independentes,
+duas instâncias simultâneas com estados separados e coexistência com efeitos
+DYN e de outras classes.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell

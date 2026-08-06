@@ -7,7 +7,297 @@
   "name": "COMP3",
   "model_id": 3,
   "secondary_selector": 0,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "threshold",
+      "name": "THRESHOLD",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "multiple_parameters": true,
+        "physical_fixture_count": 84,
+        "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "ratio",
+      "name": "RATIO",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "multiple_parameters": true,
+        "physical_fixture_count": 84,
+        "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "multiple_parameters": true,
+        "physical_fixture_count": 84,
+        "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "attack",
+      "name": "ATTACK",
+      "display_order": 4,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 3,
+        "multiple_parameters": true,
+        "physical_fixture_count": 84,
+        "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "release",
+      "name": "RELEASE",
+      "display_order": 5,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 4,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 4,
+        "multiple_parameters": true,
+        "physical_fixture_count": 84,
+        "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "tone",
+      "name": "TONE",
+      "display_order": 6,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 5,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 5,
+        "multiple_parameters": true,
+        "physical_fixture_count": 84,
+        "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "blend",
+      "name": "BLEND",
+      "display_order": 7,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 6,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 6,
+        "multiple_parameters": true,
+        "physical_fixture_count": 84,
+        "evidence": "docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    }
+  ]
 }

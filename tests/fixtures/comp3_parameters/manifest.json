@@ -1,0 +1,1428 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.comp3",
+    "name": "COMP3",
+    "model_id": 3,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "threshold",
+      "name": "THRESHOLD",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "ratio",
+      "name": "RATIO",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "attack",
+      "name": "ATTACK",
+      "selector": 3,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "release",
+      "name": "RELEASE",
+      "selector": 4,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "tone",
+      "name": "TONE",
+      "selector": 5,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "blend",
+      "name": "BLEND",
+      "selector": 6,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "comp3_threshold_cap.pcapng",
+    "comp3_ratio_cap.pcapng",
+    "comp3_volume_cap.pcapng",
+    "comp3_attack_cap.pcapng",
+    "comp3_release_cap.pcapng",
+    "comp3_tone_cap.pcapng",
+    "comp3_blend_cap.pcapng",
+    "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+    "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+    "sequence": [
+      "threshold_51",
+      "ratio_52",
+      "volume_53",
+      "attack_54",
+      "release_55",
+      "tone_56",
+      "blend_57",
+      "threshold_50",
+      "ratio_50",
+      "volume_50",
+      "attack_50",
+      "release_50",
+      "tone_50",
+      "blend_50"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "slot2_validation": {
+    "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+    "sequence": [
+      "threshold_51",
+      "threshold_50",
+      "ratio_52",
+      "ratio_50",
+      "volume_53",
+      "volume_50",
+      "attack_54",
+      "attack_50",
+      "release_55",
+      "release_50",
+      "tone_56",
+      "tone_50",
+      "blend_57",
+      "blend_50"
+    ],
+    "result": "same_selectors_and_codec_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "ATTACK repetiu 99 → 100 antes do retorno para 50; as duplicatas não foram multiplicadas como fixtures.",
+    "TONE emitiu o valor 0 duas vezes; uma resposta física foi preservada."
+  ],
+  "physical_binary_fixtures": 84,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_attack_000.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "5b0c2ab8590f4e0149af540cd8ff284b9fef7f24c307e8c988fb4cf71032f22f"
+    },
+    {
+      "file": "slot1_attack_001.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "db16c5b66908b304c81a602c2dec9fa19bba21ddbf3aba35071c90c7e44f72c9"
+    },
+    {
+      "file": "slot1_attack_002.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "cae065b4035eb1f723da037f9c9684934515860c5c85ca71f54d72bef0206b1f"
+    },
+    {
+      "file": "slot1_attack_010.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "cae6624c6e7a3a68812d35f24b101f0a9e90e3abe2a138494fb535d105216181"
+    },
+    {
+      "file": "slot1_attack_025.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "dc19ad6b092dc39b284f42b18bc235849f50c26de6e65f2289904be4af03a2c0"
+    },
+    {
+      "file": "slot1_attack_050.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "8dad75fca2dc37e44e09d40b610d6cd9fabc23da7d067f7f9d2c0430b298991a"
+    },
+    {
+      "file": "slot1_attack_054.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "77c537b1bcaba90d8a70a14c330ca22a18faf8f431fcb8cb69e258fcd3c35cd8"
+    },
+    {
+      "file": "slot1_attack_075.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "5b25c819cfca2552bd7d9b32c219a659184b50b0edbe8d3bc35b23435ec449ba"
+    },
+    {
+      "file": "slot1_attack_099.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "246d6eb9d687124f5378bdc506da24ec39f9127c3e9ee7de6d2eef1db81dff7b"
+    },
+    {
+      "file": "slot1_attack_100.bin",
+      "source": "comp3_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "f26b2e00d977a9dd7c98dbb82042575ff9a703b405d9c5c0ce41ecb668161fd0"
+    },
+    {
+      "file": "slot1_blend_000.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "153204d6911e0b99bb5749e3d00c63d272330ebf3594ffdcce19902d7d86ac74"
+    },
+    {
+      "file": "slot1_blend_001.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "8ce9b131671c2cf0dbef494f9581d73ab55388c272a08ce8e0616324ebb4d62f"
+    },
+    {
+      "file": "slot1_blend_002.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "a8a602382bf74a54a0186df06582408aca55120bbb7f95e53cf72797d4e3c7ed"
+    },
+    {
+      "file": "slot1_blend_010.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "2746de8d234f44366cec93a9d3be19c701ecb0eb3b8b5866843ea22812ab7d2b"
+    },
+    {
+      "file": "slot1_blend_025.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "e675f184a35f44715d08b707d0e7d868c3742627c850fd5092aa272b5f4b6586"
+    },
+    {
+      "file": "slot1_blend_050.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "3b021126e043b0085f2e4c110af4b81e5451108bf96f738c59fae8f2b548fb4c"
+    },
+    {
+      "file": "slot1_blend_057.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 57,
+      "encoded_value": [
+        6,
+        4,
+        4,
+        2
+      ],
+      "sha256": "89876064bc5531f6a05c42cf9d4d1e2321454548246ca825bfd953dd0bbbc6da"
+    },
+    {
+      "file": "slot1_blend_075.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "2fd45f623f147ea5b6a4d2908f722ef2ca0dc9499e7e444903461a1da0b4808b"
+    },
+    {
+      "file": "slot1_blend_099.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "ac8dcafafe8c280e37795b7c7a23b64f3fc1d9f391b0737639714f6c16b596af"
+    },
+    {
+      "file": "slot1_blend_100.bin",
+      "source": "comp3_blend_cap.pcapng",
+      "slot": 1,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "4f9168ed2055d0bbaab00e1bb12b4c312a50605139bcafa0ab2e9eb496fbaec2"
+    },
+    {
+      "file": "slot1_ratio_000.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "6c0a84ebe7cd8dca399356f6fde27ea10dc0c37ae3328860634f5fab62ebbf3d"
+    },
+    {
+      "file": "slot1_ratio_001.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "c37b83309f8b140786014e4fbd87cf787b9665e683b3b5391c049b42946ac0ae"
+    },
+    {
+      "file": "slot1_ratio_002.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "a1470aead4317c42d109cb0df7d40836df088fb34ac3e56c4ff4b138efa0ed70"
+    },
+    {
+      "file": "slot1_ratio_010.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "ba01a7095603df53308e13832a82f3b3d9f6c1f8f4eeaa26eb91de7fec4e2002"
+    },
+    {
+      "file": "slot1_ratio_025.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "60f448ae68f331458d7a51d20cd69f5b15b304f5b678b536538f32f1e58f9c95"
+    },
+    {
+      "file": "slot1_ratio_050.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e028e305463cb9b686cc6cc31d4578f919ddad52298c7df404dd850bf970ba6b"
+    },
+    {
+      "file": "slot1_ratio_052.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "7bda111de5acb7715179789528dfda0ba60cb30614a2ff5cf5849b655d48fcd6"
+    },
+    {
+      "file": "slot1_ratio_075.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "f6d5a2a9b05cb3112ec5b52a43a637a367a1ad19d7e6ae7106178fdedfa6d983"
+    },
+    {
+      "file": "slot1_ratio_099.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "8a0bdba56379e58bef7e8b7e9246a85c5dcc8ac3b7afbb73028e43cf1c8fd317"
+    },
+    {
+      "file": "slot1_ratio_100.bin",
+      "source": "comp3_ratio_cap.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "af1f6f3e210d1dedb4b0a7b7fa6a564341f9641f6e241b7be5762ea592d26003"
+    },
+    {
+      "file": "slot1_release_000.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "6749dd407930b91f3e1898fd4761a9aba062c0563542e6a9947339fe09f4721d"
+    },
+    {
+      "file": "slot1_release_001.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "857baf90e3f870549faeaa57c3d393697664df78ed615083294b1ffcb6d2245c"
+    },
+    {
+      "file": "slot1_release_002.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "33ac9dffc8b01169e7dd77e117d920a5c264e8882e0c2f1652f1a426d8cdcab7"
+    },
+    {
+      "file": "slot1_release_010.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "93dbcfdcae7b4bcbc62218967b949bbf9a2ef920771ad48a502ee7cc65bad2c2"
+    },
+    {
+      "file": "slot1_release_025.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "4fc3d19634ecb7a62cfa78154821a12cd3566ae0dde7a123bc2f9b2c8135f8f1"
+    },
+    {
+      "file": "slot1_release_050.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "1d7793cd489a86c39839424acc0740f11a9192b1c5d09a93142e7231d7b7ccb4"
+    },
+    {
+      "file": "slot1_release_055.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 55,
+      "encoded_value": [
+        5,
+        12,
+        4,
+        2
+      ],
+      "sha256": "a0eac4b280bc156999b690c2dfb038e74ae3c6d9f338ecea8c02a0222c5fd4ef"
+    },
+    {
+      "file": "slot1_release_075.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "b65f7028d9499c5895c6fcbaeed7abd2be0da989197bc0ba6fafdc6b1ba1e73c"
+    },
+    {
+      "file": "slot1_release_099.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "64cb4413e0ad99d9a4fed5c4147e6a92d3e776e70193727562f47774a86d2e10"
+    },
+    {
+      "file": "slot1_release_100.bin",
+      "source": "comp3_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 4,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "2794dbda4bc1cce29f46078209baae8da9e0b1221ea3c210fb9ff5bc7d358efa"
+    },
+    {
+      "file": "slot1_threshold_000.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d708ba435d0d15ce28aedf537e3bb25bee9aa4056ad2666a2852fa2237546e6d"
+    },
+    {
+      "file": "slot1_threshold_001.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "674ca9fa928f83728c5b3b1c7de4e27ddc274995be5492f3cc5090bb0db65ae1"
+    },
+    {
+      "file": "slot1_threshold_002.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "8ded3e3326dbe5bfa0cfebf2ac5dd4a1c81cab9d6ce58eeeed16dc16ead245ad"
+    },
+    {
+      "file": "slot1_threshold_010.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "13ead0a1ce662113efec3da38b3596c56953e53bba304e1ab5459876e1c696e3"
+    },
+    {
+      "file": "slot1_threshold_025.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "76151e125679446f3cd7ceea9d2b1a157755a47d7cb44114337ef9e0a8f62ada"
+    },
+    {
+      "file": "slot1_threshold_050.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "9c8ed86d9fa0733c15a976d4cff5536d00786b9d02380a9808231ff09c806f51"
+    },
+    {
+      "file": "slot1_threshold_051.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "8cbfffa8d7f88ea3c3b187ced6f274bf8e85ddd97dfe5c641a9289ebe2b59621"
+    },
+    {
+      "file": "slot1_threshold_075.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "38f8cc1b72e73b91041a3349b18ac72236d6197fc94f0faa4d481885e1450e34"
+    },
+    {
+      "file": "slot1_threshold_099.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "556d040c98252687b9380991efcf448af60bd59d446a26ea0c1cb631a32a7db9"
+    },
+    {
+      "file": "slot1_threshold_100.bin",
+      "source": "comp3_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "2ff4fa2a312e093db76adfba58698673e994f2b1a4f2d6f4c797dbc5e3b34b44"
+    },
+    {
+      "file": "slot1_tone_000.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "725faf0774def4441bdf429afcb911575242d1936fe1403c9e5f4d86b0a34fd3"
+    },
+    {
+      "file": "slot1_tone_001.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "d4a4e357ab3e23c1c5a07883d6098f8bddf0cb0ec6acdf603fe9cbc3656dbafe"
+    },
+    {
+      "file": "slot1_tone_002.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "d49a84f1535a43c1806a780700e9bc8a4b2a8913d0e112eaf63f12a3a9fe3ce8"
+    },
+    {
+      "file": "slot1_tone_010.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "f3028aec80193f44491b25744f6197903352b0d63265aa401799199611154ea0"
+    },
+    {
+      "file": "slot1_tone_025.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "37962d36762fa34316c68162e8e2b81e441f1a25926c1b404312d32927935319"
+    },
+    {
+      "file": "slot1_tone_050.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "9ac25656bb5054389d97ba6e213c670efd7df200ee73ebfc2485fe3df8f43c3b"
+    },
+    {
+      "file": "slot1_tone_056.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 56,
+      "encoded_value": [
+        6,
+        0,
+        4,
+        2
+      ],
+      "sha256": "3b7db86d9667a32e391d16bebaeb2133461a368a47421f0dadab23919457442d"
+    },
+    {
+      "file": "slot1_tone_075.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "8e590857b1b6293b702e574ec68e15c9ab4e87788f285fc25855874bfb874475"
+    },
+    {
+      "file": "slot1_tone_099.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "2fdc4e94af8d948fff9587c123c74456d2558b1a381b4d049af27645b33584c2"
+    },
+    {
+      "file": "slot1_tone_100.bin",
+      "source": "comp3_tone_cap.pcapng",
+      "slot": 1,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "44f5b8db2a6cb7f3d48b9b298a74c4586ab0ce68e909ba7b62b9a425c7cc508e"
+    },
+    {
+      "file": "slot1_volume_000.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "8598992992ef7bb379893a282c51c770083771f7fcb2cca29e15a297aa815855"
+    },
+    {
+      "file": "slot1_volume_001.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "94263660ec49b09412b730b6367aa4dccf9181c1001fbcddda31e13fb2e4ac47"
+    },
+    {
+      "file": "slot1_volume_002.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "9a3576f05115066f3eaf860d1f6c8286d53bbae946866e0e39f656e81be7f60c"
+    },
+    {
+      "file": "slot1_volume_010.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "ee1c027b49a291d1f6ad9bd4307fc5925ae62b47a2ad8111c962f637a2592fcf"
+    },
+    {
+      "file": "slot1_volume_025.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "b2b29a35c4dcc8420a58db0f3e68caf9b2d11f91d31d93aa5d3e2b6e6f558156"
+    },
+    {
+      "file": "slot1_volume_050.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "565e3bda7280f27ee93281d5536207116f5e66890e0548edec35ffbab1b41b68"
+    },
+    {
+      "file": "slot1_volume_053.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "4138a62a28ef7cc5dff5642dfbd13da518b5c7d565e22acd24478a180542b7bd"
+    },
+    {
+      "file": "slot1_volume_075.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "288f42432f2fd00df1cf442288d1be1ff4365cec05b34fb5d4a913636e643377"
+    },
+    {
+      "file": "slot1_volume_099.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "7d06ac1d9f26f41488569e3bddef8f8e9d303f532dfd4d817b00486ee7ff95eb"
+    },
+    {
+      "file": "slot1_volume_100.bin",
+      "source": "comp3_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "c39f6cd57df42f2b6d1240b7e0beb69749fc695bc2fbfe3eca1864605dcaa3f2"
+    },
+    {
+      "file": "slot2_attack_050.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d099f62fd458230f988ee914bbc62654b7ec7c69fa1693c603fb2985d4ad2346"
+    },
+    {
+      "file": "slot2_attack_054.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "attack",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "fd5bfb43e5f5fab9028eda2545ea862dcc8bdcad52c770e4070fbff3c05549ea"
+    },
+    {
+      "file": "slot2_blend_050.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "8f5469ab73e7f18d5009ad9a63788cf6c4f946e1afb66154e6f13a55dfe6516b"
+    },
+    {
+      "file": "slot2_blend_057.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "blend",
+      "selector": 6,
+      "value": 57,
+      "encoded_value": [
+        6,
+        4,
+        4,
+        2
+      ],
+      "sha256": "4302f8bc59e7e9551b15e2733000d347c104872dd708cd833de333878bf95714"
+    },
+    {
+      "file": "slot2_ratio_050.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "74b044e1a93cdd774cd7491dc016947deb12a29697c2a29cde9d6b16935fd4f9"
+    },
+    {
+      "file": "slot2_ratio_052.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "ratio",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "fe3288822063c54bf4b94b86b53a8bb33b235fc82faee6bdc6fd8bdee25b6ddc"
+    },
+    {
+      "file": "slot2_release_050.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "release",
+      "selector": 4,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "0e472aba598c7610626e39c084d26a87aea62f8d3be204263216a31cf3ae06f7"
+    },
+    {
+      "file": "slot2_release_055.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "release",
+      "selector": 4,
+      "value": 55,
+      "encoded_value": [
+        5,
+        12,
+        4,
+        2
+      ],
+      "sha256": "62a7b124bc73770f5a27ed36fc456117f0667faa267f305a7388c0486140d59e"
+    },
+    {
+      "file": "slot2_threshold_050.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "b2cc620fdadb0f54df7c69aedfe5c3817fa816b9616b076299ad74d3556020b6"
+    },
+    {
+      "file": "slot2_threshold_051.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "07b40d9f99a91fa463a072a4e16931db7292f59e8a3093fbd3f268fcf8b7667a"
+    },
+    {
+      "file": "slot2_tone_050.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "482720ee6d72426cdc3b9a99773192f21679e0d945036d09d35a6577fd4642a5"
+    },
+    {
+      "file": "slot2_tone_056.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "tone",
+      "selector": 5,
+      "value": 56,
+      "encoded_value": [
+        6,
+        0,
+        4,
+        2
+      ],
+      "sha256": "f3857d9367824ce163e4995fa93dce5f493eccd3e3407d40757a94f6eb4db0c7"
+    },
+    {
+      "file": "slot2_volume_050.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "ae2156366f557e49f61a585aa88563ea9dd41f7741cd807a7133b3d395521b0a"
+    },
+    {
+      "file": "slot2_volume_053.bin",
+      "source": "COMP3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "81200b1e65f3ac19a0f7edcbbe95d74f8f75a16a5a81e4f78e06d17c94b70d4d"
+    }
+  ]
+}

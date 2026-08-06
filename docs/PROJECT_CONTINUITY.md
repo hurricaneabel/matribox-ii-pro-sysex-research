@@ -3,11 +3,11 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 27 — DYN / COMP2 com SUSTAIN, ATTACK, VOLUME
-> e CLIPPING, aprovado offline e fisicamente com duas instâncias simultâneas
-> e estados independentes
-> **Próxima pesquisa:** Fase 28 — análise do DYN / COMP3; capturas de
-> AC-BOOST e BB-BOOST preservadas separadamente para fases posteriores
+> **Marco consolidado:** Fase 28 — DYN / COMP3 com sete parâmetros,
+> aprovado offline e fisicamente com duas instâncias simultâneas e estados
+> independentes
+> **Próxima pesquisa:** Fase 29 — integração conjunta de AC-BOOST e BB-BOOST;
+> AC SIM reservado para fase própria por possuir o parâmetro categórico MODE
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/dyn-parameters`
 
@@ -260,7 +260,8 @@ A Fase 22 isolou o `DYN / M-BOOST / GAIN`. A Fase 24 acrescentou
 essencial. A Fase 25 acrescentou `DYN / E-BOOST / GAIN`, `+3dB` e
 `BRIGHT`, validando o primeiro uso de `value_type: boolean`. A Fase 26
 acrescentou `DYN / AC WOODY / SHAPE` e `DYN / GATE 1 / THRESHOLD`. A
-Fase 27 acrescentou os quatro controles contínuos do `DYN / COMP2`.
+Fase 27 acrescentou os quatro controles contínuos do `DYN / COMP2`. A
+Fase 28 acrescentou os sete controles contínuos do `DYN / COMP3`.
 
 Estrutura confirmada da resposta de 70 bytes:
 
@@ -284,6 +285,13 @@ COMP2 / SUSTAIN     → 0
 COMP2 / ATTACK      → 1
 COMP2 / VOLUME      → 2
 COMP2 / CLIPPING    → 3
+COMP3 / THRESHOLD   → 0
+COMP3 / RATIO       → 1
+COMP3 / VOLUME      → 2
+COMP3 / ATTACK      → 3
+COMP3 / RELEASE     → 4
+COMP3 / TONE        → 5
+COMP3 / BLEND       → 6
 E-BOOST / GAIN      → 0
 E-BOOST / +3dB      → 1
 E-BOOST / BRIGHT    → 2
@@ -291,8 +299,8 @@ AC WOODY / SHAPE    → 0
 GATE 1 / THRESHOLD  → 0
 ```
 
-Os índices `21–22` permanecem `01 04` no M-BOOST, COMP1, COMP2, E-BOOST,
-AC WOODY e GATE 1.
+Os índices `21–22` permanecem `01 04` no M-BOOST, COMP1, COMP2, COMP3,
+E-BOOST, AC WOODY e GATE 1.
 Portanto, eles não representam o `model_id` do efeito. A mensagem informa slot,
 seletor e valor; a identidade do efeito deve ser obtida da cadeia estrutural
 atual naquele slot.
@@ -325,6 +333,7 @@ Fixtures:
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
 tests/fixtures/comp2_parameters/
+tests/fixtures/comp3_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -355,9 +364,9 @@ A equivalência foi comprovada contra um snapshot anterior à migração:
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-M-BOOST, COMP1, COMP2, E-BOOST, AC WOODY e GATE 1 são os seis efeitos com
-parâmetros preenchidos no catálogo atual. Os outros 261 efeitos permanecem
-explicitamente `pending`,
+M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC WOODY e GATE 1 são os sete
+efeitos com parâmetros preenchidos no catálogo atual. Os outros 260 efeitos
+permanecem explicitamente `pending`,
 sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
@@ -737,12 +746,47 @@ alterado. A suíte offline passou com 370 testes. A validação física aprovou 
 apresentação e atualização independente dos quatro controles, duas instâncias
 simultâneas com estados separados e coexistência com outros efeitos DYN.
 
-## 11. Estado de validação no marco atual
 
-Suíte completa da Fase 27 consolidada:
+### Fase 28 — DYN / COMP3 com sete parâmetros
+
+As nove capturas controladas confirmaram sete controles contínuos de 0 a 100:
 
 ```text
-Ran 370 tests
+THRESHOLD  → seletor 0
+RATIO      → seletor 1
+VOLUME     → seletor 2
+ATTACK     → seletor 3
+RELEASE    → seletor 4
+TONE       → seletor 5
+BLEND      → seletor 6
+```
+
+Os slots internos humanos 1 e 2 foram observados e 84 respostas físicas únicas
+foram preservadas:
+
+```text
+docs/phases/DYN_COMP3_PARAMETERS_PHASE28.md
+catalog/effects/dyn/003_comp3.json
+tests/fixtures/comp3_parameters/
+```
+
+A integração reutiliza integralmente o perfil `0x1C`, o codec compartilhado e
+o estado genérico por slot. O núcleo do decoder e do monitor não precisou ser
+alterado. A suíte offline passou com 376 testes.
+
+A validação física aprovou os sete parâmetros na ordem do catálogo, atualização
+independente, preservação dos valores durante mudanças estruturais e duas
+instâncias simultâneas com estados separados. A primeira manteve
+`20, 45, 66, 59, 59, 62, 59`; a segunda recebeu
+`25, 8, 30, 26, 24, 30, 33`.
+
+
+## 11. Estado de validação no marco atual
+
+Suíte completa da Fase 28 consolidada:
+
+```text
+Ran 376 tests
 OK
 ```
 
@@ -751,12 +795,14 @@ Validação offline aprovada:
 - 27 fixtures físicas do M-BOOST;
 - 22 fixtures físicas do COMP1;
 - 49 fixtures físicas únicas do COMP2;
+- 84 fixtures físicas únicas do COMP3;
 - 19 fixtures físicas únicas do E-BOOST;
 - 11 fixtures físicas únicas do AC WOODY;
 - 11 fixtures físicas únicas do GATE 1;
 - SHAPE e THRESHOLD resolvidos pelo efeito real da cadeia;
 - SUSTAIN e VOLUME independentes no mesmo slot do COMP1;
 - SUSTAIN, ATTACK, VOLUME e CLIPPING independentes no COMP2;
+- sete parâmetros independentes no COMP3;
 - GAIN, +3dB e BRIGHT independentes no mesmo slot;
 - conversão booleana estrita `0/1 → False/True`;
 - exibição humana `desligado/ligado`;
@@ -766,7 +812,9 @@ Validação offline aprovada:
 - múltiplas instâncias com valores independentes;
 - descarte de estado antigo ao substituir efeito ou trocar preset;
 - apresentação do COMP1 na ordem SUSTAIN, VOLUME;
-- apresentação do COMP2 na ordem SUSTAIN, ATTACK, VOLUME, CLIPPING.
+- apresentação do COMP2 na ordem SUSTAIN, ATTACK, VOLUME, CLIPPING;
+- apresentação do COMP3 na ordem THRESHOLD, RATIO, VOLUME, ATTACK, RELEASE,
+  TONE, BLEND.
 
 Validação física aprovada:
 
@@ -817,6 +865,22 @@ Validação física aprovada para a Fase 27:
 - ausência de colisão apesar da reutilização dos seletores `0`, `1`, `2` e `3`;
 - preservação dos valores pelo slot interno correto durante mudanças estruturais.
 
+Validação física aprovada para a Fase 28:
+
+- COMP3 exibindo THRESHOLD, RATIO, VOLUME, ATTACK, RELEASE, TONE e BLEND na
+  ordem do catálogo;
+- atualização independente dos sete controles no monitor principal;
+- primeira instância mantendo 20, 45, 66, 59, 59, 62 e 59;
+- segunda instância mantendo 25, 8, 30, 26, 24, 30 e 33;
+- ausência de contaminação entre duas instâncias simultâneas de COMP3;
+- preservação dos sete valores enquanto a cadeia recebeu efeitos DRV, FREQ,
+  EQ, MOD, DLY e RVB;
+- coexistência com COMP1 e COMP2;
+- ausência de colisão apesar da reutilização dos seletores `0` a `6`;
+- a troca explícita de posição entre as duas instâncias não aparece no log
+  fornecido, mas o isolamento por slot e a estabilidade estrutural foram
+  confirmados.
+
 Fixtures físicas de regressão:
 
 ```text
@@ -826,6 +890,7 @@ tests/fixtures/effect_slot_state/
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
 tests/fixtures/comp2_parameters/
+tests/fixtures/comp3_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -851,9 +916,9 @@ tests/fixtures/gate1_parameters/
   voltar a usar os índices `21–22` como `model_id`; resolver sempre pela cadeia
   atual no slot interno.
 - Seletores podem se repetir entre efeitos diferentes: seletor `0` significa
-  GAIN no M-BOOST, SUSTAIN no COMP1, SUSTAIN no COMP2, GAIN no E-BOOST,
-  SHAPE no AC WOODY e THRESHOLD no GATE 1. Os seletores 1 e 2 também já
-  possuem significados diferentes entre efeitos.
+  GAIN no M-BOOST, SUSTAIN no COMP1, SUSTAIN no COMP2, THRESHOLD no COMP3,
+  GAIN no E-BOOST, SHAPE no AC WOODY e THRESHOLD no GATE 1. Os seletores
+  `1` a `6` também podem ter significados diferentes conforme o efeito.
 - Booleanos do protocolo devem continuar restritos aos valores físicos `0/1`;
   não aceitar outros números como verdadeiros.
 - O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
@@ -868,14 +933,14 @@ tests/fixtures/gate1_parameters/
 ## 13. Próximos passos recomendados
 
 1. permanecer em `research/dyn-parameters`;
-2. repetir os 370 testes, `compileall` e `git diff --check`;
-3. revisar o escopo do `git add` para conter apenas a Fase 27 e esta aprovação;
-4. criar o commit estável do COMP2 e enviar a branch de pesquisa;
+2. repetir os 376 testes, `compileall` e `git diff --check`;
+3. revisar o escopo do `git add` para conter apenas a Fase 28 e esta aprovação;
+4. criar o commit estável do COMP3 e enviar a branch de pesquisa;
 5. promover o mesmo commit por fast-forward à `main`;
-6. manter `dyn.zip` e as capturas de COMP3, AC-BOOST e BB-BOOST fora do commit;
-7. iniciar a próxima fase pela análise física do COMP3;
-8. analisar AC-BOOST e BB-BOOST em seguida e decidir se podem compartilhar uma
-   única fase de integração.
+6. manter as capturas de AC-BOOST, BB-BOOST e AC SIM fora do commit;
+7. iniciar a Fase 29 com AC-BOOST e BB-BOOST juntos;
+8. reservar o AC SIM para fase própria, porque MODE exige suporte genérico a
+   valores categóricos e rótulos portáteis no catálogo.
 
 A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
 sem conhecer offsets, nibbles ou detalhes MIDI.
@@ -893,3 +958,79 @@ sem conhecer offsets, nibbles ou detalhes MIDI.
 [ ] O escopo do git add foi revisado; arquivos locais não relacionados ficaram fora.
 [ ] O commit será feito na branch de pesquisa correta e só depois promovido à main.
 ```
+
+## 15. Atualização atual — Fase 28 consolidada: DYN / COMP3
+
+A Fase 28 foi aprovada offline e fisicamente na branch
+`research/dyn-parameters`.
+
+Parâmetros consolidados:
+
+```text
+THRESHOLD  → seletor 0, inteiro 0–100
+RATIO      → seletor 1, inteiro 0–100
+VOLUME     → seletor 2, inteiro 0–100
+ATTACK     → seletor 3, inteiro 0–100
+RELEASE    → seletor 4, inteiro 0–100
+TONE       → seletor 5, inteiro 0–100
+BLEND      → seletor 6, inteiro 0–100
+```
+
+Foram preservadas 84 fixtures físicas: 70 no slot humano 1 e 14 no slot humano
+2. Todos os parâmetros reutilizam `effect_parameter_response_1c_v1`,
+`upper_float32_nibbles_v1`, marcador/tipo `01 01` e endereço opaco `01 04`.
+A identidade continua sendo resolvida pela cadeia atual do slot.
+
+Estado arquitetural:
+
+- nenhum parser, codec ou perfil específico para COMP3 foi criado;
+- o monitor continua orientado pelo catálogo JSON;
+- `EffectParameterState` mantém os sete valores por slot, efeito e parâmetro;
+- `catalog_version` está em 6;
+- sete efeitos DYN e 19 parâmetros estão catalogados;
+- 260 efeitos permanecem pendentes.
+
+Validação offline consolidada:
+
+```text
+Ran 376 tests
+OK
+```
+
+Também passaram `python -m compileall tools tests`, validação dos 319 arquivos
+JSON e `git diff --check`.
+
+Validação física consolidada:
+
+```text
+COMP3 A
+THRESHOLD 20 | RATIO 45 | VOLUME 66 | ATTACK 59
+RELEASE 59   | TONE 62  | BLEND 59
+
+COMP3 B
+THRESHOLD 25 | RATIO 8  | VOLUME 30 | ATTACK 26
+RELEASE 24   | TONE 30  | BLEND 33
+```
+
+O primeiro conjunto permaneceu estável enquanto a cadeia foi ampliada. A
+segunda instância recebeu os próprios sete valores sem contaminar a primeira.
+O log não contém uma troca explícita de posição entre as duas instâncias, mas
+confirma isolamento por slot e preservação durante mudanças estruturais.
+
+Limitações preservadas:
+
+- valores iniciais ainda aparecem como `aguardando alteração`;
+- seletores não identificam o efeito sem o contexto da cadeia;
+- o monitor permanece somente leitura;
+- respostas auxiliares não `0x1C` continuam ignoradas.
+
+### Próximo passo exato
+
+1. executar novamente os 376 testes, `compileall` e `git diff --check`;
+2. adicionar somente os arquivos da Fase 28 e desta aprovação;
+3. criar o commit `feat: add COMP3 parameters`;
+4. enviar `research/dyn-parameters`;
+5. promover por fast-forward à `main`;
+6. iniciar a Fase 29 com AC-BOOST e BB-BOOST;
+7. capturar o AC SIM com MODE separado e tratá-lo em fase posterior com suporte
+   categórico genérico.
