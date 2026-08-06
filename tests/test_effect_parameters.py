@@ -24,6 +24,8 @@ from tools.parameters import (
 MBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "mboost_gain"
 COMP1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "comp1_parameters"
 EBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "e_boost_parameters"
+AC_WOODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_woody_parameters"
+GATE1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate1_parameters"
 
 
 def make_chain(*, internal_slot_id: int, effect_key: str) -> ChainOrderState:
@@ -151,6 +153,42 @@ class GenericParameterDecoderTests(unittest.TestCase):
                     self.assertIs(event.value, expected_token == "on")
                 else:
                     self.assertEqual(event.value, int(expected_token))
+
+    def test_all_physical_ac_woody_fixtures_decode_by_effect_context(self) -> None:
+        fixtures = sorted(AC_WOODY_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 11)
+
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(),
+                    effect_key="dyn.ac_woody",
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                parts = fixture.stem.split("_")
+                self.assertEqual(event.human_slot, int(parts[0].removeprefix("slot")))
+                self.assertEqual(event.effect_key, "dyn.ac_woody")
+                self.assertEqual(event.parameter_key, "shape")
+                self.assertEqual(event.value, int(parts[-1]))
+
+    def test_all_physical_gate1_fixtures_decode_by_effect_context(self) -> None:
+        fixtures = sorted(GATE1_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 11)
+
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(),
+                    effect_key="dyn.gate_1",
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                parts = fixture.stem.split("_")
+                self.assertEqual(event.human_slot, int(parts[0].removeprefix("slot")))
+                self.assertEqual(event.effect_key, "dyn.gate_1")
+                self.assertEqual(event.parameter_key, "threshold")
+                self.assertEqual(event.value, int(parts[-1]))
 
     def test_e_boost_boolean_display_is_localized(self) -> None:
         on_event = parse_effect_parameter_response(
@@ -319,6 +357,29 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         self.assertIn("+3dB: aguardando alteração", formatted)
         self.assertIn("BRIGHT: aguardando alteração", formatted)
 
+    def test_monitor_lists_ac_woody_shape(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.ac_woody"))
+        snapshot = core.snapshot
+        assert snapshot is not None
+        self.assertEqual(
+            tuple(parameter.name for parameter in snapshot.effects[0].parameters),
+            ("SHAPE",),
+        )
+        self.assertIn("SHAPE: aguardando alteração", format_monitor_snapshot(snapshot))
+
+    def test_monitor_lists_gate1_threshold(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.gate_1"))
+        snapshot = core.snapshot
+        assert snapshot is not None
+        self.assertEqual(
+            tuple(parameter.name for parameter in snapshot.effects[0].parameters),
+            ("THRESHOLD",),
+        )
+        self.assertIn(
+            "THRESHOLD: aguardando alteração",
+            format_monitor_snapshot(snapshot),
+        )
+
     def test_live_events_update_e_boost_parameters_independently(self) -> None:
         core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.e_boost"))
 
@@ -340,6 +401,26 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         self.assertIn("GAIN: 51", formatted)
         self.assertIn("+3dB: ligado", formatted)
         self.assertIn("BRIGHT: desligado", formatted)
+
+    def test_live_event_updates_ac_woody_shape(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.ac_woody"))
+        update = core.feed(
+            (AC_WOODY_FIXTURE_ROOT / "slot2_shape_051.bin").read_bytes()
+        )
+        self.assertIsNotNone(update.parameter_event)
+        assert update.snapshot is not None
+        self.assertEqual(update.snapshot.effects[0].parameters[0].value, 51)
+        self.assertIn("SHAPE: 51", format_monitor_snapshot(update.snapshot))
+
+    def test_live_event_updates_gate1_threshold(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.gate_1"))
+        update = core.feed(
+            (GATE1_FIXTURE_ROOT / "slot2_threshold_051.bin").read_bytes()
+        )
+        self.assertIsNotNone(update.parameter_event)
+        assert update.snapshot is not None
+        self.assertEqual(update.snapshot.effects[0].parameters[0].value, 51)
+        self.assertIn("THRESHOLD: 51", format_monitor_snapshot(update.snapshot))
 
     def test_live_events_update_comp1_parameters_independently(self) -> None:
         core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.comp1"))
@@ -421,6 +502,27 @@ class Comp1EvidenceManifestTests(unittest.TestCase):
             manifest["protocol"]["observed_parameter_address"]["value"],
             [1, 4],
         )
+
+
+class SimpleDynEvidenceManifestTests(unittest.TestCase):
+    def test_ac_woody_and_gate1_manifests_preserve_two_slot_evidence(self) -> None:
+        for fixture_root, effect_key, parameter_key in (
+            (AC_WOODY_FIXTURE_ROOT, "dyn.ac_woody", "shape"),
+            (GATE1_FIXTURE_ROOT, "dyn.gate_1", "threshold"),
+        ):
+            with self.subTest(effect=effect_key):
+                manifest = json.loads(
+                    (fixture_root / "manifest.json").read_text(encoding="utf-8")
+                )
+                self.assertEqual(manifest["effect"]["key"], effect_key)
+                self.assertEqual(manifest["parameters"][0]["key"], parameter_key)
+                self.assertEqual(manifest["physical_binary_fixtures"], 11)
+                self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+                self.assertEqual(len(manifest["controlled_capture_sources"]), 2)
+                self.assertEqual(
+                    manifest["protocol"]["effect_identity_source"],
+                    "current_chain",
+                )
 
 
 class EBoostEvidenceManifestTests(unittest.TestCase):

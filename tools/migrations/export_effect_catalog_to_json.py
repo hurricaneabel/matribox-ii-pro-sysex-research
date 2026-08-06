@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 3
+CATALOG_VERSION = 4
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -259,6 +259,83 @@ EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
 )
 
 
+AC_WOODY_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "shape",
+        "name": "SHAPE",
+        "display_order": 1,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 0,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 0,
+            "single_parameter": True,
+            "physical_fixture_count": 11,
+            "evidence": "docs/phases/DYN_AC_WOODY_GATE1_PARAMETERS_PHASE26.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+)
+
+
+GATE1_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "threshold",
+        "name": "THRESHOLD",
+        "display_order": 1,
+        "value_type": "integer",
+        "range": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 0,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 0,
+            "single_parameter": True,
+            "physical_fixture_count": 11,
+            "evidence": "docs/phases/DYN_AC_WOODY_GATE1_PARAMETERS_PHASE26.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+)
+
 
 def slugify(value: str) -> str:
     """Cria uma chave ASCII estável, preservando o significado de ``+``."""
@@ -331,6 +408,14 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "dyn.e_boost" and not parameters:
         parameters = list(EBOOST_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.ac_woody" and not parameters:
+        parameters = list(AC_WOODY_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.gate_1" and not parameters:
+        parameters = list(GATE1_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
 

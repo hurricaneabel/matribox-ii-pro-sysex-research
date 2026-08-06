@@ -71,6 +71,21 @@ validação física no monitor principal aprovou a atualização independente do
 três parâmetros, a apresentação `ligado/desligado`, duas instâncias de E-BOOST
 com estados separados e a coexistência com COMP1 e outros efeitos da cadeia.
 
+A Fase 26 acrescentou dois efeitos DYN de parâmetro único:
+
+```text
+AC WOODY → SHAPE 0–100
+GATE 1   → THRESHOLD 0–100
+```
+
+As capturas controladas confirmaram o comando `0x1C`, seletor `0`, o codec
+`upper_float32_nibbles_v1` e os slots internos 1 e 2 para ambos. A integração
+preserva 11 respostas físicas únicas por efeito. A validação no monitor
+principal aprovou atualização independente de SHAPE e THRESHOLD, múltiplas
+instâncias de AC WOODY com estados separados, preservação dos valores após
+mudança da ordem visual e coexistência com COMP1, GATE 1 e efeitos de outras
+classes.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell

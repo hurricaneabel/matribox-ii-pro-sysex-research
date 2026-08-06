@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.gate_1",
+    "name": "GATE 1",
+    "model_id": 27,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "threshold",
+      "name": "THRESHOLD",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "gate1_slot2_short_capture.pcapng"
+  ],
+  "physical_binary_fixtures": 11,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_threshold_000.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "e65667dd93e476a564934a616e50715c9fdbda072ad1853a023724b8e9e80cc1"
+    },
+    {
+      "file": "slot1_threshold_001.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "15b19decc8541a8546cc4f1948e2cf5400122d459d72af1862190df5f7f744d5"
+    },
+    {
+      "file": "slot1_threshold_002.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "8e013fa1603306c1c536ad2ea923dad607c923486a31078c12c575e08de6f6bf"
+    },
+    {
+      "file": "slot1_threshold_010.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "3ae95faaa3643df3cf3505ba1468da7375ddd2388b84e2bd6f5dd7a4ba1a4513"
+    },
+    {
+      "file": "slot1_threshold_025.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "338ea715828bd07cd57ce582b22e39685b16456186ade50ea6d0f49ba2365512"
+    },
+    {
+      "file": "slot1_threshold_050.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "9dd320ecae89efc0a63fbb6fd205d27a9afa781daa6749cf197f3740cb5d2e73"
+    },
+    {
+      "file": "slot1_threshold_075.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "bee4a67d8f583ec63861f4e22d19276bd11afe26495dc3d976cd67e13b9722ef"
+    },
+    {
+      "file": "slot1_threshold_099.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "c7b25c03e36c4b3b1577c9aaf40236ce9b15f3a9efeacc0efabd8f1c000d2e1b"
+    },
+    {
+      "file": "slot1_threshold_100.bin",
+      "source": "GATE1_THRESHOLD_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "1a364e7e455581b7d0eb91be4adcb28e43daab4b49a117e3cb07fdde87745ff0"
+    },
+    {
+      "file": "slot2_threshold_050.bin",
+      "source": "gate1_slot2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "9b5aefd1095e9f3b7a752952ea74f918874800ef910df55c30f153dc4b118b50"
+    },
+    {
+      "file": "slot2_threshold_051.bin",
+      "source": "gate1_slot2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "3ba0c45599942cac087ee3aff00acbbb326f946dfbc30159724b56875275fed1"
+    }
+  ]
+}

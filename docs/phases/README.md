@@ -18,3 +18,4 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 23B | `EFFECT_PARAMETER_ENGINE_PHASE23B.md` | motor genérico de parâmetros |
 | 24 | `DYN_COMP1_PARAMETERS_PHASE24.md` | COMP1 com SUSTAIN/VOLUME e resolução pelo contexto da cadeia |
 | 25 | `DYN_EBOOST_PARAMETERS_PHASE25.md` | E-BOOST com GAIN e booleanos +3dB/BRIGHT |
+| 26 | `DYN_AC_WOODY_GATE1_PARAMETERS_PHASE26.md` | AC WOODY/SHAPE e GATE 1/THRESHOLD |

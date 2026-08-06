@@ -7,7 +7,51 @@
   "name": "AC WOODY",
   "model_id": 0,
   "secondary_selector": 1,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "shape",
+      "name": "SHAPE",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "single_parameter": true,
+        "physical_fixture_count": 11,
+        "evidence": "docs/phases/DYN_AC_WOODY_GATE1_PARAMETERS_PHASE26.md",
+        "monitor_integration_physical_validation": "pending",
+        "range_validated": [
+          0,
+          100
+        ]
+      }
+    }
+  ]
 }

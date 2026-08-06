@@ -3,9 +3,12 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco aprovado para consolidação:** Fase 25 — DYN / E-BOOST com GAIN,
-> +3dB e BRIGHT, incluindo suporte genérico a valores booleanos, aprovado
-> offline e fisicamente no monitor principal com múltiplas instâncias
+> **Marco consolidado:** Fase 25 — DYN / E-BOOST com GAIN, +3dB e BRIGHT,
+> incluindo suporte genérico a valores booleanos, aprovado offline e
+> fisicamente no monitor principal com múltiplas instâncias
+> **Fase candidata atual:** Fase 26 — DYN / AC WOODY / SHAPE e
+> DYN / GATE 1 / THRESHOLD, integrada offline e aguardando validação física
+> no monitor principal
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/dyn-parameters`
 
@@ -82,10 +85,12 @@ O estado atual já permite:
   independentes no mesmo slot;
 - reconhecer `GAIN`, `+3dB` e `BRIGHT` do `DYN / E-BOOST`, incluindo
   conversão física `0/1` para booleanos e exibição `ligado/desligado`;
+- reconhecer `SHAPE` do `DYN / AC WOODY` e `THRESHOLD` do `DYN / GATE 1`,
+  ambos inteiros de 0 a 100;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e seis parâmetros confirmados por
-  capturas em três efeitos DYN a partir de um catálogo JSON versionado e
+- carregar as 16 classes, 267 efeitos e oito parâmetros confirmados por
+  capturas em cinco efeitos DYN a partir de um catálogo JSON versionado e
   independente de Python/Windows.
 
 ## 4. Programa principal atual
@@ -253,8 +258,10 @@ tools/commands/effect_slot_state.py
 
 A Fase 22 isolou o `DYN / M-BOOST / GAIN`. A Fase 24 acrescentou
 `DYN / COMP1 / SUSTAIN` e `VOLUME` e revelou uma correção arquitetural
-essencial. A Fase 25 acrescenta `DYN / E-BOOST / GAIN`, `+3dB` e `BRIGHT`,
-validando o primeiro uso de `value_type: boolean`.
+essencial. A Fase 25 acrescentou `DYN / E-BOOST / GAIN`, `+3dB` e
+`BRIGHT`, validando o primeiro uso de `value_type: boolean`. A Fase 26
+candidata acrescenta `DYN / AC WOODY / SHAPE` e
+`DYN / GATE 1 / THRESHOLD`.
 
 Estrutura confirmada da resposta de 70 bytes:
 
@@ -277,9 +284,11 @@ COMP1 / VOLUME      → 1
 E-BOOST / GAIN      → 0
 E-BOOST / +3dB      → 1
 E-BOOST / BRIGHT    → 2
+AC WOODY / SHAPE    → 0
+GATE 1 / THRESHOLD  → 0
 ```
 
-Os índices `21–22` permanecem `01 04` no M-BOOST, COMP1 e E-BOOST.
+Os índices `21–22` permanecem `01 04` no M-BOOST, COMP1, E-BOOST, AC WOODY e GATE 1.
 Portanto, eles não representam o `model_id` do efeito. A mensagem informa slot,
 seletor e valor; a identidade do efeito deve ser obtida da cadeia estrutural
 atual naquele slot.
@@ -312,6 +321,8 @@ Fixtures:
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
 tests/fixtures/e_boost_parameters/
+tests/fixtures/ac_woody_parameters/
+tests/fixtures/gate1_parameters/
 ```
 
 ### 6.5 Catálogo JSON multiplataforma
@@ -339,8 +350,9 @@ A equivalência foi comprovada contra um snapshot anterior à migração:
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-M-BOOST, COMP1 e E-BOOST são os três efeitos com parâmetros preenchidos no
-catálogo atual. Os outros 264 efeitos permanecem explicitamente `pending`,
+M-BOOST, COMP1, E-BOOST, AC WOODY e GATE 1 são os cinco efeitos com
+parâmetros preenchidos no catálogo atual. Os outros 262 efeitos permanecem
+explicitamente `pending`,
 sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
@@ -664,12 +676,38 @@ aprovou a ordem dos três parâmetros, valores booleanos em português, atualiza
 independente, duas instâncias simultâneas com estados separados e coexistência
 com COMP1 e outros efeitos da cadeia.
 
-## 11. Estado de validação no marco atual
+### Fase 26 — DYN / AC WOODY e GATE 1
 
-Suíte completa da Fase 25:
+As capturas controladas confirmaram dois efeitos de parâmetro único:
 
 ```text
-Ran 356 tests
+AC WOODY / SHAPE       → seletor 0, inteiro 0–100
+GATE 1 / THRESHOLD     → seletor 0, inteiro 0–100
+```
+
+Ambos reutilizam `effect_parameter_response_1c_v1` e
+`upper_float32_nibbles_v1`. Os slots internos humanos 1 e 2 foram observados.
+Foram preservadas 11 respostas físicas únicas para cada efeito:
+
+```text
+docs/phases/DYN_AC_WOODY_GATE1_PARAMETERS_PHASE26.md
+catalog/effects/dyn/010_ac_woody.json
+catalog/effects/dyn/012_gate_1.json
+tests/fixtures/ac_woody_parameters/
+tests/fixtures/gate1_parameters/
+```
+
+A integração não exigiu mudança no motor. A validação física no monitor
+principal aprovou SHAPE e THRESHOLD independentes, duas instâncias de AC WOODY
+com estados separados, coexistência com os demais efeitos catalogados e
+preservação dos valores após mudança da ordem visual.
+
+## 11. Estado de validação no marco atual
+
+Suíte completa da Fase 26 candidata:
+
+```text
+Ran 364 tests
 OK
 ```
 
@@ -678,6 +716,9 @@ Validação offline aprovada:
 - 27 fixtures físicas do M-BOOST;
 - 22 fixtures físicas do COMP1;
 - 19 fixtures físicas únicas do E-BOOST;
+- 11 fixtures físicas únicas do AC WOODY;
+- 11 fixtures físicas únicas do GATE 1;
+- SHAPE e THRESHOLD resolvidos pelo efeito real da cadeia;
 - SUSTAIN e VOLUME independentes no mesmo slot;
 - GAIN, +3dB e BRIGHT independentes no mesmo slot;
 - conversão booleana estrita `0/1 → False/True`;
@@ -716,6 +757,17 @@ Validação física aprovada para a Fase 25:
 - coexistência com COMP1 e efeitos de outras classes sem colisão de seletores;
 - substituições estruturais em outro slot sem atribuição ao efeito incorreto.
 
+Validação física aprovada para a Fase 26:
+
+- AC WOODY exibindo e atualizando `SHAPE`;
+- GATE 1 exibindo e atualizando `THRESHOLD`;
+- atualização independente de SHAPE e THRESHOLD;
+- duas instâncias simultâneas de AC WOODY com estados separados;
+- preservação dos valores após mudança de posição visual;
+- GATE 1 preservando THRESHOLD após mudança de ordem;
+- coexistência com COMP1, M-BOOST, E-BOOST e efeitos de outras classes;
+- ausência de colisão apesar da reutilização do seletor `0`.
+
 Fixtures físicas de regressão:
 
 ```text
@@ -725,6 +777,8 @@ tests/fixtures/effect_slot_state/
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
 tests/fixtures/e_boost_parameters/
+tests/fixtures/ac_woody_parameters/
+tests/fixtures/gate1_parameters/
 ```
 
 ## 12. Limitações e cuidados conhecidos
@@ -747,7 +801,8 @@ tests/fixtures/e_boost_parameters/
   voltar a usar os índices `21–22` como `model_id`; resolver sempre pela cadeia
   atual no slot interno.
 - Seletores podem se repetir entre efeitos diferentes: seletor `0` significa
-  GAIN no M-BOOST, SUSTAIN no COMP1 e GAIN no E-BOOST.
+  GAIN no M-BOOST, SUSTAIN no COMP1, GAIN no E-BOOST, SHAPE no AC WOODY e
+  THRESHOLD no GATE 1.
 - Booleanos do protocolo devem continuar restritos aos valores físicos `0/1`;
   não aceitar outros números como verdadeiros.
 - O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
@@ -762,14 +817,12 @@ tests/fixtures/e_boost_parameters/
 ## 13. Próximos passos recomendados
 
 1. permanecer em `research/dyn-parameters`;
-2. extrair o pacote documental de aprovação física na raiz;
+2. extrair o pacote documental de aprovação física da Fase 26;
 3. repetir a suíte completa, `compileall` e `git diff --check`;
-4. revisar o escopo com `git status --short` e `git diff --cached --check`;
-5. consolidar a Fase 25 na branch de pesquisa;
+4. revisar o escopo com `git status --short` e `git diff --cached --stat`;
+5. criar o commit estável da Fase 26 e enviar a branch de pesquisa;
 6. promover o mesmo commit à `main` por fast-forward;
-7. retornar à branch `research/dyn-parameters` limpa;
-8. escolher o próximo efeito DYN de baixa complexidade e iniciar novas
-   capturas controladas.
+7. escolher o próximo efeito DYN de baixa complexidade.
 
 A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
 sem conhecer offsets, nibbles ou detalhes MIDI.

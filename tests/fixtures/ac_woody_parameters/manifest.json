@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.ac_woody",
+    "name": "AC WOODY",
+    "model_id": 0,
+    "secondary_selector": 1
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "shape",
+      "name": "SHAPE",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "ac_woody_slot2_short_capture.pcapng"
+  ],
+  "physical_binary_fixtures": 11,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_shape_000.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "9085af59b05a95c84456a06262e44a27171f022646ddad2a014a02dbd1b50baf"
+    },
+    {
+      "file": "slot1_shape_001.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "7262b0a5903c29f0b4540b60d3c0fe57b62f0ff16419b254dcd6f8fcd0d947f4"
+    },
+    {
+      "file": "slot1_shape_002.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "3d1c5d1c1174bff6f99dffb7cd5581323675286a1625afb871ff7c826508045c"
+    },
+    {
+      "file": "slot1_shape_010.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "ce913bfc04ccb3434a250de2be2231a8d78a6a258a101da0d0ba9e7011b258c8"
+    },
+    {
+      "file": "slot1_shape_025.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "1f00049e017d6be002f7efd0591958e3269634195a46adde34ce27c5437c3332"
+    },
+    {
+      "file": "slot1_shape_050.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "c2c0b546651eb75a9d39ea6bcc5b3637594b63ed2c4e8bb759c4977bb91c0ad7"
+    },
+    {
+      "file": "slot1_shape_075.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "ee3c3a228305de710d545fa82b53f833c613d75ef752c39978bb4badaea8319c"
+    },
+    {
+      "file": "slot1_shape_099.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "7b51328073dcce4cbf458a00355c91f78a9f3df1456fc7a058702b9f7a996b22"
+    },
+    {
+      "file": "slot1_shape_100.bin",
+      "source": "AC_WOODY_SHAPE_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e2ba7046dfb1da84f8e9af75c5e64f363878d807e404ba21de1c258cfe3bb0d9"
+    },
+    {
+      "file": "slot2_shape_050.bin",
+      "source": "ac_woody_slot2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "5ac9163c3521c3814eef080328c394354f7433794afdf4dc047dc5a8f66f5011"
+    },
+    {
+      "file": "slot2_shape_051.bin",
+      "source": "ac_woody_slot2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "shape",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "22862e11e07c1eb2118970333ce6b5a1dcdd35e55958d2e3dbea9629402ee328"
+    }
+  ]
+}

@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 3)
+        self.assertEqual(self.catalog.catalog_version, 4)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -168,14 +168,51 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 {"false": 0, "true": 1},
             )
 
+    def test_ac_woody_and_gate1_have_single_validated_parameters(self) -> None:
+        expected = (
+            ("dyn.ac_woody", "AC WOODY", "shape", "SHAPE", 0x00, 0x01),
+            ("dyn.gate_1", "GATE 1", "threshold", "THRESHOLD", 0x1B, 0x00),
+        )
+        for effect_key, name, parameter_key, parameter_name, model_id, selector in expected:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.name, name)
+                self.assertEqual(effect.model_id, model_id)
+                self.assertEqual(effect.secondary_selector, selector)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual(effect.capabilities, ("parameters",))
+                self.assertEqual(len(effect.parameters), 1)
+                parameter = effect.parameters[0]
+                self.assertEqual(parameter.key, parameter_key)
+                self.assertEqual(parameter.name, parameter_name)
+                self.assertEqual(parameter.value_type, "integer")
+                self.assertEqual(
+                    (parameter.minimum, parameter.maximum, parameter.step),
+                    (0, 100, 1),
+                )
+                self.assertEqual(
+                    dict(parameter.message_match)["parameter_selector"],
+                    0,
+                )
+                self.assertEqual(
+                    parameter.identification_status,
+                    "validated_with_chain_effect_context",
+                )
+
     def test_uncataloged_effects_do_not_invent_parameters(self) -> None:
         pending = [
             model
             for effect_class in self.catalog.classes
             for model in effect_class.models
-            if model.key not in {"dyn.m_boost", "dyn.comp1", "dyn.e_boost"}
+            if model.key not in {
+                "dyn.m_boost",
+                "dyn.comp1",
+                "dyn.e_boost",
+                "dyn.ac_woody",
+                "dyn.gate_1",
+            }
         ]
-        self.assertEqual(len(pending), 264)
+        self.assertEqual(len(pending), 262)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -226,6 +263,8 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_mboost = exported.effect_by_key("dyn.m_boost")
             exported_comp1 = exported.effect_by_key("dyn.comp1")
             exported_e_boost = exported.effect_by_key("dyn.e_boost")
+            exported_ac_woody = exported.effect_by_key("dyn.ac_woody")
+            exported_gate1 = exported.effect_by_key("dyn.gate_1")
             self.assertEqual(
                 exported_mboost.parameters,
                 self.catalog.effect_by_key("dyn.m_boost").parameters,
@@ -237,6 +276,14 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_e_boost.parameters,
                 self.catalog.effect_by_key("dyn.e_boost").parameters,
+            )
+            self.assertEqual(
+                exported_ac_woody.parameters,
+                self.catalog.effect_by_key("dyn.ac_woody").parameters,
+            )
+            self.assertEqual(
+                exported_gate1.parameters,
+                self.catalog.effect_by_key("dyn.gate_1").parameters,
             )
 
     def test_loader_rejects_effect_key_from_another_class(self) -> None:
