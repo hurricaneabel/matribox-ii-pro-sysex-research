@@ -86,6 +86,21 @@ instâncias de AC WOODY com estados separados, preservação dos valores após
 mudança da ordem visual e coexistência com COMP1, GATE 1 e efeitos de outras
 classes.
 
+A Fase 27 acrescentou os quatro controles contínuos do `DYN / COMP2`:
+
+```text
+SUSTAIN   → inteiro 0–100, seletor 0
+ATTACK    → inteiro 0–100, seletor 1
+VOLUME    → inteiro 0–100, seletor 2
+CLIPPING  → inteiro 0–100, seletor 3
+```
+
+As seis capturas controladas confirmaram os slots internos 1 e 2 e preservaram
+49 respostas físicas únicas. A suíte offline passou com 370 testes. A validação
+física no monitor principal aprovou a apresentação dos quatro controles, a
+atualização independente, duas instâncias simultâneas com estados separados e
+a coexistência com COMP1, COMP3, M-BOOST, E-BOOST, AC-BOOST e BB-BOOST.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell

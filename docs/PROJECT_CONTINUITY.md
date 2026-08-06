@@ -3,12 +3,11 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 25 — DYN / E-BOOST com GAIN, +3dB e BRIGHT,
-> incluindo suporte genérico a valores booleanos, aprovado offline e
-> fisicamente no monitor principal com múltiplas instâncias
-> **Fase candidata atual:** Fase 26 — DYN / AC WOODY / SHAPE e
-> DYN / GATE 1 / THRESHOLD, integrada offline e aguardando validação física
-> no monitor principal
+> **Marco consolidado:** Fase 27 — DYN / COMP2 com SUSTAIN, ATTACK, VOLUME
+> e CLIPPING, aprovado offline e fisicamente com duas instâncias simultâneas
+> e estados independentes
+> **Próxima pesquisa:** Fase 28 — análise do DYN / COMP3; capturas de
+> AC-BOOST e BB-BOOST preservadas separadamente para fases posteriores
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/dyn-parameters`
 
@@ -89,8 +88,8 @@ O estado atual já permite:
   ambos inteiros de 0 a 100;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e oito parâmetros confirmados por
-  capturas em cinco efeitos DYN a partir de um catálogo JSON versionado e
+- carregar as 16 classes, 267 efeitos e 12 parâmetros confirmados por
+  capturas em seis efeitos DYN a partir de um catálogo JSON versionado e
   independente de Python/Windows.
 
 ## 4. Programa principal atual
@@ -260,8 +259,8 @@ A Fase 22 isolou o `DYN / M-BOOST / GAIN`. A Fase 24 acrescentou
 `DYN / COMP1 / SUSTAIN` e `VOLUME` e revelou uma correção arquitetural
 essencial. A Fase 25 acrescentou `DYN / E-BOOST / GAIN`, `+3dB` e
 `BRIGHT`, validando o primeiro uso de `value_type: boolean`. A Fase 26
-candidata acrescenta `DYN / AC WOODY / SHAPE` e
-`DYN / GATE 1 / THRESHOLD`.
+acrescentou `DYN / AC WOODY / SHAPE` e `DYN / GATE 1 / THRESHOLD`. A
+Fase 27 acrescentou os quatro controles contínuos do `DYN / COMP2`.
 
 Estrutura confirmada da resposta de 70 bytes:
 
@@ -281,6 +280,10 @@ Seletores catalogados:
 M-BOOST / GAIN      → 0
 COMP1 / SUSTAIN     → 0
 COMP1 / VOLUME      → 1
+COMP2 / SUSTAIN     → 0
+COMP2 / ATTACK      → 1
+COMP2 / VOLUME      → 2
+COMP2 / CLIPPING    → 3
 E-BOOST / GAIN      → 0
 E-BOOST / +3dB      → 1
 E-BOOST / BRIGHT    → 2
@@ -288,7 +291,8 @@ AC WOODY / SHAPE    → 0
 GATE 1 / THRESHOLD  → 0
 ```
 
-Os índices `21–22` permanecem `01 04` no M-BOOST, COMP1, E-BOOST, AC WOODY e GATE 1.
+Os índices `21–22` permanecem `01 04` no M-BOOST, COMP1, COMP2, E-BOOST,
+AC WOODY e GATE 1.
 Portanto, eles não representam o `model_id` do efeito. A mensagem informa slot,
 seletor e valor; a identidade do efeito deve ser obtida da cadeia estrutural
 atual naquele slot.
@@ -320,6 +324,7 @@ Fixtures:
 ```text
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
+tests/fixtures/comp2_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -350,8 +355,8 @@ A equivalência foi comprovada contra um snapshot anterior à migração:
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-M-BOOST, COMP1, E-BOOST, AC WOODY e GATE 1 são os cinco efeitos com
-parâmetros preenchidos no catálogo atual. Os outros 262 efeitos permanecem
+M-BOOST, COMP1, COMP2, E-BOOST, AC WOODY e GATE 1 são os seis efeitos com
+parâmetros preenchidos no catálogo atual. Os outros 261 efeitos permanecem
 explicitamente `pending`,
 sem parâmetros presumidos.
 
@@ -477,8 +482,9 @@ necessário para desambiguar casos como modelos AMP distintos com o mesmo ID.
 
 O catálogo usa JSON Schema Draft 2020-12, caminhos relativos portáteis e
 versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
-futuro, por Kotlin/Android e desktop. O único parâmetro interno concluído neste
-marco é `DYN / M-BOOST / GAIN`; os demais permanecem sem dados inventados.
+futuro, por Kotlin/Android e desktop. Neste marco há 12 parâmetros fisicamente
+confirmados em seis efeitos DYN; os demais efeitos permanecem sem dados
+inventados.
 
 ## 10. Histórico consolidado das Fases 14–24
 
@@ -597,8 +603,9 @@ arquivos JSON individuais, criou schemas, carregador, perfil de protocolo e
 codec de valor. `effect_catalog.py` passou a funcionar como fachada compatível.
 
 A comparação contra o snapshot legado confirmou equivalência registro por
-registro. O M-BOOST/GAIN foi registrado como primeiro parâmetro validado; os
-outros 266 efeitos permanecem `pending`.
+registro. O M-BOOST/GAIN foi registrado como primeiro parâmetro validado. As
+fases posteriores ampliaram o catálogo sem alterar a equivalência estrutural
+original.
 
 ```text
 docs/phases/EFFECT_CATALOG_JSON_PHASE23A.md
@@ -702,12 +709,40 @@ principal aprovou SHAPE e THRESHOLD independentes, duas instâncias de AC WOODY
 com estados separados, coexistência com os demais efeitos catalogados e
 preservação dos valores após mudança da ordem visual.
 
-## 11. Estado de validação no marco atual
+### Fase 27 — DYN / COMP2 com quatro parâmetros
 
-Suíte completa da Fase 26 candidata:
+As seis capturas controladas confirmaram quatro controles contínuos de 0 a 100:
 
 ```text
-Ran 364 tests
+SUSTAIN   → seletor 0
+ATTACK    → seletor 1
+VOLUME    → seletor 2
+CLIPPING  → seletor 3
+```
+
+Os slots internos humanos 1 e 2 foram observados e 49 respostas físicas únicas
+foram preservadas. A captura combinada incluiu a sequência acidental
+`CLIPPING 54 → 5 → 50`; o valor 5 foi corretamente decodificado e mantido como
+evidência.
+
+```text
+docs/phases/DYN_COMP2_PARAMETERS_PHASE27.md
+catalog/effects/dyn/002_comp2.json
+tests/fixtures/comp2_parameters/
+```
+
+A integração reutiliza integralmente o perfil `0x1C`, o codec compartilhado e
+o estado genérico por slot. O núcleo do decoder e do monitor não precisou ser
+alterado. A suíte offline passou com 370 testes. A validação física aprovou a
+apresentação e atualização independente dos quatro controles, duas instâncias
+simultâneas com estados separados e coexistência com outros efeitos DYN.
+
+## 11. Estado de validação no marco atual
+
+Suíte completa da Fase 27 consolidada:
+
+```text
+Ran 370 tests
 OK
 ```
 
@@ -715,11 +750,13 @@ Validação offline aprovada:
 
 - 27 fixtures físicas do M-BOOST;
 - 22 fixtures físicas do COMP1;
+- 49 fixtures físicas únicas do COMP2;
 - 19 fixtures físicas únicas do E-BOOST;
 - 11 fixtures físicas únicas do AC WOODY;
 - 11 fixtures físicas únicas do GATE 1;
 - SHAPE e THRESHOLD resolvidos pelo efeito real da cadeia;
-- SUSTAIN e VOLUME independentes no mesmo slot;
+- SUSTAIN e VOLUME independentes no mesmo slot do COMP1;
+- SUSTAIN, ATTACK, VOLUME e CLIPPING independentes no COMP2;
 - GAIN, +3dB e BRIGHT independentes no mesmo slot;
 - conversão booleana estrita `0/1 → False/True`;
 - exibição humana `desligado/ligado`;
@@ -728,7 +765,8 @@ Validação offline aprovada:
 - manutenção da compatibilidade com `mboost_gain.py`;
 - múltiplas instâncias com valores independentes;
 - descarte de estado antigo ao substituir efeito ou trocar preset;
-- apresentação dos parâmetros na ordem SUSTAIN, VOLUME.
+- apresentação do COMP1 na ordem SUSTAIN, VOLUME;
+- apresentação do COMP2 na ordem SUSTAIN, ATTACK, VOLUME, CLIPPING.
 
 Validação física aprovada:
 
@@ -768,6 +806,17 @@ Validação física aprovada para a Fase 26:
 - coexistência com COMP1, M-BOOST, E-BOOST e efeitos de outras classes;
 - ausência de colisão apesar da reutilização do seletor `0`.
 
+Validação física aprovada para a Fase 27:
+
+- COMP2 exibindo SUSTAIN, ATTACK, VOLUME e CLIPPING na ordem do catálogo;
+- atualização independente dos quatro controles no monitor principal;
+- primeira instância mantendo SUSTAIN 21, ATTACK 60, VOLUME 50 e CLIPPING 10;
+- segunda instância mantendo SUSTAIN 21, ATTACK 61, VOLUME 51 e CLIPPING 11;
+- ausência de contaminação entre duas instâncias simultâneas de COMP2;
+- coexistência com COMP1, COMP3, M-BOOST, E-BOOST, AC-BOOST e BB-BOOST;
+- ausência de colisão apesar da reutilização dos seletores `0`, `1`, `2` e `3`;
+- preservação dos valores pelo slot interno correto durante mudanças estruturais.
+
 Fixtures físicas de regressão:
 
 ```text
@@ -776,6 +825,7 @@ tests/fixtures/preset_dump_chain/
 tests/fixtures/effect_slot_state/
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
+tests/fixtures/comp2_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -801,8 +851,9 @@ tests/fixtures/gate1_parameters/
   voltar a usar os índices `21–22` como `model_id`; resolver sempre pela cadeia
   atual no slot interno.
 - Seletores podem se repetir entre efeitos diferentes: seletor `0` significa
-  GAIN no M-BOOST, SUSTAIN no COMP1, GAIN no E-BOOST, SHAPE no AC WOODY e
-  THRESHOLD no GATE 1.
+  GAIN no M-BOOST, SUSTAIN no COMP1, SUSTAIN no COMP2, GAIN no E-BOOST,
+  SHAPE no AC WOODY e THRESHOLD no GATE 1. Os seletores 1 e 2 também já
+  possuem significados diferentes entre efeitos.
 - Booleanos do protocolo devem continuar restritos aos valores físicos `0/1`;
   não aceitar outros números como verdadeiros.
 - O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
@@ -817,12 +868,14 @@ tests/fixtures/gate1_parameters/
 ## 13. Próximos passos recomendados
 
 1. permanecer em `research/dyn-parameters`;
-2. extrair o pacote documental de aprovação física da Fase 26;
-3. repetir a suíte completa, `compileall` e `git diff --check`;
-4. revisar o escopo com `git status --short` e `git diff --cached --stat`;
-5. criar o commit estável da Fase 26 e enviar a branch de pesquisa;
-6. promover o mesmo commit à `main` por fast-forward;
-7. escolher o próximo efeito DYN de baixa complexidade.
+2. repetir os 370 testes, `compileall` e `git diff --check`;
+3. revisar o escopo do `git add` para conter apenas a Fase 27 e esta aprovação;
+4. criar o commit estável do COMP2 e enviar a branch de pesquisa;
+5. promover o mesmo commit por fast-forward à `main`;
+6. manter `dyn.zip` e as capturas de COMP3, AC-BOOST e BB-BOOST fora do commit;
+7. iniciar a próxima fase pela análise física do COMP3;
+8. analisar AC-BOOST e BB-BOOST em seguida e decidir se podem compartilhar uma
+   única fase de integração.
 
 A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
 sem conhecer offsets, nibbles ou detalhes MIDI.
@@ -830,13 +883,13 @@ sem conhecer offsets, nibbles ou detalhes MIDI.
 ## 14. Checklist obrigatório para o próximo commit
 
 ```text
-[ ] A funcionalidade foi validada offline.
-[ ] A funcionalidade MIDI foi validada fisicamente, quando aplicável.
-[ ] A suíte unittest completa passou.
-[ ] python -m compileall tools tests passou.
-[ ] git diff --check passou.
-[ ] docs/PROJECT_CONTINUITY.md foi atualizado.
-[ ] README.md foi atualizado se o uso público mudou.
+[x] A funcionalidade foi validada offline.
+[x] A funcionalidade MIDI foi validada fisicamente, quando aplicável.
+[x] A suíte unittest completa passou.
+[x] python -m compileall tools tests passou.
+[x] git diff --check passou.
+[x] docs/PROJECT_CONTINUITY.md foi atualizado.
+[x] README.md foi atualizado se o uso público mudou.
 [ ] O escopo do git add foi revisado; arquivos locais não relacionados ficaram fora.
 [ ] O commit será feito na branch de pesquisa correta e só depois promovido à main.
 ```

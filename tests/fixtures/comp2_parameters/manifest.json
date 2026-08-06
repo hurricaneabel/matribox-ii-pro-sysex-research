@@ -1,0 +1,849 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.comp2",
+    "name": "COMP2",
+    "model_id": 1,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "sustain",
+      "name": "SUSTAIN",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "attack",
+      "name": "ATTACK",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "clipping",
+      "name": "CLIPPING",
+      "selector": 3,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+    "COMP2_ALL_PARAMETERS_SLOT1_50_TO_51_52_53_54_AND_BACK.pcapng",
+    "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "COMP2_ALL_PARAMETERS_SLOT1_50_TO_51_52_53_54_AND_BACK.pcapng",
+    "sequence": [
+      "sustain_51",
+      "attack_52",
+      "volume_53",
+      "clipping_54",
+      "sustain_50",
+      "attack_50",
+      "volume_50",
+      "clipping_5",
+      "clipping_50"
+    ],
+    "clipping_return_observation": "O ajuste acidental 54 → 5 → 50 foi preservado e decodificado corretamente.",
+    "result": "independent_messages_per_parameter"
+  },
+  "physical_binary_fixtures": 49,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_sustain_000.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "99b42e28641aab0b5545d2b802914fdb71f0c610d2265754aa7f502386e7f3e4"
+    },
+    {
+      "file": "slot1_sustain_001.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "c819b1d34de0ed46d2b87310b6567572274e97a2f4a00ff75044f85dddafdb1d"
+    },
+    {
+      "file": "slot1_sustain_002.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "ff63e47dc2971417e5d883e0f9563c13c0bc5656aad385c63db8fba16acbefe3"
+    },
+    {
+      "file": "slot1_sustain_010.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "a6a2ed004dab2c13f4a56665921ae42215b57ce78f409b9e5ecfaadc3ded4446"
+    },
+    {
+      "file": "slot1_sustain_025.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "1c086d08218173226f960e35e4ebdcaa114f88bb07509303da198ddf3fa199e3"
+    },
+    {
+      "file": "slot1_sustain_050.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "6109135ee44ca9df60bbe4dd6a54fee788335434c9e70caa425ffd0e837ed721"
+    },
+    {
+      "file": "slot1_sustain_051.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT1_50_TO_51_52_53_54_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "4c2ed5b95c61a0ccdc5dd2850581e32cf7147d44c9b9836d722248ea26f892f9"
+    },
+    {
+      "file": "slot1_sustain_075.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "302c8b502d0eca452b9ec82721ddb489ff9efb7cabd7b1a544958e95f31e12f8"
+    },
+    {
+      "file": "slot1_sustain_099.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "3279bb9bb84406a469bf7f40e0f63f23a2f3b20cbc5d7d230d87433969cc655f"
+    },
+    {
+      "file": "slot1_sustain_100.bin",
+      "source": "COMP2_SUSTAIN_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "a9c1a8a708be8b8a17f4c7f03582269ffb55e02264d48d1e10eaf595d0ff037c"
+    },
+    {
+      "file": "slot1_attack_000.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ab9df250c39d5a365575b262aa09b42ee150634c2adf4cb5226358b8975c6cde"
+    },
+    {
+      "file": "slot1_attack_001.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "0f96bf7b1e49dc1c2e928ce402bdc2870571318bb4890c41a0035a3829bebbd1"
+    },
+    {
+      "file": "slot1_attack_002.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "d84bca056a4d980fdad11bc931df292e5f9ef1d83b5991ef9d7269996cafae04"
+    },
+    {
+      "file": "slot1_attack_010.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "b7c5967fcd5c1b17cce5a3af4c9527256049469dce1c0937538259bb83fa23ac"
+    },
+    {
+      "file": "slot1_attack_025.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "b1a74ebe454c629b6c1be95065b307121ebe478225ad1dec55b709b6c1f9fc68"
+    },
+    {
+      "file": "slot1_attack_050.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "7089cb5a9c7cbbd093e02def08a446ccd50579662ddf0496badcde47f606f965"
+    },
+    {
+      "file": "slot1_attack_052.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT1_50_TO_51_52_53_54_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "978f41244f0af98275e4f881dbdb1ed7d3f7400b65ad90524cca456e70191183"
+    },
+    {
+      "file": "slot1_attack_075.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "d78e39b34fd1d0a7657e3d9f7304a51e1ab72d9550d6356868f3acfa864f7abd"
+    },
+    {
+      "file": "slot1_attack_099.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "87b80bf89fe299b1812623f8ffa06528c35fe8336638e7d2a11d2136fbe15134"
+    },
+    {
+      "file": "slot1_attack_100.bin",
+      "source": "COMP2_ATTACK_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "80fc0f1cecabcacd7f89b26ea37dc81524afcfc1a454c60f1d0a3e8134f64f34"
+    },
+    {
+      "file": "slot1_volume_000.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ea16e240df8be46fbff2ca031e6015ceb753df9c49521d2e07d306a727f70140"
+    },
+    {
+      "file": "slot1_volume_001.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "35c054c28a95a1a6c76fc8438e5cb5e6931bc7f9f72f3172f6f113ac93824812"
+    },
+    {
+      "file": "slot1_volume_002.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "d47d2a0ab4cae49fd49461c75383862fbe23ed13c80399c8634c3799978d2379"
+    },
+    {
+      "file": "slot1_volume_010.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "d134bb18e91c60977fa24203677b59abff3952e9430088ae08da733834ae55b4"
+    },
+    {
+      "file": "slot1_volume_025.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "0b183ea3d86fcfbd575b604c1b42485d154a333b5b2c44cb6e45aa1ffa796af1"
+    },
+    {
+      "file": "slot1_volume_050.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "652b1d8f443e66a08f76379c6f057fc7e62c6538e7594ee1d240e7a372d56ff0"
+    },
+    {
+      "file": "slot1_volume_053.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT1_50_TO_51_52_53_54_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "7d9f57169cb0beeb92c75c072a901f01ac4e508c6ce0e39cccfaa54b10c20270"
+    },
+    {
+      "file": "slot1_volume_075.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "f2d191158020bc2344546994922917eeba811fcb45fb74ebc03c05ea5c503265"
+    },
+    {
+      "file": "slot1_volume_099.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "0a62da0f776fc4047975b733efee8d61b9fffce90c06548cbf99db98cef75280"
+    },
+    {
+      "file": "slot1_volume_100.bin",
+      "source": "COMP2_VOLUME_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "b9312c9f0739933e34e90ae1b88643288c4ed207d2e80ed73b2b95b45832c54d"
+    },
+    {
+      "file": "slot1_clipping_000.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ea6fc5fa4eb031964a79bc215a2787ffa3ce3f873bb1bb6bd5d61e2eb6b3fce4"
+    },
+    {
+      "file": "slot1_clipping_001.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "31487d88a5239c40f182f6393080916f096555936637796c97e9c397d467131f"
+    },
+    {
+      "file": "slot1_clipping_002.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "70447036a300a84f9e811c036da784272584f1d339cc19a5c5d8bfb4776e15f8"
+    },
+    {
+      "file": "slot1_clipping_005.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT1_50_TO_51_52_53_54_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 5,
+      "encoded_value": [
+        10,
+        0,
+        4,
+        0
+      ],
+      "sha256": "e44f8af39ff32f4963d99659e0e8b2a5d21c6521a511c03d2b37213c8d3f80b8"
+    },
+    {
+      "file": "slot1_clipping_010.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "f24748fe67e20385417edee43684e62f830d852d9194d9859b2066731b28ac2a"
+    },
+    {
+      "file": "slot1_clipping_025.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 25,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        1
+      ],
+      "sha256": "a37dc227c48921cdbbd64f36aacfc34dc1b816815287de842c19a0acf2a26c20"
+    },
+    {
+      "file": "slot1_clipping_050.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "6244f45fddd7298fd395b8012204661e9364a21e644835001b783d7d15e39441"
+    },
+    {
+      "file": "slot1_clipping_054.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT1_50_TO_51_52_53_54_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e34e9971aee434291737771674c3e4aae191f3bb12873d1dfe9a687ba36fb6a7"
+    },
+    {
+      "file": "slot1_clipping_075.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 75,
+      "encoded_value": [
+        9,
+        6,
+        4,
+        2
+      ],
+      "sha256": "36ebddb6dd78efb45a3a1ead2e6e2cf28e357d5adac4893a25a99499fb2bf251"
+    },
+    {
+      "file": "slot1_clipping_099.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "975398a4494d5ee259aaa332b189cd11f80152877fe8fb8fce5f31d5ceb1c2ae"
+    },
+    {
+      "file": "slot1_clipping_100.bin",
+      "source": "COMP2_CLIPPING_SLOT1_50_0_1_2_10_25_50_75_99_100_50.pcapng",
+      "slot": 1,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "c2aeaef5c661062cdb0f9ccf1c2d4a3de1eec17c6fad314697df9eff443f30e6"
+    },
+    {
+      "file": "slot2_sustain_050.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "5ac9163c3521c3814eef080328c394354f7433794afdf4dc047dc5a8f66f5011"
+    },
+    {
+      "file": "slot2_sustain_051.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "sustain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "22862e11e07c1eb2118970333ce6b5a1dcdd35e55958d2e3dbea9629402ee328"
+    },
+    {
+      "file": "slot2_attack_050.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "4161289160624c51bcf179dd228c392fff92de839cc862266807b5b3e04bb6b0"
+    },
+    {
+      "file": "slot2_attack_052.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "45a81692588664f71a3b13fe144cea3c0142d0b816ea7c4ac8450474fee8553b"
+    },
+    {
+      "file": "slot2_volume_050.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e14d11d88e673bf0b6048b7bac61febfbd497f99d7b0770e7cb1255f4ebff682"
+    },
+    {
+      "file": "slot2_volume_053.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "c66085e1888aca9cedc7649de2f827cf432ff46248628df48f22479c72da402d"
+    },
+    {
+      "file": "slot2_clipping_050.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "51db48363d4f95a2fa90f40b8214c2ffe1c86da8fb0a9537ab218881e1b83172"
+    },
+    {
+      "file": "slot2_clipping_054.bin",
+      "source": "COMP2_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "slot": 2,
+      "parameter": "clipping",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "a3708484639c108e0a78ecc93a7941f67a516c773b19030b1733bb4e2a41f5a0"
+    }
+  ],
+  "monitor_validation": {
+    "status": "pending",
+    "read_only": true
+  }
+}

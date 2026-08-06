@@ -23,6 +23,7 @@ from tools.parameters import (
 
 MBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "mboost_gain"
 COMP1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "comp1_parameters"
+COMP2_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "comp2_parameters"
 EBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "e_boost_parameters"
 AC_WOODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_woody_parameters"
 GATE1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate1_parameters"
@@ -130,6 +131,27 @@ class GenericParameterDecoderTests(unittest.TestCase):
                 self.assertEqual(event.parameter_key, expected_parameter)
                 self.assertEqual(event.value, expected_value)
 
+    def test_all_physical_comp2_fixtures_resolve_four_parameters(self) -> None:
+        fixtures = sorted(COMP2_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 49)
+
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(),
+                    effect_key="dyn.comp2",
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                parts = fixture.stem.split("_")
+                expected_slot = int(parts[0].removeprefix("slot"))
+                expected_parameter = parts[1]
+                expected_value = int(parts[2])
+                self.assertEqual(event.human_slot, expected_slot)
+                self.assertEqual(event.effect_key, "dyn.comp2")
+                self.assertEqual(event.parameter_key, expected_parameter)
+                self.assertEqual(event.value, expected_value)
+
     def test_all_physical_e_boost_fixtures_decode_by_effect_context(self) -> None:
         fixtures = sorted(EBOOST_FIXTURE_ROOT.glob("*.bin"))
         self.assertEqual(len(fixtures), 19)
@@ -220,11 +242,14 @@ class GenericParameterDecoderTests(unittest.TestCase):
             parse_effect_parameter_response(message)
 
         comp1 = parse_effect_parameter_response(message, effect_key="dyn.comp1")
+        comp2 = parse_effect_parameter_response(message, effect_key="dyn.comp2")
         mboost = parse_effect_parameter_response(message, effect_key="dyn.m_boost")
-        assert comp1 is not None and mboost is not None
+        assert comp1 is not None and comp2 is not None and mboost is not None
         self.assertEqual(comp1.parameter_key, "sustain")
+        self.assertEqual(comp2.parameter_key, "sustain")
         self.assertEqual(mboost.parameter_key, "gain")
         self.assertEqual(comp1.value, 50)
+        self.assertEqual(comp2.value, 50)
         self.assertEqual(mboost.value, 50)
 
     def test_signal_exposes_slot_selector_and_shared_parameter_address(self) -> None:
@@ -310,6 +335,30 @@ class ParameterStateTests(unittest.TestCase):
         self.assertEqual(state.event_for(1, "dyn.comp1", "sustain").value, 51)
         self.assertEqual(state.event_for(1, "dyn.comp1", "volume").value, 50)
 
+    def test_comp2_four_parameters_keep_independent_values(self) -> None:
+        state = EffectParameterState()
+        expected = {
+            "sustain": 51,
+            "attack": 52,
+            "volume": 53,
+            "clipping": 54,
+        }
+        for parameter, value in expected.items():
+            event = parse_effect_parameter_response(
+                (COMP2_FIXTURE_ROOT / f"slot2_{parameter}_{value:03d}.bin").read_bytes(),
+                effect_key="dyn.comp2",
+            )
+            assert event is not None
+            state.apply(event)
+
+        self.assertEqual(
+            {
+                parameter: state.event_for(1, "dyn.comp2", parameter).value
+                for parameter in expected
+            },
+            expected,
+        )
+
     def test_retain_effects_discards_stale_slot_value(self) -> None:
         state = EffectParameterState()
         event = parse_effect_parameter_response(
@@ -343,6 +392,18 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         formatted = format_monitor_snapshot(snapshot)
         self.assertIn("SUSTAIN: aguardando alteração", formatted)
         self.assertIn("VOLUME: aguardando alteração", formatted)
+
+    def test_monitor_lists_comp2_parameters_in_catalog_order(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.comp2"))
+        snapshot = core.snapshot
+        assert snapshot is not None
+        self.assertEqual(
+            tuple(parameter.name for parameter in snapshot.effects[0].parameters),
+            ("SUSTAIN", "ATTACK", "VOLUME", "CLIPPING"),
+        )
+        formatted = format_monitor_snapshot(snapshot)
+        for parameter_name in ("SUSTAIN", "ATTACK", "VOLUME", "CLIPPING"):
+            self.assertIn(f"{parameter_name}: aguardando alteração", formatted)
 
     def test_monitor_lists_e_boost_parameters_in_catalog_order(self) -> None:
         core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.e_boost"))
@@ -446,6 +507,30 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         self.assertIn("SUSTAIN: 51", formatted)
         self.assertIn("VOLUME: 50", formatted)
 
+    def test_live_events_update_comp2_parameters_independently(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.comp2"))
+        sequence = (
+            ("sustain", 51),
+            ("attack", 52),
+            ("volume", 53),
+            ("clipping", 54),
+        )
+        for parameter, value in sequence:
+            update = core.feed(
+                (COMP2_FIXTURE_ROOT / f"slot2_{parameter}_{value:03d}.bin").read_bytes()
+            )
+            self.assertIsNotNone(update.parameter_event)
+
+        assert update.snapshot is not None
+        parameters = update.snapshot.effects[0].parameters
+        self.assertEqual(
+            tuple(parameter.value for parameter in parameters),
+            (51, 52, 53, 54),
+        )
+        formatted = format_monitor_snapshot(update.snapshot)
+        for name, value in (("SUSTAIN", 51), ("ATTACK", 52), ("VOLUME", 53), ("CLIPPING", 54)):
+            self.assertIn(f"{name}: {value}", formatted)
+
     def test_chain_context_resolves_selector_zero_as_mboost_gain(self) -> None:
         core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.m_boost"))
         update = core.feed(
@@ -501,6 +586,31 @@ class Comp1EvidenceManifestTests(unittest.TestCase):
         self.assertEqual(
             manifest["protocol"]["observed_parameter_address"]["value"],
             [1, 4],
+        )
+
+
+class Comp2EvidenceManifestTests(unittest.TestCase):
+    def test_manifest_preserves_four_parameters_and_accidental_value_five(self) -> None:
+        manifest = json.loads(
+            (COMP2_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["effect"]["key"], "dyn.comp2")
+        self.assertEqual(manifest["physical_binary_fixtures"], 49)
+        self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+        self.assertEqual(len(manifest["controlled_capture_sources"]), 6)
+        self.assertEqual(
+            tuple(parameter["selector"] for parameter in manifest["parameters"]),
+            (0, 1, 2, 3),
+        )
+        clipping_values = {
+            fixture["value"]
+            for fixture in manifest["fixtures"]
+            if fixture["parameter"] == "clipping"
+        }
+        self.assertIn(5, clipping_values)
+        self.assertEqual(
+            manifest["combination_capture_validation"]["result"],
+            "independent_messages_per_parameter",
         )
 
 
