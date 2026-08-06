@@ -1,0 +1,457 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.gate_2",
+    "name": "GATE 2",
+    "model_id": 29,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "threshold",
+      "name": "THRESHOLD",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "attack",
+      "name": "ATTACK",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "release",
+      "name": "RELEASE",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "gate2_threshold_cap.pcapng",
+    "gate2_attack_cap.pcapng",
+    "gate2_release_cap.pcapng",
+    "gate2_unique_value.pcapng",
+    "gate2_short_capture.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "gate2_unique_value.pcapng",
+    "sequence": [
+      "threshold_51",
+      "attack_52",
+      "release_53",
+      "threshold_50",
+      "attack_50",
+      "release_50"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "slot2_validation": {
+    "source": "gate2_short_capture.pcapng",
+    "sequence": [
+      "threshold_51",
+      "threshold_50",
+      "attack_52",
+      "attack_50",
+      "release_53",
+      "release_50"
+    ],
+    "result": "same_selectors_and_codec_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "A captura individual de THRESHOLD não contém o retorno final a 50; esse valor foi confirmado na captura combinada e no slot 2.",
+    "A captura individual de ATTACK não contém 99; os pontos 0, 1, 50 e 100, combinados com as demais evidências, confirmam a faixa 0–100."
+  ],
+  "physical_binary_fixtures": 23,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_attack_000.bin",
+      "source": "gate2_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "dc3259437462590c708ff4c49d10f62aeedba2a20ad9d50723d44b089b8be75a"
+    },
+    {
+      "file": "slot1_attack_001.bin",
+      "source": "gate2_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "091036dc508cf975fbbe920c498d66e1d192abd403f697f749d315dd23158542"
+    },
+    {
+      "file": "slot1_attack_050.bin",
+      "source": "gate2_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d651cee646201066a30c3fa2d2cf640770fcc9e332bdb3853fbf9c5bb4a97666"
+    },
+    {
+      "file": "slot1_attack_052.bin",
+      "source": "gate2_unique_value.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "99d125bb82cd7ab545e0e4a73bec8b81b873c2fd6791db8c2c377904b38368d4"
+    },
+    {
+      "file": "slot1_attack_100.bin",
+      "source": "gate2_attack_cap.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "f799b06660d0e811fedb16f41e8fbd51b8bb391e7f6325dae3ef1834663151e0"
+    },
+    {
+      "file": "slot1_release_000.bin",
+      "source": "gate2_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "1587c46166a0162ac02e797638ae93d1f9c4b45ca199affa773f29a3e8dbf038"
+    },
+    {
+      "file": "slot1_release_001.bin",
+      "source": "gate2_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "f191429e80eb56099398fdcf4e7f9f5f852a3d1c2e555db0b8492ce0d6556f22"
+    },
+    {
+      "file": "slot1_release_050.bin",
+      "source": "gate2_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "91fe7679f664f595983a6243819e7e8ccbe81319507e92d72223030f016c3137"
+    },
+    {
+      "file": "slot1_release_053.bin",
+      "source": "gate2_unique_value.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "5aead3b905d5b89f0402c1b7b73da4f50a59eb45edbbf2bbd5c86a7a6bfd44f4"
+    },
+    {
+      "file": "slot1_release_099.bin",
+      "source": "gate2_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "db21b2cd33da24cc9dccc1ab0e82351a6872f1f7b9a62834026209090086f0db"
+    },
+    {
+      "file": "slot1_release_100.bin",
+      "source": "gate2_release_cap.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "8d82a6828e63dc218bf71b619be517ac046eb15981c463d29e8975064dfe458c"
+    },
+    {
+      "file": "slot1_threshold_000.bin",
+      "source": "gate2_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "1be53be20f9a69b150a1a0500a03082ae8c43126c33a6c5f6e1ce4588860bf23"
+    },
+    {
+      "file": "slot1_threshold_001.bin",
+      "source": "gate2_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "ab9d9f010842a736ffccb40024abb611bf49efbbb433807927ce7636d7b1d5af"
+    },
+    {
+      "file": "slot1_threshold_050.bin",
+      "source": "gate2_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "488604e3dc205337291ce1a195ba6b37060e0355b0595678611af09d63193d91"
+    },
+    {
+      "file": "slot1_threshold_051.bin",
+      "source": "gate2_unique_value.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "f43c06f9e3def72144de5c30113f6bec309f65dbaccb70ee2b52a2249663af99"
+    },
+    {
+      "file": "slot1_threshold_099.bin",
+      "source": "gate2_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "6eccd5b714068cc714d816d2d63450c96019a9e8993320501f6df9cddd9635f6"
+    },
+    {
+      "file": "slot1_threshold_100.bin",
+      "source": "gate2_threshold_cap.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "40a2a2edbb12bea984b9a71e70c5cd885513fbd7c2756dbc2a940c022cd813d1"
+    },
+    {
+      "file": "slot2_attack_050.bin",
+      "source": "gate2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "8ac8080ca5e0fc8a319fbfb4560f507415f4d9eeab5d5587a00856beba22aa14"
+    },
+    {
+      "file": "slot2_attack_052.bin",
+      "source": "gate2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "attack",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "23eca0ebb5382173d535bb4c9cca987f08e6f2022348a36bf1cd08a91dcd06f1"
+    },
+    {
+      "file": "slot2_release_050.bin",
+      "source": "gate2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "release",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "626a50ac01d32bf2895e33ba3ba8f4ce5f455f5b6b0eaa547262d1048b16105b"
+    },
+    {
+      "file": "slot2_release_053.bin",
+      "source": "gate2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "release",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "8071f1f3ccd5b045f4c79e7a1ac0e455c15dad7b6197d9fd6c07ebac14409f6a"
+    },
+    {
+      "file": "slot2_threshold_050.bin",
+      "source": "gate2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "0bbb956fcaf5103ce8aef9fe6751587efbc207eefea1744ec85ba9bcffc0e540"
+    },
+    {
+      "file": "slot2_threshold_051.bin",
+      "source": "gate2_short_capture.pcapng",
+      "slot": 2,
+      "parameter": "threshold",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "8654c45507a50429166c5c68783a4306f03c5da2ed899bd68e3438a9edbcee99"
+    }
+  ]
+}

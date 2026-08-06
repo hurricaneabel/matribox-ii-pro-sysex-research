@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 7
+CATALOG_VERSION = 8
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -605,6 +605,100 @@ AC_BOOST_PARAMETER_SEEDS = _four_control_boost_parameter_seeds(
 BB_BOOST_PARAMETER_SEEDS = _four_control_boost_parameter_seeds(
     evidence="docs/phases/DYN_AC_BB_BOOST_PARAMETERS_PHASE29.md",
 )
+RC_BOOST_PARAMETER_SEEDS = _four_control_boost_parameter_seeds(
+    evidence="docs/phases/DYN_RC_FAT_BOOST_GATE2_PARAMETERS_PHASE30.md",
+)
+
+
+def _phase30_parameter_seed(
+    *,
+    key: str,
+    name: str,
+    display_order: int,
+    selector: int,
+    value_type: str,
+    fixture_count: int,
+) -> dict[str, Any]:
+    boolean = value_type == "boolean"
+    validation: dict[str, Any] = {
+        "offline": True,
+        "physical": True,
+        "read_only": True,
+        "internal_slots_observed": [1, 2],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": selector,
+        "multiple_parameters": True,
+        "physical_fixture_count": fixture_count,
+        "evidence": "docs/phases/DYN_RC_FAT_BOOST_GATE2_PARAMETERS_PHASE30.md",
+        "monitor_integration_physical_validation": "pending",
+    }
+    if boolean:
+        validation["boolean_encoding"] = {"false": 0, "true": 1}
+    else:
+        validation["range_validated"] = [0, 100]
+    return {
+        "key": key,
+        "name": name,
+        "display_order": display_order,
+        "value_type": value_type,
+        "range": {
+            "minimum": 0,
+            "maximum": 1 if boolean else 100,
+            "step": 1,
+        },
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": validation,
+    }
+
+
+FAT_BOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    _phase30_parameter_seed(
+        key=key,
+        name=name,
+        display_order=display_order,
+        selector=selector,
+        value_type=value_type,
+        fixture_count=28,
+    )
+    for display_order, (key, name, selector, value_type) in enumerate(
+        (
+            ("bass", "BASS", 0, "integer"),
+            ("treble", "TREBLE", 1, "integer"),
+            ("volume", "VOLUME", 2, "integer"),
+            ("low_cut", "LOW CUT", 3, "boolean"),
+        ),
+        start=1,
+    )
+)
+
+GATE2_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    _phase30_parameter_seed(
+        key=key,
+        name=name,
+        display_order=display_order,
+        selector=selector,
+        value_type="integer",
+        fixture_count=23,
+    )
+    for display_order, (key, name, selector) in enumerate(
+        (
+            ("threshold", "THRESHOLD", 0),
+            ("attack", "ATTACK", 1),
+            ("release", "RELEASE", 2),
+        ),
+        start=1,
+    )
+)
 
 
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
@@ -877,6 +971,18 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "dyn.bb_boost" and not parameters:
         parameters = list(BB_BOOST_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.rc_boost" and not parameters:
+        parameters = list(RC_BOOST_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.fat_boost" and not parameters:
+        parameters = list(FAT_BOOST_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.gate_2" and not parameters:
+        parameters = list(GATE2_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.e_boost" and not parameters:

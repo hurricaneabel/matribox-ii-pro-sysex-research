@@ -1,0 +1,606 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.rc_boost",
+    "name": "RC-BOOST",
+    "model_id": 12,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "bass",
+      "name": "BASS",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "treble",
+      "name": "TREBLE",
+      "selector": 3,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "rscboost_gain_cap.pcapng",
+    "rcboost_volume_cap.pcapng",
+    "rcboost_bass_cap.pcapng",
+    "rcboost_treble_cap.pcapng",
+    "rcboost_short_cap.pcapng",
+    "rcboost_unique_values.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "rcboost_short_cap.pcapng",
+    "sequence": [
+      "gain_51",
+      "gain_50",
+      "volume_52",
+      "volume_50",
+      "bass_53",
+      "bass_50",
+      "treble_54",
+      "treble_50"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "slot2_validation": {
+    "source": "rcboost_unique_values.pcapng",
+    "sequence": [
+      "gain_51",
+      "gain_50",
+      "volume_52",
+      "volume_50",
+      "bass_53",
+      "bass_50",
+      "treble_54",
+      "treble_50"
+    ],
+    "result": "same_selectors_and_codec_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "A captura individual de GAIN repetiu o valor 100; a fixture equivalente foi preservada uma única vez.",
+    "Os nomes short e unique dos arquivos não indicam o slot: a captura short observou o slot humano 1 e unique_values observou o slot humano 2."
+  ],
+  "physical_binary_fixtures": 32,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_bass_000.bin",
+      "source": "rcboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "7e60bb3a349b962a053e1a8f1dbcfed15e604540e44d7da26555c70ef9ba1535"
+    },
+    {
+      "file": "slot1_bass_001.bin",
+      "source": "rcboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "13d3563b468469fab0fb7559f48a2a845d05d320ba83afb8cae7eb60985449b2"
+    },
+    {
+      "file": "slot1_bass_050.bin",
+      "source": "rcboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "58fad23151e0aa4f809ff190450cf0d4ba9e5b6fb4eda75112476ba2a48c1969"
+    },
+    {
+      "file": "slot1_bass_053.bin",
+      "source": "rcboost_short_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "a5c6b65313547ba370f01fb87456f79097cd0a9c95f6a3b10603533a8c9de566"
+    },
+    {
+      "file": "slot1_bass_099.bin",
+      "source": "rcboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "bcecf5202c0a78fa268ea71dcba7d201dfe75663727e3a89deddf425cd94367b"
+    },
+    {
+      "file": "slot1_bass_100.bin",
+      "source": "rcboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "77ece721c016981b45b84b6ef5af94cefc8d0c8bbcc505441e9ed0bf78e608e1"
+    },
+    {
+      "file": "slot1_gain_000.bin",
+      "source": "rscboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "1be53be20f9a69b150a1a0500a03082ae8c43126c33a6c5f6e1ce4588860bf23"
+    },
+    {
+      "file": "slot1_gain_001.bin",
+      "source": "rscboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "58441bb9dd21eb30fc6d32ec2be610b261b13fcd7c473de5aa21af3ec9a72eef"
+    },
+    {
+      "file": "slot1_gain_050.bin",
+      "source": "rscboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "da4f0948097e17db667f72a570ad4d943bf8e8dc1dcafa991df0b6a166ef69d6"
+    },
+    {
+      "file": "slot1_gain_051.bin",
+      "source": "rcboost_short_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "4c2ed5b95c61a0ccdc5dd2850581e32cf7147d44c9b9836d722248ea26f892f9"
+    },
+    {
+      "file": "slot1_gain_099.bin",
+      "source": "rscboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "04399e3e1676a978fc71d2e809aed722452c0ca7292b2823c4f1ad12f38b4dc1"
+    },
+    {
+      "file": "slot1_gain_100.bin",
+      "source": "rscboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "1e051082356d5d9e912342fb47c15972bd6f79b2c46d11a2f04ee2b2fc61d17e"
+    },
+    {
+      "file": "slot1_treble_000.bin",
+      "source": "rcboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ace0c44092c11561fa0cedea5673fcdb07466a61da664db3a45112d2bdf83b69"
+    },
+    {
+      "file": "slot1_treble_001.bin",
+      "source": "rcboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "18a594a108c9eb59a6e6e9269aa00902d6847d42863b742dbf6455fc23ec628e"
+    },
+    {
+      "file": "slot1_treble_050.bin",
+      "source": "rcboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "bfbc1aec504b523e17df4fe72fc782a9e9968f3dd4f744b00b7517db28eaf6a0"
+    },
+    {
+      "file": "slot1_treble_054.bin",
+      "source": "rcboost_short_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e34e9971aee434291737771674c3e4aae191f3bb12873d1dfe9a687ba36fb6a7"
+    },
+    {
+      "file": "slot1_treble_099.bin",
+      "source": "rcboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "e4a9a19169858a8f0d0653056d76b52631336c61712ed696317496b2c4e61359"
+    },
+    {
+      "file": "slot1_treble_100.bin",
+      "source": "rcboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "c4c50f99a486ea66066fa6aaac853950c2a664d1b76b7e24975b6dff0886d202"
+    },
+    {
+      "file": "slot1_volume_000.bin",
+      "source": "rcboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "dc3259437462590c708ff4c49d10f62aeedba2a20ad9d50723d44b089b8be75a"
+    },
+    {
+      "file": "slot1_volume_001.bin",
+      "source": "rcboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "eb72aec976752ad39d128741f4408773cb49d075a04565b914f214e8f95ee09f"
+    },
+    {
+      "file": "slot1_volume_050.bin",
+      "source": "rcboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e42e132dd9144d1667058129c1b2b11e4dc244b81faf4bacf812ab7e408f82cc"
+    },
+    {
+      "file": "slot1_volume_052.bin",
+      "source": "rcboost_short_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "433d2da541d09d8eb9deecf41135239d382bdd0fc024fa3dac212580a4cec51e"
+    },
+    {
+      "file": "slot1_volume_099.bin",
+      "source": "rcboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "b840f88664d089538bc66425d0a2ed22eb9f6a231fdaea67f6c5f80df538157e"
+    },
+    {
+      "file": "slot1_volume_100.bin",
+      "source": "rcboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "f115a51d619b302f5ca0e0119a57a5bf98e03757ce3cf92d0b02a4a0a52f6dd3"
+    },
+    {
+      "file": "slot2_bass_050.bin",
+      "source": "rcboost_unique_values.pcapng",
+      "slot": 2,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "626a50ac01d32bf2895e33ba3ba8f4ce5f455f5b6b0eaa547262d1048b16105b"
+    },
+    {
+      "file": "slot2_bass_053.bin",
+      "source": "rcboost_unique_values.pcapng",
+      "slot": 2,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "8071f1f3ccd5b045f4c79e7a1ac0e455c15dad7b6197d9fd6c07ebac14409f6a"
+    },
+    {
+      "file": "slot2_gain_050.bin",
+      "source": "rcboost_unique_values.pcapng",
+      "slot": 2,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "adfee02ad355aa79243a44cc6e765efce2ffcb7826dd4387ec6024b4d068f446"
+    },
+    {
+      "file": "slot2_gain_051.bin",
+      "source": "rcboost_unique_values.pcapng",
+      "slot": 2,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "6791cdf1c84cc1a359389b13112e9619bff59cc6036871368ba754568c0a0343"
+    },
+    {
+      "file": "slot2_treble_050.bin",
+      "source": "rcboost_unique_values.pcapng",
+      "slot": 2,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "755b992449f4e022aa2d770a5ea0732a4cbc5f9eb21fdefec6fc2ea1b7e0ede9"
+    },
+    {
+      "file": "slot2_treble_054.bin",
+      "source": "rcboost_unique_values.pcapng",
+      "slot": 2,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d1f45644e0967c58d2e8808d773a5ef9af7c503459bc788ccb637853bc2f2b8f"
+    },
+    {
+      "file": "slot2_volume_050.bin",
+      "source": "rcboost_unique_values.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "26688dec9c963e8338b6ff213b5905c55d4168b8573153b01600a03fcd924fbe"
+    },
+    {
+      "file": "slot2_volume_052.bin",
+      "source": "rcboost_unique_values.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "23eca0ebb5382173d535bb4c9cca987f08e6f2022348a36bf1cd08a91dcd06f1"
+    }
+  ]
+}

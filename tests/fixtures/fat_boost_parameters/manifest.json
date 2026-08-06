@@ -1,0 +1,555 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.fat_boost",
+    "name": "FAT BOOST",
+    "model_id": 25,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    },
+    "boolean_encoding": {
+      "false": 0,
+      "true": 1,
+      "semantic": "numeric_0_or_1_using_shared_float_codec"
+    }
+  },
+  "parameters": [
+    {
+      "key": "bass",
+      "name": "BASS",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "treble",
+      "name": "TREBLE",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "low_cut",
+      "name": "LOW CUT",
+      "selector": 3,
+      "value_type": "boolean",
+      "minimum": 0,
+      "maximum": 1,
+      "step": 1,
+      "boolean_encoding": {
+        "false": 0,
+        "true": 1
+      }
+    }
+  ],
+  "controlled_capture_sources": [
+    "fatboost_bass_cap.pcapng",
+    "fatboost_treble_cap.pcapng",
+    "fatboost_volume_cap.pcapng",
+    "fatboost_low_cut_off-on, on-off, off - on, on-off.pcapng",
+    "fatboost_unique_value_off_on_off.pcapng",
+    "fatboost_short_cap_off_on_off.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "fatboost_unique_value_off_on_off.pcapng",
+    "sequence": [
+      "bass_51",
+      "treble_52",
+      "volume_53",
+      "low_cut_on",
+      "bass_50",
+      "treble_50",
+      "volume_50",
+      "low_cut_off"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "slot2_validation": {
+    "source": "fatboost_short_cap_off_on_off.pcapng",
+    "sequence": [
+      "bass_51",
+      "bass_50",
+      "treble_52",
+      "treble_50",
+      "volume_53",
+      "volume_50",
+      "low_cut_on",
+      "low_cut_off"
+    ],
+    "result": "same_selectors_and_codec_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "LOW CUT reutiliza o codec numérico compartilhado: OFF=0 e ON=1.",
+    "A captura individual de LOW CUT alternou ON/OFF duas vezes; estados duplicados foram preservados uma única vez."
+  ],
+  "physical_binary_fixtures": 28,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_bass_000.bin",
+      "source": "fatboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "bd90cb7c6bf024453cd5514b3975c2eba3107f6303cda49f6e3284cb8cffe00f"
+    },
+    {
+      "file": "slot1_bass_001.bin",
+      "source": "fatboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "e2420e8ab915317047110681eb3372f65c1e18919506d5d89cd399412d575566"
+    },
+    {
+      "file": "slot1_bass_050.bin",
+      "source": "fatboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "deb1bb0092abd38f57e2d454a0a4338a5e7ce255df9cf550e6a673eb9a0ab439"
+    },
+    {
+      "file": "slot1_bass_051.bin",
+      "source": "fatboost_unique_value_off_on_off.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "0c8a4dae9732d892516cdc42207eac5a0bce03cff968bceb36eb0dfefefa0bd0"
+    },
+    {
+      "file": "slot1_bass_099.bin",
+      "source": "fatboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "6a3f37ab3a62e0add0edc1380887ddeae842fd5c401681aea634bb38a360bff2"
+    },
+    {
+      "file": "slot1_bass_100.bin",
+      "source": "fatboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "15c227bcdf60f9513cc634290555448aedb7c75a7752b3e650951b6eee0230b6"
+    },
+    {
+      "file": "slot1_low_cut_off.bin",
+      "source": "fatboost_low_cut_off-on, on-off, off - on, on-off.pcapng",
+      "slot": 1,
+      "parameter": "low_cut",
+      "selector": 3,
+      "value": false,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "0d365a4ce67aba7c9c830229bc13ab570ee58055f5f85857dce4b705bf9fc079"
+    },
+    {
+      "file": "slot1_low_cut_on.bin",
+      "source": "fatboost_low_cut_off-on, on-off, off - on, on-off.pcapng",
+      "slot": 1,
+      "parameter": "low_cut",
+      "selector": 3,
+      "value": true,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "e6ae6e1210dfb6eda2a5c61a8ffaf896d94bbb5aae439e72342b6ff21e5259f9"
+    },
+    {
+      "file": "slot1_treble_000.bin",
+      "source": "fatboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "6c669079cd90bbc500682194b5c68117edbff7e8a52c400637ac3476ef525c7a"
+    },
+    {
+      "file": "slot1_treble_001.bin",
+      "source": "fatboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "c5bf20196c11348fac3095dbf68b79cf29d98ed1aa1cce386c13e39197ab71e8"
+    },
+    {
+      "file": "slot1_treble_050.bin",
+      "source": "fatboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "a6c58dff1411d50452e96be471b5af63529c8805d2fca4815815c3c69ff16d88"
+    },
+    {
+      "file": "slot1_treble_052.bin",
+      "source": "fatboost_unique_value_off_on_off.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "488dcc280690c8845f9605c44e719b6b5f683c3f5faf49a9691e957cf758ebde"
+    },
+    {
+      "file": "slot1_treble_099.bin",
+      "source": "fatboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 1,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "86d79f372a40bee007f26994a72e18b3f80e1c823b473a64cc929b647f23e483"
+    },
+    {
+      "file": "slot1_treble_100.bin",
+      "source": "fatboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 1,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "a438af0020c6a882a0eec3102f6245ee8bae5eda29fdf038ad48c23a4a5db73b"
+    },
+    {
+      "file": "slot1_volume_000.bin",
+      "source": "fatboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "eb39cf287d497af540b3d20ff0dba796b2a8b140c0c09b3bce899205048c9fc3"
+    },
+    {
+      "file": "slot1_volume_001.bin",
+      "source": "fatboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "1acad3f9039ed20cae49ee7044d52fa29241759762964884228256bc4e68394d"
+    },
+    {
+      "file": "slot1_volume_050.bin",
+      "source": "fatboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d6ac2ecb96659d7339d7439a42d79645494d7ec4a589c34b0b2c4b73dab727d4"
+    },
+    {
+      "file": "slot1_volume_053.bin",
+      "source": "fatboost_unique_value_off_on_off.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "61f1a44d1602bd29dd2d4f53b576b5fa3788f58701c87b3ba03f225cdad9d3c4"
+    },
+    {
+      "file": "slot1_volume_099.bin",
+      "source": "fatboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "db025cf3ad922b00b413c7897a79b96b81cad77c1b8e6c51dbd424cd3ecc7564"
+    },
+    {
+      "file": "slot1_volume_100.bin",
+      "source": "fatboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "3487d12316bda5f89c92b975a2f31f60d0788d036d4b5b360b72aaf06a654860"
+    },
+    {
+      "file": "slot2_bass_050.bin",
+      "source": "fatboost_short_cap_off_on_off.pcapng",
+      "slot": 2,
+      "parameter": "bass",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "b2cc620fdadb0f54df7c69aedfe5c3817fa816b9616b076299ad74d3556020b6"
+    },
+    {
+      "file": "slot2_bass_051.bin",
+      "source": "fatboost_short_cap_off_on_off.pcapng",
+      "slot": 2,
+      "parameter": "bass",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "6a45e1690376b4daef12ea4350dc342949a7851c9b03f560f1f466a533b5f2ef"
+    },
+    {
+      "file": "slot2_low_cut_off.bin",
+      "source": "fatboost_short_cap_off_on_off.pcapng",
+      "slot": 2,
+      "parameter": "low_cut",
+      "selector": 3,
+      "value": false,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d7d9809266f5ef0d03baddb1336c7e58e981e78c16f28557975694eb5ddb1eb6"
+    },
+    {
+      "file": "slot2_low_cut_on.bin",
+      "source": "fatboost_short_cap_off_on_off.pcapng",
+      "slot": 2,
+      "parameter": "low_cut",
+      "selector": 3,
+      "value": true,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "a4453c15f4808bb144af8940ac16954c1380f9e55796db408c7d3dcf905e2ae4"
+    },
+    {
+      "file": "slot2_treble_050.bin",
+      "source": "fatboost_short_cap_off_on_off.pcapng",
+      "slot": 2,
+      "parameter": "treble",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "65862f1a33c135fe71eb44147dfefa2685aa14d4e288b99426bd85b8f36d5b10"
+    },
+    {
+      "file": "slot2_treble_052.bin",
+      "source": "fatboost_short_cap_off_on_off.pcapng",
+      "slot": 2,
+      "parameter": "treble",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "fe3288822063c54bf4b94b86b53a8bb33b235fc82faee6bdc6fd8bdee25b6ddc"
+    },
+    {
+      "file": "slot2_volume_050.bin",
+      "source": "fatboost_short_cap_off_on_off.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "5d364b7a4ad6ec5fc3779460e72c60020e47b1515ef6d0af6ca8114a5ae1a092"
+    },
+    {
+      "file": "slot2_volume_053.bin",
+      "source": "fatboost_short_cap_off_on_off.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "81200b1e65f3ac19a0f7edcbbe95d74f8f75a16a5a81e4f78e06d17c94b70d4d"
+    }
+  ]
+}

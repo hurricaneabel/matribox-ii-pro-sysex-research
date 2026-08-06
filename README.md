@@ -139,6 +139,28 @@ principal. AC-BOOST e BB-BOOST atualizaram os quatro controles de forma
 independente enquanto coexistiam na mesma cadeia. Os estados ligado/desligado
 também foram acompanhados sem perda dos valores já observados.
 
+A Fase 30 acrescenta `DYN / RC-BOOST`, `DYN / FAT BOOST` e
+`DYN / GATE 2`:
+
+```text
+RC-BOOST
+GAIN 0–100 | VOLUME 0–100 | BASS 0–100 | TREBLE 0–100
+
+FAT BOOST
+BASS 0–100 | TREBLE 0–100 | VOLUME 0–100 | LOW CUT desligado/ligado
+
+GATE 2
+THRESHOLD 0–100 | ATTACK 0–100 | RELEASE 0–100
+```
+
+As 17 capturas controladas preservaram 83 respostas SysEx físicas únicas e
+confirmaram os slots internos humanos 1 e 2. A integração passou com 386
+testes e foi aprovada fisicamente no monitor principal com os três efeitos
+simultâneos. Os onze parâmetros foram atualizados sem colisões, e o LOW CUT
+foi apresentado corretamente como `desligado` e `ligado`. O log final não
+inclui duas instâncias do mesmo modelo nem teste explícito de bypass; essa
+limitação de cobertura física permanece documentada.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell

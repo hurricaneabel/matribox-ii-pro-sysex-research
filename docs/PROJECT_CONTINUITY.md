@@ -3,13 +3,11 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 28 — DYN / COMP3 com sete parâmetros,
-> aprovado offline e fisicamente com duas instâncias simultâneas e estados
-> independentes
-> **Trabalho candidato:** Fase 29 — AC-BOOST e BB-BOOST integrados e aprovados
-> offline; validação no monitor principal ainda pendente
-> **Próxima pesquisa:** AC SIM reservado para fase própria por possuir o
-> parâmetro categórico MODE
+> **Marco consolidado:** Fase 30 — RC-BOOST, FAT BOOST e GATE 2 aprovados
+> offline e fisicamente, prontos para commit e promoção à `main`
+> **Trabalho candidato:** nenhum código adicional além da Fase 30 aprovada
+> **Próxima pesquisa:** Fase 31 — AC SIM com MODE categórico e GATE 3 com
+> parâmetros temporais em milissegundos/segundos
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/dyn-parameters`
 
@@ -1124,3 +1122,91 @@ limitação do teste final.
 6. promover por fast-forward à `main`;
 7. iniciar fase própria para AC SIM, incluindo suporte genérico a valores
    categóricos nomeados no parâmetro `MODE`.
+
+
+## 17. Atualização atual — Fase 30 aprovada: RC-BOOST, FAT BOOST e GATE 2
+
+A Fase 30 foi integrada e aprovada sobre a Fase 29 fisicamente consolidada.
+
+Parâmetros catalogados:
+
+```text
+RC-BOOST
+GAIN 0 | VOLUME 1 | BASS 2 | TREBLE 3
+
+FAT BOOST
+BASS 0 | TREBLE 1 | VOLUME 2 | LOW CUT 3
+
+GATE 2
+THRESHOLD 0 | ATTACK 1 | RELEASE 2
+```
+
+Os números representam os seletores no índice `48`. Os dez controles
+contínuos usam inteiro `0–100`; LOW CUT usa `value_type: boolean`, com
+`OFF=0` e `ON=1`. Todos reutilizam `effect_parameter_response_1c_v1`,
+`upper_float32_nibbles_v1`, marcador/tipo `01 01` e endereço opaco `01 04`.
+
+Evidências preservadas:
+
+```text
+RC-BOOST  → 32 fixtures
+FAT BOOST → 28 fixtures
+GATE 2    → 23 fixtures
+Total     → 83 fixtures
+```
+
+Estado arquitetural:
+
+- nenhum parser, codec, estado ou monitor específico foi criado;
+- a identidade do efeito continua vindo da cadeia atual do slot;
+- os slots humanos 1 e 2 foram confirmados nas capturas;
+- `catalog_version` está em 8;
+- 12 efeitos DYN e 38 parâmetros estão catalogados;
+- 255 efeitos permanecem pendentes.
+
+Validação offline consolidada:
+
+```text
+Ran 386 tests
+OK
+```
+
+Também passaram `python -m compileall tools tests`, validação dos arquivos JSON
+e `git diff --check`.
+
+Validação física consolidada:
+
+```text
+RC-BOOST
+GAIN 25 | VOLUME 56 | BASS 55 | TREBLE 63
+
+FAT BOOST
+BASS 60 | TREBLE 42 | VOLUME 28 | LOW CUT desligado
+
+GATE 2
+THRESHOLD 26 | ATTACK 34 | RELEASE 61
+```
+
+Os três efeitos coexistiram na mesma cadeia. Cada grupo de parâmetros foi
+atualizado sem alterar os valores dos outros efeitos. LOW CUT acompanhou
+`desligado → ligado → desligado`, confirmando o suporte booleano genérico.
+
+Limitações preservadas:
+
+- valores iniciais ainda aparecem como `aguardando alteração`;
+- mensagens `0x1C` isoladas não identificam o efeito;
+- o monitor permanece somente leitura;
+- eventos auxiliares não `0x1C` continuam ignorados;
+- o log final não inclui duas instâncias do mesmo modelo, reordenação ou teste
+  explícito de bypass.
+
+### Próximo passo exato
+
+1. aplicar `matribox_phase30_physical_approval_docs.zip`;
+2. executar novamente os 386 testes, `compileall` e `git diff --check`;
+3. revisar o escopo do `git add`;
+4. criar o commit `feat: add RC-BOOST FAT BOOST and GATE 2 parameters`;
+5. enviar `research/dyn-parameters`;
+6. promover por fast-forward à `main`;
+7. iniciar a Fase 31 com AC SIM e GATE 3, preservando valores categóricos e
+   temporais como recursos genéricos do catálogo.

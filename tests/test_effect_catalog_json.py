@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 7)
+        self.assertEqual(self.catalog.catalog_version, 8)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -243,6 +243,79 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                         32,
                     )
 
+    def test_rc_fat_boost_and_gate2_have_physically_validated_parameters(self) -> None:
+        rc_boost = self.catalog.effect_by_key("dyn.rc_boost")
+        self.assertEqual(rc_boost.name, "RC-BOOST")
+        self.assertEqual(rc_boost.model_id, 0x0C)
+        self.assertEqual(rc_boost.parameter_catalog_status, "physically_validated")
+        self.assertEqual(
+            tuple(parameter.key for parameter in rc_boost.parameters),
+            ("gain", "volume", "bass", "treble"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in rc_boost.parameters
+            ),
+            (0, 1, 2, 3),
+        )
+        for parameter in rc_boost.parameters:
+            self.assertEqual(parameter.value_type, "integer")
+            self.assertEqual(
+                (parameter.minimum, parameter.maximum, parameter.step),
+                (0, 100, 1),
+            )
+            self.assertEqual(parameter.validation["physical_fixture_count"], 32)
+
+        fat_boost = self.catalog.effect_by_key("dyn.fat_boost")
+        self.assertEqual(fat_boost.name, "FAT BOOST")
+        self.assertEqual(fat_boost.model_id, 0x19)
+        self.assertEqual(fat_boost.parameter_catalog_status, "physically_validated")
+        self.assertEqual(
+            tuple(parameter.key for parameter in fat_boost.parameters),
+            ("bass", "treble", "volume", "low_cut"),
+        )
+        self.assertEqual(
+            tuple(parameter.value_type for parameter in fat_boost.parameters),
+            ("integer", "integer", "integer", "boolean"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in fat_boost.parameters
+            ),
+            (0, 1, 2, 3),
+        )
+        for parameter in fat_boost.parameters:
+            self.assertEqual(parameter.validation["physical_fixture_count"], 28)
+        self.assertEqual(
+            dict(fat_boost.parameters[3].validation)["boolean_encoding"],
+            {"false": 0, "true": 1},
+        )
+
+        gate2 = self.catalog.effect_by_key("dyn.gate_2")
+        self.assertEqual(gate2.name, "GATE 2")
+        self.assertEqual(gate2.model_id, 0x1D)
+        self.assertEqual(gate2.parameter_catalog_status, "physically_validated")
+        self.assertEqual(
+            tuple(parameter.key for parameter in gate2.parameters),
+            ("threshold", "attack", "release"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in gate2.parameters
+            ),
+            (0, 1, 2),
+        )
+        for parameter in gate2.parameters:
+            self.assertEqual(parameter.value_type, "integer")
+            self.assertEqual(
+                (parameter.minimum, parameter.maximum, parameter.step),
+                (0, 100, 1),
+            )
+            self.assertEqual(parameter.validation["physical_fixture_count"], 23)
+
     def test_e_boost_has_integer_and_boolean_parameters(self) -> None:
         e_boost = self.catalog.effect_by_key("dyn.e_boost")
         self.assertEqual(e_boost.name, "E-BOOST")
@@ -321,12 +394,15 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "dyn.comp3",
                 "dyn.ac_boost",
                 "dyn.bb_boost",
+                "dyn.rc_boost",
+                "dyn.fat_boost",
+                "dyn.gate_2",
                 "dyn.e_boost",
                 "dyn.ac_woody",
                 "dyn.gate_1",
             }
         ]
-        self.assertEqual(len(pending), 258)
+        self.assertEqual(len(pending), 255)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -380,6 +456,9 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_comp3 = exported.effect_by_key("dyn.comp3")
             exported_ac_boost = exported.effect_by_key("dyn.ac_boost")
             exported_bb_boost = exported.effect_by_key("dyn.bb_boost")
+            exported_rc_boost = exported.effect_by_key("dyn.rc_boost")
+            exported_fat_boost = exported.effect_by_key("dyn.fat_boost")
+            exported_gate2 = exported.effect_by_key("dyn.gate_2")
             exported_e_boost = exported.effect_by_key("dyn.e_boost")
             exported_ac_woody = exported.effect_by_key("dyn.ac_woody")
             exported_gate1 = exported.effect_by_key("dyn.gate_1")
@@ -406,6 +485,18 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_bb_boost.parameters,
                 self.catalog.effect_by_key("dyn.bb_boost").parameters,
+            )
+            self.assertEqual(
+                exported_rc_boost.parameters,
+                self.catalog.effect_by_key("dyn.rc_boost").parameters,
+            )
+            self.assertEqual(
+                exported_fat_boost.parameters,
+                self.catalog.effect_by_key("dyn.fat_boost").parameters,
+            )
+            self.assertEqual(
+                exported_gate2.parameters,
+                self.catalog.effect_by_key("dyn.gate_2").parameters,
             )
             self.assertEqual(
                 exported_e_boost.parameters,

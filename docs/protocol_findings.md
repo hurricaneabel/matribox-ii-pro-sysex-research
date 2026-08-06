@@ -1361,3 +1361,40 @@ A identidade continua vindo da cadeia atual. Uma mensagem `0x1C` com seletor
 `0`, por exemplo, não permite distinguir GAIN de AC-BOOST, GAIN de BB-BOOST,
 THRESHOLD de COMP3, SUSTAIN de COMP2 ou outros parâmetros sem o efeito real do
 slot.
+
+
+## Fase 30 — RC-BOOST, FAT BOOST e GATE 2
+
+As 17 capturas controladas confirmaram mais onze parâmetros no mesmo perfil
+`effect_parameter_response_1c_v1` e codec `upper_float32_nibbles_v1`:
+
+```text
+RC-BOOST / GAIN       = seletor 0
+RC-BOOST / VOLUME     = seletor 1
+RC-BOOST / BASS       = seletor 2
+RC-BOOST / TREBLE     = seletor 3
+
+FAT BOOST / BASS      = seletor 0
+FAT BOOST / TREBLE    = seletor 1
+FAT BOOST / VOLUME    = seletor 2
+FAT BOOST / LOW CUT   = seletor 3
+
+GATE 2 / THRESHOLD    = seletor 0
+GATE 2 / ATTACK       = seletor 1
+GATE 2 / RELEASE      = seletor 2
+```
+
+Os dez controles contínuos são inteiros de `0` a `100`. LOW CUT é booleano,
+com `0 = desligado` e `1 = ligado`, usando os mesmos quatro nibbles do codec
+numérico. Os slots internos humanos 1 e 2 foram observados nos três efeitos.
+
+Foram preservadas 83 respostas físicas em:
+
+```text
+tests/fixtures/rc_boost_parameters/
+tests/fixtures/fat_boost_parameters/
+tests/fixtures/gate2_parameters/
+```
+
+O endereço opaco permanece `01 04`; portanto, a cadeia atual continua sendo a
+fonte obrigatória da identidade do efeito antes da interpretação do seletor.
