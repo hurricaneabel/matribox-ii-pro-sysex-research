@@ -30,19 +30,30 @@ O monitor consolidado principal é:
 python -m tools.commands.matribox_monitor
 ```
 
-Ele acompanha o preset atual, nome, etiqueta, cadeia de efeitos, ordem visual
-e estado ligado/desligado. A leitura da cadeia é não destrutiva e possui
-reenvios automáticos para a primeira comunicação após ligar a pedaleira.
+Ele acompanha o preset atual, nome, etiqueta, cadeia de efeitos, ordem visual,
+estado ligado/desligado e valores de parâmetros já catalogados. A leitura da
+cadeia é não destrutiva e possui reenvios automáticos para a primeira
+comunicação após ligar a pedaleira.
 
-O primeiro parâmetro interno concluído é o `GAIN` do `DYN / M-BOOST`. Ele está
-preservado em um validador isolado e somente de leitura:
+O primeiro parâmetro interno concluído é o `GAIN` do `DYN / M-BOOST`. O monitor
+mostra `GAIN: aguardando alteração` até receber o primeiro evento ao vivo e,
+depois, atualiza o valor da instância correta. O validador histórico permanece:
 
 ```powershell
 python -m tools.experiments.validate_mboost_gain_live
 ```
 
-A validação física aprovou múltiplas instâncias simultâneas e os slots internos
-2, 8, 10 e 12, incluindo valores de 0 a 100.
+A validação física da Fase 22 aprovou múltiplas instâncias simultâneas e os
+slots internos 2, 8, 10 e 12, incluindo valores de 0 a 100. A Fase 23B também
+foi aprovada fisicamente no validador genérico e no monitor principal, com dois
+M-BOOSTs simultâneos, valores independentes e preservação do slot interno após
+mudança de posição visual.
+
+Validador genérico para qualquer parâmetro presente no catálogo JSON:
+
+```powershell
+python -m tools.experiments.validate_effect_parameters_live
+```
 
 O gerenciador flexível de escrita continua disponível em:
 
@@ -79,19 +90,9 @@ interpretada como a ordem oficial da interface da pedaleira.
 | 15 | FX RETURN | `0x0E` | 1 (`RTN`) |
 | 16 | VOL | `0x0F` | 1 |
 
-As listas completas de modelos, IDs, seletores e parâmetros ficam em:
-
-```text
-catalog/catalog.json
-catalog/effects/
-catalog/protocol_profiles/
-catalog/value_codecs/
-```
-
-`tools/commands/effect_catalog.py` permanece como fachada compatível para os
-comandos antigos, mas os dados agora são carregados do catálogo JSON. O formato
-é versionado, usa caminhos relativos portáteis e foi preparado para consumo
-futuro por Python, Kotlin/Android e desktop.
+As definições portáteis ficam em `catalog/effects/`. A fachada histórica
+`tools/commands/effect_catalog.py` carrega esses JSONs sem quebrar os comandos
+antigos. Detalhes do protocolo continuam em `docs/protocol_findings.md`.
 
 ## Últimas classes concluídas: blocos especiais
 
@@ -138,7 +139,7 @@ cadeia.
 | `0x16` | 58 bytes | trocar modelo dentro da mesma classe |
 | `0x17` | 60 bytes | adicionar, substituir ou remover efeito |
 | `0x18` | 62 bytes | ligar ou desligar slot interno |
-| `0x1C` | 70 bytes | atualização de parâmetro; M-BOOST/GAIN validado |
+| `0x1C` | 70 bytes | atualização ao vivo de parâmetro catalogado |
 
 O checksum fica no índice `7`.
 
@@ -282,11 +283,11 @@ Executar toda a suíte:
 python -m unittest discover -s tests -v
 ```
 
-Estado após a migração do catálogo JSON (Fase 23A):
+Estado após a preservação do M-BOOST/GAIN (Fase 22):
 
 ```text
-328 testes executados
-328 testes aprovados
+316 testes executados
+316 testes aprovados
 ```
 
 Também é usado:
@@ -307,14 +308,20 @@ python -m tools.commands.matribox_monitor
 Mostra preset, nome, etiqueta e efeitos; acompanha mudanças de ordem e
 liga/desliga em tempo real.
 
-### Validar M-BOOST / GAIN
+### Validar parâmetros catalogados
+
+```powershell
+python -m tools.experiments.validate_effect_parameters_live
+```
+
+Usa o mesmo motor genérico do monitor, mostra efeito, parâmetro, valor, slot,
+posição visual, perfil e codec. Não envia alterações.
+
+O validador histórico específico do M-BOOST permanece disponível em:
 
 ```powershell
 python -m tools.experiments.validate_mboost_gain_live
 ```
-
-Escuta o GAIN de qualquer M-BOOST da cadeia, mostra slot interno e posição
-visual e não envia alterações de parâmetro.
 
 ### Gerenciar a cadeia
 
@@ -365,6 +372,7 @@ confirmadas na pedaleira. Eles não são executados pela suíte offline.
 
 ```text
 tools/experiments/validate_live_preset_monitor.py
+tools/experiments/validate_effect_parameters_live.py
 tools/experiments/validate_mboost_gain_live.py
 tools/experiments/validate_eq_models_slot_11.py
 tools/experiments/validate_add_eq_slot_12.py
@@ -381,23 +389,16 @@ tools/experiments/validate_unified_replacement_slot_11.py
 
 ```text
 matribox-sysex/
-├── README.md
-├── requirements.txt
-├── catalog/
-│   ├── effects/        # 267 definições individuais
-│   ├── schemas/        # JSON Schema Draft 2020-12
-│   ├── protocol_profiles/
-│   └── value_codecs/
+├── catalog/            # classes, efeitos, parâmetros, perfis e codecs JSON
 ├── data/
 │   └── fixtures/       # amostras mínimas usadas pelos testes
-├── docs/               # protocolo e descobertas confirmadas
+├── docs/               # protocolo e continuidade
 ├── tests/              # regressão offline
 └── tools/
-    ├── analysis/       # decodificadores auxiliares ainda testados
-    ├── catalog/        # carregador e modelos do catálogo JSON
-    ├── commands/       # protocolo reutilizável e comandos estáveis
-    ├── experiments/    # validadores físicos preservados
-    └── migrations/     # exportação reproduzível de dados legados
+    ├── catalog/        # carregamento e validação do JSON
+    ├── parameters/     # decoder, codecs e estado genérico
+    ├── commands/       # protocolo reutilizável e monitor
+    └── experiments/    # validadores físicos preservados
 ```
 
 ## Dados gerados e histórico de pesquisa
@@ -431,27 +432,20 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-A Fase 23A concluiu o catálogo declarativo e multiplataforma em JSON:
+A Fase 23B implementou e validou fisicamente o motor genérico de parâmetros
+orientado pelo catálogo JSON. A próxima frente será conduzida na branch
+`research/dyn-parameters`, mantendo a `main` como marco estável.
 
-- 16 classes e 267 efeitos migrados sem redigitação manual;
-- equivalência comprovada contra o snapshot do catálogo Python;
-- `effect_catalog.py` preservado como fachada;
-- M-BOOST/GAIN registrado como primeiro parâmetro validado;
-- schemas, perfil `0x1C` e codec de valor versionados.
+A catalogação seguirá por dados, sem criar novos parsers específicos:
 
-O próximo marco é a **Fase 23B — motor genérico de parâmetros**:
+1. capturar o próximo efeito da classe DYN;
+2. identificar cada parâmetro e seu `message_match`;
+3. reutilizar o perfil e o codec existentes quando as capturas comprovarem
+   equivalência, ou cadastrar novos perfis/codecs quando necessário;
+4. validar múltiplas instâncias e slots;
+5. repetir até concluir DYN e depois iniciar FREQ.
 
-1. criar um evento genérico independente de efeito;
-2. implementar codecs reutilizáveis a partir do catálogo;
-3. interpretar perfis de protocolo sem condicionais exclusivas do M-BOOST;
-4. provar equivalência contra as 27 fixtures físicas existentes;
-5. manter o validador atual como compatibilidade até a nova camada ser aprovada;
-6. somente depois integrar parâmetros ao monitor principal;
-7. retomar os demais efeitos DYN e depois a classe FREQ.
-
-Importação de IR e CLONE continuará como subsistema separado de arquivos
-externos, usando a mesma base de catálogo sem misturar upload binário com
-parâmetros comuns.
+Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats
 

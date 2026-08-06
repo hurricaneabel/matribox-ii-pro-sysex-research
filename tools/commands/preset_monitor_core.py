@@ -5,7 +5,8 @@ Este módulo coordena os componentes estáveis já validados:
 - ``preset_state.py``: consulta e eventos do preset atual;
 - ``global_metadata_collector.py``: reconstrução dos fragmentos globais;
 - ``global_preset_metadata.py``: nomes e etiquetas dos 240 presets;
-- ``chain_order.py``: ordem, classe, modelo, seletor e bypass dos efeitos.
+- ``chain_order.py``: ordem, classe, modelo, seletor e bypass dos efeitos;
+- ``tools.parameters``: eventos e valores de parâmetros definidos no JSON.
 
 Ele trabalha exclusivamente com bytes. Não abre portas MIDI, não usa mido,
 não dorme entre mensagens e não envia nada para a pedaleira.
@@ -36,6 +37,12 @@ from tools.commands.global_preset_metadata import (
     PresetMetadata,
     decode_global_preset_metadata,
 )
+from tools.parameters.decoder import (
+    EffectParameterEvent,
+    EffectParameterProtocolError,
+    parse_effect_parameter_response,
+)
+from tools.parameters.state import EffectParameterState
 from tools.commands.preset_state import (
     PresetEvent,
     build_current_preset_query,
@@ -88,6 +95,27 @@ class MonitorStartupPlan:
 
 
 @dataclass(frozen=True, slots=True)
+class PresetParameterSnapshot:
+    """Valor conhecido de um parâmetro catalogado do efeito."""
+
+    key: str
+    name: str
+    value: int | float | bool | str | None
+    unit: str | None = None
+
+    @property
+    def ready(self) -> bool:
+        return self.value is not None
+
+    @property
+    def display_value(self) -> str:
+        if self.value is None:
+            return "aguardando alteração"
+        value_text = str(self.value)
+        return f"{value_text} {self.unit}" if self.unit else value_text
+
+
+@dataclass(frozen=True, slots=True)
 class PresetEffectSnapshot:
     """Efeito resolvido para exibição no monitor."""
 
@@ -99,6 +127,8 @@ class PresetEffectSnapshot:
     model_name: str
     secondary_selector: int
     enabled: bool
+    effect_key: str = ""
+    parameters: tuple[PresetParameterSnapshot, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,9 +148,10 @@ class PresetMonitorSnapshot:
         cls,
         metadata: PresetMetadata,
         chain_state: ChainOrderState | None = None,
+        parameter_state: EffectParameterState | None = None,
     ) -> "PresetMonitorSnapshot":
         effects = (
-            build_effect_snapshots(chain_state)
+            build_effect_snapshots(chain_state, parameter_state)
             if chain_state is not None
             else ()
         )
@@ -149,6 +180,7 @@ class PresetMonitorUpdate:
     chain_state: ChainOrderState | None = None
     chain_changed: bool = False
     bypass_event: EffectSlotStateEvent | None = None
+    parameter_event: EffectParameterEvent | None = None
 
 
 def build_global_metadata_query() -> bytes:
@@ -200,18 +232,15 @@ def _find_effect_class(class_id: int):
     )
 
 
-def _resolve_effect_names(
+def _resolve_effect_definition(
     class_id: int,
     model_id: int,
     secondary_selector: int,
-) -> tuple[str, str]:
+):
     effect_class = _find_effect_class(class_id)
 
     if effect_class is None:
-        return (
-            f"CLASSE 0x{class_id:02X}",
-            f"MODELO 0x{model_id:02X}",
-        )
+        return None, None
 
     exact_matches = tuple(
         model
@@ -223,29 +252,38 @@ def _resolve_effect_names(
     )
 
     if len(exact_matches) == 1:
-        model_name = exact_matches[0].name
-    else:
-        model_matches = tuple(
-            model
-            for model in effect_class.models
-            if model.model_id == model_id
-        )
+        return effect_class, exact_matches[0]
 
-        if len(model_matches) == 1:
-            model_name = model_matches[0].name
-        else:
-            model_name = f"MODELO 0x{model_id:02X}"
+    model_matches = tuple(
+        model for model in effect_class.models if model.model_id == model_id
+    )
+    if len(model_matches) == 1:
+        return effect_class, model_matches[0]
 
+    return effect_class, None
+
+
+def _resolve_effect_names(
+    class_id: int,
+    model_id: int,
+    secondary_selector: int,
+) -> tuple[str, str]:
+    effect_class, effect = _resolve_effect_definition(
+        class_id, model_id, secondary_selector
+    )
+    if effect_class is None:
+        return (f"CLASSE 0x{class_id:02X}", f"MODELO 0x{model_id:02X}")
     return (
         effect_class.name,
-        model_name,
+        effect.name if effect is not None else f"MODELO 0x{model_id:02X}",
     )
 
 
 def build_effect_snapshots(
     chain_state: ChainOrderState,
+    parameter_state: EffectParameterState | None = None,
 ) -> tuple[PresetEffectSnapshot, ...]:
-    """Converte os registros estruturais para nomes do catálogo."""
+    """Converte registros estruturais e parâmetros para a apresentação."""
 
     snapshots: list[PresetEffectSnapshot] = []
 
@@ -261,11 +299,37 @@ def build_effect_snapshots(
         ):
             continue
 
+        _, effect = _resolve_effect_definition(
+            record.class_id,
+            record.model_id,
+            record.secondary_selector,
+        )
         class_name, model_name = _resolve_effect_names(
             record.class_id,
             record.model_id,
             record.secondary_selector,
         )
+
+        parameter_snapshots: list[PresetParameterSnapshot] = []
+        if effect is not None:
+            for parameter in effect.parameters:
+                event = (
+                    parameter_state.event_for(
+                        record.internal_slot_id,
+                        effect.key,
+                        parameter.key,
+                    )
+                    if parameter_state is not None
+                    else None
+                )
+                parameter_snapshots.append(
+                    PresetParameterSnapshot(
+                        key=parameter.key,
+                        name=parameter.name,
+                        value=event.value if event is not None else None,
+                        unit=parameter.unit,
+                    )
+                )
 
         snapshots.append(
             PresetEffectSnapshot(
@@ -277,6 +341,8 @@ def build_effect_snapshots(
                 model_name=model_name,
                 secondary_selector=record.secondary_selector,
                 enabled=record.enabled,
+                effect_key=effect.key if effect is not None else "",
+                parameters=tuple(parameter_snapshots),
             )
         )
 
@@ -314,6 +380,10 @@ def format_monitor_snapshot(
             f"{effect.class_name} / {effect.model_name} "
             f"— {state_text}"
         )
+        for parameter in effect.parameters:
+            lines.append(
+                f"     {parameter.name}: {parameter.display_value}"
+            )
 
     return "\n".join(lines)
 
@@ -337,6 +407,7 @@ class PresetMonitorCore:
         self.global_block: bytes | None = None
         self._last_snapshot: PresetMonitorSnapshot | None = None
         self._pending_bypass_by_internal_slot: dict[int, bool] = {}
+        self.parameter_state = EffectParameterState()
 
     @property
     def metadata_ready(self) -> bool:
@@ -368,6 +439,7 @@ class PresetMonitorCore:
         return PresetMonitorSnapshot.from_metadata(
             metadata,
             self.current_chain,
+            self.parameter_state,
         )
 
     @property
@@ -403,6 +475,7 @@ class PresetMonitorCore:
         self.global_block = None
         self._last_snapshot = None
         self._pending_bypass_by_internal_slot.clear()
+        self.parameter_state.clear()
 
     def load_global_block(
         self,
@@ -444,6 +517,52 @@ class PresetMonitorCore:
         self._pending_bypass_by_internal_slot.clear()
         return resolved_state
 
+    def _effect_keys_by_internal_slot(
+        self,
+        chain_state: ChainOrderState,
+    ) -> dict[int, str]:
+        result: dict[int, str] = {}
+        for internal_slot_id in chain_state.internal_slot_ids:
+            record = chain_state.effect_records_by_internal_slot[internal_slot_id]
+            if (
+                record.class_id is None
+                or record.model_id is None
+                or record.secondary_selector is None
+            ):
+                continue
+            _, effect = _resolve_effect_definition(
+                record.class_id,
+                record.model_id,
+                record.secondary_selector,
+            )
+            if effect is not None:
+                result[internal_slot_id] = effect.key
+        return result
+
+    def _parameter_event_matches_current_chain(
+        self,
+        event: EffectParameterEvent,
+    ) -> bool:
+        if self.current_chain is None:
+            return True
+        if event.internal_slot_id not in self.current_chain.internal_slot_ids:
+            return False
+        record = self.current_chain.effect_records_by_internal_slot[
+            event.internal_slot_id
+        ]
+        if (
+            record.class_id is None
+            or record.model_id is None
+            or record.secondary_selector is None
+        ):
+            return False
+        _, effect = _resolve_effect_definition(
+            record.class_id,
+            record.model_id,
+            record.secondary_selector,
+        )
+        return effect is not None and effect.key == event.effect_key
+
     def apply_chain_state(
         self,
         chain_state: ChainOrderState,
@@ -452,6 +571,9 @@ class PresetMonitorCore:
 
         previous_snapshot = self._last_snapshot
         self.current_chain = self._merge_pending_bypass(chain_state)
+        self.parameter_state.retain_effects(
+            self._effect_keys_by_internal_slot(self.current_chain)
+        )
         current_snapshot = self.snapshot
         snapshot_changed = (
             current_snapshot is not None
@@ -462,7 +584,6 @@ class PresetMonitorCore:
             self._last_snapshot = current_snapshot
 
         return current_snapshot, snapshot_changed
-
 
     def feed(
         self,
@@ -488,6 +609,20 @@ class PresetMonitorCore:
                 # Nunca exibe a cadeia do preset anterior junto do endereço novo.
                 self.current_chain = None
                 self._pending_bypass_by_internal_slot.clear()
+                self.parameter_state.clear()
+
+        try:
+            parameter_event = parse_effect_parameter_response(raw_message)
+        except EffectParameterProtocolError:
+            parameter_event = None
+
+        if (
+            parameter_event is not None
+            and self._parameter_event_matches_current_chain(parameter_event)
+        ):
+            self.parameter_state.apply(parameter_event)
+        else:
+            parameter_event = None
 
         try:
             bypass_event = parse_effect_slot_state_response(raw_message)
@@ -518,6 +653,9 @@ class PresetMonitorCore:
 
         if chain_state is not None:
             self.current_chain = self._merge_pending_bypass(chain_state)
+            self.parameter_state.retain_effects(
+                self._effect_keys_by_internal_slot(self.current_chain)
+            )
             chain_state = self.current_chain
 
         collector_update = self.collector.feed(raw_message)
@@ -541,6 +679,7 @@ class PresetMonitorCore:
 
         handled = (
             preset_event is not None
+            or parameter_event is not None
             or bypass_event is not None
             or chain_state is not None
             or collector_update.accepted
@@ -557,6 +696,7 @@ class PresetMonitorCore:
             chain_state=chain_state,
             chain_changed=chain_changed,
             bypass_event=bypass_event,
+            parameter_event=parameter_event,
         )
 
     def feed_many(

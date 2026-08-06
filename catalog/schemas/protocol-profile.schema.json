@@ -13,13 +13,63 @@
     "validation"
   ],
   "properties": {
-    "$schema": { "type": "string" },
-    "schema_version": { "const": 1 },
-    "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
-    "direction": { "enum": ["incoming", "outgoing", "bidirectional"] },
-    "command": { "type": "integer", "minimum": 0, "maximum": 127 },
-    "message_length": { "type": "integer", "minimum": 1 },
-    "fields": { "type": "object" },
-    "validation": { "type": "object" }
+    "$schema": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "direction": {
+      "enum": [
+        "incoming",
+        "outgoing",
+        "bidirectional"
+      ]
+    },
+    "command": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127
+    },
+    "message_length": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "fields": {
+      "type": "object"
+    },
+    "validation": {
+      "type": "object"
+    },
+    "fixed_segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start_index",
+          "bytes"
+        ],
+        "properties": {
+          "start_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bytes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        }
+      }
+    }
   }
 }

@@ -107,3 +107,23 @@ class EffectCatalog:
                 if effect.key == normalized:
                     return effect
         raise KeyError(key)
+
+    def class_by_id(self, class_id: int) -> EffectClass:
+        for effect_class in self.classes:
+            if effect_class.class_id == class_id:
+                return effect_class
+        raise KeyError(class_id)
+
+    def protocol_profile_by_key(self, key: str) -> ProtocolProfile:
+        normalized = key.strip().lower()
+        for profile in self.protocol_profiles:
+            if profile.key == normalized:
+                return profile
+        raise KeyError(key)
+
+    def value_codec_by_key(self, key: str) -> ValueCodec:
+        normalized = key.strip().lower()
+        for codec in self.value_codecs:
+            if codec.key == normalized:
+                return codec
+        raise KeyError(key)

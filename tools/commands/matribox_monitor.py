@@ -5,8 +5,8 @@ Uso:
     python -m tools.commands.matribox_monitor
 
 O monitor carrega os metadados globais, identifica o preset atual e processa
-respostas estruturais e eventos imediatos de bypass para exibir os efeitos na
-ordem visual e atualizar liga/desliga em tempo real. A inicialização
+respostas estruturais, bypass e parâmetros catalogados para exibir os efeitos
+na ordem visual e atualizar estado e valores em tempo real. A inicialização
 possui reenvios automáticos para o primeiro comando perdido após cold boot.
 """
 

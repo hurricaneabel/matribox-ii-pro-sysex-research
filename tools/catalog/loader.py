@@ -342,6 +342,104 @@ def _parse_class_index(root: Path, index_path: Path) -> EffectClass:
     )
 
 
+def _validate_profile_document(document: Mapping[str, Any], path: Path) -> None:
+    direction = _require_string(document, "direction", path)
+    if direction not in {"incoming", "outgoing", "bidirectional"}:
+        raise _fail(path, f"direction inválida: {direction}")
+
+    message_length = _require_integer(
+        document, "message_length", path, minimum=1
+    )
+    _require_integer(document, "command", path, minimum=0, maximum=0x7F)
+
+    fields = document.get("fields")
+    if not isinstance(fields, dict):
+        raise _fail(path, "campo 'fields' deve ser objeto")
+
+    required_fields = {
+        "checksum",
+        "direction",
+        "command",
+        "model_id",
+        "internal_slot",
+        "class_id",
+        "value",
+    }
+    missing = sorted(required_fields.difference(fields))
+    if missing:
+        raise _fail(path, "campos obrigatórios ausentes: " + ", ".join(missing))
+
+    for field_name, field in fields.items():
+        if not isinstance(field_name, str) or not field_name:
+            raise _fail(path, "fields possui chave inválida")
+        if not isinstance(field, dict):
+            raise _fail(path, f"fields.{field_name} deve ser objeto")
+        if "index" in field:
+            index = field["index"]
+            if isinstance(index, bool) or not isinstance(index, int):
+                raise _fail(path, f"fields.{field_name}.index deve ser inteiro")
+            if not 0 <= index < message_length:
+                raise _fail(path, f"fields.{field_name}.index fora da mensagem")
+        if "indices" in field:
+            indices = field["indices"]
+            if (
+                not isinstance(indices, list)
+                or len(indices) != 2
+                or any(isinstance(item, bool) or not isinstance(item, int) for item in indices)
+                or any(not 0 <= item < message_length for item in indices)
+            ):
+                raise _fail(path, f"fields.{field_name}.indices inválido")
+        if "start_index" in field or "end_index_exclusive" in field:
+            start = field.get("start_index")
+            end = field.get("end_index_exclusive")
+            if (
+                isinstance(start, bool)
+                or not isinstance(start, int)
+                or isinstance(end, bool)
+                or not isinstance(end, int)
+                or not 0 <= start < end <= message_length
+            ):
+                raise _fail(path, f"faixa de fields.{field_name} inválida")
+
+    segments = document.get("fixed_segments", [])
+    if not isinstance(segments, list):
+        raise _fail(path, "fixed_segments deve ser lista")
+    occupied: set[int] = set()
+    for segment in segments:
+        if not isinstance(segment, dict):
+            raise _fail(path, "fixed_segments contém item inválido")
+        start = segment.get("start_index")
+        values = segment.get("bytes")
+        if isinstance(start, bool) or not isinstance(start, int):
+            raise _fail(path, "fixed_segments.start_index deve ser inteiro")
+        if (
+            not isinstance(values, list)
+            or not values
+            or any(
+                isinstance(value, bool)
+                or not isinstance(value, int)
+                or not 0 <= value <= 0xFF
+                for value in values
+            )
+        ):
+            raise _fail(path, "fixed_segments.bytes inválido")
+        indices = set(range(start, start + len(values)))
+        if start < 0 or start + len(values) > message_length:
+            raise _fail(path, "fixed_segments excede message_length")
+        if occupied.intersection(indices):
+            raise _fail(path, "fixed_segments possui sobreposição")
+        occupied.update(indices)
+
+
+def _validate_codec_document(document: Mapping[str, Any], path: Path) -> None:
+    _require_string(document, "kind", path)
+    _require_integer(document, "encoded_length", path, minimum=1)
+    _require_string(document, "description", path)
+    configuration = document.get("configuration", {})
+    if not isinstance(configuration, dict):
+        raise _fail(path, "configuration deve ser objeto")
+
+
 def _parse_named_documents(
     root: Path,
     paths_value: Any,
@@ -363,6 +461,10 @@ def _parse_named_documents(
         document = _read_json(path)
         _require_version(document, path)
         key = _require_key(document, "key", path)
+        if kind is ProtocolProfile:
+            _validate_profile_document(document, path)
+        elif kind is ValueCodec:
+            _validate_codec_document(document, path)
         result.append(kind(key=key, document=MappingProxyType(document)))
 
     _validate_unique(
@@ -448,21 +550,42 @@ def _load_effect_catalog_cached(root_string: str) -> EffectCatalog:
         kind=ValueCodec,
     )
 
-    profile_keys = {profile.key for profile in protocol_profiles}
-    codec_keys = {codec.key for codec in value_codecs}
+    profiles_by_key = {profile.key: profile for profile in protocol_profiles}
+    codecs_by_key = {codec.key: codec for codec in value_codecs}
     for effect_class in classes_tuple:
         for effect in effect_class.models:
             for parameter in effect.parameters:
-                if parameter.protocol_profile not in profile_keys:
+                profile = profiles_by_key.get(parameter.protocol_profile or "")
+                if profile is None:
                     raise _fail(
                         manifest_path,
                         f"parâmetro {effect.key}.{parameter.key} referencia perfil inexistente",
                     )
-                if parameter.value_codec not in codec_keys:
+                codec = codecs_by_key.get(parameter.value_codec or "")
+                if codec is None:
                     raise _fail(
                         manifest_path,
                         f"parâmetro {effect.key}.{parameter.key} referencia codec inexistente",
                     )
+
+                fields = profile.document.get("fields", {})
+                for match_key in parameter.message_match:
+                    if match_key not in fields:
+                        raise _fail(
+                            manifest_path,
+                            f"parâmetro {effect.key}.{parameter.key} usa message_match inexistente: {match_key}",
+                        )
+
+                value_field = fields.get("value", {})
+                start = value_field.get("start_index")
+                end = value_field.get("end_index_exclusive")
+                encoded_length = codec.document.get("encoded_length")
+                if isinstance(start, int) and isinstance(end, int):
+                    if end - start != encoded_length:
+                        raise _fail(
+                            manifest_path,
+                            f"parâmetro {effect.key}.{parameter.key} possui codec com tamanho incompatível",
+                        )
 
     return EffectCatalog(
         schema_version=schema_version,

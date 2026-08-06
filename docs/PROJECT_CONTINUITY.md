@@ -5,6 +5,8 @@
 > **Última atualização:** 6 de agosto de 2026
 > **Marco consolidado:** Fase 23A — catálogo de efeitos e parâmetros migrado
 > para JSON multiplataforma, mantendo compatibilidade com o núcleo Python
+> **Candidato em validação física:** Fase 23B — motor genérico de parâmetros
+> integrado ao monitor principal
 > **Branch de trabalho:** `main`
 
 ## 1. Como usar este documento
@@ -68,7 +70,9 @@ O estado atual já permite:
 - adicionar, substituir, remover e mover efeitos com comandos já validados;
 - alterar modelo, bypass e volume usando comandos conhecidos;
 - reconhecer e decodificar em tempo real o parâmetro `GAIN` de qualquer
-  instância de `DYN / M-BOOST`, ainda por um validador isolado;
+  instância de `DYN / M-BOOST` por um motor genérico orientado pelo JSON;
+- apresentar parâmetros catalogados no monitor principal e manter valores
+  separados por slot interno e instância;
 - carregar as 16 classes, 267 efeitos e o primeiro parâmetro validado a partir
   de um catálogo JSON versionado e independente de Python/Windows.
 
@@ -96,6 +100,16 @@ Efeitos:
   7. DLY / RACK — ligado
 ```
 
+Quando um efeito possui parâmetros catalogados, o monitor acrescenta linhas
+como:
+
+```text
+  2. DYN / M-BOOST — ligado
+     GAIN: aguardando alteração
+```
+
+Depois do primeiro evento `0x1C`, o valor real substitui o texto de espera.
+
 ### Comportamentos fisicamente confirmados
 
 - A troca de preset atualiza endereço, nome, etiqueta e solicita a nova cadeia.
@@ -107,19 +121,24 @@ Efeitos:
 - O monitor é somente leitura durante a consulta da cadeia. Ele não move,
   substitui, liga/desliga nem salva efeitos.
 
-### Validador isolado de parâmetro
+### Validadores de parâmetro
 
-O primeiro parâmetro interno fisicamente catalogado é o `GAIN` do
-`DYN / M-BOOST`:
+O validador genérico da Fase 23B usa o mesmo motor do monitor:
+
+```powershell
+python -m tools.experiments.validate_effect_parameters_live
+```
+
+O validador histórico específico do primeiro parâmetro fisicamente catalogado,
+o `GAIN` do `DYN / M-BOOST`, permanece disponível:
 
 ```powershell
 python -m tools.experiments.validate_mboost_gain_live
 ```
 
-O validador reutiliza a inicialização e o dump não destrutivo do monitor, mas
-permanece separado do programa principal. Ele escuta respostas `0x1C`, cruza o
-slot interno com a cadeia atual e mostra GAIN e posição visual. Nenhum comando
-de escrita de parâmetro é enviado.
+Ambos reutilizam a inicialização e o dump não destrutivo do monitor. Eles
+escutam respostas `0x1C`, cruzam o slot interno com a cadeia atual e não enviam
+comandos de escrita de parâmetro.
 
 ## 5. Ambiente validado
 
@@ -264,6 +283,35 @@ tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 
 O M-BOOST é o único efeito com parâmetro preenchido neste marco. Os outros 266
 efeitos permanecem explicitamente `pending`, sem parâmetros presumidos.
+
+### 6.6 Motor genérico de parâmetros — Fase 23B
+
+Arquivos principais:
+
+```text
+tools/parameters/codecs.py
+tools/parameters/decoder.py
+tools/parameters/state.py
+tools/experiments/validate_effect_parameters_live.py
+tests/test_effect_parameters.py
+```
+
+O decoder consulta o perfil, o codec, o efeito e o `message_match` declarados
+no catálogo. Ele produz `EffectParameterEvent` sem condicionais específicas
+para M-BOOST. `mboost_gain.py` agora é apenas uma fachada de compatibilidade.
+
+O estado guarda o último valor por slot interno, efeito e parâmetro. Eventos
+são rejeitados quando a cadeia atual identifica outro efeito no slot. Valores
+são descartados ao trocar preset ou substituir o efeito.
+
+O valor inicial ainda não é extraído do dump. Após carregar o preset, o monitor
+mostra `aguardando alteração` até receber o primeiro evento ao vivo.
+
+Relatório:
+
+```text
+EFFECT_PARAMETER_ENGINE_PHASE23B.md
+```
 
 ## 7. Estrutura estrutural confirmada
 
@@ -488,31 +536,53 @@ tests/test_effect_catalog_json.py
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-## 11. Estado de validação no marco atual
+### Fase 23B — motor genérico de parâmetros (candidato)
 
-Suíte completa após a Fase 23A:
+Criou codecs, decoder e estado genéricos orientados pelo catálogo JSON,
+preservou a API específica da Fase 22 e integrou parâmetros ao monitor. As 27
+fixtures físicas são decodificadas pelo novo motor. A validação física da
+integração ao monitor ainda é obrigatória antes do commit.
 
 ```text
-Ran 328 tests
+EFFECT_PARAMETER_ENGINE_PHASE23B.md
+tools/parameters/
+tools/experiments/validate_effect_parameters_live.py
+tests/test_effect_parameters.py
+```
+
+## 11. Estado de validação no marco atual
+
+Suíte completa do candidato da Fase 23B:
+
+```text
+Ran 340 tests
 OK
 ```
 
-A Fase 23A não alterou mensagens MIDI e, por isso, não exigiu nova validação
-física. A validação física do M-BOOST permanece a da Fase 22.
+Validação offline aprovada:
 
-Validação física aprovada pelo usuário:
+- 27 fixtures físicas decodificadas pelo motor genérico;
+- compatibilidade integral com `mboost_gain.py`;
+- múltiplas instâncias com valores independentes;
+- descarte de estado antigo ao substituir efeito ou trocar preset;
+- rejeição de mensagens incompatíveis e valores fora da faixa;
+- cruzamento de efeito e slot com a cadeia estrutural atual;
+- apresentação de valor pendente e valor recebido no snapshot do monitor.
+
+Validação física já aprovada em fases anteriores:
 
 - inicialização e recuperação após cold boot;
-- leitura de preset, nome e etiqueta;
-- leitura de cadeias vazias e cadeias com vários efeitos;
-- identificação correta dos modelos exibidos;
-- mudança da ordem visual em tempo real;
-- liga/desliga em tempo real sem novo dump;
-- preservação da ordem durante atualização de bypass;
-- leitura do M-BOOST/GAIN em tempo real;
-- múltiplas instâncias simultâneas sem conflito;
-- reconhecimento físico nos slots internos 2, 8, 10 e 12;
-- independência entre slot interno e posição visual.
+- leitura de preset, nome, etiqueta e cadeia;
+- mudança de ordem e bypass em tempo real;
+- leitura isolada do M-BOOST/GAIN;
+- múltiplas instâncias e slots 2, 8, 10 e 12.
+
+Validação física ainda pendente para a Fase 23B:
+
+- atualização do GAIN dentro do monitor principal;
+- duas ou mais instâncias com valores independentes no monitor;
+- preservação correta após movimento visual;
+- limpeza do valor ao trocar preset.
 
 Fixtures físicas de regressão ficam em:
 
@@ -538,8 +608,10 @@ tests/fixtures/mboost_gain/
   efeitos ativos da cadeia.
 - Não assumir offsets no SysEx comprimido; sempre trabalhar sobre o payload
   LZO1X descomprimido.
-- Mudanças em parâmetros internos de efeitos ainda não fazem parte do monitor
-  principal. O M-BOOST/GAIN está aprovado em um validador isolado.
+- Parâmetros catalogados fazem parte do monitor candidato da Fase 23B, mas a
+  integração ainda precisa de aprovação física antes do commit.
+- O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
+  alteração` até o primeiro evento ao vivo.
 - Não criar um parser Python separado para cada parâmetro. A expansão deve usar
   o catálogo JSON, codecs e perfis de protocolo genéricos já criados.
 - Não colocar caminhos absolutos, objetos `pickle` ou estruturas exclusivas de
@@ -549,23 +621,20 @@ tests/fixtures/mboost_gain/
 
 ## 13. Próximos passos recomendados
 
-O catálogo JSON e o primeiro parâmetro isolado estão estáveis. O próximo marco
-aprovado é a **Fase 23B — motor genérico de parâmetros**:
+1. extrair o pacote da Fase 23B e executar a suíte completa;
+2. executar `tools.commands.matribox_monitor`;
+3. confirmar `GAIN: aguardando alteração` e a atualização ao vivo;
+4. testar duas ou mais instâncias de M-BOOST;
+5. mover uma instância e trocar de preset para validar retenção e limpeza;
+6. após aprovação física, atualizar este documento com o resultado final e
+   consolidar o commit;
+7. iniciar o próximo efeito DYN adicionando somente dados ao catálogo e novos
+   perfis/codecs quando as capturas exigirem;
+8. depois de concluir DYN, iniciar FREQ;
+9. manter importação IR/CLONE como subsistema separado.
 
-1. criar um `ParameterEvent` genérico, independente do M-BOOST;
-2. implementar o codec `upper_float32_nibbles_v1` como componente reutilizável;
-3. interpretar o perfil `effect_parameter_response_1c_v1` consultando o
-   catálogo, sem condicionais específicas por efeito;
-4. provar equivalência contra as 27 fixtures físicas da Fase 22;
-5. manter `mboost_gain.py` e o validador atual como compatibilidade durante a
-   transição;
-6. criar um validador genérico isolado antes de tocar no monitor principal;
-7. somente após aprovação integrar parâmetros ao estado do monitor;
-8. retomar a captura dos demais efeitos DYN e depois FREQ;
-9. manter importação IR/CLONE como subsistema separado de arquivos externos.
-
-A futura interface ou API deve consumir eventos e definições do catálogo sem
-conhecer offsets, nibbles, checksums ou detalhes MIDI.
+A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
+sem conhecer offsets, nibbles ou detalhes MIDI.
 
 ## 14. Checklist obrigatório para o próximo commit
 

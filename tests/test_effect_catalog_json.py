@@ -180,6 +180,38 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             with self.assertRaises(CatalogValidationError):
                 load_effect_catalog(copied)
 
+    def test_loader_rejects_unknown_parameter_match_field(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            copied = Path(temporary_directory) / "catalog"
+            shutil.copytree(CATALOG_ROOT, copied)
+            effect_path = copied / "effects" / "dyn" / "004_m_boost.json"
+            document = json.loads(effect_path.read_text(encoding="utf-8"))
+            document["parameters"][0]["protocol"]["message_match"] = {
+                "unknown_marker": 1
+            }
+            effect_path.write_text(json.dumps(document), encoding="utf-8")
+
+            with self.assertRaises(CatalogValidationError):
+                load_effect_catalog(copied)
+
+    def test_loader_rejects_overlapping_fixed_segments(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            copied = Path(temporary_directory) / "catalog"
+            shutil.copytree(CATALOG_ROOT, copied)
+            profile_path = (
+                copied
+                / "protocol_profiles"
+                / "effect_parameter_response_1c_v1.json"
+            )
+            document = json.loads(profile_path.read_text(encoding="utf-8"))
+            document["fixed_segments"].append(
+                {"start_index": 5, "bytes": [0]}
+            )
+            profile_path.write_text(json.dumps(document), encoding="utf-8")
+
+            with self.assertRaises(CatalogValidationError):
+                load_effect_catalog(copied)
+
 
 class CatalogSchemaDocumentTests(unittest.TestCase):
     def test_schema_documents_use_draft_2020_12(self) -> None:
