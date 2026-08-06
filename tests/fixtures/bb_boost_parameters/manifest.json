@@ -1,0 +1,608 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.bb_boost",
+    "name": "BB-BOOST",
+    "model_id": 11,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "bass",
+      "name": "BASS",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "treble",
+      "name": "TREBLE",
+      "selector": 3,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "bb-boost_gain_cap.pcapng",
+    "bb-boost_volume_cap.pcapng",
+    "bb-boost_bass_cap.pcapng",
+    "bb-boost_treble_cap.pcapng",
+    "bb-boost_unique_values.pcapng",
+    "bb-boost_slot2_short_validation.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "bb-boost_unique_values.pcapng",
+    "sequence": [
+      "gain_51",
+      "volume_52",
+      "bass_53",
+      "treble_54",
+      "gain_50",
+      "volume_50",
+      "bass_50",
+      "treble_50"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "slot2_validation": {
+    "source": "bb-boost_slot2_short_validation.pcapng",
+    "sequence": [
+      "gain_51",
+      "gain_50",
+      "volume_50",
+      "volume_52",
+      "volume_50",
+      "bass_53",
+      "bass_50",
+      "treble_54",
+      "treble_50"
+    ],
+    "result": "same_selectors_and_codec_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "A captura de GAIN também continha uma resposta auxiliar de 54 bytes, ignorada pelo parser de parâmetros.",
+    "No slot 2, VOLUME emitiu um valor 50 adicional antes de 52 → 50; uma única fixture por estado físico foi preservada.",
+    "A validação curta do slot 2 também continha uma resposta auxiliar de 54 bytes."
+  ],
+  "physical_binary_fixtures": 32,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_gain_000.bin",
+      "source": "bb-boost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "97b396b2a00941c6e799d12eb38c345ab136a71af95e8e0fce90cd45b6e9b9e9"
+    },
+    {
+      "file": "slot1_gain_001.bin",
+      "source": "bb-boost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "922a8c3367999587033e2d8dc5a71a46920969373b40a75d340c8709ebb2be01"
+    },
+    {
+      "file": "slot1_gain_050.bin",
+      "source": "bb-boost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "f028acdd81a05fada5a0a75eb195bfa3a0c7fe26f1300b595664ec0a855757f6"
+    },
+    {
+      "file": "slot1_gain_051.bin",
+      "source": "bb-boost_unique_values.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "a45e885909a207a3a53a6dbfae58233de522c1074a7f9c9adca17e81a72a358d"
+    },
+    {
+      "file": "slot1_gain_099.bin",
+      "source": "bb-boost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "10ae0b78acded2b0b60b4b9ee595862bcd066cbe0f654326939ac27614cb5cee"
+    },
+    {
+      "file": "slot1_gain_100.bin",
+      "source": "bb-boost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "29e810278561834bab5d0e4b174835cb38721ab1e1179e4b20c414d8a3d0c355"
+    },
+    {
+      "file": "slot1_volume_000.bin",
+      "source": "bb-boost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "0bd2a516bc53942fcf3fc53b76a3c4669a0cb1480e5f11a68a48b8b9d8f01716"
+    },
+    {
+      "file": "slot1_volume_001.bin",
+      "source": "bb-boost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "c6fb963802ed98f378ca72942ea2cbbeeede0fc176ae4995b15a133b3b96a688"
+    },
+    {
+      "file": "slot1_volume_050.bin",
+      "source": "bb-boost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "723f0e75487b5543bd2389355940c98be3d91e82eeb0c833975279c44fbe7306"
+    },
+    {
+      "file": "slot1_volume_052.bin",
+      "source": "bb-boost_unique_values.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "2c8411e55b7f7ffeacd960c69f413193604f985bd4278983cc016e417aca7b60"
+    },
+    {
+      "file": "slot1_volume_099.bin",
+      "source": "bb-boost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "02f44487ea8183a927fe6762298f8ee01cd6976deaee43e23b05708f4f128316"
+    },
+    {
+      "file": "slot1_volume_100.bin",
+      "source": "bb-boost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "1fb309d09c1e5948f8199798e57f654ce611211046a8307f6f66a54b64c51bc5"
+    },
+    {
+      "file": "slot1_bass_000.bin",
+      "source": "bb-boost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d518ca70cdd8fb288fad3b1038ad1f004328af7e27e17bd42449b1ca89cbafb1"
+    },
+    {
+      "file": "slot1_bass_001.bin",
+      "source": "bb-boost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "e5a9b22c01b70863fa764fed1ccba8676b5154fe3caa92147cec562727f9f23a"
+    },
+    {
+      "file": "slot1_bass_050.bin",
+      "source": "bb-boost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "38182ab3c8f0ab59dba838e6893be47e7f0d85ef5ccd4637a26a43cdd7aaa1c0"
+    },
+    {
+      "file": "slot1_bass_053.bin",
+      "source": "bb-boost_unique_values.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "c60fe62cd3f7094dabc8c7ffb026bd866431068f98d212256842e607eb561c29"
+    },
+    {
+      "file": "slot1_bass_099.bin",
+      "source": "bb-boost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "a7e7c93e710d84c1dccc8b1b6af0d4cf07324623226f4b8ca486d489955e143b"
+    },
+    {
+      "file": "slot1_bass_100.bin",
+      "source": "bb-boost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "34351d467aaf29b1b9f19b44649da5cf65ad6ec3869b1db9aa2aa60426951137"
+    },
+    {
+      "file": "slot1_treble_000.bin",
+      "source": "bb-boost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "65393f2e6203ee565c27d27115f8cae50e14ed5858b0e345e8ac297a343ff49b"
+    },
+    {
+      "file": "slot1_treble_001.bin",
+      "source": "bb-boost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "0b8a0269f6b2b159534ece162e12d391cd6d4d40ae07224ba4a945a67b7f5019"
+    },
+    {
+      "file": "slot1_treble_050.bin",
+      "source": "bb-boost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "8af0d0ab24fe2819604118340e234e73f8168cad65d8c3ed658b7b5bfa79a3dc"
+    },
+    {
+      "file": "slot1_treble_054.bin",
+      "source": "bb-boost_unique_values.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "adbc339303c364a6d42c920407a5973e9227dfa023233a4cdde14f4a1dbb7855"
+    },
+    {
+      "file": "slot1_treble_099.bin",
+      "source": "bb-boost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "cbfc50d1de0f2733d66dbfd8f101994bc2bfeba1852c3f54c5ec41b3a2d45839"
+    },
+    {
+      "file": "slot1_treble_100.bin",
+      "source": "bb-boost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "57176a46aeced7d558890c96959eb3e3a559d83c4ae6f21a511441b1610e0420"
+    },
+    {
+      "file": "slot2_gain_050.bin",
+      "source": "bb-boost_slot2_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "adfee02ad355aa79243a44cc6e765efce2ffcb7826dd4387ec6024b4d068f446"
+    },
+    {
+      "file": "slot2_gain_051.bin",
+      "source": "bb-boost_slot2_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "6791cdf1c84cc1a359389b13112e9619bff59cc6036871368ba754568c0a0343"
+    },
+    {
+      "file": "slot2_volume_050.bin",
+      "source": "bb-boost_slot2_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "26688dec9c963e8338b6ff213b5905c55d4168b8573153b01600a03fcd924fbe"
+    },
+    {
+      "file": "slot2_volume_052.bin",
+      "source": "bb-boost_slot2_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "23eca0ebb5382173d535bb4c9cca987f08e6f2022348a36bf1cd08a91dcd06f1"
+    },
+    {
+      "file": "slot2_bass_050.bin",
+      "source": "bb-boost_slot2_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "626a50ac01d32bf2895e33ba3ba8f4ce5f455f5b6b0eaa547262d1048b16105b"
+    },
+    {
+      "file": "slot2_bass_053.bin",
+      "source": "bb-boost_slot2_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "8071f1f3ccd5b045f4c79e7a1ac0e455c15dad7b6197d9fd6c07ebac14409f6a"
+    },
+    {
+      "file": "slot2_treble_050.bin",
+      "source": "bb-boost_slot2_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "755b992449f4e022aa2d770a5ea0732a4cbc5f9eb21fdefec6fc2ea1b7e0ede9"
+    },
+    {
+      "file": "slot2_treble_054.bin",
+      "source": "bb-boost_slot2_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d1f45644e0967c58d2e8808d773a5ef9af7c503459bc788ccb637853bc2f2b8f"
+    }
+  ]
+}

@@ -25,6 +25,8 @@ MBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "mboost_gain"
 COMP1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "comp1_parameters"
 COMP2_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "comp2_parameters"
 COMP3_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "comp3_parameters"
+AC_BOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_boost_parameters"
+BB_BOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "bb_boost_parameters"
 EBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "e_boost_parameters"
 AC_WOODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_woody_parameters"
 GATE1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate1_parameters"
@@ -187,6 +189,34 @@ class GenericParameterDecoderTests(unittest.TestCase):
                 self.assertEqual(event.value, expected_value)
 
         self.assertEqual(observed_parameters, expected_parameters)
+
+    def test_all_physical_ac_and_bb_boost_fixtures_resolve_four_parameters(self) -> None:
+        expected_parameters = {"gain", "volume", "bass", "treble"}
+        for fixture_root, effect_key in (
+            (AC_BOOST_FIXTURE_ROOT, "dyn.ac_boost"),
+            (BB_BOOST_FIXTURE_ROOT, "dyn.bb_boost"),
+        ):
+            fixtures = sorted(fixture_root.glob("*.bin"))
+            self.assertEqual(len(fixtures), 32)
+            observed_parameters = set()
+            for fixture in fixtures:
+                with self.subTest(effect=effect_key, fixture=fixture.name):
+                    event = parse_effect_parameter_response(
+                        fixture.read_bytes(),
+                        effect_key=effect_key,
+                    )
+                    self.assertIsNotNone(event)
+                    assert event is not None
+                    parts = fixture.stem.split("_")
+                    expected_slot = int(parts[0].removeprefix("slot"))
+                    expected_parameter = parts[1]
+                    expected_value = int(parts[2])
+                    observed_parameters.add(event.parameter_key)
+                    self.assertEqual(event.human_slot, expected_slot)
+                    self.assertEqual(event.effect_key, effect_key)
+                    self.assertEqual(event.parameter_key, expected_parameter)
+                    self.assertEqual(event.value, expected_value)
+            self.assertEqual(observed_parameters, expected_parameters)
 
     def test_all_physical_e_boost_fixtures_decode_by_effect_context(self) -> None:
         fixtures = sorted(EBOOST_FIXTURE_ROOT.glob("*.bin"))
@@ -423,6 +453,42 @@ class ParameterStateTests(unittest.TestCase):
             expected,
         )
 
+    def test_ac_and_bb_boost_parameters_keep_independent_values(self) -> None:
+        expected = {
+            "gain": 51,
+            "volume": 52,
+            "bass": 53,
+            "treble": 54,
+        }
+        for fixture_root, effect_key in (
+            (AC_BOOST_FIXTURE_ROOT, "dyn.ac_boost"),
+            (BB_BOOST_FIXTURE_ROOT, "dyn.bb_boost"),
+        ):
+            with self.subTest(effect=effect_key):
+                state = EffectParameterState()
+                for parameter, value in expected.items():
+                    event = parse_effect_parameter_response(
+                        (
+                            fixture_root
+                            / f"slot2_{parameter}_{value:03d}.bin"
+                        ).read_bytes(),
+                        effect_key=effect_key,
+                    )
+                    assert event is not None
+                    state.apply(event)
+
+                self.assertEqual(
+                    {
+                        parameter: state.event_for(
+                            1,
+                            effect_key,
+                            parameter,
+                        ).value
+                        for parameter in expected
+                    },
+                    expected,
+                )
+
     def test_retain_effects_discards_stale_slot_value(self) -> None:
         state = EffectParameterState()
         event = parse_effect_parameter_response(
@@ -490,6 +556,29 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         formatted = format_monitor_snapshot(snapshot)
         for parameter_name in expected_names:
             self.assertIn(f"{parameter_name}: aguardando alteração", formatted)
+
+    def test_monitor_lists_ac_and_bb_boost_parameters_in_catalog_order(self) -> None:
+        expected_names = ("GAIN", "VOLUME", "BASS", "TREBLE")
+        for effect_key in ("dyn.ac_boost", "dyn.bb_boost"):
+            with self.subTest(effect=effect_key):
+                core = prepare_core(
+                    make_chain(internal_slot_id=0, effect_key=effect_key)
+                )
+                snapshot = core.snapshot
+                assert snapshot is not None
+                self.assertEqual(
+                    tuple(
+                        parameter.name
+                        for parameter in snapshot.effects[0].parameters
+                    ),
+                    expected_names,
+                )
+                formatted = format_monitor_snapshot(snapshot)
+                for parameter_name in expected_names:
+                    self.assertIn(
+                        f"{parameter_name}: aguardando alteração",
+                        formatted,
+                    )
 
     def test_monitor_lists_e_boost_parameters_in_catalog_order(self) -> None:
         core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.e_boost"))
@@ -653,6 +742,45 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         ):
             self.assertIn(f"{name}: {value}", formatted)
 
+    def test_live_events_update_ac_and_bb_boost_parameters_independently(self) -> None:
+        sequence = (
+            ("gain", 51),
+            ("volume", 52),
+            ("bass", 53),
+            ("treble", 54),
+        )
+        for fixture_root, effect_key in (
+            (AC_BOOST_FIXTURE_ROOT, "dyn.ac_boost"),
+            (BB_BOOST_FIXTURE_ROOT, "dyn.bb_boost"),
+        ):
+            with self.subTest(effect=effect_key):
+                core = prepare_core(
+                    make_chain(internal_slot_id=1, effect_key=effect_key)
+                )
+                for parameter, value in sequence:
+                    update = core.feed(
+                        (
+                            fixture_root
+                            / f"slot2_{parameter}_{value:03d}.bin"
+                        ).read_bytes()
+                    )
+                    self.assertIsNotNone(update.parameter_event)
+
+                assert update.snapshot is not None
+                parameters = update.snapshot.effects[0].parameters
+                self.assertEqual(
+                    tuple(parameter.value for parameter in parameters),
+                    (51, 52, 53, 54),
+                )
+                formatted = format_monitor_snapshot(update.snapshot)
+                for name, value in (
+                    ("GAIN", 51),
+                    ("VOLUME", 52),
+                    ("BASS", 53),
+                    ("TREBLE", 54),
+                ):
+                    self.assertIn(f"{name}: {value}", formatted)
+
     def test_chain_context_resolves_selector_zero_as_mboost_gain(self) -> None:
         core = prepare_core(make_chain(internal_slot_id=0, effect_key="dyn.m_boost"))
         update = core.feed(
@@ -757,6 +885,37 @@ class Comp3EvidenceManifestTests(unittest.TestCase):
             manifest["slot2_validation"]["result"],
             "same_selectors_and_codec_on_internal_slot_2",
         )
+
+
+class BoostEvidenceManifestTests(unittest.TestCase):
+    def test_ac_and_bb_boost_manifests_preserve_four_parameters_and_two_slots(self) -> None:
+        for fixture_root, effect_key in (
+            (AC_BOOST_FIXTURE_ROOT, "dyn.ac_boost"),
+            (BB_BOOST_FIXTURE_ROOT, "dyn.bb_boost"),
+        ):
+            with self.subTest(effect=effect_key):
+                manifest = json.loads(
+                    (fixture_root / "manifest.json").read_text(encoding="utf-8")
+                )
+                self.assertEqual(manifest["effect"]["key"], effect_key)
+                self.assertEqual(manifest["physical_binary_fixtures"], 32)
+                self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+                self.assertEqual(len(manifest["controlled_capture_sources"]), 6)
+                self.assertEqual(
+                    tuple(
+                        parameter["selector"]
+                        for parameter in manifest["parameters"]
+                    ),
+                    (0, 1, 2, 3),
+                )
+                self.assertEqual(
+                    manifest["combination_capture_validation"]["result"],
+                    "independent_messages_per_parameter",
+                )
+                self.assertEqual(
+                    manifest["slot2_validation"]["result"],
+                    "same_selectors_and_codec_on_internal_slot_2",
+                )
 
 
 class SimpleDynEvidenceManifestTests(unittest.TestCase):

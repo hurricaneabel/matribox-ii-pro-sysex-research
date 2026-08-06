@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 6)
+        self.assertEqual(self.catalog.catalog_version, 7)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -202,6 +202,47 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             )
             self.assertEqual(parameter.validation["physical_fixture_count"], 84)
 
+    def test_ac_and_bb_boost_have_four_physically_validated_parameters(self) -> None:
+        for effect_key, name, model_id in (
+            ("dyn.ac_boost", "AC-BOOST", 0x0A),
+            ("dyn.bb_boost", "BB-BOOST", 0x0B),
+        ):
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.name, name)
+                self.assertEqual(effect.model_id, model_id)
+                self.assertEqual(effect.secondary_selector, 0x00)
+                self.assertEqual(
+                    effect.parameter_catalog_status,
+                    "physically_validated",
+                )
+                self.assertEqual(effect.capabilities, ("parameters",))
+                self.assertEqual(
+                    tuple(parameter.key for parameter in effect.parameters),
+                    ("gain", "volume", "bass", "treble"),
+                )
+                self.assertEqual(
+                    tuple(
+                        dict(parameter.message_match)["parameter_selector"]
+                        for parameter in effect.parameters
+                    ),
+                    (0, 1, 2, 3),
+                )
+                for parameter in effect.parameters:
+                    self.assertEqual(parameter.value_type, "integer")
+                    self.assertEqual(
+                        (parameter.minimum, parameter.maximum, parameter.step),
+                        (0, 100, 1),
+                    )
+                    self.assertEqual(
+                        parameter.identification_status,
+                        "validated_with_chain_effect_context",
+                    )
+                    self.assertEqual(
+                        parameter.validation["physical_fixture_count"],
+                        32,
+                    )
+
     def test_e_boost_has_integer_and_boolean_parameters(self) -> None:
         e_boost = self.catalog.effect_by_key("dyn.e_boost")
         self.assertEqual(e_boost.name, "E-BOOST")
@@ -278,12 +319,14 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "dyn.comp1",
                 "dyn.comp2",
                 "dyn.comp3",
+                "dyn.ac_boost",
+                "dyn.bb_boost",
                 "dyn.e_boost",
                 "dyn.ac_woody",
                 "dyn.gate_1",
             }
         ]
-        self.assertEqual(len(pending), 260)
+        self.assertEqual(len(pending), 258)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -335,6 +378,8 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_comp1 = exported.effect_by_key("dyn.comp1")
             exported_comp2 = exported.effect_by_key("dyn.comp2")
             exported_comp3 = exported.effect_by_key("dyn.comp3")
+            exported_ac_boost = exported.effect_by_key("dyn.ac_boost")
+            exported_bb_boost = exported.effect_by_key("dyn.bb_boost")
             exported_e_boost = exported.effect_by_key("dyn.e_boost")
             exported_ac_woody = exported.effect_by_key("dyn.ac_woody")
             exported_gate1 = exported.effect_by_key("dyn.gate_1")
@@ -353,6 +398,14 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_comp3.parameters,
                 self.catalog.effect_by_key("dyn.comp3").parameters,
+            )
+            self.assertEqual(
+                exported_ac_boost.parameters,
+                self.catalog.effect_by_key("dyn.ac_boost").parameters,
+            )
+            self.assertEqual(
+                exported_bb_boost.parameters,
+                self.catalog.effect_by_key("dyn.bb_boost").parameters,
             )
             self.assertEqual(
                 exported_e_boost.parameters,

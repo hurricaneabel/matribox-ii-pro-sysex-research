@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 6
+CATALOG_VERSION = 7
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -543,6 +543,70 @@ COMP3_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
 )
 
 
+
+
+def _four_control_boost_parameter_seeds(
+    *,
+    evidence: str,
+) -> tuple[dict[str, Any], ...]:
+    """Cria os quatro controles contínuos compartilhados pelos boosts DYN."""
+
+    return tuple(
+        {
+            "key": key,
+            "name": name,
+            "display_order": display_order,
+            "value_type": "integer",
+            "range": {
+                "minimum": 0,
+                "maximum": 100,
+                "step": 1,
+            },
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "range_validated": [0, 100],
+                "internal_slots_observed": [1, 2],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "multiple_parameters": True,
+                "physical_fixture_count": 32,
+                "evidence": evidence,
+                "monitor_integration_physical_validation": "pending",
+            },
+        }
+        for display_order, (key, name, selector) in enumerate(
+            (
+                ("gain", "GAIN", 0),
+                ("volume", "VOLUME", 1),
+                ("bass", "BASS", 2),
+                ("treble", "TREBLE", 3),
+            ),
+            start=1,
+        )
+    )
+
+
+AC_BOOST_PARAMETER_SEEDS = _four_control_boost_parameter_seeds(
+    evidence="docs/phases/DYN_AC_BB_BOOST_PARAMETERS_PHASE29.md",
+)
+BB_BOOST_PARAMETER_SEEDS = _four_control_boost_parameter_seeds(
+    evidence="docs/phases/DYN_AC_BB_BOOST_PARAMETERS_PHASE29.md",
+)
+
+
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
     {
         "key": "gain",
@@ -805,6 +869,14 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "dyn.comp3" and not parameters:
         parameters = list(COMP3_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.ac_boost" and not parameters:
+        parameters = list(AC_BOOST_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.bb_boost" and not parameters:
+        parameters = list(BB_BOOST_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.e_boost" and not parameters:

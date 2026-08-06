@@ -6,8 +6,10 @@
 > **Marco consolidado:** Fase 28 — DYN / COMP3 com sete parâmetros,
 > aprovado offline e fisicamente com duas instâncias simultâneas e estados
 > independentes
-> **Próxima pesquisa:** Fase 29 — integração conjunta de AC-BOOST e BB-BOOST;
-> AC SIM reservado para fase própria por possuir o parâmetro categórico MODE
+> **Trabalho candidato:** Fase 29 — AC-BOOST e BB-BOOST integrados e aprovados
+> offline; validação no monitor principal ainda pendente
+> **Próxima pesquisa:** AC SIM reservado para fase própria por possuir o
+> parâmetro categórico MODE
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/dyn-parameters`
 
@@ -334,6 +336,8 @@ tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
 tests/fixtures/comp2_parameters/
 tests/fixtures/comp3_parameters/
+tests/fixtures/ac_boost_parameters/
+tests/fixtures/bb_boost_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -364,10 +368,10 @@ A equivalência foi comprovada contra um snapshot anterior à migração:
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC WOODY e GATE 1 são os sete
-efeitos com parâmetros preenchidos no catálogo atual. Os outros 260 efeitos
-permanecem explicitamente `pending`,
-sem parâmetros presumidos.
+M-BOOST, COMP1, COMP2, COMP3, AC-BOOST, BB-BOOST, E-BOOST, AC WOODY e
+GATE 1 são os nove efeitos com parâmetros preenchidos no catálogo atual. Os
+outros 258 efeitos permanecem explicitamente `pending`, sem parâmetros
+presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
 
@@ -781,12 +785,12 @@ instâncias simultâneas com estados separados. A primeira manteve
 `25, 8, 30, 26, 24, 30, 33`.
 
 
-## 11. Estado de validação no marco atual
+## 11. Estado de validação no trabalho atual
 
-Suíte completa da Fase 28 consolidada:
+Suíte completa candidata da Fase 29:
 
 ```text
-Ran 376 tests
+Ran 382 tests
 OK
 ```
 
@@ -796,6 +800,8 @@ Validação offline aprovada:
 - 22 fixtures físicas do COMP1;
 - 49 fixtures físicas únicas do COMP2;
 - 84 fixtures físicas únicas do COMP3;
+- 32 fixtures físicas únicas do AC-BOOST;
+- 32 fixtures físicas únicas do BB-BOOST;
 - 19 fixtures físicas únicas do E-BOOST;
 - 11 fixtures físicas únicas do AC WOODY;
 - 11 fixtures físicas únicas do GATE 1;
@@ -814,7 +820,9 @@ Validação offline aprovada:
 - apresentação do COMP1 na ordem SUSTAIN, VOLUME;
 - apresentação do COMP2 na ordem SUSTAIN, ATTACK, VOLUME, CLIPPING;
 - apresentação do COMP3 na ordem THRESHOLD, RATIO, VOLUME, ATTACK, RELEASE,
-  TONE, BLEND.
+  TONE, BLEND;
+- apresentação de AC-BOOST e BB-BOOST na ordem GAIN, VOLUME, BASS, TREBLE;
+- atualização simulada independente dos quatro parâmetros dos dois boosts.
 
 Validação física aprovada:
 
@@ -891,6 +899,8 @@ tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
 tests/fixtures/comp2_parameters/
 tests/fixtures/comp3_parameters/
+tests/fixtures/ac_boost_parameters/
+tests/fixtures/bb_boost_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -917,8 +927,9 @@ tests/fixtures/gate1_parameters/
   atual no slot interno.
 - Seletores podem se repetir entre efeitos diferentes: seletor `0` significa
   GAIN no M-BOOST, SUSTAIN no COMP1, SUSTAIN no COMP2, THRESHOLD no COMP3,
-  GAIN no E-BOOST, SHAPE no AC WOODY e THRESHOLD no GATE 1. Os seletores
-  `1` a `6` também podem ter significados diferentes conforme o efeito.
+  GAIN no E-BOOST, GAIN no AC-BOOST, GAIN no BB-BOOST, SHAPE no AC WOODY
+  e THRESHOLD no GATE 1. Os seletores `1` a `6` também podem ter significados
+  diferentes conforme o efeito.
 - Booleanos do protocolo devem continuar restritos aos valores físicos `0/1`;
   não aceitar outros números como verdadeiros.
 - O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
@@ -933,13 +944,14 @@ tests/fixtures/gate1_parameters/
 ## 13. Próximos passos recomendados
 
 1. permanecer em `research/dyn-parameters`;
-2. repetir os 376 testes, `compileall` e `git diff --check`;
-3. revisar o escopo do `git add` para conter apenas a Fase 28 e esta aprovação;
-4. criar o commit estável do COMP3 e enviar a branch de pesquisa;
-5. promover o mesmo commit por fast-forward à `main`;
-6. manter as capturas de AC-BOOST, BB-BOOST e AC SIM fora do commit;
-7. iniciar a Fase 29 com AC-BOOST e BB-BOOST juntos;
-8. reservar o AC SIM para fase própria, porque MODE exige suporte genérico a
+2. aplicar o pacote candidato da Fase 29;
+3. repetir os 382 testes, `compileall` e `git diff --check`;
+4. validar AC-BOOST e BB-BOOST no monitor principal;
+5. confirmar valores independentes, duas instâncias e mudança de posição;
+6. atualizar a documentação com o log físico aprovado;
+7. criar o commit estável da Fase 29 e promovê-lo por fast-forward à `main`;
+8. manter as capturas do AC SIM fora desse commit;
+9. reservar o AC SIM para fase própria, porque MODE exige suporte genérico a
    valores categóricos e rótulos portáteis no catálogo.
 
 A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
@@ -949,13 +961,13 @@ sem conhecer offsets, nibbles ou detalhes MIDI.
 
 ```text
 [x] A funcionalidade foi validada offline.
-[x] A funcionalidade MIDI foi validada fisicamente, quando aplicável.
+[x] A integração da Fase 29 foi validada fisicamente no monitor principal.
 [x] A suíte unittest completa passou.
 [x] python -m compileall tools tests passou.
 [x] git diff --check passou.
 [x] docs/PROJECT_CONTINUITY.md foi atualizado.
 [x] README.md foi atualizado se o uso público mudou.
-[ ] O escopo do git add foi revisado; arquivos locais não relacionados ficaram fora.
+[ ] O escopo do git add ainda deve ser revisado; arquivos locais não relacionados devem ficar fora.
 [ ] O commit será feito na branch de pesquisa correta e só depois promovido à main.
 ```
 
@@ -1034,3 +1046,81 @@ Limitações preservadas:
 6. iniciar a Fase 29 com AC-BOOST e BB-BOOST;
 7. capturar o AC SIM com MODE separado e tratá-lo em fase posterior com suporte
    categórico genérico.
+
+## 16. Atualização atual — Fase 29 candidata: AC-BOOST e BB-BOOST
+
+A implementação candidata da Fase 29 foi preparada sobre a Fase 28
+fisicamente aprovada.
+
+Parâmetros adicionados aos dois efeitos:
+
+```text
+GAIN    → seletor 0, inteiro 0–100
+VOLUME  → seletor 1, inteiro 0–100
+BASS    → seletor 2, inteiro 0–100
+TREBLE  → seletor 3, inteiro 0–100
+```
+
+Evidências físicas preservadas:
+
+```text
+AC-BOOST → 32 fixtures, slots humanos 1 e 2
+BB-BOOST → 32 fixtures, slots humanos 1 e 2
+```
+
+Cada efeito possui seis capturas controladas: quatro individuais, uma
+combinada com valores exclusivos e uma validação curta no slot 2. As respostas
+auxiliares de 54 bytes continuam ignoradas. No BB-BOOST, o evento extra
+`VOLUME = 50` foi documentado sem duplicar o mesmo estado físico.
+
+Estado arquitetural:
+
+- nenhum parser, codec ou perfil específico foi criado;
+- ambos reutilizam `effect_parameter_response_1c_v1`;
+- ambos reutilizam `upper_float32_nibbles_v1`;
+- o efeito é resolvido pela cadeia atual do slot;
+- o monitor lê ordem, nomes e faixas diretamente do JSON;
+- `catalog_version` está em 7;
+- nove efeitos DYN e 27 parâmetros estão catalogados;
+- 258 efeitos permanecem pendentes.
+
+Validação offline candidata:
+
+```text
+Ran 382 tests
+OK
+```
+
+Também passaram `python -m compileall tools tests`, a validação dos arquivos
+JSON e a reprodução dos parâmetros pelo exportador do catálogo.
+
+Estado físico consolidado:
+
+```text
+AC-BOOST
+GAIN 33 | VOLUME 54 | BASS 43 | TREBLE 58
+
+BB-BOOST
+GAIN 26 | VOLUME 43 | BASS 66 | TREBLE 30
+```
+
+O monitor apresentou os dois efeitos simultaneamente, atualizou os quatro
+parâmetros de cada um sem colisão e preservou os valores do outro efeito. O
+bypass independente de AC-BOOST e BB-BOOST também foi acompanhado sem perda do
+estado dos parâmetros.
+
+O log final não inclui duas instâncias do mesmo boost nem uma troca explícita
+de posição visual. As capturas físicas nos slots humanos 1 e 2 e a coexistência
+sem colisões sustentam a aprovação da fase, preservando essa observação como
+limitação do teste final.
+
+### Próximo passo exato
+
+1. aplicar `matribox_phase29_physical_approval_docs.zip`;
+2. executar novamente os 382 testes, `compileall` e `git diff --check`;
+3. revisar o escopo do `git add` e manter capturas futuras fora do commit;
+4. criar o commit `feat: add AC-BOOST and BB-BOOST parameters`;
+5. enviar `research/dyn-parameters`;
+6. promover por fast-forward à `main`;
+7. iniciar fase própria para AC SIM, incluindo suporte genérico a valores
+   categóricos nomeados no parâmetro `MODE`.

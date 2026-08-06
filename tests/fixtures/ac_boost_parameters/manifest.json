@@ -1,0 +1,606 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.ac_boost",
+    "name": "AC-BOOST",
+    "model_id": 10,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa o model_id do efeito."
+    }
+  },
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "bass",
+      "name": "BASS",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "treble",
+      "name": "TREBLE",
+      "selector": 3,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "acboost_gain_cap.pcapng",
+    "acboost_volume_cap.pcapng",
+    "acboost_bass_cap.pcapng",
+    "acboost_treble_cap.pcapng",
+    "acboost_unique_values_and_back.pcapng",
+    "acboost_short_validation.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "acboost_unique_values_and_back.pcapng",
+    "sequence": [
+      "gain_51",
+      "volume_52",
+      "bass_53",
+      "treble_54",
+      "gain_50",
+      "volume_50",
+      "bass_50",
+      "treble_50"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "slot2_validation": {
+    "source": "acboost_short_validation.pcapng",
+    "sequence": [
+      "gain_51",
+      "gain_50",
+      "volume_52",
+      "volume_50",
+      "bass_53",
+      "bass_50",
+      "treble_54",
+      "treble_50"
+    ],
+    "result": "same_selectors_and_codec_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "A captura de GAIN também continha uma resposta auxiliar de 54 bytes, ignorada pelo parser de parâmetros.",
+    "A validação curta do slot 2 também continha uma resposta auxiliar de 54 bytes."
+  ],
+  "physical_binary_fixtures": 32,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_gain_000.bin",
+      "source": "acboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "66169c8dfca1b11d82040bca2594ed6d4e254ce73062874003701f88025dd669"
+    },
+    {
+      "file": "slot1_gain_001.bin",
+      "source": "acboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "9ca4a26ae5c0f7a7a8c1eeb2cce1bc97cfdf222e74fb7136a941e61ea1200a20"
+    },
+    {
+      "file": "slot1_gain_050.bin",
+      "source": "acboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "a96b6a0fb00be2c011ce8edc1ac9fd337dec9ca1b86227ce7165b27ed76df74d"
+    },
+    {
+      "file": "slot1_gain_051.bin",
+      "source": "acboost_unique_values_and_back.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "6da546b83b3e500e13a8d13d59c6f5aa5c3c121ffce9d80ccfdf9c97d4b463f6"
+    },
+    {
+      "file": "slot1_gain_099.bin",
+      "source": "acboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "22465b8bd3bb0064e4a72a5e694066db43a7cf2f53ad3a7368b83433ff55d426"
+    },
+    {
+      "file": "slot1_gain_100.bin",
+      "source": "acboost_gain_cap.pcapng",
+      "slot": 1,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "f38d7301c804c5bb3790d0e35e44f5c980e47e5c0eacb5dbedabd73a8f264f66"
+    },
+    {
+      "file": "slot1_volume_000.bin",
+      "source": "acboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "920f7433e8bf70716d95f7713232cb254bcbdb8e13743b67afc522be3fe99753"
+    },
+    {
+      "file": "slot1_volume_001.bin",
+      "source": "acboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "7b16ed7e5c584cf389e6317f486870963efa70478d3469a1b576509c305ef904"
+    },
+    {
+      "file": "slot1_volume_050.bin",
+      "source": "acboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "22d81fe5c2575536d2b5058320cebe42574d116a4b8cdd0d60ab0811567f3d83"
+    },
+    {
+      "file": "slot1_volume_052.bin",
+      "source": "acboost_unique_values_and_back.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "bfd5ae6cb02447d11266b843b2b7e92a5588496fff97a8d4d8827a292381ecb6"
+    },
+    {
+      "file": "slot1_volume_099.bin",
+      "source": "acboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "be02a9ae470b975709441042121f3daeae84d44ff3cda8c73493b66bdb4e1bec"
+    },
+    {
+      "file": "slot1_volume_100.bin",
+      "source": "acboost_volume_cap.pcapng",
+      "slot": 1,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "b4ac9c27f707e934371cd0f194f2f2a6535e10bb40c1d99540c5f0cd1ba426d5"
+    },
+    {
+      "file": "slot1_bass_000.bin",
+      "source": "acboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "bc59dd5b9cd368c24ed9ea6f9a14206d80ac944bb60faf85ac13759c2b16b2c0"
+    },
+    {
+      "file": "slot1_bass_001.bin",
+      "source": "acboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "fced9cd814866c7f15c773a7ceafb3e6e8ff710be36ed61858b1cc898cfa6a4d"
+    },
+    {
+      "file": "slot1_bass_050.bin",
+      "source": "acboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "b13e8d8df06231ae8cd8ca525d592b1c1a046949fca1df653e9fdcbaa7128f28"
+    },
+    {
+      "file": "slot1_bass_053.bin",
+      "source": "acboost_unique_values_and_back.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "15ea71c3e42eac9c5f39c9df877fb740dbbb835d0972f0a07376b45cfc095b98"
+    },
+    {
+      "file": "slot1_bass_099.bin",
+      "source": "acboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "5d035751f163c5ca140b1f3d421ad49702c004e2ed5fa85fbd837c4313b088f2"
+    },
+    {
+      "file": "slot1_bass_100.bin",
+      "source": "acboost_bass_cap.pcapng",
+      "slot": 1,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "4372da02b04d528a84e56556af45cb237585f1d72779b56e95b92591af3274e3"
+    },
+    {
+      "file": "slot1_treble_000.bin",
+      "source": "acboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d803002e173843971bdaa0c857bdf314ddbdf09bc3ede527718af2e5dced0c77"
+    },
+    {
+      "file": "slot1_treble_001.bin",
+      "source": "acboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "b104351ac2fbf1b63ee23704197f8673dcc667e4bf543a6bb5c0539b36409a2b"
+    },
+    {
+      "file": "slot1_treble_050.bin",
+      "source": "acboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "b86afde13f1c4d7756efeca8189fe4d58675125555bab6945ca482cbd45b98a7"
+    },
+    {
+      "file": "slot1_treble_054.bin",
+      "source": "acboost_unique_values_and_back.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d0b82fadce17517c421b918d469f37a4fb2a925d934e2f5e329bba61907d9343"
+    },
+    {
+      "file": "slot1_treble_099.bin",
+      "source": "acboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "98f2f24fc7cd72f2d6321507ec4bdbae708773280085f45c660e6929c2826af4"
+    },
+    {
+      "file": "slot1_treble_100.bin",
+      "source": "acboost_treble_cap.pcapng",
+      "slot": 1,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d1559371a90c833a7d989a789d3318f4910a14da0bd0c14f7b7d121cdb106364"
+    },
+    {
+      "file": "slot2_gain_050.bin",
+      "source": "acboost_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "ea7fa92b250b1854669b43634b7516708fa994c4cb9c13fafc408f92d93e480c"
+    },
+    {
+      "file": "slot2_gain_051.bin",
+      "source": "acboost_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "gain",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "a3130f6f4724cf571ca12d759d9201842556333f46cb6f3fcf0df7fc5b3422c3"
+    },
+    {
+      "file": "slot2_volume_050.bin",
+      "source": "acboost_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "a868f8dab1d5302dfeb26a577bb4c1157c46e84d0629b720035b60040311190a"
+    },
+    {
+      "file": "slot2_volume_052.bin",
+      "source": "acboost_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "volume",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "6c7791e1c70de726c250dcb5af976ecddb5f44458af6a4ff9a3ec2e33ec507b2"
+    },
+    {
+      "file": "slot2_bass_050.bin",
+      "source": "acboost_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "a86fa5bc66716120b37c1d14f61bfc4cc684f7cec5b199cae0fd0854989dd504"
+    },
+    {
+      "file": "slot2_bass_053.bin",
+      "source": "acboost_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "bass",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "e8103069cdb73c02cbe8280262121f705efa93c74f011806f4b82db8eff4f53d"
+    },
+    {
+      "file": "slot2_treble_050.bin",
+      "source": "acboost_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "4d1193d249e7d4771ac5fbf8b457dc5e2bb34d08484f5508dd509551d0d78428"
+    },
+    {
+      "file": "slot2_treble_054.bin",
+      "source": "acboost_short_validation.pcapng",
+      "slot": 2,
+      "parameter": "treble",
+      "selector": 3,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "4ddad5d2689b94be0fa8453e5951b44f929803b386a1e8e472b8798ed9912c5e"
+    }
+  ]
+}

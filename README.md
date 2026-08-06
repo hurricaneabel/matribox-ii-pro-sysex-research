@@ -121,6 +121,24 @@ aprovada fisicamente no monitor principal com os sete controles independentes,
 duas instâncias simultâneas com estados separados e coexistência com efeitos
 DYN e de outras classes.
 
+A Fase 29 acrescenta os quatro controles contínuos de `DYN / AC-BOOST` e
+`DYN / BB-BOOST`:
+
+```text
+GAIN    → inteiro 0–100, seletor 0
+VOLUME  → inteiro 0–100, seletor 1
+BASS    → inteiro 0–100, seletor 2
+TREBLE  → inteiro 0–100, seletor 3
+```
+
+Doze capturas controladas confirmaram a mesma estrutura nos slots internos
+humanos 1 e 2. Foram preservadas 32 respostas SysEx únicas por efeito. O
+monitor continua inteiramente orientado pelo catálogo, sem parser específico
+para cada boost. A integração passou com 382 testes e foi aprovada fisicamente no monitor
+principal. AC-BOOST e BB-BOOST atualizaram os quatro controles de forma
+independente enquanto coexistiam na mesma cadeia. Os estados ligado/desligado
+também foram acompanhados sem perda dos valores já observados.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell

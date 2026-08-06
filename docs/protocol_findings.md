@@ -1328,3 +1328,36 @@ Foram preservadas 84 respostas físicas em
 `tests/fixtures/comp3_parameters/`. A identidade do efeito continua vindo da
 cadeia atual do slot; a mensagem `0x1C` isolada não diferencia COMP3 dos demais
 efeitos DYN que reutilizam os mesmos endereços e seletores.
+
+## Fase 29 — AC-BOOST e BB-BOOST com quatro seletores contínuos
+
+As doze capturas controladas confirmaram que `DYN / AC-BOOST` e
+`DYN / BB-BOOST` compartilham a mesma definição de parâmetros:
+
+```text
+GAIN    = seletor 0
+VOLUME  = seletor 1
+BASS    = seletor 2
+TREBLE  = seletor 3
+```
+
+Todos são inteiros de `0` a `100`, passo `1`, e reutilizam
+`effect_parameter_response_1c_v1` e `upper_float32_nibbles_v1`. O marcador e
+tipo permanecem `01 01`; o endereço opaco observado permanece `01 04`.
+
+As capturas individuais usaram os pontos `0`, `1`, `50`, `99` e `100`. As
+capturas combinadas distinguiram os quatro parâmetros com `51`, `52`, `53` e
+`54`, e a validação curta reproduziu os mesmos seletores no slot interno humano
+2.
+
+Foram preservadas 32 respostas físicas por efeito em:
+
+```text
+tests/fixtures/ac_boost_parameters/
+tests/fixtures/bb_boost_parameters/
+```
+
+A identidade continua vindo da cadeia atual. Uma mensagem `0x1C` com seletor
+`0`, por exemplo, não permite distinguir GAIN de AC-BOOST, GAIN de BB-BOOST,
+THRESHOLD de COMP3, SUSTAIN de COMP2 ou outros parâmetros sem o efeito real do
+slot.
