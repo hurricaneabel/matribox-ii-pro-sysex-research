@@ -30,6 +30,7 @@ BB_BOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "bb_boost_parameter
 RC_BOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "rc_boost_parameters"
 FAT_BOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "fat_boost_parameters"
 GATE2_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate2_parameters"
+GATE3_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate3_parameters"
 AC_SIM_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_sim_parameters"
 EBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "e_boost_parameters"
 AC_WOODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_woody_parameters"
@@ -1079,6 +1080,128 @@ class EBoostEvidenceManifestTests(unittest.TestCase):
         self.assertEqual(
             manifest["combination_capture_validation"]["result"],
             "independent_messages_per_parameter",
+        )
+
+
+class Gate3TimeParameterTests(unittest.TestCase):
+    def test_all_physical_gate3_fixtures_decode_full_float32(self) -> None:
+        fixtures = sorted(GATE3_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 58)
+        manifest = json.loads(
+            (GATE3_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        expected = {item["file"]: item for item in manifest["fixtures"]}
+        observed_slots = set()
+        observed_parameters = set()
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(), effect_key="dyn.gate_3"
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                item = expected[fixture.name]
+                observed_slots.add(event.human_slot)
+                observed_parameters.add(event.parameter_key)
+                self.assertEqual(event.human_slot, item["slot"])
+                self.assertEqual(event.parameter_key, item["parameter"])
+                self.assertEqual(event.value, item["value"])
+                self.assertEqual(event.value_codec, "float32_nibbles_v1")
+                self.assertEqual(len(event.encoded_value), 8)
+        self.assertEqual(observed_slots, {1, 2})
+        self.assertEqual(
+            observed_parameters,
+            {"threshold", "ratio", "attack", "release", "hold"},
+        )
+
+    def test_release_preserves_lower_float_nibbles(self) -> None:
+        for filename, expected in (
+            ("slot1_release_05001.bin", 5001),
+            ("slot2_release_05037.bin", 5037),
+            ("slot2_release_06037.bin", 6037),
+        ):
+            with self.subTest(fixture=filename):
+                event = parse_effect_parameter_response(
+                    (GATE3_FIXTURE_ROOT / filename).read_bytes(),
+                    effect_key="dyn.gate_3",
+                )
+                assert event is not None
+                self.assertEqual(event.value, expected)
+
+    def test_duration_display_switches_from_ms_to_seconds(self) -> None:
+        cases = (
+            ("slot1_release_00900.bin", "900 ms"),
+            ("slot1_release_01000.bin", "1,0 s"),
+            ("slot1_release_05000.bin", "5,0 s"),
+            ("slot2_release_05037.bin", "5,0 s"),
+            ("slot1_release_10000.bin", "10,0 s"),
+            ("slot1_hold_00999.bin", "999 ms"),
+            ("slot1_hold_01000.bin", "1,0 s"),
+        )
+        for filename, display in cases:
+            with self.subTest(fixture=filename):
+                event = parse_effect_parameter_response(
+                    (GATE3_FIXTURE_ROOT / filename).read_bytes(),
+                    effect_key="dyn.gate_3",
+                )
+                assert event is not None
+                self.assertEqual(event.display_value, display)
+
+    def test_monitor_lists_and_updates_gate3_in_catalog_order(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="dyn.gate_3"))
+        snapshot = core.snapshot
+        assert snapshot is not None
+        self.assertEqual(
+            tuple(parameter.name for parameter in snapshot.effects[0].parameters),
+            ("THRESHOLD", "RATIO", "ATTACK", "RELEASE", "HOLD"),
+        )
+        for filename in (
+            "slot2_threshold_00051.bin",
+            "slot2_ratio_00051.bin",
+            "slot2_attack_00300.bin",
+            "slot2_release_05037.bin",
+            "slot2_hold_00600.bin",
+        ):
+            update = core.feed((GATE3_FIXTURE_ROOT / filename).read_bytes())
+            self.assertIsNotNone(update.parameter_event)
+        assert update.snapshot is not None
+        self.assertEqual(
+            tuple(parameter.value for parameter in update.snapshot.effects[0].parameters),
+            (51, 51, 300, 5037, 600),
+        )
+        formatted = format_monitor_snapshot(update.snapshot)
+        self.assertIn("THRESHOLD: 51", formatted)
+        self.assertIn("RATIO: 51", formatted)
+        self.assertIn("ATTACK: 300 ms", formatted)
+        self.assertIn("RELEASE: 5,0 s", formatted)
+        self.assertIn("HOLD: 600 ms", formatted)
+
+    def test_full_value_payload_rejects_non_nibble_lower_part(self) -> None:
+        message = bytearray(
+            (GATE3_FIXTURE_ROOT / "slot1_release_05001.bin").read_bytes()
+        )
+        message[56] = 0x10
+        with self.assertRaises(EffectParameterProtocolError):
+            parse_effect_parameter_response(message, effect_key="dyn.gate_3")
+
+
+class Phase32EvidenceManifestTests(unittest.TestCase):
+    def test_manifest_preserves_full_float_and_corrected_slot2_evidence(self) -> None:
+        manifest = json.loads(
+            (GATE3_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["physical_binary_fixtures"], 58)
+        self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+        self.assertEqual(
+            manifest["protocol"]["value_indices"],
+            [55, 56, 57, 58, 59, 60, 61, 62],
+        )
+        self.assertEqual(
+            manifest["corrected_slot2_validation"]["result"],
+            "same_selectors_and_full_float32_codec_on_internal_slot_2",
+        )
+        self.assertTrue(
+            any("5037" in note for note in manifest["capture_observations"])
         )
 
 

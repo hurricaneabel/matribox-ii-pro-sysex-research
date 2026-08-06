@@ -183,6 +183,33 @@ independentes. O AC SIM coexistiu com RC-BOOST e FAT BOOST sem colisões. O
 log final não inclui duas instâncias simultâneas do AC SIM, reordenação ou
 bypass explícito; essa limitação de cobertura permanece documentada.
 
+A Fase 32 acrescenta o `DYN / GATE 3` e o primeiro codec que reconstrói o
+`float32` completo transmitido pelo comando `0x1C`:
+
+```text
+THRESHOLD → inteiro 0–100, seletor 0
+RATIO     → inteiro 0–100, seletor 1
+ATTACK    → 1–500 ms, seletor 2
+RELEASE   → 10–10000 ms, seletor 3
+HOLD      → 0–1000 ms, seletor 4
+```
+
+O payload físico ocupa oito nibbles nos índices `55–62`. O novo codec
+`float32_nibbles_v1` preserva valores como `5001`, `5037` e `6037`, que seriam
+arredondados incorretamente pelo codec histórico de quatro nibbles. O monitor
+continua genérico e apresenta tempos abaixo de `1000 ms` em milissegundos; a
+partir desse limite, converte para segundos com uma casa decimal, como
+`RELEASE: 5,0 s`. Foram preservadas 58 fixtures físicas dos slots humanos 1 e
+2. A integração passou com 401 testes offline e foi aprovada fisicamente no
+monitor principal. O log confirmou valores contínuos de THRESHOLD e RATIO,
+ATTACK em milissegundos, RELEASE atravessando a apresentação entre `ms` e `s`,
+HOLD chegando a `1,0 s`, coexistência com os demais modelos DYN e isolamento
+entre duas instâncias de GATE 3.
+
+Com essa aprovação, os **14 modelos da classe DYN** e seus **47 parâmetros**
+estão catalogados e validados. DYN é a primeira classe de efeitos concluída
+integralmente no projeto.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell
@@ -560,20 +587,12 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-A Fase 23B implementou e validou fisicamente o motor genérico de parâmetros
-orientado pelo catálogo JSON. A próxima frente será conduzida na branch
-`research/dyn-parameters`, mantendo a `main` como marco estável.
+A classe DYN foi encerrada com a aprovação física da Fase 32. O próximo passo é
+consolidar o commit final da branch `research/dyn-parameters`, promovê-lo por
+fast-forward à `main` e somente então escolher a próxima classe de efeitos.
 
-A catalogação seguirá por dados, sem criar novos parsers específicos:
-
-1. capturar o próximo efeito da classe DYN;
-2. identificar cada parâmetro e seu `message_match`;
-3. reutilizar o perfil e o codec existentes quando as capturas comprovarem
-   equivalência, ou cadastrar novos perfis/codecs quando necessário;
-4. validar múltiplas instâncias e slots;
-5. repetir até concluir DYN e depois iniciar FREQ.
-
-Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
+A próxima classe deverá usar uma branch de pesquisa própria. Importação de IR e
+CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats
 

@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 9)
+        self.assertEqual(self.catalog.catalog_version, 10)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -317,6 +317,35 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(parameter.validation["physical_fixture_count"], 23)
 
 
+    def test_gate3_has_full_float_and_time_parameters(self) -> None:
+        gate3 = self.catalog.effect_by_key("dyn.gate_3")
+        self.assertEqual(gate3.name, "GATE 3")
+        self.assertEqual(gate3.model_id, 0x21)
+        self.assertEqual(gate3.secondary_selector, 0x00)
+        self.assertEqual(gate3.parameter_catalog_status, "physically_validated")
+        self.assertEqual(gate3.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in gate3.parameters),
+            ("threshold", "ratio", "attack", "release", "hold"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in gate3.parameters),
+            (0, 1, 2, 3, 4),
+        )
+        self.assertEqual(
+            tuple((parameter.minimum, parameter.maximum, parameter.step) for parameter in gate3.parameters),
+            ((0, 100, 1), (0, 100, 1), (1, 500, 1), (10, 10000, 1), (0, 1000, 1)),
+        )
+        for parameter in gate3.parameters:
+            self.assertEqual(parameter.value_codec, "float32_nibbles_v1")
+            self.assertEqual(parameter.validation["physical_fixture_count"], 58)
+        for parameter in gate3.parameters[2:]:
+            self.assertEqual(parameter.unit, "ms")
+            self.assertEqual(parameter.display["kind"], "duration_milliseconds")
+            self.assertEqual(parameter.display["seconds_threshold"], 1000)
+            self.assertEqual(parameter.display["seconds_decimals"], 1)
+            self.assertEqual(parameter.display["decimal_separator"], ",")
+
     def test_ac_sim_has_named_enum_mode(self) -> None:
         ac_sim = self.catalog.effect_by_key("dyn.ac_sim")
         self.assertEqual(ac_sim.name, "AC SIM")
@@ -450,13 +479,14 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "dyn.rc_boost",
                 "dyn.fat_boost",
                 "dyn.gate_2",
+                "dyn.gate_3",
                 "dyn.ac_sim",
                 "dyn.e_boost",
                 "dyn.ac_woody",
                 "dyn.gate_1",
             }
         ]
-        self.assertEqual(len(pending), 254)
+        self.assertEqual(len(pending), 253)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -467,6 +497,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         codecs = {item.key: item for item in self.catalog.value_codecs}
         profile = profiles["effect_parameter_response_1c_v1"].document
         codec = codecs["upper_float32_nibbles_v1"].document
+        full_codec = codecs["float32_nibbles_v1"].document
 
         self.assertEqual(profile["command"], 0x1C)
         self.assertEqual(profile["message_length"], 70)
@@ -474,10 +505,13 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         self.assertEqual(profile["fields"]["parameter_selector"]["index"], 48)
         self.assertEqual(profile["fields"]["parameter_address"]["indices"], [21, 22])
         self.assertNotIn("model_id", profile["fields"])
-        self.assertEqual(profile["fields"]["value"]["start_index"], 59)
+        self.assertEqual(profile["fields"]["value"]["start_index"], 55)
         self.assertEqual(profile["fields"]["value"]["end_index_exclusive"], 63)
         self.assertEqual(codec["encoded_length"], 4)
         self.assertEqual(codec["configuration"]["lower_bytes"], [0, 0])
+        self.assertEqual(codec["configuration"]["input_slice"], [4, 8])
+        self.assertEqual(full_codec["encoded_length"], 8)
+        self.assertEqual(full_codec["kind"], "float32_as_nibbles")
 
     def test_historical_facade_is_backwards_compatible(self) -> None:
         self.assertIs(facade.EFFECT_CLASSES, self.catalog.classes)
@@ -513,6 +547,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_rc_boost = exported.effect_by_key("dyn.rc_boost")
             exported_fat_boost = exported.effect_by_key("dyn.fat_boost")
             exported_gate2 = exported.effect_by_key("dyn.gate_2")
+            exported_gate3 = exported.effect_by_key("dyn.gate_3")
             exported_e_boost = exported.effect_by_key("dyn.e_boost")
             exported_ac_woody = exported.effect_by_key("dyn.ac_woody")
             exported_gate1 = exported.effect_by_key("dyn.gate_1")
@@ -551,6 +586,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_gate2.parameters,
                 self.catalog.effect_by_key("dyn.gate_2").parameters,
+            )
+            self.assertEqual(
+                exported_gate3.parameters,
+                self.catalog.effect_by_key("dyn.gate_3").parameters,
             )
             self.assertEqual(
                 exported_e_boost.parameters,

@@ -3,13 +3,13 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 31 — AC SIM e MODE enum aprovados offline e
-> fisicamente, prontos para commit e promoção à `main`
-> **Trabalho candidato:** nenhum código adicional além da Fase 31 aprovada
-> **Próxima pesquisa:** Fase 32 — GATE 3 e parâmetros temporais em
-> milissegundos/segundos
+> **Marco consolidado:** Fase 32 — GATE 3 aprovado offline e fisicamente;
+> classe DYN concluída com 14 modelos e 47 parâmetros
+> **Trabalho candidato:** nenhum
+> **Próximo passo:** consolidar o commit final da classe DYN, promover por
+> fast-forward à `main` e abrir uma nova branch para a próxima classe
 > **Branch estável:** `main`
-> **Branch de pesquisa atual:** `research/dyn-parameters`
+> **Branch de pesquisa atual:** `research/dyn-parameters` até a consolidação
 
 ## 1. Como usar este documento
 
@@ -88,10 +88,13 @@ O estado atual já permite:
   ambos inteiros de 0 a 100;
 - reconhecer `BODY`, `TOP`, `VOLUME` e o `MODE` enum nomeado do `DYN / AC SIM`,
   convertendo 0–3 para STANDARD/JUMBO/ENHANCED/PIEZO pelo catálogo;
+- decodificar `THRESHOLD`, `RATIO`, `ATTACK`, `RELEASE` e `HOLD` do
+  `DYN / GATE 3`, preservando o float32 completo e exibindo tempos em `ms` ou
+  `s` conforme o catálogo;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e 42 parâmetros confirmados por
-  capturas em treze efeitos DYN a partir de um catálogo JSON versionado e
+- carregar as 16 classes, 267 efeitos e 47 parâmetros confirmados por
+  capturas em quatorze efeitos DYN a partir de um catálogo JSON versionado e
   independente de Python/Windows.
 
 ## 4. Programa principal atual
@@ -339,6 +342,10 @@ tests/fixtures/comp3_parameters/
 tests/fixtures/ac_boost_parameters/
 tests/fixtures/bb_boost_parameters/
 tests/fixtures/ac_sim_parameters/
+tests/fixtures/rc_boost_parameters/
+tests/fixtures/fat_boost_parameters/
+tests/fixtures/gate2_parameters/
+tests/fixtures/gate3_parameters/
 tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_woody_parameters/
 tests/fixtures/gate1_parameters/
@@ -369,10 +376,10 @@ A equivalência foi comprovada contra um snapshot anterior à migração:
 tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 ```
 
-M-BOOST, COMP1, COMP2, COMP3, AC-BOOST, BB-BOOST, E-BOOST, AC WOODY e
-GATE 1 são os nove efeitos com parâmetros preenchidos no catálogo atual. Os
-outros 258 efeitos permanecem explicitamente `pending`, sem parâmetros
-presumidos.
+M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC-BOOST, BB-BOOST, RC-BOOST,
+FAT BOOST, AC WOODY, AC SIM, GATE 1, GATE 2 e GATE 3 são os quatorze efeitos
+com parâmetros preenchidos no catálogo atual. Os outros 253 efeitos permanecem
+explicitamente `pending`, sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
 
@@ -496,9 +503,11 @@ necessário para desambiguar casos como modelos AMP distintos com o mesmo ID.
 
 O catálogo usa JSON Schema Draft 2020-12, caminhos relativos portáteis e
 versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
-futuro, por Kotlin/Android e desktop. Neste marco há 42 parâmetros fisicamente confirmados em treze efeitos DYN.
-O AC SIM é o primeiro a usar `value_type: enum`, com escolhas numéricas e
-rótulos portáteis; os demais efeitos permanecem sem dados inventados.
+futuro, por Kotlin/Android e desktop. Nesta candidata há 47 parâmetros
+fisicamente confirmados em quatorze efeitos DYN. O AC SIM é o primeiro a usar
+`value_type: enum`, com escolhas numéricas e rótulos portáteis. O GATE 3 é o
+primeiro a usar o `float32_nibbles_v1` completo e apresentação declarativa de
+tempo. Os outros 253 efeitos permanecem sem dados inventados.
 
 ## 10. Histórico consolidado das Fases 14–24
 
@@ -788,127 +797,51 @@ instâncias simultâneas com estados separados. A primeira manteve
 
 ## 11. Estado de validação no trabalho atual
 
-Suíte completa candidata da Fase 31:
+Suíte completa consolidada da classe DYN:
 
 ```text
-Ran 394 tests
+Ran 401 tests
 OK
 ```
 
-Validação offline aprovada:
+A validação offline cobre 14 efeitos DYN, 47 parâmetros e todas as fixtures
+físicas preservadas, incluindo 58 respostas do GATE 3 nos slots humanos 1 e 2.
+Também cobre o `float32` completo, compatibilidade do codec histórico, enums,
+booleanos, formatação de duração, múltiplas instâncias simuladas e resolução
+pelo contexto estrutural da cadeia.
 
-- 27 fixtures físicas do M-BOOST;
-- 22 fixtures físicas do COMP1;
-- 49 fixtures físicas únicas do COMP2;
-- 84 fixtures físicas únicas do COMP3;
-- 32 fixtures físicas únicas do AC-BOOST;
-- 32 fixtures físicas únicas do BB-BOOST;
-- 30 fixtures físicas únicas do AC SIM;
-- 19 fixtures físicas únicas do E-BOOST;
-- 11 fixtures físicas únicas do AC WOODY;
-- 11 fixtures físicas únicas do GATE 1;
-- SHAPE e THRESHOLD resolvidos pelo efeito real da cadeia;
-- SUSTAIN e VOLUME independentes no mesmo slot do COMP1;
-- SUSTAIN, ATTACK, VOLUME e CLIPPING independentes no COMP2;
-- sete parâmetros independentes no COMP3;
-- GAIN, +3dB e BRIGHT independentes no mesmo slot;
-- conversão booleana estrita `0/1 → False/True`;
-- exibição humana `desligado/ligado`;
-- resolução explícita pelo efeito real da cadeia;
-- detecção de ambiguidade quando o contexto da cadeia não é fornecido;
-- manutenção da compatibilidade com `mboost_gain.py`;
-- múltiplas instâncias com valores independentes;
-- descarte de estado antigo ao substituir efeito ou trocar preset;
-- apresentação do COMP1 na ordem SUSTAIN, VOLUME;
-- apresentação do COMP2 na ordem SUSTAIN, ATTACK, VOLUME, CLIPPING;
-- apresentação do COMP3 na ordem THRESHOLD, RATIO, VOLUME, ATTACK, RELEASE,
-  TONE, BLEND;
-- apresentação de AC-BOOST e BB-BOOST na ordem GAIN, VOLUME, BASS, TREBLE;
-- atualização simulada independente dos quatro parâmetros dos dois boosts;
-- enum MODE do AC SIM traduzido de 0–3 para STANDARD/JUMBO/ENHANCED/PIEZO;
-- rejeição de valores enum não catalogados e validação estrutural de `choices`.
+Validação física consolidada da classe DYN:
 
-Validação física aprovada:
+- todos os 14 modelos foram reconhecidos pelo monitor principal;
+- parâmetros contínuos, booleanos, enumerações e durações foram apresentados;
+- AC SIM exibiu STANDARD, JUMBO, ENHANCED e PIEZO;
+- GATE 3 preservou valores físicos completos e alternou entre `ms` e `s`;
+- o GATE 3 coexistiu com os demais modelos DYN sem colisão de seletores;
+- duas instâncias de GATE 3 apareceram simultaneamente sem contaminação de
+  estado;
+- valores permaneceram associados ao slot interno durante alterações
+  estruturais em outro slot.
 
-- inicialização, preset, metadados e cadeia;
-- mudança de ordem e bypass em tempo real;
-- M-BOOST/GAIN no validador e monitor;
-- capturas controladas do COMP1 nos slots internos 1 e 2;
-- seletores `0` para SUSTAIN e `1` para VOLUME;
-- faixa controlada 0–100;
-- COMP1 exibido no monitor principal;
-- SUSTAIN e VOLUME atualizados independentemente;
-- múltiplas instâncias de COMP1 com estados separados;
-- COMP1 e M-BOOST simultâneos sem colisão do seletor `0`;
-- preservação do estado de um COMP1 enquanto outro slot foi substituído por
-  COMP2, COMP3 e M-BOOST;
-- novo M-BOOST no slot substituído atualizando GAIN de forma independente.
+Limitação de cobertura do último log: não há evento explícito de bypass do
+GATE 3, embora o usuário tenha confirmado que a validação ocorreu sem problemas.
 
-Validação física aprovada para a Fase 25:
-
-- E-BOOST exibindo GAIN, +3dB e BRIGHT na ordem do catálogo;
-- atualização independente dos três parâmetros;
-- apresentação dos interruptores como `ligado/desligado`;
-- bypass do efeito sem corromper o estado dos parâmetros;
-- duas instâncias simultâneas mantendo estados separados;
-- uma instância com GAIN 31 e outra com GAIN 21, sem contaminação cruzada;
-- coexistência com COMP1 e efeitos de outras classes sem colisão de seletores;
-- substituições estruturais em outro slot sem atribuição ao efeito incorreto.
-
-Validação física aprovada para a Fase 26:
-
-- AC WOODY exibindo e atualizando `SHAPE`;
-- GATE 1 exibindo e atualizando `THRESHOLD`;
-- atualização independente de SHAPE e THRESHOLD;
-- duas instâncias simultâneas de AC WOODY com estados separados;
-- preservação dos valores após mudança de posição visual;
-- GATE 1 preservando THRESHOLD após mudança de ordem;
-- coexistência com COMP1, M-BOOST, E-BOOST e efeitos de outras classes;
-- ausência de colisão apesar da reutilização do seletor `0`.
-
-Validação física aprovada para a Fase 27:
-
-- COMP2 exibindo SUSTAIN, ATTACK, VOLUME e CLIPPING na ordem do catálogo;
-- atualização independente dos quatro controles no monitor principal;
-- primeira instância mantendo SUSTAIN 21, ATTACK 60, VOLUME 50 e CLIPPING 10;
-- segunda instância mantendo SUSTAIN 21, ATTACK 61, VOLUME 51 e CLIPPING 11;
-- ausência de contaminação entre duas instâncias simultâneas de COMP2;
-- coexistência com COMP1, COMP3, M-BOOST, E-BOOST, AC-BOOST e BB-BOOST;
-- ausência de colisão apesar da reutilização dos seletores `0`, `1`, `2` e `3`;
-- preservação dos valores pelo slot interno correto durante mudanças estruturais.
-
-Validação física aprovada para a Fase 28:
-
-- COMP3 exibindo THRESHOLD, RATIO, VOLUME, ATTACK, RELEASE, TONE e BLEND na
-  ordem do catálogo;
-- atualização independente dos sete controles no monitor principal;
-- primeira instância mantendo 20, 45, 66, 59, 59, 62 e 59;
-- segunda instância mantendo 25, 8, 30, 26, 24, 30 e 33;
-- ausência de contaminação entre duas instâncias simultâneas de COMP3;
-- preservação dos sete valores enquanto a cadeia recebeu efeitos DRV, FREQ,
-  EQ, MOD, DLY e RVB;
-- coexistência com COMP1 e COMP2;
-- ausência de colisão apesar da reutilização dos seletores `0` a `6`;
-- a troca explícita de posição entre as duas instâncias não aparece no log
-  fornecido, mas o isolamento por slot e a estabilidade estrutural foram
-  confirmados.
-
-Fixtures físicas de regressão:
+Fixtures físicas de regressão principais:
 
 ```text
-tests/fixtures/structural_effect_state/
-tests/fixtures/preset_dump_chain/
-tests/fixtures/effect_slot_state/
 tests/fixtures/mboost_gain/
 tests/fixtures/comp1_parameters/
 tests/fixtures/comp2_parameters/
 tests/fixtures/comp3_parameters/
+tests/fixtures/e_boost_parameters/
 tests/fixtures/ac_boost_parameters/
 tests/fixtures/bb_boost_parameters/
-tests/fixtures/ac_sim_parameters/
-tests/fixtures/e_boost_parameters/
+tests/fixtures/rc_boost_parameters/
+tests/fixtures/fat_boost_parameters/
 tests/fixtures/ac_woody_parameters/
+tests/fixtures/ac_sim_parameters/
 tests/fixtures/gate1_parameters/
+tests/fixtures/gate2_parameters/
+tests/fixtures/gate3_parameters/
 ```
 
 ## 12. Limitações e cuidados conhecidos
@@ -919,59 +852,57 @@ tests/fixtures/gate1_parameters/
 - Respostas auxiliares de 54 e 128 bytes devem continuar sendo ignoradas pelos
   parsers estruturais.
 - O byte de checksum observado em respostas imediatas de bypass não é estável
-  entre capturas fisicamente equivalentes. O parser valida os demais campos
-  fixos, slot e estado, mas não usa esse byte para rejeitar a resposta.
+  entre capturas fisicamente equivalentes.
 - Um slot interno não é a mesma coisa que sua posição visual.
 - Dados ocultos em slots fora da ordem visual não devem ser mostrados como
   efeitos ativos da cadeia.
-- Não assumir offsets no SysEx comprimido; sempre trabalhar sobre o payload
-  LZO1X descomprimido.
-- Parâmetros catalogados fazem parte do monitor estável desde a Fase 23B.
-- A mensagem `0x1C` não identifica de forma confiável o modelo do efeito. Não
-  voltar a usar os índices `21–22` como `model_id`; resolver sempre pela cadeia
-  atual no slot interno.
-- Seletores podem se repetir entre efeitos diferentes: seletor `0` significa
-  GAIN no M-BOOST, SUSTAIN no COMP1, SUSTAIN no COMP2, THRESHOLD no COMP3,
-  GAIN no E-BOOST, GAIN no AC-BOOST, GAIN no BB-BOOST, SHAPE no AC WOODY
-  e THRESHOLD no GATE 1. Os seletores `1` a `6` também podem ter significados
-  diferentes conforme o efeito.
-- Booleanos do protocolo devem continuar restritos aos valores físicos `0/1`;
-  não aceitar outros números como verdadeiros.
+- Não assumir offsets no SysEx comprimido; trabalhar sobre o payload LZO1X
+  descomprimido.
+- A mensagem `0x1C` não identifica de forma confiável o modelo do efeito;
+  resolver sempre pela cadeia atual no slot interno.
+- Seletores se repetem entre efeitos diferentes e nunca devem ser interpretados
+  sem o contexto do efeito real.
+- Booleanos continuam restritos aos valores físicos `0/1`.
 - O valor inicial do parâmetro não é lido do dump; aparece como `aguardando
   alteração` até o primeiro evento ao vivo.
-- Não criar um parser Python separado para cada parâmetro. A expansão deve usar
-  o catálogo JSON, codecs e perfis de protocolo genéricos já criados.
-- Não colocar caminhos absolutos, objetos `pickle` ou estruturas exclusivas de
-  Python no catálogo. Os arquivos atuais já obedecem essa regra.
-- Não executar novamente a exportação com dados incompletos sem revisar o diff,
-  porque o catálogo passará a receber novos parâmetros manualmente validados.
+- Tempos do GATE 3 são preservados internamente em milissegundos. A tela pode
+  arredondar `5037 ms` para `5,0 s`; não substituir o valor lógico pelo texto
+  arredondado.
+- O perfil agora expõe oito nibbles. Codecs históricos dependem de
+  `input_slice: [4, 8]`; não remover essa compatibilidade.
+- Não criar parser Python por efeito. A expansão deve continuar orientada por
+  catálogo, perfis, codecs e regras de apresentação genéricas.
+- Não colocar caminhos absolutos, `pickle` ou estruturas exclusivas de Python
+  no catálogo.
+- A captura curta antiga chamada de slot 2 era fisicamente slot 1; usar a
+  captura standalone corrigida como evidência do slot humano 2.
 
 ## 13. Próximos passos recomendados
 
-1. permanecer em `research/dyn-parameters`;
-2. aplicar o pacote candidato da Fase 31;
-3. repetir os 394 testes, `compileall` e `git diff --check`;
-4. validar BODY, TOP, VOLUME e as quatro opções de MODE no monitor principal;
-5. confirmar duas instâncias de AC SIM com estados independentes;
-6. atualizar a documentação com o log físico aprovado;
-7. criar o commit estável da Fase 31 e promovê-lo por fast-forward à `main`;
-8. manter as capturas e qualquer implementação de GATE 3 fora desse commit.
+1. aplicar a documentação final de aprovação física da Fase 32;
+2. executar os 401 testes, `compileall` e `git diff --check`;
+3. revisar o escopo preparado da Fase 32;
+4. criar o commit final na `research/dyn-parameters`;
+5. enviar a branch e promover por fast-forward à `main`;
+6. manter a classe DYN encerrada e escolher a próxima classe;
+7. criar uma nova branch de pesquisa específica para essa classe.
 
-A futura interface deve consumir `EffectParameterEvent` e as definições JSON,
-sem conhecer offsets, nibbles ou detalhes MIDI.
+A futura interface deve consumir `EffectParameterEvent`, `display_text` e as
+definições JSON sem conhecer offsets, nibbles ou detalhes MIDI.
 
 ## 14. Checklist obrigatório para o próximo commit
 
 ```text
 [x] A funcionalidade foi validada offline.
-[ ] A integração da Fase 31 ainda precisa ser validada fisicamente.
-[x] A suíte unittest completa passou: 394 testes.
+[x] A integração da Fase 32 foi validada fisicamente no monitor.
+[x] A suíte unittest completa passou: 401 testes.
 [x] python -m compileall tools tests passou.
+[x] Os JSONs e o exportador foram validados.
 [x] git diff --check passou.
 [x] docs/PROJECT_CONTINUITY.md foi atualizado.
 [x] README.md foi atualizado.
-[ ] O escopo do git add ainda deve ser revisado.
-[ ] O commit só será feito após a aprovação física.
+[ ] O escopo do git add deve ser revisado pelo usuário.
+[ ] O commit e a promoção à main devem ser executados pelo usuário.
 ```
 
 ## 15. Atualização atual — Fase 28 consolidada: DYN / COMP3
@@ -1273,13 +1204,80 @@ bypass explícito. As capturas nos slots humanos 1 e 2 e a validação ao vivo d
 todos os rótulos sustentam a aprovação, preservando essas ausências como
 limitações de cobertura.
 
+### Consolidação
+
+A Fase 31 foi aprovada fisicamente, documentada e promovida à `main`. A Fase
+32 foi iniciada separadamente na mesma branch de pesquisa, sem misturar os
+PCAPNGs brutos ao repositório.
+
+## 19. Atualização atual — Fase 32 aprovada: GATE 3 e tempos
+
+A Fase 32 acrescenta o primeiro parâmetro temporal e o primeiro codec que
+reconstrói os quatro bytes completos do valor `float32` transmitido em oito
+nibbles.
+
+```text
+THRESHOLD → seletor 0, inteiro 0–100
+RATIO     → seletor 1, inteiro 0–100
+ATTACK    → seletor 2, 1–500 ms
+RELEASE   → seletor 3, 10–10000 ms
+HOLD      → seletor 4, 0–1000 ms
+```
+
+O perfil `effect_parameter_response_1c_v1` expõe os índices `55–62`. O codec
+histórico `upper_float32_nibbles_v1` seleciona `[4, 8]`, enquanto o novo
+`float32_nibbles_v1` usa o payload completo. Isso evita regressões e preserva
+valores como `5001`, `5037` e `6037`.
+
+A apresentação `duration_milliseconds` mantém o estado em milissegundos e
+mostra valores a partir de 1000 em segundos com uma casa decimal.
+
+Evidências preservadas:
+
+```text
+58 fixtures físicas
+slot humano 1 → 48
+slot humano 2 → 10
+```
+
+Validação offline consolidada:
+
+```text
+Ran 401 tests
+OK
+```
+
+Também passaram `compileall`, leitura dos 327 arquivos JSON, reexportação do
+catálogo e `git diff --check`.
+
+Validação física consolidada:
+
+- GATE 3 exibido na ordem THRESHOLD, RATIO, ATTACK, RELEASE e HOLD;
+- THRESHOLD e RATIO preservados durante substituições do efeito no outro slot;
+- ATTACK exibido de 249 até 243 ms;
+- RELEASE exibido em segundos e milissegundos, incluindo 5,6 s, 2,0 s, 827 ms
+  e 292 ms;
+- HOLD exibido em milissegundos e em 1,0 s;
+- coexistência confirmada com RC-BOOST, FAT BOOST, BB-BOOST, AC-BOOST,
+  AC WOODY, AC SIM, GATE 1 e GATE 2;
+- duas instâncias de GATE 3 apareceram simultaneamente sem contaminação de
+  estado.
+
+O log final não contém evento explícito de bypass. Valores iniciais continuam
+aguardando o primeiro movimento, a exibição em segundos continua arredondada e
+o monitor permanece somente leitura.
+
+### Encerramento da classe DYN
+
+Com a Fase 32, os 14 modelos DYN e seus 47 parâmetros estão catalogados,
+documentados, cobertos por regressão e fisicamente aprovados. DYN é a primeira
+classe encerrada integralmente no projeto.
+
 ### Próximo passo exato
 
-1. aplicar `matribox_phase31_physical_approval_docs.zip`;
-2. executar novamente os 394 testes, `compileall` e `git diff --check`;
-3. revisar o escopo do `git add` e manter `ac sim.zip` e capturas do GATE 3
-   fora do commit;
-4. criar o commit `feat: add AC SIM enum parameters`;
-5. enviar `research/dyn-parameters`;
-6. promover por fast-forward à `main`;
-7. iniciar a Fase 32 com o GATE 3 e seus parâmetros temporais.
+1. revisar e preparar somente os arquivos da Fase 32;
+2. criar o commit final em `research/dyn-parameters`;
+3. enviar a branch ao remoto;
+4. promover por fast-forward à `main`;
+5. voltar à branch de pesquisa e confirmar a árvore limpa;
+6. escolher a próxima classe e criar uma nova branch para ela.

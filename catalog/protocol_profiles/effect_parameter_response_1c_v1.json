@@ -36,7 +36,7 @@
       "encoding": "nibble_pair"
     },
     "value": {
-      "start_index": 59,
+      "start_index": 55,
       "end_index_exclusive": 63,
       "encoding": "nibble_sequence"
     },
@@ -63,12 +63,23 @@
     }
   },
   "validation": {
-    "status": "physically_validated_for_dyn_m_boost_comp1_and_e_boost",
-    "physical_fixture_count": 68,
+    "status": "physically_validated_for_dyn_parameterized_effects_through_gate3",
+    "physical_fixture_count": 458,
     "effects_observed": [
-      "dyn.m_boost",
       "dyn.comp1",
-      "dyn.e_boost"
+      "dyn.comp2",
+      "dyn.comp3",
+      "dyn.m_boost",
+      "dyn.e_boost",
+      "dyn.ac_boost",
+      "dyn.bb_boost",
+      "dyn.rc_boost",
+      "dyn.fat_boost",
+      "dyn.ac_woody",
+      "dyn.ac_sim",
+      "dyn.gate_1",
+      "dyn.gate_2",
+      "dyn.gate_3"
     ],
     "internal_slots_observed": [
       1,
@@ -81,12 +92,24 @@
     "multiple_parameters": true,
     "visual_reordering_independent": true,
     "effect_identity_source": "current_chain",
-    "notes": "Os bytes 21–22 mantêm 01 04 no M-BOOST, COMP1 e E-BOOST; portanto não identificam o model_id do efeito. O efeito deve ser resolvido pela cadeia atual no slot interno. O E-BOOST confirmou que o mesmo codec representa inteiros 0–100 e booleanos numéricos 0/1, interpretados pelo value_type do parâmetro.",
+    "notes": "Os bytes 21–22 mantêm 01 04 entre efeitos e não identificam model_id. A Fase 32 confirmou que o valor físico ocupa oito nibbles nos índices 55–62. Codecs legados selecionam os quatro nibbles superiores; GATE 3 usa o float32 completo.",
     "multiple_value_types": true,
     "boolean_values_observed": [
       0,
       1
-    ]
+    ],
+    "full_float32_payload_indices": [
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62
+    ],
+    "full_float32_values_observed": true,
+    "time_values_in_milliseconds": true
   },
   "fixed_segments": [
     {
@@ -153,10 +176,6 @@
     {
       "start_index": 49,
       "bytes": [
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0,

@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 9
+CATALOG_VERSION = 10
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -987,6 +987,107 @@ def _write_json(path: Path, document: dict[str, Any]) -> None:
     )
 
 
+GATE3_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "threshold",
+        "name": "THRESHOLD",
+        "display_order": 1,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 0,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True, "physical": True, "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 0, "multiple_parameters": True,
+            "physical_fixture_count": 58,
+            "evidence": "docs/phases/DYN_GATE3_TIME_PARAMETERS_PHASE32.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    {
+        "key": "ratio",
+        "name": "RATIO",
+        "display_order": 2,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 1,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True, "physical": True, "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 1, "multiple_parameters": True,
+            "physical_fixture_count": 58,
+            "evidence": "docs/phases/DYN_GATE3_TIME_PARAMETERS_PHASE32.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    *(
+        {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": minimum, "maximum": maximum, "step": 1},
+            "unit": "ms",
+            "display": {
+                "kind": "duration_milliseconds",
+                "seconds_threshold": 1000,
+                "seconds_decimals": 1,
+                "decimal_separator": ",",
+            },
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True, "physical": True, "read_only": True,
+                "range_validated": [minimum, maximum],
+                "internal_slots_observed": [1, 2],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector, "multiple_parameters": True,
+                "physical_fixture_count": 58,
+                "evidence": "docs/phases/DYN_GATE3_TIME_PARAMETERS_PHASE32.md",
+                "monitor_integration_physical_validation": "pending",
+            },
+        }
+        for key, name, order, selector, minimum, maximum in (
+            ("attack", "ATTACK", 3, 2, 1, 500),
+            ("release", "RELEASE", 4, 3, 10, 10000),
+            ("hold", "HOLD", 5, 4, 0, 1000),
+        )
+    ),
+)
+
+
 def _parameter_document(parameter: ParameterDefinition) -> dict[str, Any]:
     document: dict[str, Any] = {
         "key": parameter.key,
@@ -1010,6 +1111,8 @@ def _parameter_document(parameter: ParameterDefinition) -> dict[str, Any]:
             {"value": value, "label": label}
             for value, label in parameter.choices.items()
         ]
+    if parameter.display:
+        document["display"] = dict(parameter.display)
     if parameter.protocol_profile is not None and parameter.value_codec is not None:
         document["protocol"] = {
             "profile": parameter.protocol_profile,
@@ -1066,6 +1169,10 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "dyn.gate_2" and not parameters:
         parameters = list(GATE2_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "dyn.gate_3" and not parameters:
+        parameters = list(GATE3_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.ac_sim" and not parameters:
@@ -1175,7 +1282,8 @@ def export_catalog(
             "protocol_profiles/effect_parameter_response_1c_v1.json"
         ],
         "value_codecs": [
-            "value_codecs/upper_float32_nibbles_v1.json"
+            "value_codecs/upper_float32_nibbles_v1.json",
+            "value_codecs/float32_nibbles_v1.json",
         ],
     }
     _write_json(output_root / "catalog.json", manifest)

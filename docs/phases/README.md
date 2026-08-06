@@ -24,3 +24,4 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 29 | `DYN_AC_BB_BOOST_PARAMETERS_PHASE29.md` | AC-BOOST e BB-BOOST com GAIN/VOLUME/BASS/TREBLE |
 | 30 | `DYN_RC_FAT_BOOST_GATE2_PARAMETERS_PHASE30.md` | RC-BOOST, FAT BOOST e GATE 2 |
 | 31 | `DYN_AC_SIM_ENUM_PARAMETERS_PHASE31.md` | AC SIM com BODY/TOP/VOLUME e MODE enum nomeado |
+| 32 | `DYN_GATE3_TIME_PARAMETERS_PHASE32.md` | GATE 3 com float32 completo e tempos adaptativos em ms/s |

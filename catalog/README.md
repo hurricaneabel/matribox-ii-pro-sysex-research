@@ -22,7 +22,7 @@ Os 16 índices de classe e os 267 efeitos foram exportados do catálogo Python
 histórico. Todos preservam menu, nome, ID de classe, ID de modelo e seletor
 secundário.
 
-Treze efeitos DYN possuem parâmetros internos catalogados, totalizando 42
+Quatorze efeitos DYN possuem parâmetros internos catalogados, totalizando 47
 controles físicos:
 
 ```text
@@ -39,11 +39,18 @@ AC WOODY| SHAPE                             | inteiro 0–100 | seletor 0
 GATE 1  | THRESHOLD                         | inteiro 0–100 | seletor 0
 GATE 2  | THRESHOLD, ATTACK, RELEASE         | inteiro 0–100 | seletores 0–2
 AC SIM  | BODY, TOP, VOLUME, MODE             | inteiros + enum nomeado | seletores 0–3
+GATE 3  | THRESHOLD, RATIO, ATTACK, RELEASE, HOLD | inteiros + tempos em ms | seletores 0–4
 ```
 
 No AC SIM, `MODE` usa os mesmos valores numéricos do codec compartilhado,
 mas o catálogo converte `0–3` para `STANDARD`, `JUMBO`, `ENHANCED` e `PIEZO`.
 O monitor permanece genérico: nenhum rótulo foi codificado diretamente nele.
+
+No GATE 3, todos os valores continuam chegando como `float32`, mas os tempos
+exigem os oito nibbles físicos completos. `float32_nibbles_v1` preserva a
+precisão integral em milissegundos; a configuração `display` do parâmetro
+determina a conversão adaptativa para `ms` ou `s`, sem lógica específica do
+efeito no monitor.
 
 No E-BOOST, `+3dB` e `BRIGHT` usam o mesmo codec numérico dos controles
 contínuos, com `0 = desligado` e `1 = ligado`. O `value_type: boolean` do JSON
@@ -53,7 +60,7 @@ O comando `0x1C` não identifica sozinho o modelo do efeito. O slot recebido é
 cruzado com a cadeia estrutural atual; somente então o seletor é interpretado
 dentro do efeito correto.
 
-Os outros 254 efeitos permanecem com:
+Os outros 253 efeitos permanecem com:
 
 ```json
 "parameter_catalog_status": "pending",

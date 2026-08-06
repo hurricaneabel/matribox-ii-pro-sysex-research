@@ -103,6 +103,7 @@ class PresetParameterSnapshot:
     name: str
     value: int | float | bool | str | None
     unit: str | None = None
+    display_text: str | None = None
 
     @property
     def ready(self) -> bool:
@@ -112,6 +113,8 @@ class PresetParameterSnapshot:
     def display_value(self) -> str:
         if self.value is None:
             return "aguardando alteração"
+        if self.display_text is not None:
+            return self.display_text
         if isinstance(self.value, bool):
             value_text = "ligado" if self.value else "desligado"
         else:
@@ -332,6 +335,7 @@ def build_effect_snapshots(
                         name=parameter.name,
                         value=event.value if event is not None else None,
                         unit=parameter.unit,
+                        display_text=event.display_value if event is not None else None,
                     )
                 )
 

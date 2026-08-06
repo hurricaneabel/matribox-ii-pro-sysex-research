@@ -1424,3 +1424,49 @@ as `choices` e o codec genérico converte o inteiro recebido para o rótulo.
 Foram observados os slots internos humanos 1 e 2. O endereço `01 04` continua
 compartilhado e opaco, portanto a cadeia estrutural permanece obrigatória para
 resolver o efeito antes do seletor.
+
+## Fase 32 — GATE 3, float32 completo e tempos em milissegundos
+
+As capturas do GATE 3 confirmaram cinco seletores no comando `0x1C`:
+
+```text
+THRESHOLD = 0 | RATIO = 1 | ATTACK = 2 | RELEASE = 3 | HOLD = 4
+```
+
+Faixas físicas confirmadas:
+
+```text
+THRESHOLD 0–100
+RATIO     0–100
+ATTACK    1–500 ms
+RELEASE   10–10000 ms
+HOLD      0–1000 ms
+```
+
+O valor completo ocupa os índices `55–62` como oito nibbles, formando quatro
+bytes de um `float32` little-endian. Os quatro nibbles historicamente lidos nos
+índices `59–62` correspondem apenas aos dois bytes superiores. Essa redução
+era suficiente para muitos inteiros simples porque os bytes inferiores eram
+`00 00`, mas falha em valores como:
+
+```text
+5001 ms → bytes 00 48 9C 45
+5037 ms → bytes 00 68 9D 45
+6037 ms → bytes 00 A8 BC 45
+```
+
+Por isso, o perfil `effect_parameter_response_1c_v1` passou a expor o payload
+completo de oito nibbles. O codec histórico declara `input_slice: [4, 8]` e
+continua recebendo somente os quatro nibbles superiores, preservando toda a
+compatibilidade anterior. O novo `float32_nibbles_v1` consome os oito nibbles.
+
+A captura curta originalmente nomeada como slot 2 estava fisicamente no slot
+humano 1. Uma captura standalone corrigida confirmou o slot humano 2 pelos
+bytes `00 01`, com THRESHOLD, RATIO, ATTACK, RELEASE e HOLD independentes.
+Foram preservadas 58 respostas físicas únicas.
+
+A unidade lógica dos três tempos é milissegundos. A apresentação é orientada
+pelo catálogo: valores menores que 1000 aparecem em `ms`; valores iguais ou
+maiores aparecem em segundos com uma casa decimal e separador decimal local.
+Exemplos: `900 ms`, `1,0 s`, `5,0 s` e `10,0 s`.
+

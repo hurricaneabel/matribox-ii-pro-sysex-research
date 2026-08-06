@@ -95,6 +95,81 @@ def _validate_numeric_value(
     return normalized
 
 
+def select_codec_encoded_value(
+    encoded_value: bytes | bytearray,
+    codec: ValueCodec,
+) -> bytes:
+    """Seleciona do payload do perfil os nibbles consumidos pelo codec.
+
+    O perfil 0x1C expõe os oito nibbles físicos do float32. Codecs antigos
+    podem declarar ``configuration.input_slice`` para continuar consumindo
+    apenas a parte historicamente validada. Chamadas diretas que já fornecem
+    exatamente ``encoded_length`` permanecem compatíveis.
+    """
+
+    encoded = bytes(encoded_value)
+    expected_length = codec.document.get("encoded_length")
+    if isinstance(expected_length, bool) or not isinstance(expected_length, int):
+        raise ParameterCodecError(f"encoded_length inválido no codec {codec.key}.")
+    if len(encoded) == expected_length:
+        return encoded
+
+    configuration = codec.document.get("configuration", {})
+    if not isinstance(configuration, dict):
+        raise ParameterCodecError(f"Configuração inválida do codec {codec.key}.")
+    input_slice = configuration.get("input_slice")
+    if (
+        not isinstance(input_slice, list)
+        or len(input_slice) != 2
+        or any(isinstance(item, bool) or not isinstance(item, int) for item in input_slice)
+    ):
+        raise ParameterCodecError(
+            f"O codec {codec.key} exige {expected_length} nibbles; recebidos {len(encoded)}."
+        )
+    start, end = input_slice
+    if not 0 <= start < end <= len(encoded) or end - start != expected_length:
+        raise ParameterCodecError(
+            f"input_slice inválido no codec {codec.key}: {input_slice!r}."
+        )
+    return encoded[start:end]
+
+
+def decode_full_float32_nibbles(
+    encoded_value: bytes | bytearray,
+    parameter: ParameterDefinition,
+    codec: ValueCodec,
+) -> ParameterValue:
+    """Decodifica os quatro bytes completos de float32 enviados em oito nibbles."""
+
+    encoded = bytes(encoded_value)
+    expected_length = codec.document.get("encoded_length")
+    if expected_length != 8 or len(encoded) != expected_length:
+        raise ParameterCodecError(
+            f"O codec {codec.key} exige oito nibbles; recebidos {len(encoded)}."
+        )
+
+    configuration = codec.document.get("configuration", {})
+    if not isinstance(configuration, dict):
+        raise ParameterCodecError(f"Configuração inválida do codec {codec.key}.")
+    if configuration.get("byte_order") != "little_endian":
+        raise ParameterCodecError(
+            f"O codec {codec.key} possui byte_order ainda não suportada."
+        )
+    if configuration.get("nibble_order") != "high_then_low_per_byte":
+        raise ParameterCodecError(
+            f"O codec {codec.key} possui nibble_order ainda não suportada."
+        )
+
+    decoded_bytes = bytes(
+        _decode_nibble_pair(encoded[index], encoded[index + 1], label=f"valor byte {index // 2}")
+        for index in range(0, 8, 2)
+    )
+    decoded = struct.unpack("<f", decoded_bytes)[0]
+    if configuration.get("require_finite", True) and not math.isfinite(decoded):
+        raise ParameterCodecError("O valor decodificado não é finito.")
+    return _validate_numeric_value(decoded, parameter)
+
+
 def decode_upper_float32_nibbles(
     encoded_value: bytes | bytearray,
     parameter: ParameterDefinition,
@@ -150,9 +225,12 @@ def decode_parameter_value(
     """Executa o codec apontado pelo parâmetro no catálogo."""
 
     kind = codec.document.get("kind")
+    selected_value = select_codec_encoded_value(encoded_value, codec)
 
     if kind == "float32_upper_16_bits_as_nibbles":
-        return decode_upper_float32_nibbles(encoded_value, parameter, codec)
+        return decode_upper_float32_nibbles(selected_value, parameter, codec)
+    if kind == "float32_as_nibbles":
+        return decode_full_float32_nibbles(selected_value, parameter, codec)
 
     raise ParameterCodecError(
         f"Codec ainda não implementado: {codec.key} ({kind!r})."

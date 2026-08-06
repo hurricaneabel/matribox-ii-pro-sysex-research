@@ -21,7 +21,12 @@ from typing import Any, Mapping
 
 from tools.catalog import EffectCatalog, EffectModel, ParameterDefinition, load_effect_catalog
 from tools.catalog.models import ProtocolProfile, ValueCodec
-from tools.parameters.codecs import ParameterCodecError, ParameterValue, decode_parameter_value
+from tools.parameters.codecs import (
+    ParameterCodecError,
+    ParameterValue,
+    decode_parameter_value,
+    select_codec_encoded_value,
+)
 
 
 MATRIBOX_HEADER = bytes.fromhex("F0 21 25 4D 50")
@@ -64,6 +69,7 @@ class EffectParameterEvent:
     parameter_name: str
     value: ParameterValue
     unit: str | None
+    display: Mapping[str, Any]
     encoded_value: bytes
     observed_checksum: int
     protocol_profile: str
@@ -76,6 +82,18 @@ class EffectParameterEvent:
 
     @property
     def display_value(self) -> str:
+        if self.display.get("kind") == "duration_milliseconds":
+            milliseconds = float(self.value)
+            threshold = float(self.display.get("seconds_threshold", 1000))
+            if milliseconds < threshold:
+                if milliseconds.is_integer():
+                    return f"{int(milliseconds)} ms"
+                return f"{milliseconds:g} ms"
+            decimals = int(self.display.get("seconds_decimals", 1))
+            value_text = f"{milliseconds / 1000:.{decimals}f}"
+            if self.display.get("decimal_separator", ",") == ",":
+                value_text = value_text.replace(".", ",")
+            return f"{value_text} s"
         if isinstance(self.value, bool):
             value_text = "ligado" if self.value else "desligado"
         else:
@@ -202,7 +220,14 @@ def _extract_value(raw_message: bytes, profile: ProtocolProfile) -> bytes:
         raise EffectParameterProtocolError(
             f"Faixa de valor inválida no perfil {profile.key}."
         )
-    return raw_message[start:end]
+    encoded = raw_message[start:end]
+    if field.get("encoding") == "nibble_sequence":
+        for index, value in enumerate(encoded, start=start):
+            if not 0 <= value <= 0x0F:
+                raise EffectParameterProtocolError(
+                    f"Nibble inválido em value[{index}]: 0x{value:02X}."
+                )
+    return encoded
 
 
 def _fixed_segments_match(raw_message: bytes, profile: ProtocolProfile) -> bool:
@@ -386,7 +411,11 @@ class EffectParameterDecoder:
             )
 
         try:
-            value = decode_parameter_value(signal.encoded_value, parameter, codec)
+            codec_encoded_value = select_codec_encoded_value(
+                signal.encoded_value,
+                codec,
+            )
+            value = decode_parameter_value(codec_encoded_value, parameter, codec)
         except ParameterCodecError as error:
             raise EffectParameterProtocolError(str(error)) from error
 
@@ -402,7 +431,8 @@ class EffectParameterDecoder:
             parameter_name=parameter.name,
             value=value,
             unit=parameter.unit,
-            encoded_value=signal.encoded_value,
+            display=parameter.display,
+            encoded_value=codec_encoded_value,
             observed_checksum=signal.observed_checksum,
             protocol_profile=signal.protocol_profile,
             value_codec=codec.key,

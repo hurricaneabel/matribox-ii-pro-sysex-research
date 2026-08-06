@@ -7,7 +7,233 @@
   "name": "GATE 3",
   "model_id": 33,
   "secondary_selector": 0,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "threshold",
+      "name": "THRESHOLD",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "multiple_parameters": true,
+        "physical_fixture_count": 58,
+        "evidence": "docs/phases/DYN_GATE3_TIME_PARAMETERS_PHASE32.md",
+        "monitor_integration_physical_validation": "pending",
+        "range_validated": [
+          0,
+          100
+        ],
+        "parameter_selector": 0
+      }
+    },
+    {
+      "key": "ratio",
+      "name": "RATIO",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "multiple_parameters": true,
+        "physical_fixture_count": 58,
+        "evidence": "docs/phases/DYN_GATE3_TIME_PARAMETERS_PHASE32.md",
+        "monitor_integration_physical_validation": "pending",
+        "range_validated": [
+          0,
+          100
+        ],
+        "parameter_selector": 1
+      }
+    },
+    {
+      "key": "attack",
+      "name": "ATTACK",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 1,
+        "maximum": 500,
+        "step": 1
+      },
+      "unit": "ms",
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "multiple_parameters": true,
+        "physical_fixture_count": 58,
+        "evidence": "docs/phases/DYN_GATE3_TIME_PARAMETERS_PHASE32.md",
+        "monitor_integration_physical_validation": "pending",
+        "range_validated": [
+          1,
+          500
+        ],
+        "parameter_selector": 2
+      },
+      "display": {
+        "kind": "duration_milliseconds",
+        "seconds_threshold": 1000,
+        "seconds_decimals": 1,
+        "decimal_separator": ","
+      }
+    },
+    {
+      "key": "release",
+      "name": "RELEASE",
+      "display_order": 4,
+      "value_type": "integer",
+      "range": {
+        "minimum": 10,
+        "maximum": 10000,
+        "step": 1
+      },
+      "unit": "ms",
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "multiple_parameters": true,
+        "physical_fixture_count": 58,
+        "evidence": "docs/phases/DYN_GATE3_TIME_PARAMETERS_PHASE32.md",
+        "monitor_integration_physical_validation": "pending",
+        "range_validated": [
+          10,
+          10000
+        ],
+        "parameter_selector": 3
+      },
+      "display": {
+        "kind": "duration_milliseconds",
+        "seconds_threshold": 1000,
+        "seconds_decimals": 1,
+        "decimal_separator": ","
+      }
+    },
+    {
+      "key": "hold",
+      "name": "HOLD",
+      "display_order": 5,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 1000,
+        "step": 1
+      },
+      "unit": "ms",
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 4,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "internal_slots_observed": [
+          1,
+          2
+        ],
+        "effect_identity_source": "current_chain",
+        "multiple_parameters": true,
+        "physical_fixture_count": 58,
+        "evidence": "docs/phases/DYN_GATE3_TIME_PARAMETERS_PHASE32.md",
+        "monitor_integration_physical_validation": "pending",
+        "range_validated": [
+          0,
+          1000
+        ],
+        "parameter_selector": 4
+      },
+      "display": {
+        "kind": "duration_milliseconds",
+        "seconds_threshold": 1000,
+        "seconds_decimals": 1,
+        "decimal_separator": ","
+      }
+    }
+  ]
 }

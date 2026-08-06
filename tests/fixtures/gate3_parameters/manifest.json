@@ -1,0 +1,1717 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "DYN",
+    "class_id": 0,
+    "key": "dyn.gate_3",
+    "name": "GATE 3",
+    "model_id": 33,
+    "secondary_selector": 0
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa model_id."
+    },
+    "float_encoding": {
+      "kind": "float32_little_endian_as_eight_nibbles",
+      "base_time_unit": "milliseconds"
+    }
+  },
+  "parameters": [
+    {
+      "key": "threshold",
+      "name": "THRESHOLD",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1,
+      "unit": null
+    },
+    {
+      "key": "ratio",
+      "name": "RATIO",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1,
+      "unit": null
+    },
+    {
+      "key": "attack",
+      "name": "ATTACK",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 1,
+      "maximum": 500,
+      "step": 1,
+      "unit": "ms"
+    },
+    {
+      "key": "release",
+      "name": "RELEASE",
+      "selector": 3,
+      "value_type": "integer",
+      "minimum": 10,
+      "maximum": 10000,
+      "step": 1,
+      "unit": "ms"
+    },
+    {
+      "key": "hold",
+      "name": "HOLD",
+      "selector": 4,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "step": 1,
+      "unit": "ms"
+    }
+  ],
+  "controlled_capture_sources": [
+    "gate3_threshold_capture.pcapng",
+    "gate3_ratio_capture.pcapng",
+    "gate3_attack_capture.pcapng",
+    "gate3_release_capture_startedwith_5000_5s.pcapng",
+    "gate3_hold_capture_started_500ms.pcapng",
+    "GATE3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+    "gate3.zip/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura fisicamente no slot 1)",
+    "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)"
+  ],
+  "combined_capture_validation": {
+    "source": "GATE3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+    "sequence": [
+      "threshold_51",
+      "ratio_52",
+      "attack_251ms",
+      "release_5001ms",
+      "hold_501ms",
+      "threshold_50",
+      "ratio_50",
+      "attack_250ms",
+      "release_5000ms",
+      "hold_500ms"
+    ],
+    "result": "five_independent_selectors_with_full_float32_values"
+  },
+  "corrected_slot2_validation": {
+    "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+    "sequence": [
+      "threshold_51_50",
+      "ratio_51_50",
+      "attack_300_250ms",
+      "release_6037_5037ms",
+      "hold_600_500ms"
+    ],
+    "result": "same_selectors_and_full_float32_codec_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "A captura curta originalmente incluída no ZIP estava fisicamente no slot humano 1 apesar do nome; ela foi preservada apenas como evidência adicional do slot 1.",
+    "A captura standalone corrigida confirma o slot humano 2 pelos bytes 00 01.",
+    "RELEASE transmitiu 5001, 5037 e 6037 ms, provando que os quatro nibbles inferiores do float32 não podem ser descartados.",
+    "A apresentação humana converte valores a partir de 1000 ms para segundos com uma casa decimal; o valor lógico permanece em milissegundos."
+  ],
+  "physical_binary_fixtures": 58,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_threshold_00000.bin",
+      "source": "gate3_threshold_capture.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "wire_value": 0,
+      "value": 0,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "053d43e4c81c961a88cfe7250e300c319ce6e2d83f322f1a3fd65684b29953c7"
+    },
+    {
+      "file": "slot1_threshold_00001.bin",
+      "source": "gate3_threshold_capture.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "wire_value": 1,
+      "value": 1,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        8,
+        0,
+        3,
+        15
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        128,
+        63
+      ],
+      "sha256": "15b19decc8541a8546cc4f1948e2cf5400122d459d72af1862190df5f7f744d5"
+    },
+    {
+      "file": "slot1_threshold_00050.bin",
+      "source": "gate3_threshold_capture.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "wire_value": 50,
+      "value": 50,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        72,
+        66
+      ],
+      "sha256": "9dd320ecae89efc0a63fbb6fd205d27a9afa781daa6749cf197f3740cb5d2e73"
+    },
+    {
+      "file": "slot1_threshold_00051.bin",
+      "source": "GATE3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "wire_value": 51,
+      "value": 51,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        12,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        76,
+        66
+      ],
+      "sha256": "2ebf656607136b5327f8830eea15211a375d49eac19e1729e56211a3555b089d"
+    },
+    {
+      "file": "slot1_threshold_00099.bin",
+      "source": "gate3_threshold_capture.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "wire_value": 99,
+      "value": 99,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        12,
+        6,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        198,
+        66
+      ],
+      "sha256": "ee65d1af6a0dbe1280cf4eeb814e301eb6b02cb52931a4dae26ac681da33228b"
+    },
+    {
+      "file": "slot1_threshold_00100.bin",
+      "source": "gate3_threshold_capture.pcapng",
+      "slot": 1,
+      "parameter": "threshold",
+      "selector": 0,
+      "wire_value": 100,
+      "value": 100,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        12,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        200,
+        66
+      ],
+      "sha256": "1a364e7e455581b7d0eb91be4adcb28e43daab4b49a117e3cb07fdde87745ff0"
+    },
+    {
+      "file": "slot1_ratio_00000.bin",
+      "source": "gate3_ratio_capture.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 0,
+      "value": 0,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "4bd1a88eb10522238e2d0a5c36570f368f35a0aae33fa73899ff68dd319d9d4e"
+    },
+    {
+      "file": "slot1_ratio_00001.bin",
+      "source": "gate3_ratio_capture.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 1,
+      "value": 1,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        8,
+        0,
+        3,
+        15
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        128,
+        63
+      ],
+      "sha256": "a13683fc8a23572bd3cdba753fa9eacbef4922d3d88224012e3f3c5aff46e790"
+    },
+    {
+      "file": "slot1_ratio_00050.bin",
+      "source": "gate3_ratio_capture.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 50,
+      "value": 50,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        72,
+        66
+      ],
+      "sha256": "a52fa05c5e95a5b57f374774cf0957cc827843cb02bc09a12e88d35c04fb578a"
+    },
+    {
+      "file": "slot1_ratio_00051.bin",
+      "source": "gate3.zip/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura fisicamente no slot 1)",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 51,
+      "value": 51,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        12,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        76,
+        66
+      ],
+      "sha256": "fb792678b4b12cde0e793641ed3b3b24e6039be389c7c419564dda0256ecaa33"
+    },
+    {
+      "file": "slot1_ratio_00052.bin",
+      "source": "GATE3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 52,
+      "value": 52,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        80,
+        66
+      ],
+      "sha256": "2ceb315630d8d3481cc2727a536347a653f86a40932353975bd851c7dc46110e"
+    },
+    {
+      "file": "slot1_ratio_00099.bin",
+      "source": "gate3_ratio_capture.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 99,
+      "value": 99,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        12,
+        6,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        198,
+        66
+      ],
+      "sha256": "294f5050334b348f8c317f8ad72999dcb39eca8734f303d1c5f61f11ade38160"
+    },
+    {
+      "file": "slot1_ratio_00100.bin",
+      "source": "gate3_ratio_capture.pcapng",
+      "slot": 1,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 100,
+      "value": 100,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        12,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        200,
+        66
+      ],
+      "sha256": "9283373cbae45350e96e404fca6a4ddb42a72b4efb2e4a703ca28f136d3de3bb"
+    },
+    {
+      "file": "slot1_attack_00001.bin",
+      "source": "gate3_attack_capture.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 1,
+      "value": 1,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        8,
+        0,
+        3,
+        15
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        128,
+        63
+      ],
+      "sha256": "7e172e98f2145a76d6311bece75420f045cb38be815b83ea081ee10986102e38"
+    },
+    {
+      "file": "slot1_attack_00002.bin",
+      "source": "gate3_attack_capture.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 2,
+      "value": 2,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        0
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        0,
+        64
+      ],
+      "sha256": "dfe8f42537d1f68f3eb1a89e1d039442b09ca14ebc6093bb58da1c86d3a921af"
+    },
+    {
+      "file": "slot1_attack_00010.bin",
+      "source": "gate3_attack_capture.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 10,
+      "value": 10,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        4,
+        1
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        32,
+        65
+      ],
+      "sha256": "fdfb0173255732e258da6aad86143436073bfdab46efb66b1ebf1dd60e3489d8"
+    },
+    {
+      "file": "slot1_attack_00050.bin",
+      "source": "gate3_attack_capture.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 50,
+      "value": 50,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        72,
+        66
+      ],
+      "sha256": "d6f2de80f323dac2fa782eb3e5d3ccbc561350abd56d87677885f874fe88bd3f"
+    },
+    {
+      "file": "slot1_attack_00100.bin",
+      "source": "gate3_attack_capture.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 100,
+      "value": 100,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        12,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        200,
+        66
+      ],
+      "sha256": "7ad401be02dc32a497e46fcd2fbee970ad546ede35e35cdcfeed6998fd49377d"
+    },
+    {
+      "file": "slot1_attack_00250.bin",
+      "source": "gate3_attack_capture.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 250,
+      "value": 250,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        7,
+        10,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        122,
+        67
+      ],
+      "sha256": "c3c6072cc5ea826ebeb51c798566adeadbc8fb94578fb35b79fdcf03918a7612"
+    },
+    {
+      "file": "slot1_attack_00251.bin",
+      "source": "GATE3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 251,
+      "value": 251,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        7,
+        11,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        123,
+        67
+      ],
+      "sha256": "e4ae957d18b75384dfffb4849494f756bec6faa925bfaf77a7f2fb6e826150ee"
+    },
+    {
+      "file": "slot1_attack_00300.bin",
+      "source": "gate3.zip/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura fisicamente no slot 1)",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 300,
+      "value": 300,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        9,
+        6,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        150,
+        67
+      ],
+      "sha256": "14556387c676f71aa01ea26d3a633fe8fa19f04b008da17e46cca8e5cbe1b02d"
+    },
+    {
+      "file": "slot1_attack_00499.bin",
+      "source": "gate3_attack_capture.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 499,
+      "value": 499,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        8,
+        0,
+        15,
+        9,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        128,
+        249,
+        67
+      ],
+      "sha256": "848b12283cec90de271607d9adf7d7151c3e5a104d503e08d7f2587f64f99cc8"
+    },
+    {
+      "file": "slot1_attack_00500.bin",
+      "source": "gate3_attack_capture.pcapng",
+      "slot": 1,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 500,
+      "value": 500,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        15,
+        10,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        250,
+        67
+      ],
+      "sha256": "af9ce90b9b9c5d4d5a5e59dbee6daf6108a508994ad20dbcccba421127416390"
+    },
+    {
+      "file": "slot1_release_00010.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 10,
+      "value": 10,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        4,
+        1
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        32,
+        65
+      ],
+      "sha256": "af40958e756a837adb5501ae2649fe44b9b2f0a02e2442bd7d95e8765d2b5b8a"
+    },
+    {
+      "file": "slot1_release_00020.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 20,
+      "value": 20,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        10,
+        0,
+        4,
+        1
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        160,
+        65
+      ],
+      "sha256": "1f40510fd405464e1d14ba6a3540ee08a6f2f9389c8e1625e1d2c20368b966de"
+    },
+    {
+      "file": "slot1_release_00050.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 50,
+      "value": 50,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        72,
+        66
+      ],
+      "sha256": "2791afd72f4a6d52b35bfaaa5e858f94ecaa3d206a8d1a74ee6801de2b64b93f"
+    },
+    {
+      "file": "slot1_release_00100.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 100,
+      "value": 100,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        12,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        200,
+        66
+      ],
+      "sha256": "17c5dec181898f5f0e04282ec561cefa2f650dce47a905f7324871f2cf96a98b"
+    },
+    {
+      "file": "slot1_release_00500.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 500,
+      "value": 500,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        15,
+        10,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        250,
+        67
+      ],
+      "sha256": "27e2ccf6098ba1e526f02c84ec9578c0f29dfdf683b31ccf167eea56c43086bb"
+    },
+    {
+      "file": "slot1_release_00900.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 900,
+      "value": 900,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        1,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        97,
+        68
+      ],
+      "sha256": "00882d368e8c68a468ba5979d0135715e1dc94c0dd7034ba6c582f3286abc4a0"
+    },
+    {
+      "file": "slot1_release_01000.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 1000,
+      "value": 1000,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        7,
+        10,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        122,
+        68
+      ],
+      "sha256": "32b26c6250a809e268a62501c24b6b9160ef55c4822b8c11a5e227fa0c953b89"
+    },
+    {
+      "file": "slot1_release_01100.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 1100,
+      "value": 1100,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        8,
+        0,
+        8,
+        9,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        128,
+        137,
+        68
+      ],
+      "sha256": "b66d720bbd04561fed4309950aea1838635c06ea0265859f275ea56083219480"
+    },
+    {
+      "file": "slot1_release_02000.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 2000,
+      "value": 2000,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        15,
+        10,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        250,
+        68
+      ],
+      "sha256": "cd8360a18348a87907e782ef1568469a26a0007ed96721a1027ee916117a966d"
+    },
+    {
+      "file": "slot1_release_05000.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 5000,
+      "value": 5000,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0,
+        9,
+        12,
+        4,
+        5
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        64,
+        156,
+        69
+      ],
+      "sha256": "58c0d0aa8be57d80d753ad16d76fa6da604707f830ed8f6315070f1febce852f"
+    },
+    {
+      "file": "slot1_release_05001.bin",
+      "source": "GATE3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 5001,
+      "value": 5001,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        4,
+        8,
+        9,
+        12,
+        4,
+        5
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        72,
+        156,
+        69
+      ],
+      "sha256": "37b212dcd9a33cf8a4a5ba862ccfb4fdb1c046097be14a9a4f8ab05d37b5b834"
+    },
+    {
+      "file": "slot1_release_06000.bin",
+      "source": "gate3.zip/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura fisicamente no slot 1)",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 6000,
+      "value": 6000,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        8,
+        0,
+        11,
+        11,
+        4,
+        5
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        128,
+        187,
+        69
+      ],
+      "sha256": "178eaf93121ff469adc9bf00d89cac0b70d4a9650eb716a03a5a9de0927eee62"
+    },
+    {
+      "file": "slot1_release_09900.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 9900,
+      "value": 9900,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        11,
+        0,
+        1,
+        10,
+        4,
+        6
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        176,
+        26,
+        70
+      ],
+      "sha256": "eb0449852178b27ecf43e8bccc45010427c9e9ff59e1c491496b646fb6a55da2"
+    },
+    {
+      "file": "slot1_release_10000.bin",
+      "source": "gate3_release_capture_startedwith_5000_5s.pcapng",
+      "slot": 1,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 10000,
+      "value": 10000,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0,
+        1,
+        12,
+        4,
+        6
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        64,
+        28,
+        70
+      ],
+      "sha256": "0cac28b519d3774fed3d2c8cc0005828ace4a1d784aac6ca9a364b6c8b071f57"
+    },
+    {
+      "file": "slot1_hold_00000.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 0,
+      "value": 0,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "75f4837d3c3a65f135c0dd8bf8445b4be28b5500f9e8630a8f6b33aa5c1c3a78"
+    },
+    {
+      "file": "slot1_hold_00001.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 1,
+      "value": 1,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        8,
+        0,
+        3,
+        15
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        128,
+        63
+      ],
+      "sha256": "75715cfd82a2ed1a9bd623fcc9d063b69ddd9b52aab0ce7c11c8c4a6244721d0"
+    },
+    {
+      "file": "slot1_hold_00010.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 10,
+      "value": 10,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        4,
+        1
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        32,
+        65
+      ],
+      "sha256": "cc731cd28e3e62f51620c2d8bee012e4a78026782f88d39dbb0c0f6546b444d9"
+    },
+    {
+      "file": "slot1_hold_00050.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 50,
+      "value": 50,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        72,
+        66
+      ],
+      "sha256": "38ab050240fce2d9e2e085a4b83b6094f4e01564751feba55509ad3cd4ad7a84"
+    },
+    {
+      "file": "slot1_hold_00100.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 100,
+      "value": 100,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        12,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        200,
+        66
+      ],
+      "sha256": "c067e76d4533a7c37d4c6b03477bd098b114cc6aa4da122fa462b94c2d225f9c"
+    },
+    {
+      "file": "slot1_hold_00500.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 500,
+      "value": 500,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        15,
+        10,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        250,
+        67
+      ],
+      "sha256": "3e8f8f79af204769c18c95aa2c63b1affb47cd802e34268287b778212e9981c5"
+    },
+    {
+      "file": "slot1_hold_00501.bin",
+      "source": "GATE3_ALL_PARAMETERS_SLOT1_UNIQUE_VALUES_AND_BACK.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 501,
+      "value": 501,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        8,
+        0,
+        15,
+        10,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        128,
+        250,
+        67
+      ],
+      "sha256": "9fd3f7221e59cb5d3cf9120166c47b3b7eabc2672af82e71c1d40a32832ed76d"
+    },
+    {
+      "file": "slot1_hold_00600.bin",
+      "source": "gate3.zip/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura fisicamente no slot 1)",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 600,
+      "value": 600,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        6,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        22,
+        68
+      ],
+      "sha256": "ad3bcd9d6b4ab6398aaec4fe146d659934852d48597bc5a9b6f0f3f15f5becb6"
+    },
+    {
+      "file": "slot1_hold_00900.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 900,
+      "value": 900,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        1,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        97,
+        68
+      ],
+      "sha256": "23c5c85d5d0f370b822eb8179756bc9abceed817094ed58b0ff0714f6786caf4"
+    },
+    {
+      "file": "slot1_hold_00999.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 999,
+      "value": 999,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        12,
+        0,
+        7,
+        9,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        192,
+        121,
+        68
+      ],
+      "sha256": "90f41df703502854b1974e18ad7741362496c20b008775ecbda55f91e86a5ca8"
+    },
+    {
+      "file": "slot1_hold_01000.bin",
+      "source": "gate3_hold_capture_started_500ms.pcapng",
+      "slot": 1,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 1000,
+      "value": 1000,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        7,
+        10,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        122,
+        68
+      ],
+      "sha256": "934ad7a56f81c3cb59c349fe6c1cbfba4cb2a754bf81c963d034b7bcfd87d802"
+    },
+    {
+      "file": "slot2_threshold_00050.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "threshold",
+      "selector": 0,
+      "wire_value": 50,
+      "value": 50,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        72,
+        66
+      ],
+      "sha256": "34ce8bb478fc5d148f2de67228a7231bb954f45e67235d53a29264d55a9776a9"
+    },
+    {
+      "file": "slot2_threshold_00051.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "threshold",
+      "selector": 0,
+      "wire_value": 51,
+      "value": 51,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        12,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        76,
+        66
+      ],
+      "sha256": "59ada2f029fc6494dd09b8f353f796b0145029dded2b875f7dd985976d1d1535"
+    },
+    {
+      "file": "slot2_ratio_00050.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 50,
+      "value": 50,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        8,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        72,
+        66
+      ],
+      "sha256": "74a418ee00ad20829504439ab2749f298729f5a299af3642bc7a1bf52cae44af"
+    },
+    {
+      "file": "slot2_ratio_00051.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "ratio",
+      "selector": 1,
+      "wire_value": 51,
+      "value": 51,
+      "base_unit": null,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        4,
+        12,
+        4,
+        2
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        76,
+        66
+      ],
+      "sha256": "c381da90ca5f742f1b102a6bbdb351648faed830cee44d2be038a6e7ca95409b"
+    },
+    {
+      "file": "slot2_attack_00250.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 250,
+      "value": 250,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        7,
+        10,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        122,
+        67
+      ],
+      "sha256": "0c9a9f066efb4cf4a39af686c204ec78f5c818ff3e281d2ccc452035ddee0723"
+    },
+    {
+      "file": "slot2_attack_00300.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "attack",
+      "selector": 2,
+      "wire_value": 300,
+      "value": 300,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        9,
+        6,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        150,
+        67
+      ],
+      "sha256": "ae5ba5fd7e9be61bc8419a503955019132cf0ba52afe814f110ca838edad42b0"
+    },
+    {
+      "file": "slot2_release_05037.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 5037,
+      "value": 5037,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        6,
+        8,
+        9,
+        13,
+        4,
+        5
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        104,
+        157,
+        69
+      ],
+      "sha256": "9fe31b69da490ec9873dfa4851e68744070fc6627c4f3b6ac02b06b7391f2ef0"
+    },
+    {
+      "file": "slot2_release_06037.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "release",
+      "selector": 3,
+      "wire_value": 6037,
+      "value": 6037,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        10,
+        8,
+        11,
+        12,
+        4,
+        5
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        168,
+        188,
+        69
+      ],
+      "sha256": "3e0057f5b5678fa8f82f284b46e9513391ff7af13cd917e17a40b7dd54605fb1"
+    },
+    {
+      "file": "slot2_hold_00500.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 500,
+      "value": 500,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        15,
+        10,
+        4,
+        3
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        250,
+        67
+      ],
+      "sha256": "9695e9a839288e4342c525cbb5d6eff4c5d3b723e29c79158a1274403e688e96"
+    },
+    {
+      "file": "slot2_hold_00600.bin",
+      "source": "standalone/GATE3_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng (captura corrigida no slot 2)",
+      "slot": 2,
+      "parameter": "hold",
+      "selector": 4,
+      "wire_value": 600,
+      "value": 600,
+      "base_unit": "ms",
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        6,
+        4,
+        4
+      ],
+      "decoded_float32_little_endian_bytes": [
+        0,
+        0,
+        22,
+        68
+      ],
+      "sha256": "cea9015c933025e98370b7a0521d702230fea32fe3e9236defb75154dd1a6cd5"
+    }
+  ]
+}

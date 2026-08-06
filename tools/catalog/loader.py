@@ -188,6 +188,39 @@ def _parse_parameter(document: Mapping[str, Any], path: Path) -> ParameterDefini
         raise _fail(path, "campo choices é permitido somente para value_type enum")
     choices = MappingProxyType(normalized_choices)
 
+    raw_display = document.get("display", {})
+    if not isinstance(raw_display, dict):
+        raise _fail(path, "campo 'display' deve ser objeto")
+    normalized_display: dict[str, Any] = {}
+    if raw_display:
+        kind = raw_display.get("kind")
+        if kind != "duration_milliseconds":
+            raise _fail(path, f"display.kind não suportado: {kind!r}")
+        seconds_threshold = raw_display.get("seconds_threshold", 1000)
+        seconds_decimals = raw_display.get("seconds_decimals", 1)
+        decimal_separator = raw_display.get("decimal_separator", ",")
+        if (
+            isinstance(seconds_threshold, bool)
+            or not isinstance(seconds_threshold, (int, float))
+            or seconds_threshold <= 0
+        ):
+            raise _fail(path, "display.seconds_threshold deve ser número positivo")
+        if (
+            isinstance(seconds_decimals, bool)
+            or not isinstance(seconds_decimals, int)
+            or not 0 <= seconds_decimals <= 6
+        ):
+            raise _fail(path, "display.seconds_decimals deve ser inteiro entre 0 e 6")
+        if decimal_separator not in {".", ","}:
+            raise _fail(path, "display.decimal_separator deve ser '.' ou ','")
+        normalized_display = {
+            "kind": kind,
+            "seconds_threshold": seconds_threshold,
+            "seconds_decimals": seconds_decimals,
+            "decimal_separator": decimal_separator,
+        }
+    display = MappingProxyType(normalized_display)
+
     protocol = document.get("protocol")
     protocol_profile: str | None = None
     value_codec: str | None = None
@@ -235,6 +268,7 @@ def _parse_parameter(document: Mapping[str, Any], path: Path) -> ParameterDefini
         step=step,
         unit=unit,
         choices=choices,
+        display=display,
         protocol_profile=protocol_profile,
         value_codec=value_codec,
         message_match=message_match,
@@ -614,7 +648,27 @@ def _load_effect_catalog_cached(root_string: str) -> EffectCatalog:
                 end = value_field.get("end_index_exclusive")
                 encoded_length = codec.document.get("encoded_length")
                 if isinstance(start, int) and isinstance(end, int):
-                    if end - start != encoded_length:
+                    payload_length = end - start
+                    configuration = codec.document.get("configuration", {})
+                    input_slice = (
+                        configuration.get("input_slice")
+                        if isinstance(configuration, dict)
+                        else None
+                    )
+                    if input_slice is None:
+                        compatible = payload_length == encoded_length
+                    else:
+                        compatible = (
+                            isinstance(input_slice, list)
+                            and len(input_slice) == 2
+                            and all(
+                                not isinstance(item, bool) and isinstance(item, int)
+                                for item in input_slice
+                            )
+                            and 0 <= input_slice[0] < input_slice[1] <= payload_length
+                            and input_slice[1] - input_slice[0] == encoded_length
+                        )
+                    if not compatible:
                         raise _fail(
                             manifest_path,
                             f"parâmetro {effect.key}.{parameter.key} possui codec com tamanho incompatível",

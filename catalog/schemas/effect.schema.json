@@ -192,6 +192,35 @@
               }
             }
           }
+        },
+        "display": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "duration_milliseconds"
+              ]
+            },
+            "seconds_threshold": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "seconds_decimals": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 6
+            },
+            "decimal_separator": {
+              "enum": [
+                ".",
+                ","
+              ]
+            }
+          }
         }
       }
     },
