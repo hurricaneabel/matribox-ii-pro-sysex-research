@@ -274,6 +274,30 @@ instâncias simultâneas mantiveram estados independentes e uma terceira instân
 foi validada mais adiante na cadeia, sem contaminar as anteriores.
 
 
+A Fase 35 adiciona o `FREQ / Dual Melody` e comprova pela primeira vez um
+intervalo numérico negativo no protocolo de parâmetros:
+
+```text
+HIGH PITCH → inteiro 0–24, seletor 0
+LOW PITCH  → inteiro -24–0, seletor 1
+DRY        → inteiro 0–100, seletor 2
+HI VOL     → inteiro 0–100, seletor 4
+LOW VOL    → inteiro 0–100, seletor 5
+```
+
+`LOW PITCH` não usa índice deslocado: `-24`, `-12` e `-1` aparecem nas
+respostas físicas como float32 negativos reais e são decodificados pelo mesmo
+`upper_float32_nibbles_v1`. Foram preservadas 40 fixtures físicas nos slots
+humanos 1 e 2. O seletor 3 não aparece nas respostas device->host e não é
+preenchido artificialmente. As capturas também mostram assimetria direcional
+nos seletores de HI VOL/LOW VOL em mensagens host->device; como esta fase é
+somente leitura, escrita fica explicitamente fora do escopo até pesquisa
+específica. A validação física no monitor foi aprovada, incluindo valores
+negativos, controles independentes, bypass e múltiplas instâncias sem
+contaminação de estado.
+
+
+
 ## Catálogo confirmado
 
 Até esta etapa foram catalogadas **16 classes** e **267 posições/modelos**.
@@ -643,10 +667,12 @@ Os testes usam presets dedicados e alterações reversíveis.
 ## Próxima investigação
 
 A classe DYN permanece encerrada e a investigação atual ocorre na branch
-`research/freq-parameters`. As Fases 33 (`FREQ / Filter`) e 34 (`FREQ / Octaver`)
-estão implementadas e fisicamente aprovadas. O próximo passo é consolidar a Fase
-34 por commit/fast-forward e então seguir para o próximo efeito FREQ. Importação
-de IR e CLONE permanece um subsistema separado de arquivos externos.
+`research/freq-parameters`. As Fases 33 (`FREQ / Filter`), 34 (`FREQ / Octaver`)
+e 35 (`FREQ / Dual Melody`) estão fisicamente aprovadas e consolidadas. O
+próximo trabalho deve iniciar a Fase 36 com o próximo efeito da classe FREQ,
+mantendo a mesma rotina de captura, implementação, validação física e promoção
+por fast-forward à `main`. Importação de IR e CLONE permanece um subsistema
+separado de arquivos externos.
 
 ## Continuidade entre chats
 

@@ -37,6 +37,7 @@ AC_WOODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_woody_parameter
 GATE1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate1_parameters"
 FILTER_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "filter_parameters"
 OCTAVER_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "octaver_parameters"
+DUAL_MELODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "dual_melody_parameters"
 
 
 def make_chain(*, internal_slot_id: int, effect_key: str) -> ChainOrderState:
@@ -1381,6 +1382,111 @@ class OctaverParameterTests(unittest.TestCase):
             manifest["excluded_capture_sources"][0]["source"],
             "octaver_short_dump.pcapng",
         )
+
+class DualMelodyParameterTests(unittest.TestCase):
+    def test_all_physical_dual_melody_fixtures_decode_signed_values_by_chain_context(self) -> None:
+        fixtures = sorted(DUAL_MELODY_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 40)
+        manifest = json.loads(
+            (DUAL_MELODY_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        expected = {item["file"]: item for item in manifest["fixtures"]}
+        observed_slots = set()
+        observed_parameters = set()
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(), effect_key="freq.dual_melody"
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                item = expected[fixture.name]
+                observed_slots.add(event.human_slot)
+                observed_parameters.add(event.parameter_key)
+                self.assertEqual(event.class_id, 1)
+                self.assertEqual(event.class_key, "freq")
+                self.assertEqual(event.human_slot, item["slot"])
+                self.assertEqual(event.parameter_key, item["parameter"])
+                self.assertEqual(event.value, item["value"])
+        self.assertEqual(observed_slots, {1, 2})
+        self.assertEqual(
+            observed_parameters,
+            {"high_pitch", "low_pitch", "dry", "hi_vol", "low_vol"},
+        )
+
+    def test_dual_melody_low_pitch_decodes_native_negative_float32(self) -> None:
+        expected = {
+            "slot1_low_pitch_m024.bin": -24,
+            "slot1_low_pitch_m012.bin": -12,
+            "slot1_low_pitch_m001.bin": -1,
+            "slot1_low_pitch_000.bin": 0,
+        }
+        for filename, value in expected.items():
+            with self.subTest(filename=filename):
+                event = parse_effect_parameter_response(
+                    (DUAL_MELODY_FIXTURE_ROOT / filename).read_bytes(),
+                    effect_key="freq.dual_melody",
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                self.assertEqual(event.parameter_key, "low_pitch")
+                self.assertEqual(event.value, value)
+                self.assertEqual(event.display_value, str(value))
+
+    def test_dual_melody_slot2_updates_five_independent_parameters(self) -> None:
+        core = prepare_core(
+            make_chain(internal_slot_id=1, effect_key="freq.dual_melody")
+        )
+        for filename in (
+            "slot2_high_pitch_014.bin",
+            "slot2_low_pitch_m014.bin",
+            "slot2_dry_061.bin",
+            "slot2_hi_vol_062.bin",
+            "slot2_low_vol_063.bin",
+        ):
+            update = core.feed((DUAL_MELODY_FIXTURE_ROOT / filename).read_bytes())
+            self.assertIsNotNone(update.parameter_event)
+        assert update.snapshot is not None
+        effect = update.snapshot.effects[0]
+        self.assertEqual(
+            tuple(parameter.name for parameter in effect.parameters),
+            ("HIGH PITCH", "LOW PITCH", "DRY", "HI VOL", "LOW VOL"),
+        )
+        self.assertEqual(
+            tuple(parameter.value for parameter in effect.parameters),
+            (14, -14, 61, 62, 63),
+        )
+        formatted = format_monitor_snapshot(update.snapshot)
+        self.assertIn("HIGH PITCH: 14", formatted)
+        self.assertIn("LOW PITCH: -14", formatted)
+        self.assertIn("DRY: 61", formatted)
+        self.assertIn("HI VOL: 62", formatted)
+        self.assertIn("LOW VOL: 63", formatted)
+
+    def test_dual_melody_manifest_preserves_signed_evidence_and_selector_gap(self) -> None:
+        manifest = json.loads(
+            (DUAL_MELODY_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["effect"]["key"], "freq.dual_melody")
+        self.assertEqual(manifest["physical_binary_fixtures"], 40)
+        self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+        self.assertEqual(
+            tuple(parameter["selector"] for parameter in manifest["parameters"]),
+            (0, 1, 2, 4, 5),
+        )
+        self.assertEqual(
+            manifest["signed_value_validation"]["result"],
+            "negative_display_values_are_native_signed_float32_values_not_zero_based_indices",
+        )
+        self.assertEqual(
+            manifest["incoming_selector_gap"]["selector_3"],
+            "not_observed_in_device_to_host_parameter_responses",
+        )
+        self.assertEqual(
+            manifest["slot2_validation"]["result"],
+            "same_incoming_selectors_and_signed_float_codec_on_internal_slot_2",
+        )
+
 
 class FilterConditionalRateParameterTests(unittest.TestCase):
     def test_all_physical_filter_fixtures_decode_by_chain_effect_context(self) -> None:

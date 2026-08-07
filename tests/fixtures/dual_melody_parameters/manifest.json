@@ -1,0 +1,862 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "FREQ",
+    "class_id": 1,
+    "key": "freq.dual_melody",
+    "name": "Dual Melody",
+    "model_id": 35,
+    "secondary_selector": 1
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "parameter_envelope_class_field": {
+      "indices": [
+        41,
+        42
+      ],
+      "observed_value": [
+        0,
+        0
+      ],
+      "note": "Campo opaco; em FREQ permanece 00 00 e não representa o class_id estrutural."
+    },
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa model_id ou class_id estrutural."
+    }
+  },
+  "parameters": [
+    {
+      "key": "high_pitch",
+      "name": "HIGH PITCH",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 24,
+      "step": 1
+    },
+    {
+      "key": "low_pitch",
+      "name": "LOW PITCH",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": -24,
+      "maximum": 0,
+      "step": 1,
+      "signed_numeric_encoding": "native_float32_negative"
+    },
+    {
+      "key": "dry",
+      "name": "DRY",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "hi_vol",
+      "name": "HI VOL",
+      "selector": 4,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "low_vol",
+      "name": "LOW VOL",
+      "selector": 5,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "DualMelody_Hipitch_first_dump.pcapng",
+    "DualMelody_LowPitch_first_dump.pcapng",
+    "DualMelody_dry_first_dump.pcapng",
+    "DualMelody_HiVol_first_dump.pcapng",
+    "DualMelody_LowVol_first_dump.pcapng",
+    "DualMelody_UniqueValue_dump.pcapng",
+    "DualMelody_ShortValue_dump.pcapng"
+  ],
+  "combination_capture_validation": {
+    "source": "DualMelody_UniqueValue_dump.pcapng",
+    "sequence": [
+      "high_pitch_13",
+      "low_pitch_-13",
+      "dry_51",
+      "hi_vol_52",
+      "low_vol_53",
+      "high_pitch_12",
+      "low_pitch_-12",
+      "dry_50",
+      "hi_vol_50",
+      "low_vol_50"
+    ],
+    "result": "independent_messages_per_parameter_with_signed_low_pitch"
+  },
+  "slot2_validation": {
+    "source": "DualMelody_ShortValue_dump.pcapng",
+    "sequence": [
+      "high_pitch_14",
+      "high_pitch_12",
+      "low_pitch_-14",
+      "low_pitch_-12",
+      "dry_61",
+      "dry_50",
+      "hi_vol_62",
+      "hi_vol_50",
+      "low_vol_63",
+      "low_vol_50"
+    ],
+    "result": "same_incoming_selectors_and_signed_float_codec_on_internal_slot_2"
+  },
+  "signed_value_validation": {
+    "parameter": "low_pitch",
+    "observed_values": [
+      -24,
+      -23,
+      -14,
+      -13,
+      -12,
+      -1,
+      0
+    ],
+    "examples": [
+      {
+        "display_value": -24,
+        "encoded_value": [
+          12,
+          0,
+          12,
+          1
+        ],
+        "decoded_float32": -24.0
+      },
+      {
+        "display_value": -12,
+        "encoded_value": [
+          4,
+          0,
+          12,
+          1
+        ],
+        "decoded_float32": -12.0
+      },
+      {
+        "display_value": -1,
+        "encoded_value": [
+          8,
+          0,
+          11,
+          15
+        ],
+        "decoded_float32": -1.0
+      }
+    ],
+    "result": "negative_display_values_are_native_signed_float32_values_not_zero_based_indices"
+  },
+  "incoming_selector_gap": {
+    "observed_selectors": [
+      0,
+      1,
+      2,
+      4,
+      5
+    ],
+    "selector_3": "not_observed_in_device_to_host_parameter_responses",
+    "note": "Não inferir parâmetro oculto nem renumerar HI VOL/LOW VOL; o decoder usa a resposta física recebida."
+  },
+  "directional_selector_observation": {
+    "note": "Nas mensagens host->device vistas nas mesmas capturas, HI VOL/LOW VOL aparecem com seletor 3/4 enquanto as respostas device->host usam 4/5. Esta fase é somente leitura; escrita deve ser pesquisada separadamente.",
+    "device_to_host_selectors": {
+      "high_pitch": 0,
+      "low_pitch": 1,
+      "dry": 2,
+      "hi_vol": 4,
+      "low_vol": 5
+    }
+  },
+  "capture_observations": [
+    "HIGH PITCH confirma 0, 1, 12, 23 e 24 no slot humano 1.",
+    "LOW PITCH confirma valores float32 assinados reais entre -24 e 0, incluindo -24, -23, -12, -1 e 0.",
+    "DRY, HI VOL e LOW VOL confirmam 0, 1, 50, 99 e 100.",
+    "A captura combinada usa 13, -13, 51, 52 e 53 para provar independência dos cinco parâmetros.",
+    "A short no slot humano 2 confirma 14/-14/61/62/63 e retorno aos valores de referência.",
+    "O seletor 3 não aparece nas respostas device->host; HI VOL e LOW VOL são resolvidos por 4 e 5 respectivamente."
+  ],
+  "physical_binary_fixtures": 40,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_dry_000.bin",
+      "source": "DualMelody_dry_first_dump.pcapng",
+      "packet_index": 1728,
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ea16e240df8be46fbff2ca031e6015ceb753df9c49521d2e07d306a727f70140"
+    },
+    {
+      "file": "slot1_dry_001.bin",
+      "source": "DualMelody_dry_first_dump.pcapng",
+      "packet_index": 2152,
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "35c054c28a95a1a6c76fc8438e5cb5e6931bc7f9f72f3172f6f113ac93824812"
+    },
+    {
+      "file": "slot1_dry_050.bin",
+      "source": "DualMelody_dry_first_dump.pcapng",
+      "packet_index": 2844,
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "9c1d9ba124de982f28b34f66807d03c15fa90e4d8c9754c762a210ec95f5ee12"
+    },
+    {
+      "file": "slot1_dry_051.bin",
+      "source": "DualMelody_UniqueValue_dump.pcapng",
+      "packet_index": 5640,
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "839bc40f9a75903e2200d16f09b188ce27cc9b0a789f39504ab3f77345bd404a"
+    },
+    {
+      "file": "slot1_dry_099.bin",
+      "source": "DualMelody_dry_first_dump.pcapng",
+      "packet_index": 3508,
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "0a62da0f776fc4047975b733efee8d61b9fffce90c06548cbf99db98cef75280"
+    },
+    {
+      "file": "slot1_dry_100.bin",
+      "source": "DualMelody_dry_first_dump.pcapng",
+      "packet_index": 3696,
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "b9312c9f0739933e34e90ae1b88643288c4ed207d2e80ed73b2b95b45832c54d"
+    },
+    {
+      "file": "slot1_hi_vol_000.bin",
+      "source": "DualMelody_HiVol_first_dump.pcapng",
+      "packet_index": 1494,
+      "slot": 1,
+      "parameter": "hi_vol",
+      "selector": 4,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "0949fd10158ff797cd9c8d4c636d7a5d6c1b3a8274a4216e0fd3fcb304c07b4e"
+    },
+    {
+      "file": "slot1_hi_vol_001.bin",
+      "source": "DualMelody_HiVol_first_dump.pcapng",
+      "packet_index": 2104,
+      "slot": 1,
+      "parameter": "hi_vol",
+      "selector": 4,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "a418377ebbf8b944c107f3fff01e83cbc6f697d63445a9733ae5b9879d9c011c"
+    },
+    {
+      "file": "slot1_hi_vol_050.bin",
+      "source": "DualMelody_HiVol_first_dump.pcapng",
+      "packet_index": 2782,
+      "slot": 1,
+      "parameter": "hi_vol",
+      "selector": 4,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "1deb0c347da8b6fcb315acad30b60c4e52b1af4a4fe6fb428cc15d084ea3a0fc"
+    },
+    {
+      "file": "slot1_hi_vol_052.bin",
+      "source": "DualMelody_UniqueValue_dump.pcapng",
+      "packet_index": 6010,
+      "slot": 1,
+      "parameter": "hi_vol",
+      "selector": 4,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "e45bd43b29549a04e3d3ccd20eef7b797da3adfd9dfea19bf6f9e98846664d1a"
+    },
+    {
+      "file": "slot1_hi_vol_099.bin",
+      "source": "DualMelody_HiVol_first_dump.pcapng",
+      "packet_index": 3120,
+      "slot": 1,
+      "parameter": "hi_vol",
+      "selector": 4,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "3a652b852622672f064e5607c4f2f4db99eb848c7487e74955083e296278e5ec"
+    },
+    {
+      "file": "slot1_hi_vol_100.bin",
+      "source": "DualMelody_HiVol_first_dump.pcapng",
+      "packet_index": 3352,
+      "slot": 1,
+      "parameter": "hi_vol",
+      "selector": 4,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "475f36c47394c6adfa8023da1d1e7e6282229db3fe756bf4d3bdb578a34099f3"
+    },
+    {
+      "file": "slot1_high_pitch_000.bin",
+      "source": "DualMelody_Hipitch_first_dump.pcapng",
+      "packet_index": 4414,
+      "slot": 1,
+      "parameter": "high_pitch",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "99b42e28641aab0b5545d2b802914fdb71f0c610d2265754aa7f502386e7f3e4"
+    },
+    {
+      "file": "slot1_high_pitch_001.bin",
+      "source": "DualMelody_Hipitch_first_dump.pcapng",
+      "packet_index": 5106,
+      "slot": 1,
+      "parameter": "high_pitch",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "c819b1d34de0ed46d2b87310b6567572274e97a2f4a00ff75044f85dddafdb1d"
+    },
+    {
+      "file": "slot1_high_pitch_012.bin",
+      "source": "DualMelody_Hipitch_first_dump.pcapng",
+      "packet_index": 6340,
+      "slot": 1,
+      "parameter": "high_pitch",
+      "selector": 0,
+      "value": 12,
+      "encoded_value": [
+        4,
+        0,
+        4,
+        1
+      ],
+      "sha256": "39e3b848091496025da1f566fab09709c77110cce8a9fe78f33db30b514604b2"
+    },
+    {
+      "file": "slot1_high_pitch_013.bin",
+      "source": "DualMelody_UniqueValue_dump.pcapng",
+      "packet_index": 1454,
+      "slot": 1,
+      "parameter": "high_pitch",
+      "selector": 0,
+      "value": 13,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        1
+      ],
+      "sha256": "0808b42bb77b3f45078f00b4c0da5fad34337b1777bc53ef03cd7f7d010bf515"
+    },
+    {
+      "file": "slot1_high_pitch_023.bin",
+      "source": "DualMelody_Hipitch_first_dump.pcapng",
+      "packet_index": 9454,
+      "slot": 1,
+      "parameter": "high_pitch",
+      "selector": 0,
+      "value": 23,
+      "encoded_value": [
+        11,
+        8,
+        4,
+        1
+      ],
+      "sha256": "e424bddd226ea0f7d9bd06f315398504525b90dc551e3f82e33304f83fe36c4e"
+    },
+    {
+      "file": "slot1_high_pitch_024.bin",
+      "source": "DualMelody_Hipitch_first_dump.pcapng",
+      "packet_index": 9856,
+      "slot": 1,
+      "parameter": "high_pitch",
+      "selector": 0,
+      "value": 24,
+      "encoded_value": [
+        12,
+        0,
+        4,
+        1
+      ],
+      "sha256": "2c4047e874bdd767e60d636e8a1365397ae26e688df919b8fa9652284e83849a"
+    },
+    {
+      "file": "slot1_low_pitch_000.bin",
+      "source": "DualMelody_LowPitch_first_dump.pcapng",
+      "packet_index": 6214,
+      "slot": 1,
+      "parameter": "low_pitch",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ab9df250c39d5a365575b262aa09b42ee150634c2adf4cb5226358b8975c6cde"
+    },
+    {
+      "file": "slot1_low_pitch_m001.bin",
+      "source": "DualMelody_LowPitch_first_dump.pcapng",
+      "packet_index": 5656,
+      "slot": 1,
+      "parameter": "low_pitch",
+      "selector": 1,
+      "value": -1,
+      "encoded_value": [
+        8,
+        0,
+        11,
+        15
+      ],
+      "sha256": "21994b4feac084603576000fe20ca1f5f8d455772bf3dc6f53cf2330ac8694c1"
+    },
+    {
+      "file": "slot1_low_pitch_m012.bin",
+      "source": "DualMelody_LowPitch_first_dump.pcapng",
+      "packet_index": 5446,
+      "slot": 1,
+      "parameter": "low_pitch",
+      "selector": 1,
+      "value": -12,
+      "encoded_value": [
+        4,
+        0,
+        12,
+        1
+      ],
+      "sha256": "60c2b18c9d98a4fbd3d0dca07c9fa102d0fe91359494d0ba4fefb1876f4f20d6"
+    },
+    {
+      "file": "slot1_low_pitch_m013.bin",
+      "source": "DualMelody_UniqueValue_dump.pcapng",
+      "packet_index": 2650,
+      "slot": 1,
+      "parameter": "low_pitch",
+      "selector": 1,
+      "value": -13,
+      "encoded_value": [
+        5,
+        0,
+        12,
+        1
+      ],
+      "sha256": "7ced6c00f4de19882427f24bcee3e58eb4dca4f1a5dd0d3b869232a1e7cebb5d"
+    },
+    {
+      "file": "slot1_low_pitch_m023.bin",
+      "source": "DualMelody_LowPitch_first_dump.pcapng",
+      "packet_index": 5084,
+      "slot": 1,
+      "parameter": "low_pitch",
+      "selector": 1,
+      "value": -23,
+      "encoded_value": [
+        11,
+        8,
+        12,
+        1
+      ],
+      "sha256": "603e10387e9051974db12552f98a5b6cb243ad6ee08d66272ff601059ec7b221"
+    },
+    {
+      "file": "slot1_low_pitch_m024.bin",
+      "source": "DualMelody_LowPitch_first_dump.pcapng",
+      "packet_index": 4414,
+      "slot": 1,
+      "parameter": "low_pitch",
+      "selector": 1,
+      "value": -24,
+      "encoded_value": [
+        12,
+        0,
+        12,
+        1
+      ],
+      "sha256": "a7e760527b655fd9a78f2e2402ae716ed849ad5cba1cc71d24c8e5f900749f0e"
+    },
+    {
+      "file": "slot1_low_vol_000.bin",
+      "source": "DualMelody_LowVol_first_dump.pcapng",
+      "packet_index": 1526,
+      "slot": 1,
+      "parameter": "low_vol",
+      "selector": 5,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "e40c608f40e125b4f3f02ead294914882cb62cbe52ccf5cf72a3addef747915a"
+    },
+    {
+      "file": "slot1_low_vol_001.bin",
+      "source": "DualMelody_LowVol_first_dump.pcapng",
+      "packet_index": 2156,
+      "slot": 1,
+      "parameter": "low_vol",
+      "selector": 5,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "cb75f9a1930112f83d5860e0c40c90ae7a225dc232065730dc283e312f86f93f"
+    },
+    {
+      "file": "slot1_low_vol_050.bin",
+      "source": "DualMelody_LowVol_first_dump.pcapng",
+      "packet_index": 2652,
+      "slot": 1,
+      "parameter": "low_vol",
+      "selector": 5,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "6122ea7fdbc9ca3f7b05af2603639877722b6123120db48fe292fc657f046c69"
+    },
+    {
+      "file": "slot1_low_vol_053.bin",
+      "source": "DualMelody_UniqueValue_dump.pcapng",
+      "packet_index": 6544,
+      "slot": 1,
+      "parameter": "low_vol",
+      "selector": 5,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "c968badf8097e4dd5ab1216e05f82af844303abb88d05824772d4ea2c6e0b41d"
+    },
+    {
+      "file": "slot1_low_vol_099.bin",
+      "source": "DualMelody_LowVol_first_dump.pcapng",
+      "packet_index": 2792,
+      "slot": 1,
+      "parameter": "low_vol",
+      "selector": 5,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "4479094c7c722c8d3644833a4b8ade74eeb98dc7a0e1b9150adc148e9642428d"
+    },
+    {
+      "file": "slot1_low_vol_100.bin",
+      "source": "DualMelody_LowVol_first_dump.pcapng",
+      "packet_index": 3034,
+      "slot": 1,
+      "parameter": "low_vol",
+      "selector": 5,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "26f635b16fbc6893a0d0763cc4400e8c24fda5718c5c1e142b6f4a9e48a97526"
+    },
+    {
+      "file": "slot2_dry_050.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 2598,
+      "slot": 2,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d0b536969616b610bdba9495c7b08a40d6dcbfbee5695513ca621f895b4acb43"
+    },
+    {
+      "file": "slot2_dry_061.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 2282,
+      "slot": 2,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 61,
+      "encoded_value": [
+        7,
+        4,
+        4,
+        2
+      ],
+      "sha256": "d83cf6b24193fd41fee74b597fbb6f9faae210c8770c1ebb7abbf5677bb44bc8"
+    },
+    {
+      "file": "slot2_hi_vol_050.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 3676,
+      "slot": 2,
+      "parameter": "hi_vol",
+      "selector": 4,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "8936538aa3932a8ff409469110808cc1e2fa69eb28b1506f67ac2d494e58ab85"
+    },
+    {
+      "file": "slot2_hi_vol_062.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 2942,
+      "slot": 2,
+      "parameter": "hi_vol",
+      "selector": 4,
+      "value": 62,
+      "encoded_value": [
+        7,
+        8,
+        4,
+        2
+      ],
+      "sha256": "1a2f3f22c4ee05bb003e39dd1c079a5ce56d1291c90bcaf204bf40c716c1454e"
+    },
+    {
+      "file": "slot2_high_pitch_012.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 1688,
+      "slot": 2,
+      "parameter": "high_pitch",
+      "selector": 0,
+      "value": 12,
+      "encoded_value": [
+        4,
+        0,
+        4,
+        1
+      ],
+      "sha256": "9239a12199fa41e09df3e171c81872b1d36045ffe68ce239b3cb3ff641d08d3f"
+    },
+    {
+      "file": "slot2_high_pitch_014.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 1298,
+      "slot": 2,
+      "parameter": "high_pitch",
+      "selector": 0,
+      "value": 14,
+      "encoded_value": [
+        6,
+        0,
+        4,
+        1
+      ],
+      "sha256": "1e4bfeafbcc3909bf155aecf573599e0e1032e7fc42aba8d98514d7566e162ef"
+    },
+    {
+      "file": "slot2_low_pitch_m012.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 1990,
+      "slot": 2,
+      "parameter": "low_pitch",
+      "selector": 1,
+      "value": -12,
+      "encoded_value": [
+        4,
+        0,
+        12,
+        1
+      ],
+      "sha256": "092387bc07cf324737122f3f01d0d877b698979f6ce0186a1376a9a19d651de6"
+    },
+    {
+      "file": "slot2_low_pitch_m014.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 1882,
+      "slot": 2,
+      "parameter": "low_pitch",
+      "selector": 1,
+      "value": -14,
+      "encoded_value": [
+        6,
+        0,
+        12,
+        1
+      ],
+      "sha256": "878d4df76a56c12c0a8b60f5a7c7db15672d03d0a52b5328271f6da5c32be4c0"
+    },
+    {
+      "file": "slot2_low_vol_050.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 4724,
+      "slot": 2,
+      "parameter": "low_vol",
+      "selector": 5,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "34b70126a6393556cbe2f4229c221e53a1d7a24a7b1a570d892b059e8ea1ffa3"
+    },
+    {
+      "file": "slot2_low_vol_063.bin",
+      "source": "DualMelody_ShortValue_dump.pcapng",
+      "packet_index": 4222,
+      "slot": 2,
+      "parameter": "low_vol",
+      "selector": 5,
+      "value": 63,
+      "encoded_value": [
+        7,
+        12,
+        4,
+        2
+      ],
+      "sha256": "eec4bba08845294725e504ac323097587d137047c4e11851b9e0102685f73c3c"
+    }
+  ]
+}

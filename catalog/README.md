@@ -22,7 +22,7 @@ Os 16 índices de classe e os 267 efeitos foram exportados do catálogo Python
 histórico. Todos preservam menu, nome, ID de classe, ID de modelo e seletor
 secundário.
 
-Quatorze efeitos DYN e dois efeitos FREQ possuem parâmetros internos catalogados, totalizando 56
+Quatorze efeitos DYN e três efeitos FREQ possuem parâmetros internos catalogados, totalizando 61
 controles físicos:
 
 ```text
@@ -42,6 +42,7 @@ AC SIM  | BODY, TOP, VOLUME, MODE             | inteiros + enum nomeado | seleto
 GATE 3  | THRESHOLD, RATIO, ATTACK, RELEASE, HOLD | inteiros + tempos em ms | seletores 0–4
 FILTER  | STEP 1, STEP 2, STEP 3, STEP 4, RATE, SYNC | inteiros + domínio condicionado + booleano | seletores 0–5
 OCTAVER | LOW OCT, HIGH OCT, DRY             | inteiro 0–100 | seletores 0–2
+DUAL MELODY | HIGH PITCH, LOW PITCH, DRY, HI VOL, LOW VOL | inteiros; LOW PITCH assinado | seletores 0,1,2,4,5
 ```
 
 No AC SIM, `MODE` usa os mesmos valores numéricos do codec compartilhado,
@@ -54,6 +55,13 @@ precisão integral em milissegundos; a configuração `display` do parâmetro
 determina a conversão adaptativa para `ms` ou `s`, sem lógica específica do
 efeito no monitor.
 
+
+No DUAL MELODY, `LOW PITCH` é o primeiro intervalo numérico assinado
+fisicamente comprovado no catálogo: a pedaleira transmite valores negativos
+reais em float32 (`-24` a `0`), e não um índice 0-based convertido apenas para
+a tela. O mesmo `upper_float32_nibbles_v1` já usado pelos inteiros positivos
+decodifica corretamente o bit de sinal. As respostas device->host usam os
+seletores `0, 1, 2, 4, 5`; o seletor 3 não é renumerado nem inventado.
 
 No FILTER, `RATE` mantém o seletor 4 nos dois domínios. Com `SYNC = OFF`,
 é numérico `0–100` e o default implícito é `10`; com `SYNC = ON`, os valores
@@ -70,7 +78,7 @@ O comando `0x1C` não identifica sozinho o modelo do efeito. O slot recebido é
 cruzado com a cadeia estrutural atual; somente então o seletor é interpretado
 dentro do efeito correto.
 
-Os outros 251 efeitos permanecem com:
+Os outros 250 efeitos permanecem com:
 
 ```json
 "parameter_catalog_status": "pending",

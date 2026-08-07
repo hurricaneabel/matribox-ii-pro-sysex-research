@@ -3,9 +3,9 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 33 — FREQ / FILTER fisicamente aprovado e promovido
-> **Trabalho atual:** Fase 34 — FREQ / OCTAVER implementada, aguardando validação física no monitor
-> **Próximo passo:** validar OCTAVER fisicamente nos slots humanos 1 e 2; somente depois preparar commit e promoção à `main`
+> **Marco consolidado:** Fase 35 — FREQ / DUAL MELODY fisicamente aprovada
+> **Trabalho atual:** Fase 35 concluída; branch de pesquisa pronta para a próxima investigação FREQ
+> **Próximo passo:** consolidar este estado em `research/freq-parameters`, promover por fast-forward à `main` e iniciar a Fase 36 com o próximo efeito FREQ
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/freq-parameters`
 
@@ -91,8 +91,8 @@ O estado atual já permite:
   `s` conforme o catálogo;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e 56 parâmetros confirmados por
-  capturas em quatorze efeitos DYN e dois efeitos FREQ a partir de um catálogo
+- carregar as 16 classes, 267 efeitos e 61 parâmetros confirmados por
+  capturas em quatorze efeitos DYN e três efeitos FREQ a partir de um catálogo
   JSON versionado e independente de Python/Windows;
 - representar parâmetros com domínio condicionado, como RATE do FILTER, sem
   fabricar mensagens USB para defaults implícitos do dispositivo.
@@ -378,7 +378,7 @@ tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 
 M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC-BOOST, BB-BOOST, RC-BOOST,
 FAT BOOST, AC WOODY, AC SIM, GATE 1, GATE 2 e GATE 3 são os quatorze efeitos
-DYN preenchidos. FILTER e OCTAVER são os dois primeiros efeitos FREQ parametrizados. Os outros 251
+DYN preenchidos. FILTER, OCTAVER e DUAL MELODY são os três primeiros efeitos FREQ parametrizados. Os outros 250
 efeitos permanecem explicitamente `pending`, sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
@@ -503,11 +503,11 @@ necessário para desambiguar casos como modelos AMP distintos com o mesmo ID.
 
 O catálogo usa JSON Schema Draft 2020-12, caminhos relativos portáteis e
 versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
-futuro, por Kotlin/Android e desktop. Nesta candidata há 56 parâmetros
-fisicamente confirmados em quatorze efeitos DYN e um FREQ. O AC SIM usa
+futuro, por Kotlin/Android e desktop. Nesta candidata há 61 parâmetros
+fisicamente confirmados em quatorze efeitos DYN e três FREQ. O AC SIM usa
 `value_type: enum`, o GATE 3 usa `float32_nibbles_v1` e apresentação de tempo,
 e o FILTER introduz `value_domain` controlado por outro parâmetro. Os outros
-251 efeitos permanecem sem dados inventados.
+250 efeitos permanecem sem dados inventados.
 
 ## 10. Histórico consolidado das Fases 14–24
 
@@ -1385,3 +1385,72 @@ aprovação remove essa linha antes do commit final.
 6. promover por fast-forward à `main`;
 7. voltar para `research/freq-parameters` e confirmar `nothing to commit`;
 8. iniciar o próximo efeito da classe FREQ.
+
+## 22. Fase 35 consolidada — FREQ / DUAL MELODY
+
+A Fase 34 foi fisicamente aprovada, commitada e promovida. A investigação FREQ
+avançou para DUAL MELODY. Sete capturas físicas controladas confirmaram cinco
+parâmetros recebidos no comando `0x1C`:
+
+```text
+HIGH PITCH = seletor 0, inteiro 0–24
+LOW PITCH  = seletor 1, inteiro -24–0
+DRY        = seletor 2, inteiro 0–100
+HI VOL     = seletor 4, inteiro 0–100
+LOW VOL    = seletor 5, inteiro 0–100
+```
+
+A principal descoberta é que LOW PITCH usa valores float32 negativos reais.
+`-24`, `-23`, `-12`, `-1` e `0` foram observados diretamente no wire; não há
+offset 0-based nem enum de apresentação. O codec `upper_float32_nibbles_v1` já
+decodifica esses valores corretamente, então nenhum novo codec foi criado.
+
+O seletor 3 não aparece nas respostas device->host. HI VOL e LOW VOL permanecem
+respectivamente em 4 e 5. As mensagens host->device presentes nas capturas
+mostram uma assimetria 3/4 para esses dois controles; por isso a Fase 35 é
+estritamente de leitura e não autoriza escrita de DUAL MELODY.
+
+Evidência preservada:
+
+```text
+40 fixtures físicas
+slot humano 1 → 30
+slot humano 2 → 10
+```
+
+`catalog_version` passa a 13. O catálogo fica com 17 efeitos parametrizados,
+61 parâmetros catalogados e 250 efeitos pendentes. Não houve alteração em
+decoder, codecs, estado ou monitor.
+
+Validação offline final:
+
+```text
+Ran 418 tests
+OK
+compileall: aprovado
+git diff --check: aprovado
+```
+
+### Validação física final
+
+A Fase 35 foi aprovada no monitor principal. HIGH PITCH acompanhou valores
+positivos; LOW PITCH acompanhou corretamente valores negativos reais, incluindo
+pontos próximos aos extremos e o retorno a zero; DRY, HI VOL e LOW VOL
+permaneceram independentes. O bypass foi validado sem perda dos últimos valores
+e duas instâncias de DUAL MELODY em posições diferentes da cadeia mantiveram
+estados independentes.
+
+A validação ao vivo também confirmou que a resolução continua vinculada ao slot
+interno real e ao modelo presente na cadeia. Nenhuma escrita de parâmetro foi
+implementada; a assimetria host->device de HI VOL/LOW VOL permanece apenas como
+evidência para uma pesquisa futura.
+
+### Próximo passo exato
+
+1. revisar o escopo final da Fase 35 em `research/freq-parameters`;
+2. adicionar somente os arquivos desta fase ao índice;
+3. executar `git diff --cached --stat` e `git diff --cached --check`;
+4. criar o commit da Fase 35 e enviar `research/freq-parameters`;
+5. promover o mesmo commit por `git merge --ff-only` para `main` e enviar;
+6. voltar para `research/freq-parameters` e confirmar árvore limpa;
+7. iniciar a Fase 36 com o próximo efeito da classe FREQ.

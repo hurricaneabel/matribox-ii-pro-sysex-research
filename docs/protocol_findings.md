@@ -1525,3 +1525,54 @@ A cadeia foi expandida e uma terceira instância no slot humano 7 recebeu
 52/73/42 sem contaminação dos estados anteriores, reforçando que a resolução de
 parâmetros continua vinculada ao slot interno real e ao modelo presente na
 cadeia.
+
+## Fase 35 — DUAL MELODY e primeiro intervalo numérico assinado
+
+As sete capturas controladas do `FREQ / Dual Melody` confirmaram as respostas
+de parâmetro `0x1C` com os seguintes seletores device->host:
+
+```text
+HIGH PITCH = 0 | LOW PITCH = 1 | DRY = 2 | HI VOL = 4 | LOW VOL = 5
+```
+
+HIGH PITCH usa `0–24`; LOW PITCH usa `-24–0`; DRY, HI VOL e LOW VOL usam
+`0–100`. O seletor 3 não apareceu em nenhuma resposta recebida e não deve ser
+preenchido por inferência.
+
+LOW PITCH comprovou que o valor negativo exibido pela pedaleira é o próprio
+valor numérico transportado, não um índice interno convertido pela interface.
+Exemplos do payload consumido por `upper_float32_nibbles_v1`:
+
+```text
+-24 → 0C 00 0C 01 → float32 -24.0
+-12 → 04 00 0C 01 → float32 -12.0
+ -1 → 08 00 0B 0F → float32  -1.0
+  0 → 00 00 00 00 → float32   0.0
+```
+
+Portanto, nenhum offset ou enum foi criado. O codec existente já reconstrói o
+bit de sinal corretamente porque os dois bytes superiores do float32 contêm o
+sinal, expoente e parte suficiente da mantissa para esses valores inteiros.
+
+A captura combinada no slot humano 1 confirmou valores independentes
+`13 / -13 / 51 / 52 / 53` e retorno a `12 / -12 / 50 / 50 / 50`. A short no
+slot humano 2 confirmou `14 / -14 / 61 / 62 / 63` e os retornos correspondentes.
+Foram preservadas 40 fixtures físicas únicas.
+
+As mesmas capturas revelaram uma assimetria que deve permanecer documentada:
+nas mensagens host->device observadas, HI VOL/LOW VOL aparecem com seletores
+3/4, enquanto as respostas device->host usadas pelo monitor chegam com 4/5.
+A Fase 35 é somente leitura; esses dados não autorizam implementar escrita de
+DUAL MELODY sem uma pesquisa direcional própria.
+
+### Validação física da Fase 35
+
+A integração foi aprovada no monitor principal. HIGH PITCH acompanhou valores
+positivos e LOW PITCH preservou corretamente valores negativos reais até o
+retorno a zero. DRY, HI VOL e LOW VOL responderam de forma independente. O
+bypass foi validado preservando os últimos valores, e duas instâncias de DUAL
+MELODY em posições diferentes da cadeia mantiveram estados independentes.
+
+A suíte final permaneceu íntegra com 418 testes aprovados, além de `compileall`
+e `git diff --check`. O catálogo encerra a fase com 17 efeitos parametrizados,
+61 parâmetros catalogados, 250 efeitos pendentes e `catalog_version = 13`.
