@@ -240,6 +240,38 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
             ("21", "43", "-17", "65"),
         )
 
+    def test_tape_mod_hydrates_four_values_and_ignores_residual_selector(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 21,
+                (0, 1): 43,
+                (0, 2): 65,
+                (0, 3): 87,
+                (0, 4): 10,
+            }),
+            make_chain((0, "freq.tape_mod")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("saturation", 21),
+                ("mix", 43),
+                ("volume", 65),
+                ("high_cut", 87),
+            ),
+        )
+
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        snapshot = build_effect_snapshots(
+            make_chain((0, "freq.tape_mod")), state
+        )[0]
+        self.assertEqual(
+            tuple(parameter.display_value for parameter in snapshot.parameters),
+            ("21", "43", "65", "87"),
+        )
+
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(
             make_dump({(0, 0): 31.5, (0, 1): 67}),
