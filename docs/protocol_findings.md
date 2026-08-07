@@ -1690,3 +1690,24 @@ A validação física final usou uma cadeia com os doze slots ocupados. Duas
 instâncias de Pitch S, posicionadas em regiões diferentes, preservaram estados
 independentes e coexistiram com múltiplos COMP1. Isso confirma que o mapa
 continua vinculado ao slot interno real mesmo sob ocupação máxima.
+
+## Fase 40 — RING MOD e FINE assinado
+
+`FREQ / Ring Mod` usa `class_id 0x01`, `model_id 0x2F` e quatro seletores:
+
+```text
+0 MIX | 1 FREQ. | 2 FINE | 3 TONE
+```
+
+MIX, FREQ. e TONE usam 0–100. FINE usa -50–50 e preserva valores negativos
+nativos no mesmo codec float32. Defaults: `50 / 50 / 0 / 50`. Três dumps
+completos e uma varredura ao vivo confirmaram o mapa. O valor 9 extra acionado
+em FREQ. foi identificado pela ordem informada e tratado como evidência válida.
+
+O seletor 4 continha novamente `10.0` residual, sem controle ou resposta ao vivo
+correspondente. O catálogo limitado a 0–3 impede sua hidratação.
+
+A validação física final confirmou duas instâncias simultâneas nas posições
+visuais 4 e 12 de uma cadeia com os doze slots ocupados. FINE preservou `-33` e
+`20` independentemente, MIX aceitou zero e não houve colisão com múltiplos
+COMP1.

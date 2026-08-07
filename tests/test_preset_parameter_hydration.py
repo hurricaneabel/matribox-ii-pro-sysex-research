@@ -213,6 +213,33 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
             ("-1 OCT", "21", "43", "65"),
         )
 
+    def test_ring_mod_hydrates_signed_fine_and_ignores_residual_selector(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 21,
+                (0, 1): 43,
+                (0, 2): -17,
+                (0, 3): 65,
+                (0, 4): 10,
+            }),
+            make_chain((0, "freq.ring_mod")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("mix", 21), ("freq", 43), ("fine", -17), ("tone", 65)),
+        )
+
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        snapshot = build_effect_snapshots(
+            make_chain((0, "freq.ring_mod")), state
+        )[0]
+        self.assertEqual(
+            tuple(parameter.display_value for parameter in snapshot.parameters),
+            ("21", "43", "-17", "65"),
+        )
+
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(
             make_dump({(0, 0): 31.5, (0, 1): 67}),

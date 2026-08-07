@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 16
+CATALOG_VERSION = 17
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -1454,6 +1454,58 @@ PITCH_S_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
 )
 
 
+RING_MOD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": minimum, "maximum": maximum, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [minimum, maximum],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "multiple_parameters": True,
+            "saved_dump_default": default,
+            "physical_saved_dump_count": 3,
+            "physical_live_sweep": True,
+            "evidence": "docs/phases/FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md",
+            "monitor_integration_physical_validation": "pending",
+            **(
+                {
+                    "signed_numeric_encoding": "native_float32_negative",
+                    "signed_values_physically_observed": [-49, -17, -16, -1],
+                    "documented_domain_minimum": -50,
+                }
+                if key == "fine"
+                else {}
+            ),
+        },
+    }
+    for key, name, order, selector, minimum, maximum, default in (
+        ("mix", "MIX", 1, 0, 0, 100, 50),
+        ("freq", "FREQ.", 2, 1, 0, 100, 50),
+        ("fine", "FINE", 3, 2, -50, 50, 0),
+        ("tone", "TONE", 4, 3, 0, 100, 50),
+    )
+)
+
+
 FILTER_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple([{'key': 'step_1',
   'name': 'STEP 1',
   'display_order': 1,
@@ -1689,6 +1741,10 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "freq.pitch_s" and not parameters:
         parameters = list(PITCH_S_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "freq.ring_mod" and not parameters:
+        parameters = list(RING_MOD_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:

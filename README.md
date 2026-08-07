@@ -85,6 +85,12 @@ valor residual encontrado no seletor 4 do slot reutilizado. A suíte offline
 passou com 449 testes. A validação física aprovou duas instâncias em uma cadeia
 com doze efeitos, hidratação e alterações em tempo real.
 
+A Fase 40 adiciona `FREQ / Ring Mod` com MIX, FREQ., FINE e TONE.
+FINE preserva valores negativos nativos de -50 a 50. Como no Pitch S, um campo
+residual no seletor 4 é ignorado por não pertencer ao efeito. A suíte offline
+passou com 451 testes. A validação física aprovou duas instâncias em uma cadeia
+com doze efeitos, incluindo FINE negativo e positivo.
+
 O primeiro parâmetro interno concluído foi o `GAIN` do `DYN / M-BOOST`. Desde a
 Fase 36, o monitor hidrata o valor salvo antes do primeiro evento ao vivo e
 depois atualiza a instância correta. O validador histórico permanece:
@@ -722,7 +728,8 @@ fisicamente aprovadas. A Fase 37 adiciona `FREQ / Pitch` com HI PITCH, LOW
 PITCH, WET, DRY e RANGE, incluindo hidratação dos defaults salvos e LOW PITCH
 negativo. A integração física também foi aprovada. O `Harmony D` foi igualmente
 aprovado com enums nomeados e múltiplas instâncias. O `Pitch S` também foi
-aprovado sob ocupação máxima da cadeia. O próximo efeito FREQ é `Ring Mod`.
+aprovado sob ocupação máxima da cadeia. O `Ring Mod` também foi aprovado com
+duas instâncias independentes. O próximo efeito FREQ é o `Tape Mod`.
 Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats

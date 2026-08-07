@@ -3,9 +3,9 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 39 — FREQ / Pitch S fisicamente aprovado
-> **Trabalho atual:** consolidar e publicar a Fase 39 pelo usuário
-> **Próximo passo:** iniciar FREQ / Ring Mod
+> **Marco consolidado:** Fase 40 — FREQ / Ring Mod fisicamente aprovado
+> **Trabalho atual:** consolidar e publicar a Fase 40 pelo usuário
+> **Próximo passo:** iniciar FREQ / Tape Mod
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/freq-parameters`
 
@@ -95,8 +95,8 @@ O estado atual já permite:
   separados por slot interno, efeito e parâmetro;
 - hidratar valores persistidos dos parâmetros catalogados ao carregar o preset
   e após adicionar, substituir ou reordenar efeitos;
-- carregar as 16 classes, 267 efeitos e 76 parâmetros confirmados por
-  capturas em quatorze efeitos DYN e seis efeitos FREQ a partir de um catálogo
+- carregar as 16 classes, 267 efeitos e 80 parâmetros confirmados por
+  capturas em quatorze efeitos DYN e sete efeitos FREQ a partir de um catálogo
   JSON versionado e independente de Python/Windows;
 - representar parâmetros com domínio condicionado, como RATE do FILTER, sem
   fabricar mensagens USB para defaults implícitos do dispositivo.
@@ -418,8 +418,8 @@ tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 
 M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC-BOOST, BB-BOOST, RC-BOOST,
 FAT BOOST, AC WOODY, AC SIM, GATE 1, GATE 2 e GATE 3 são os quatorze efeitos
-DYN preenchidos. FILTER, OCTAVER, DUAL MELODY, PITCH, HARMONY D e PITCH S são
-os seis primeiros efeitos FREQ parametrizados. Os outros 247 efeitos permanecem explicitamente
+DYN preenchidos. FILTER, OCTAVER, DUAL MELODY, PITCH, HARMONY D, PITCH S e
+RING MOD são os sete primeiros efeitos FREQ parametrizados. Os outros 246 efeitos permanecem explicitamente
 `pending`, sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
@@ -1617,3 +1617,26 @@ coexistência com múltiplos COMP1 não produziu colisões.
 2. revisar e executar commit e push pelo usuário;
 3. manter `main` sem integração até encerrar a pesquisa FREQ;
 4. iniciar `FREQ / Ring Mod` usando 56B para descoberta e 56C para validação.
+
+## 27. Atualização atual — candidata da Fase 40: FREQ / Ring Mod
+
+Três dumps completos e uma varredura ao vivo confirmaram MIX 0, FREQ. 1,
+FINE 2 e TONE 3. FINE usa -50–50 com negativos nativos; os demais controles
+usam 0–100. Defaults: `50 / 50 / 0 / 50`.
+
+O `10.0` residual no seletor 4 não corresponde a um controle e é ignorado pelo
+catálogo. A candidata eleva `catalog_version` para 17, com 21 efeitos
+parametrizados, 80 parâmetros e 246 efeitos pendentes. A suíte offline possui
+451 testes aprovados.
+
+A validação física foi aprovada no preset 56C com doze efeitos. Duas instâncias
+de Ring Mod nas posições 4 e 12 mantiveram MIX, FREQ., FINE e TONE
+independentes. MIX 0, FINE `-33` e FINE `20` foram exibidos corretamente e a
+coexistência com múltiplos COMP1 não produziu colisões.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/freq-parameters`;
+2. revisar e executar commit e push pelo usuário;
+3. manter `main` sem integração até encerrar a pesquisa FREQ;
+4. iniciar `FREQ / Tape Mod` usando 56B para descoberta e 56C para validação.
