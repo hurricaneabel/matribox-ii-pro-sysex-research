@@ -1849,3 +1849,106 @@ A validação final confirmou alterações ao vivo nos dois domínios. Uma inst�
 na posição visual 12 preservou DEPTH 58, RATE 8,7 Hz, VOLUME 100, LOW 54, Q 70,
 HIGH 60 e SYNC OFF, coexistindo com múltiplos COMP1. A Fase 47 encerra a classe
 WAH.
+
+## Fase 48 — Skreamer e início da classe DRIVE
+
+`DRIVE / Skreamer` usa a identidade estrutural `03 / 00 / 03`. O mapa físico é:
+
+```text
+0 GAIN | 1 TONE | 2 VOLUME
+```
+
+Os três controles usam inteiros 0–100 com padrões 40, 70 e 50. Dumps completos
+preservaram `40 / 70 / 50`, `21 / 43 / 65` e `22 / 44 / 66`. A varredura ao
+vivo confirmou eventos independentes nos seletores 0–2, usando o envelope 0x1C
+e o codec de nibbles superiores já conhecido.
+
+Os quinze floats do slot mostram zero nos seletores 3–14. Não há resíduos de
+outros modelos nem campos implícitos no Skreamer. A hidratação fica limitada
+aos três parâmetros declarados. A integração final confirmou GAIN 60, TONE 55
+e VOLUME 78; a Fase 48 está aprovada.
+
+## Fase 49 — Skreamer 9 inferido sem captura
+
+O manual atribui GAIN, TONE e VOLUME tanto ao Skreamer quanto ao Skreamer 9.
+Como a identidade `03 / 01 / 03` do segundo modelo já era conhecida, o layout
+validado `0 / 1 / 2` foi aplicado como inferência controlada.
+
+A entrada registra a fonte `drv.skreamer` e não declara defaults. O monitor
+confirmou hidratação, alterações ao vivo e funcionamento em uma cadeia cheia.
+O modelo foi promovido sem PCAPNG próprio.
+
+## Fase 50 — Butter OD e residual no seletor 2
+
+`DRIVE / Butter OD` usa a identidade `03 / 02 / 03`. O mapa confirmado é:
+
+```text
+0 GAIN | 1 VOLUME
+```
+
+Ambos usam 0–100; os padrões informados são 40 e 70. A captura combinada trouxe
+dois dumps completos com `21 / 65 / 50`. O seletor 2 não possui controle e não
+produziu evento ao vivo, portanto o 50 é residual e fica fora do catálogo.
+
+A varredura confirmou 0, 1, 50, 99 e 100 em GAIN e VOLUME. A hidratação lê
+somente 0–1. A validação final confirmou duas instâncias independentes em cadeia
+cheia: `0 / 48` na posição 4 e `82 / 81` na posição 12.
+
+## Fase 51 — Warm OD e Super OD validados
+
+O manual atribui GAIN, TONE e VOLUME aos dois modelos. O layout 0–2 validado por
+Skreamer e Skreamer 9 foi aplicado a Warm OD (`03 / 04 / 03`) e Super OD
+(`03 / 06 / 03`).
+
+Defaults informados: Warm `40 / 50 / 50`; Super `50 / 50 / 50`. A fonte é a
+interface oficial, não um dump capturado.
+
+A validação física confirmou duas instâncias simultâneas de cada modelo numa
+cadeia com outras classes: Warm OD nas posições 4 (`13 / 24 / 18`) e 10
+(`68 / 81 / 84`), e Super OD nas posições 5 (`24 / 15 / 11`) e 11
+(`78 / 85 / 84`). Hidratação, alterações ao vivo e estado desligado foram
+exibidos corretamente. Ambos passam a `physically_validated`.
+
+## Observação aberta — foco visual do aplicativo oficial
+
+Quando o script envia uma alteração de efeito para um slot diferente do
+primeiro, a pedaleira altera o destino correto, mas o aplicativo oficial volta
+a destacar visualmente o slot 1. Isso não indica erro no endereço estrutural do
+comando: cadeia e parâmetros confirmam que o slot solicitado foi modificado.
+
+A hipótese atual é uma dessincronização de estado da interface: como a edição
+não foi iniciada pelo aplicativo oficial, ele pode tratar a notificação da
+pedaleira como uma atualização externa sem contexto de foco. Ainda não há
+evidência de que o foco visual faça parte do SysEx de alteração de efeito. Para
+determinar se o comportamento pode ser eliminado, é necessária uma captura
+curta comparando a seleção e alteração do slot 1 com outro slot pelo aplicativo
+oficial. Nenhum byte será alterado por inferência enquanto esse campo não for
+isolado.
+
+## Fase 52 — Blues OD e Full OD
+
+Full OD (`03 / 0A / 03`) confirmou os seletores 0=GAIN, 1=TONE, 2=VOLUME e
+3=MODE. Os numéricos usam 0–100; MODE usa LP=0 e HP=1. O dump salvo continha
+`21 / 43 / 65 / HP`, e os eventos ao vivo confirmaram `22 / 44 / 66`, extremos
+0/100 e alternância do MODE. Os defaults informados são `40 / 60 / 50 / HP`.
+
+Blues OD (`03 / 09 / 03`) usa 0=GAIN, 1=TONE e 2=VOLUME, com defaults
+informados `40 / 60 / 50`. O monitor confirmou Blues nas posições 4 e 10 e
+Full nas posições 5 e 11, incluindo LP/HP, numa cadeia cheia. Ambos passam a
+`physically_validated`.
+
+## Fase 53 — Breaker OD e Gerden OD
+
+Breaker OD (`03 / 0E / 03`) mostra GAIN, TONE e VOLUME no firmware atual,
+divergindo da descrição do manual. Ele recebe como candidata a assinatura
+consecutiva 0–2, com padrões informados `60 / 50 / 50`.
+
+Gerden OD (`03 / 10 / 03`) confirmou 0=GAIN, 1=TONE, 2=VOLUME e 3=VOICE. O dump
+salvo continha `21 / 43 / 65 / 87`; os eventos seguintes foram
+`22 / 44 / 66 / 88`, e todos os quatro controles confirmaram 0–100. Os padrões
+informados são `40 / 30 / 50 / 60`.
+
+A validação final confirmou Breaker OD nas posições 4 e 10 e Gerden OD nas
+posições 5 e 11, simultaneamente numa cadeia cheia. Hidratação, alterações ao
+vivo, estado desligado e VOICE 0–100 funcionaram corretamente. Breaker passa a
+`physically_validated`, e Gerden recebe aprovação da integração do monitor.
