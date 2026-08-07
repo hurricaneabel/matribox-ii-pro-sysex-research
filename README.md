@@ -98,6 +98,34 @@ também cobrem limites e o segundo slot. O seletor residual 4 é ignorado. A
 validação física final aprovou duas instâncias nas posições 4 e 12 de uma
 cadeia cheia. Com isso, a pesquisa de parâmetros da classe FREQ está concluída.
 
+A Fase 42 inicia a classe WAH com `VOKS WAH`. RANGE, Q, VOLUME e
+POSITION usam seletores consecutivos 0–3, faixa 0–100 e default 50. Três dumps
+de reabertura e uma varredura ao vivo confirmaram o mapa. Os valores residuais
+dos seletores 4–6 são ignorados. A validação física aprovou duas instâncias nas
+posições 4 e 12 de uma cadeia com os doze slots ocupados.
+
+A Fase 43 adiciona `CRY WAH` com o mesmo conjunto funcional de
+RANGE, Q, VOLUME e POSITION, mas identidade estrutural própria (`model_id
+0x08`). Três dumps e a varredura ao vivo confirmaram seletores 0–3 e defaults
+50; os resíduos 4–6 são ignorados. A validação física aprovou a coexistência
+independente de CRY WAH e VOKS WAH em uma cadeia cheia.
+
+A Fase 44 adiciona `RACK WAH`: RANGE, Q, VOLUME e POSITION nos
+seletores 0–3 e EQ booleano no seletor 4. Uma captura combinada confirmou dump
+salvo, alterações ao vivo e `ON → OFF → ON`. Os seletores 5–6 são residuais. A
+validação física final aprovou hidratação e EQ desligado na posição 12 de uma
+cadeia com os doze slots ocupados.
+
+A Fase 45 valida `BASS WAH` sem nova captura. O mapa 0–3 foi inferido dos três
+modelos WAH anteriores e aprovado fisicamente no monitor com duas instâncias em
+uma cadeia cheia. A leitura permanece limitada a RANGE, Q, VOLUME e POSITION,
+todos em 0–100; VOLUME zero também foi confirmado.
+
+A candidata da Fase 46 adiciona `TOUCH WAH` com SENSE, RANGE, Q e MIX nos
+seletores 0–3 e MODE enum no seletor 4 (`GUITAR=0`, `BASS=1`). Uma captura
+combinada confirmou hidratação, limites e alterações ao vivo. Os seletores 5–6
+são residuais; a validação final no monitor está pendente.
+
 O primeiro parâmetro interno concluído foi o `GAIN` do `DYN / M-BOOST`. Desde a
 Fase 36, o monitor hidrata o valor salvo antes do primeiro evento ao vivo e
 depois atualiza a instância correta. O validador histórico permanece:
@@ -729,16 +757,12 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-A classe DYN permanece encerrada. As Fases 33 (`FREQ / Filter`), 34 (`FREQ /
-Octaver`), 35 (`FREQ / Dual Melody`) e 36 (hidratação pelo dump) estão
-fisicamente aprovadas. A Fase 37 adiciona `FREQ / Pitch` com HI PITCH, LOW
-PITCH, WET, DRY e RANGE, incluindo hidratação dos defaults salvos e LOW PITCH
-negativo. A integração física também foi aprovada. O `Harmony D` foi igualmente
-aprovado com enums nomeados e múltiplas instâncias. O `Pitch S` também foi
-aprovado sob ocupação máxima da cadeia. O `Ring Mod` também foi aprovado com
-duas instâncias independentes. O `Tape Mod` encerrou a classe FREQ com duas
-instâncias nas posições 4 e 12. O próximo marco é integrar a branch de pesquisa
-na `main` após revisão do usuário.
+As classes DYN, FREQ e WAH estão encerradas. Todos os seis modelos WAH foram
+implementados e aprovados fisicamente. A Fase 47 concluiu `AUTO WAH` com sete
+parâmetros e RATE condicionado por SYNC: `0,1–10,0 Hz` quando desligado e
+divisões rítmicas quando ligado. O próximo marco é consolidar a branch
+`research/wah-parameters` e integrá-la explicitamente na `main` após revisão do
+usuário.
 Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats
