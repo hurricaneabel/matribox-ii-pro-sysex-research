@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 25
+CATALOG_VERSION = 34
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -903,6 +903,398 @@ AUTO_WAH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
             "monitor_integration_physical_validation": "approved",
         },
     },
+)
+
+
+SKREAMER_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_default": default,
+            "physical_fixture_count": 4,
+            "evidence": "docs/phases/DRV_SKREAMER_PARAMETERS_PHASE48.md",
+            "monitor_integration_physical_validation": "approved",
+        },
+    }
+    for key, name, order, selector, default in (
+        ("gain", "GAIN", 1, 0, 40),
+        ("tone", "TONE", 2, 1, 70),
+        ("volume", "VOLUME", 3, 2, 50),
+    )
+)
+
+
+SKREAMER9_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "inference_sources": ["drv.skreamer"],
+            "evidence": "docs/phases/DRV_SKREAMER9_INFERRED_PARAMETERS_PHASE49.md",
+            "monitor_integration_physical_validation": "approved",
+            "physical_validation_without_pcapng": True,
+        },
+    }
+    for key, name, order, selector in (
+        ("gain", "GAIN", 1, 0),
+        ("tone", "TONE", 2, 1),
+        ("volume", "VOLUME", 3, 2),
+    )
+)
+
+
+BUTTER_OD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_default": default,
+            "physical_combined_capture": True,
+            "evidence": "docs/phases/DRV_BUTTER_OD_PARAMETERS_PHASE50.md",
+            "monitor_integration_physical_validation": "approved",
+        },
+    }
+    for key, name, order, selector, default in (
+        ("gain", "GAIN", 1, 0, 40),
+        ("volume", "VOLUME", 2, 1, 70),
+    )
+)
+
+
+def _validated_drv_gain_tone_volume_seeds(
+    *,
+    effect_key: str,
+    defaults: tuple[int, int, int],
+) -> tuple[dict[str, Any], ...]:
+    return tuple(
+        {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "range_validated": [0, 100],
+                "internal_slots_observed": [4, 5, 10, 11],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_default": default,
+                "saved_dump_default_source": "user_reported_official_ui",
+                "inference_sources": ["drv.skreamer", "drv.skreamer9"],
+                "evidence": "docs/phases/DRV_WARM_SUPER_OD_INFERRED_PARAMETERS_PHASE51.md",
+                "monitor_integration_physical_validation": "approved",
+                "inference_target": effect_key,
+            },
+        }
+        for (key, name, order, selector), default in zip(
+            (
+                ("gain", "GAIN", 1, 0),
+                ("tone", "TONE", 2, 1),
+                ("volume", "VOLUME", 3, 2),
+            ),
+            defaults,
+            strict=True,
+        )
+    )
+
+
+WARM_OD_PARAMETER_SEEDS = _validated_drv_gain_tone_volume_seeds(
+    effect_key="drv.warm_od",
+    defaults=(40, 50, 50),
+)
+
+
+SUPER_OD_PARAMETER_SEEDS = _validated_drv_gain_tone_volume_seeds(
+    effect_key="drv.super_od",
+    defaults=(50, 50, 50),
+)
+
+
+BLUES_OD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [4, 10],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "inference_sources": [
+                "drv.skreamer",
+                "drv.skreamer9",
+                "drv.warm_od",
+                "drv.super_od",
+            ],
+            "evidence": "docs/phases/DRV_BLUES_FULL_OD_PARAMETERS_PHASE52.md",
+            "monitor_integration_physical_validation": "approved",
+            "inference_target": "drv.blues_od",
+        },
+    }
+    for key, name, order, selector, default in (
+        ("gain", "GAIN", 1, 0, 40),
+        ("tone", "TONE", 2, 1, 60),
+        ("volume", "VOLUME", 3, 2, 50),
+    )
+)
+
+
+FULL_OD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    *(
+        {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "range_validated": [0, 100],
+                "internal_slots_observed": [1, 5, 11],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_value": saved_value,
+                "saved_dump_default": default,
+                "saved_dump_default_source": "user_reported_official_ui",
+                "evidence": "docs/phases/DRV_BLUES_FULL_OD_PARAMETERS_PHASE52.md",
+                "monitor_integration_physical_validation": "approved",
+            },
+        }
+        for key, name, order, selector, default, saved_value in (
+            ("gain", "GAIN", 1, 0, 40, 21),
+            ("tone", "TONE", 2, 1, 60, 43),
+            ("volume", "VOLUME", 3, 2, 50, 65),
+        )
+    ),
+    {
+        "key": "mode",
+        "name": "MODE",
+        "display_order": 4,
+        "value_type": "enum",
+        "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "choices": [
+            {"value": 0, "label": "LP"},
+            {"value": 1, "label": "HP"},
+        ],
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 3,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "enum_wire_values_validated": [0, 1],
+            "internal_slots_observed": [1, 5, 11],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 3,
+            "saved_dump_value": 1,
+            "saved_dump_default": 1,
+            "saved_dump_default_label": "HP",
+            "evidence": "docs/phases/DRV_BLUES_FULL_OD_PARAMETERS_PHASE52.md",
+            "monitor_integration_physical_validation": "approved",
+        },
+    },
+)
+
+
+BREAKER_OD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [4, 10],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "inference_sources": ["drv.blues_od", "drv.full_od"],
+            "manual_mismatch": "firmware_ui_has_gain_tone_volume",
+            "evidence": "docs/phases/DRV_BREAKER_GERDEN_OD_PARAMETERS_PHASE53.md",
+            "monitor_integration_physical_validation": "approved",
+            "inference_target": "drv.breaker_od",
+        },
+    }
+    for key, name, order, selector, default in (
+        ("gain", "GAIN", 1, 0, 60),
+        ("tone", "TONE", 2, 1, 50),
+        ("volume", "VOLUME", 3, 2, 50),
+    )
+)
+
+
+GERDEN_OD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 5, 11],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_value": saved_value,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "evidence": "docs/phases/DRV_BREAKER_GERDEN_OD_PARAMETERS_PHASE53.md",
+            "monitor_integration_physical_validation": "approved",
+        },
+    }
+    for key, name, order, selector, default, saved_value in (
+        ("gain", "GAIN", 1, 0, 40, 21),
+        ("tone", "TONE", 2, 1, 30, 43),
+        ("volume", "VOLUME", 3, 2, 50, 65),
+        ("voice", "VOICE", 4, 3, 60, 87),
+    )
 )
 
 
@@ -2224,6 +2616,42 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "wah.auto_wah":
         parameters = list(AUTO_WAH_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.skreamer":
+        parameters = list(SKREAMER_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.skreamer9":
+        parameters = list(SKREAMER9_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.butter_od":
+        parameters = list(BUTTER_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.warm_od":
+        parameters = list(WARM_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.super_od":
+        parameters = list(SUPER_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.blues_od":
+        parameters = list(BLUES_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.full_od":
+        parameters = list(FULL_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.breaker_od":
+        parameters = list(BREAKER_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "drv.gerden_od":
+        parameters = list(GERDEN_OD_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:

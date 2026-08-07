@@ -885,7 +885,15 @@ class ParameterMonitorIntegrationTests(unittest.TestCase):
         self.assertEqual(update.parameter_event.parameter_key, "gain")
 
     def test_event_for_other_effect_in_same_slot_is_ignored(self) -> None:
-        core = prepare_core(make_chain(internal_slot_id=1, effect_key="drv.skreamer"))
+        pending_effect_key = next(
+            model.key
+            for effect_class in CATALOG.classes
+            for model in effect_class.models
+            if model.parameter_catalog_status == "pending"
+        )
+        core = prepare_core(
+            make_chain(internal_slot_id=1, effect_key=pending_effect_key)
+        )
         update = core.feed(
             (MBOOST_FIXTURE_ROOT / "slot2_skreamer_gain_050.bin").read_bytes()
         )

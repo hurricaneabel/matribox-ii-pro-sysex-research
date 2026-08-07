@@ -477,6 +477,93 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
         self.assertEqual(by_key["rate"].display_value, "3.7 Hz")
         self.assertEqual(by_key["sync"].value, False)
 
+    def test_skreamer_hydrates_only_three_cataloged_values(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 21,
+                (0, 1): 43,
+                (0, 2): 65,
+                (0, 3): 99,
+            }),
+            make_chain((0, "drv.skreamer")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("tone", 43), ("volume", 65)),
+        )
+
+    def test_inferred_skreamer9_hydrates_the_shared_three_value_layout(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 31, (0, 1): 52, (0, 2): 73, (0, 3): 99}),
+            make_chain((0, "drv.skreamer9")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 31), ("tone", 52), ("volume", 73)),
+        )
+
+    def test_butter_od_ignores_residual_saved_selector_two(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 65, (0, 2): 50}),
+            make_chain((0, "drv.butter_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("volume", 65)),
+        )
+
+    def test_inferred_warm_and_super_od_hydrate_three_shared_selectors(self) -> None:
+        for effect_key in ("drv.warm_od", "drv.super_od"):
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(
+                    make_dump({(0, 0): 23, (0, 1): 45, (0, 2): 67}),
+                    make_chain((0, effect_key)),
+                )
+                self.assertEqual(
+                    tuple((event.parameter_key, event.value) for event in events),
+                    (("gain", 23), ("tone", 45), ("volume", 67)),
+                )
+
+    def test_blues_od_hydrates_three_inferred_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 43, (0, 2): 65}),
+            make_chain((0, "drv.blues_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("tone", 43), ("volume", 65)),
+        )
+
+    def test_full_od_hydrates_three_controls_and_hp_mode(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 43, (0, 2): 65, (0, 3): 1}),
+            make_chain((0, "drv.full_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("tone", 43), ("volume", 65), ("mode", "HP")),
+        )
+
+    def test_breaker_od_hydrates_three_inferred_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 22, (0, 1): 44, (0, 2): 66}),
+            make_chain((0, "drv.breaker_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 22), ("tone", 44), ("volume", 66)),
+        )
+
+    def test_gerden_od_hydrates_voice_as_fourth_selector(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 43, (0, 2): 65, (0, 3): 87}),
+            make_chain((0, "drv.gerden_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("tone", 43), ("volume", 65), ("voice", 87)),
+        )
+
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(
             make_dump({(0, 0): 31.5, (0, 1): 67}),
