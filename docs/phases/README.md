@@ -31,3 +31,4 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 35A | `MONITOR_LIVE_MODE_PHASE35A.md` | painel `--live` em buffer alternativo e `--log` compacto, sem alterar o protocolo |
 | 36 | `PRESET_PARAMETER_HYDRATION_PHASE36.md` | hidratação inicial pelo dump `0x10` |
 | 37 | `FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md` | PITCH com cinco seletores consecutivos, LOW PITCH assinado e defaults salvos |
+| 38 | `FREQ_HARMONY_D_ENUM_PARAMETERS_PHASE38.md` | HARMONY D com KEY, MODE, dois INTERVALS e lacuna física antes de SMOOTH |

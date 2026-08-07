@@ -73,6 +73,12 @@ A Fase 37 cadastra o `FREQ / Pitch`: HI PITCH `0–12`, LOW PITCH
 offline passou com 445 testes. A validação física aprovou hidratação, adição de
 efeitos, alterações em tempo real e duas instâncias independentes.
 
+A Fase 38 adiciona `FREQ / Harmony D` com MIX, KEY, MODE,
+INTERVAL 1, INTERVAL 2 e SMOOTH. Os três enums musicais são apresentados por
+nome, e o catálogo preserva a lacuna física entre INTERVAL 2 (seletor 4) e
+SMOOTH (seletor 6). A suíte offline passou com 447 testes. A validação física
+aprovou duas instâncias, hidratação e alterações em tempo real.
+
 O primeiro parâmetro interno concluído foi o `GAIN` do `DYN / M-BOOST`. Desde a
 Fase 36, o monitor hidrata o valor salvo antes do primeiro evento ao vivo e
 depois atualiza a instância correta. O validador histórico permanece:
@@ -708,8 +714,9 @@ A classe DYN permanece encerrada. As Fases 33 (`FREQ / Filter`), 34 (`FREQ /
 Octaver`), 35 (`FREQ / Dual Melody`) e 36 (hidratação pelo dump) estão
 fisicamente aprovadas. A Fase 37 adiciona `FREQ / Pitch` com HI PITCH, LOW
 PITCH, WET, DRY e RANGE, incluindo hidratação dos defaults salvos e LOW PITCH
-negativo. A integração física também foi aprovada. O próximo efeito FREQ
-sugerido é `Harmony D`.
+negativo. A integração física também foi aprovada. O `Harmony D` foi igualmente
+aprovado com enums nomeados e múltiplas instâncias. O próximo efeito FREQ pode
+ser `Pitch S` ou outro escolhido para a sequência da pesquisa.
 Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats

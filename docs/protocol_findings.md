@@ -1643,3 +1643,28 @@ por índice. Os dumps completos possuem 1.211 bytes e obedecem à fórmula da Fa
 foi obtida do estado salvo `0x10`; a validação posterior no monitor confirmou
 também as alterações `0x1C`, duas instâncias simultâneas e reidratação após
 adição de efeitos.
+
+## Fase 38 — HARMONY D, enums musicais e seletor 5 ausente
+
+`FREQ / Harmony D` usa `class_id 0x01`, `model_id 0x4E` e seis parâmetros:
+
+```text
+0 MIX | 1 KEY | 2 MODE | 3 INTERVAL 1 | 4 INTERVAL 2 | 6 SMOOTH
+```
+
+O seletor 5 não apareceu no dump nem nas respostas recebidas e não deve ser
+preenchido por inferência. KEY usa índices 0–11 na ordem cromática C–B. MODE
+usa 0–7 para MAJOR, MINOR, H. MINOR, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN e
+LOCRIAN. Ambos os INTERVALS usam 0–13: `-OCT`, `-7TH` até `-2ND`, `+2ND` até
+`+7TH` e `+OCT`. SMOOTH usa booleano 0/1.
+
+Os defaults persistidos são MIX 50, KEY C, MODE MAJOR, INTERVAL 1 +3RD,
+INTERVAL 2 +5TH e SMOOTH desligado. Três dumps `0x10` completos e uma varredura
+com 50 respostas `0x1C` sustentam o mapa. O arquivo de captura nomeado `LIMITS`
+contém efetivamente o conjunto B `24 / E / PHRYGIAN / -4TH / +7TH / ON`; a
+divergência do nome foi preservada na documentação.
+
+A integração final foi aprovada fisicamente com duas instâncias simultâneas de
+Harmony D. MIX, KEY, MODE, INTERVAL 1, INTERVAL 2 e SMOOTH mantiveram valores
+independentes por slot, acompanharam alterações em tempo real e coexistiram com
+efeitos FREQ, DYN, WAH e DRV.

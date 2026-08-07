@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 14)
+        self.assertEqual(self.catalog.catalog_version, 15)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -488,9 +488,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "freq.octaver",
                 "freq.dual_melody",
                 "freq.pitch",
+                "freq.harmony_d",
             }
         ]
-        self.assertEqual(len(pending), 249)
+        self.assertEqual(len(pending), 248)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -603,6 +604,37 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             "native_float32_negative",
         )
 
+    def test_harmony_d_has_named_enums_and_physical_selector_gap(self) -> None:
+        effect = self.catalog.effect_by_key("freq.harmony_d")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("mix", "key", "mode", "interval_1", "interval_2", "smooth"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3, 4, 6),
+        )
+        self.assertEqual(tuple(effect.parameters[1].choices.values()), (
+            "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        ))
+        self.assertEqual(tuple(effect.parameters[2].choices.values()), (
+            "MAJOR", "MINOR", "H. MINOR", "DORIAN", "PHRYGIAN", "LYDIAN",
+            "MIXOLYDIAN", "LOCRIAN",
+        ))
+        expected_intervals = (
+            "-OCT", "-7TH", "-6TH", "-5TH", "-4TH", "-3RD", "-2ND",
+            "+2ND", "+3RD", "+4TH", "+5TH", "+6TH", "+7TH", "+OCT",
+        )
+        self.assertEqual(tuple(effect.parameters[3].choices.values()), expected_intervals)
+        self.assertEqual(tuple(effect.parameters[4].choices.values()), expected_intervals)
+        self.assertEqual(effect.parameters[5].value_type, "boolean")
+        self.assertEqual(effect.parameters[5].validation["incoming_selector_gap"], 5)
+
     def test_filter_has_conditional_rate_domain(self) -> None:
         effect = self.catalog.effect_by_key("freq.filter")
         self.assertEqual(effect.parameter_catalog_status, "physically_validated")
@@ -667,6 +699,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_octaver = exported.effect_by_key("freq.octaver")
             exported_dual_melody = exported.effect_by_key("freq.dual_melody")
             exported_pitch = exported.effect_by_key("freq.pitch")
+            exported_harmony_d = exported.effect_by_key("freq.harmony_d")
             exported_mboost = exported.effect_by_key("dyn.m_boost")
             exported_comp1 = exported.effect_by_key("dyn.comp1")
             exported_comp2 = exported.effect_by_key("dyn.comp2")
@@ -695,6 +728,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_pitch.parameters,
                 self.catalog.effect_by_key("freq.pitch").parameters,
+            )
+            self.assertEqual(
+                exported_harmony_d.parameters,
+                self.catalog.effect_by_key("freq.harmony_d").parameters,
             )
             self.assertEqual(
                 exported_mboost.parameters,

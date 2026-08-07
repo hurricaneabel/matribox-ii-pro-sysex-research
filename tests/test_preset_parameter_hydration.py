@@ -145,6 +145,42 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
             ),
         )
 
+    def test_harmony_d_hydrates_enums_and_skips_selector_five(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 23,
+                (0, 1): 3,
+                (0, 2): 3,
+                (0, 3): 3,
+                (0, 4): 11,
+                (0, 5): 99,
+                (0, 6): 0,
+            }),
+            make_chain((0, "freq.harmony_d")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("mix", 23),
+                ("key", "D#"),
+                ("mode", "DORIAN"),
+                ("interval_1", "-5TH"),
+                ("interval_2", "+6TH"),
+                ("smooth", False),
+            ),
+        )
+
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        snapshot = build_effect_snapshots(
+            make_chain((0, "freq.harmony_d")), state
+        )[0]
+        self.assertEqual(
+            tuple(parameter.display_value for parameter in snapshot.parameters),
+            ("23", "D#", "DORIAN", "-5TH", "+6TH", "desligado"),
+        )
+
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(
             make_dump({(0, 0): 31.5, (0, 1): 67}),
