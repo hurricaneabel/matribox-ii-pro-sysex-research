@@ -1668,3 +1668,25 @@ A integração final foi aprovada fisicamente com duas instâncias simultâneas 
 Harmony D. MIX, KEY, MODE, INTERVAL 1, INTERVAL 2 e SMOOTH mantiveram valores
 independentes por slot, acompanharam alterações em tempo real e coexistiram com
 efeitos FREQ, DYN, WAH e DRV.
+
+## Fase 39 — PITCH S e campo residual fora do catálogo
+
+`FREQ / Pitch S` usa `class_id 0x01`, `model_id 0x55` e quatro seletores:
+
+```text
+0 RANGE | 1 POSITION | 2 MIX | 3 LEVEL
+```
+
+RANGE mapeia 0–5 para `-2 OCT`, `-1 OCT`, `+1 OCT`, `+2 OCT`, `+/-1 OCT` e
+`+/-2 OCT`. POSITION, MIX e LEVEL usam 0–100. Defaults persistidos:
+`+1 OCT / 0 / 100 / 100`.
+
+Os dumps continham ainda `10.0` no seletor 4, sem controle correspondente e
+sem resposta ao vivo observada. Trata-se de estado residual do slot, não de um
+quinto parâmetro. O catálogo limitado aos seletores 0–3 impede que a hidratação
+promova esse valor antigo para o estado atual.
+
+A validação física final usou uma cadeia com os doze slots ocupados. Duas
+instâncias de Pitch S, posicionadas em regiões diferentes, preservaram estados
+independentes e coexistiram com múltiplos COMP1. Isso confirma que o mapa
+continua vinculado ao slot interno real mesmo sob ocupação máxima.

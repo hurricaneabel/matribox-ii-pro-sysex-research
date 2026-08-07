@@ -181,6 +181,38 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
             ("23", "D#", "DORIAN", "-5TH", "+6TH", "desligado"),
         )
 
+    def test_pitch_s_hydrates_only_four_cataloged_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 1,
+                (0, 1): 21,
+                (0, 2): 43,
+                (0, 3): 65,
+                (0, 4): 10,
+            }),
+            make_chain((0, "freq.pitch_s")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("range", "-1 OCT"),
+                ("position", 21),
+                ("mix", 43),
+                ("level", 65),
+            ),
+        )
+
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        snapshot = build_effect_snapshots(
+            make_chain((0, "freq.pitch_s")), state
+        )[0]
+        self.assertEqual(
+            tuple(parameter.display_value for parameter in snapshot.parameters),
+            ("-1 OCT", "21", "43", "65"),
+        )
+
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(
             make_dump({(0, 0): 31.5, (0, 1): 67}),

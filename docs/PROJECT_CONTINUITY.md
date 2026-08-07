@@ -3,9 +3,9 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 38 — FREQ / Harmony D fisicamente aprovado
-> **Trabalho atual:** consolidar e publicar a Fase 38 pelo usuário
-> **Próximo passo:** iniciar FREQ / Pitch S ou outro efeito escolhido
+> **Marco consolidado:** Fase 39 — FREQ / Pitch S fisicamente aprovado
+> **Trabalho atual:** consolidar e publicar a Fase 39 pelo usuário
+> **Próximo passo:** iniciar FREQ / Ring Mod
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/freq-parameters`
 
@@ -33,6 +33,8 @@ funcionalidade aprovada**. A atualização deve registrar:
   `research/dyn-parameters`; não criar uma branch por efeito individual.
 - O usuário extrai pacotes ZIP manualmente; não é necessário fornecer comandos
   de extração.
+- Reservar o preset 56B para descoberta/captura e o 56C para validação física;
+  o 56C pode manter doze efeitos para testar início, meio e fim da cadeia.
 - A suíte oficial usa `unittest`, não `pytest`.
 - Nunca executar `git add`, commit ou limpeza antes da aprovação dos testes
   físicos quando a mudança envolver comunicação MIDI.
@@ -93,8 +95,8 @@ O estado atual já permite:
   separados por slot interno, efeito e parâmetro;
 - hidratar valores persistidos dos parâmetros catalogados ao carregar o preset
   e após adicionar, substituir ou reordenar efeitos;
-- carregar as 16 classes, 267 efeitos e 72 parâmetros confirmados por
-  capturas em quatorze efeitos DYN e cinco efeitos FREQ a partir de um catálogo
+- carregar as 16 classes, 267 efeitos e 76 parâmetros confirmados por
+  capturas em quatorze efeitos DYN e seis efeitos FREQ a partir de um catálogo
   JSON versionado e independente de Python/Windows;
 - representar parâmetros com domínio condicionado, como RATE do FILTER, sem
   fabricar mensagens USB para defaults implícitos do dispositivo.
@@ -416,8 +418,8 @@ tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 
 M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC-BOOST, BB-BOOST, RC-BOOST,
 FAT BOOST, AC WOODY, AC SIM, GATE 1, GATE 2 e GATE 3 são os quatorze efeitos
-DYN preenchidos. FILTER, OCTAVER, DUAL MELODY, PITCH e HARMONY D são os cinco
-primeiros efeitos FREQ parametrizados. Os outros 248 efeitos permanecem explicitamente
+DYN preenchidos. FILTER, OCTAVER, DUAL MELODY, PITCH, HARMONY D e PITCH S são
+os seis primeiros efeitos FREQ parametrizados. Os outros 247 efeitos permanecem explicitamente
 `pending`, sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
@@ -1591,3 +1593,27 @@ com COMP1, WAH e DRV sem colisões.
 2. revisar e executar commit e push pelo usuário;
 3. manter `main` sem integração até encerrar a pesquisa FREQ;
 4. iniciar `FREQ / Pitch S` ou outro efeito escolhido.
+
+## 26. Atualização atual — candidata da Fase 39: FREQ / Pitch S
+
+Três dumps completos e uma varredura ao vivo confirmaram RANGE 0, POSITION 1,
+MIX 2 e LEVEL 3. RANGE é enum de seis rótulos de oitava; os demais parâmetros
+usam 0–100. Defaults: `+1 OCT / 0 / 100 / 100`.
+
+Um `10.0` residual apareceu no seletor 4 dos dumps, mas não existe controle ou
+resposta ao vivo correspondente. O catálogo não declara esse seletor, e o teste
+de hidratação confirma que ele é ignorado. O catálogo passa à versão 16, com 20
+efeitos parametrizados, 76 parâmetros e 247 efeitos pendentes. A suíte offline
+possui 449 testes aprovados.
+
+A validação física foi aprovada no preset 56C com os doze slots ocupados. Duas
+instâncias de Pitch S em regiões diferentes da cadeia mantiveram RANGE,
+POSITION, MIX e LEVEL independentes, incluindo `-1 OCT` e `+/-2 OCT`. A
+coexistência com múltiplos COMP1 não produziu colisões.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/freq-parameters`;
+2. revisar e executar commit e push pelo usuário;
+3. manter `main` sem integração até encerrar a pesquisa FREQ;
+4. iniciar `FREQ / Ring Mod` usando 56B para descoberta e 56C para validação.
