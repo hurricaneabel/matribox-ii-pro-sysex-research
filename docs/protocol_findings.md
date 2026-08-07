@@ -1470,3 +1470,26 @@ pelo catálogo: valores menores que 1000 aparecem em `ms`; valores iguais ou
 maiores aparecem em segundos com uma casa decimal e separador decimal local.
 Exemplos: `900 ms`, `1,0 s`, `5,0 s` e `10,0 s`.
 
+
+## Fase 33 — FILTER, RATE condicionado por SYNC e campo de classe opaco
+
+As capturas do primeiro efeito FREQ confirmaram `FILTER` com seis seletores:
+
+```text
+STEP 1 = 0 | STEP 2 = 1 | STEP 3 = 2 | STEP 4 = 3 | RATE = 4 | SYNC = 5
+```
+
+STEP 1–4 são inteiros `0–100` e SYNC é booleano. RATE mantém o seletor 4 nos
+dois modos, mas o domínio depende de SYNC. Com SYNC desligado, RATE é numérico
+`0–100`. Com SYNC ligado, wire values `0–10` representam, em ordem, `1/1`,
+`1/2`, `1/2d`, `1/2t`, `1/4`, `1/4d`, `1/4t`, `1/8`, `1/8d`, `1/8t` e `1/16`.
+
+Ao ligar SYNC, a tela redefine RATE para `1/4`; ao desligar, redefine para `10`.
+A captura isolada mostrou que essas redefinições não geram mensagens adicionais
+do seletor RATE. O software, portanto, registra esses valores como estado
+derivado de regra física (`derived_device_rule`) e não como observação USB.
+
+As capturas também mostraram `00 00` nos índices `41–42` do envelope 0x1C,
+embora FREQ tenha class_id estrutural 1. Esse campo deixa de ser tratado como
+classe estrutural; a cadeia atual é a fonte da identidade da classe e do modelo.
+Foram preservadas 55 fixtures nos slots humanos 1 e 2.

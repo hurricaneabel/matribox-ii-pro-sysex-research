@@ -22,7 +22,7 @@ Os 16 índices de classe e os 267 efeitos foram exportados do catálogo Python
 histórico. Todos preservam menu, nome, ID de classe, ID de modelo e seletor
 secundário.
 
-Quatorze efeitos DYN possuem parâmetros internos catalogados, totalizando 47
+Quatorze efeitos DYN e um efeito FREQ possuem parâmetros internos catalogados, totalizando 53
 controles físicos:
 
 ```text
@@ -40,6 +40,7 @@ GATE 1  | THRESHOLD                         | inteiro 0–100 | seletor 0
 GATE 2  | THRESHOLD, ATTACK, RELEASE         | inteiro 0–100 | seletores 0–2
 AC SIM  | BODY, TOP, VOLUME, MODE             | inteiros + enum nomeado | seletores 0–3
 GATE 3  | THRESHOLD, RATIO, ATTACK, RELEASE, HOLD | inteiros + tempos em ms | seletores 0–4
+FILTER  | STEP 1, STEP 2, STEP 3, STEP 4, RATE, SYNC | inteiros + domínio condicionado + booleano | seletores 0–5
 ```
 
 No AC SIM, `MODE` usa os mesmos valores numéricos do codec compartilhado,
@@ -52,6 +53,14 @@ precisão integral em milissegundos; a configuração `display` do parâmetro
 determina a conversão adaptativa para `ms` ou `s`, sem lógica específica do
 efeito no monitor.
 
+
+No FILTER, `RATE` mantém o seletor 4 nos dois domínios. Com `SYNC = OFF`,
+é numérico `0–100` e o default implícito é `10`; com `SYNC = ON`, os valores
+`0–10` representam `1/1`, `1/2`, `1/2d`, `1/2t`, `1/4`, `1/4d`, `1/4t`,
+`1/8`, `1/8d`, `1/8t` e `1/16`, com default implícito `1/4`. A pedaleira não
+emite um segundo pacote RATE ao alternar SYNC; o estado derivado é declarado em
+`value_domain` e não é confundido com observação USB.
+
 No E-BOOST, `+3dB` e `BRIGHT` usam o mesmo codec numérico dos controles
 contínuos, com `0 = desligado` e `1 = ligado`. O `value_type: boolean` do JSON
 determina a apresentação humana sem criar um codec específico para botões.
@@ -60,7 +69,7 @@ O comando `0x1C` não identifica sozinho o modelo do efeito. O slot recebido é
 cruzado com a cadeia estrutural atual; somente então o seletor é interpretado
 dentro do efeito correto.
 
-Os outros 253 efeitos permanecem com:
+Os outros 252 efeitos permanecem com:
 
 ```json
 "parameter_catalog_status": "pending",

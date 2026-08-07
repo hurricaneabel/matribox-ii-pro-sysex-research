@@ -2,14 +2,12 @@
 
 > Documento oficial de retomada entre conversas.
 >
-> **Última atualização:** 6 de agosto de 2026
-> **Marco consolidado:** Fase 32 — GATE 3 aprovado offline e fisicamente;
-> classe DYN concluída com 14 modelos e 47 parâmetros
-> **Trabalho candidato:** nenhum
-> **Próximo passo:** consolidar o commit final da classe DYN, promover por
-> fast-forward à `main` e abrir uma nova branch para a próxima classe
+> **Última atualização:** 7 de agosto de 2026
+> **Marco consolidado:** Fase 33 — FREQ / FILTER fisicamente aprovado com RATE condicionado por SYNC
+> **Trabalho atual:** Fase 33 pronta para commit e promoção à `main`
+> **Próximo passo:** commitar a Fase 33 em `research/freq-parameters`, promover por fast-forward à `main` e iniciar o próximo efeito FREQ
 > **Branch estável:** `main`
-> **Branch de pesquisa atual:** `research/dyn-parameters` até a consolidação
+> **Branch de pesquisa atual:** `research/freq-parameters`
 
 ## 1. Como usar este documento
 
@@ -93,9 +91,11 @@ O estado atual já permite:
   `s` conforme o catálogo;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e 47 parâmetros confirmados por
-  capturas em quatorze efeitos DYN a partir de um catálogo JSON versionado e
-  independente de Python/Windows.
+- carregar as 16 classes, 267 efeitos e 53 parâmetros confirmados por
+  capturas em quatorze efeitos DYN e um efeito FREQ a partir de um catálogo
+  JSON versionado e independente de Python/Windows;
+- representar parâmetros com domínio condicionado, como RATE do FILTER, sem
+  fabricar mensagens USB para defaults implícitos do dispositivo.
 
 ## 4. Programa principal atual
 
@@ -378,8 +378,8 @@ tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 
 M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC-BOOST, BB-BOOST, RC-BOOST,
 FAT BOOST, AC WOODY, AC SIM, GATE 1, GATE 2 e GATE 3 são os quatorze efeitos
-com parâmetros preenchidos no catálogo atual. Os outros 253 efeitos permanecem
-explicitamente `pending`, sem parâmetros presumidos.
+DYN preenchidos. FILTER é o primeiro efeito FREQ parametrizado. Os outros 252
+efeitos permanecem explicitamente `pending`, sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
 
@@ -503,11 +503,11 @@ necessário para desambiguar casos como modelos AMP distintos com o mesmo ID.
 
 O catálogo usa JSON Schema Draft 2020-12, caminhos relativos portáteis e
 versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
-futuro, por Kotlin/Android e desktop. Nesta candidata há 47 parâmetros
-fisicamente confirmados em quatorze efeitos DYN. O AC SIM é o primeiro a usar
-`value_type: enum`, com escolhas numéricas e rótulos portáteis. O GATE 3 é o
-primeiro a usar o `float32_nibbles_v1` completo e apresentação declarativa de
-tempo. Os outros 253 efeitos permanecem sem dados inventados.
+futuro, por Kotlin/Android e desktop. Nesta candidata há 53 parâmetros
+fisicamente confirmados em quatorze efeitos DYN e um FREQ. O AC SIM usa
+`value_type: enum`, o GATE 3 usa `float32_nibbles_v1` e apresentação de tempo,
+e o FILTER introduz `value_domain` controlado por outro parâmetro. Os outros
+252 efeitos permanecem sem dados inventados.
 
 ## 10. Histórico consolidado das Fases 14–24
 
@@ -797,52 +797,33 @@ instâncias simultâneas com estados separados. A primeira manteve
 
 ## 11. Estado de validação no trabalho atual
 
-Suíte completa consolidada da classe DYN:
+Marco estável da classe DYN:
 
 ```text
 Ran 401 tests
 OK
 ```
 
-A validação offline cobre 14 efeitos DYN, 47 parâmetros e todas as fixtures
-físicas preservadas, incluindo 58 respostas do GATE 3 nos slots humanos 1 e 2.
-Também cobre o `float32` completo, compatibilidade do codec histórico, enums,
-booleanos, formatação de duração, múltiplas instâncias simuladas e resolução
-pelo contexto estrutural da cadeia.
-
-Validação física consolidada da classe DYN:
-
-- todos os 14 modelos foram reconhecidos pelo monitor principal;
-- parâmetros contínuos, booleanos, enumerações e durações foram apresentados;
-- AC SIM exibiu STANDARD, JUMBO, ENHANCED e PIEZO;
-- GATE 3 preservou valores físicos completos e alternou entre `ms` e `s`;
-- o GATE 3 coexistiu com os demais modelos DYN sem colisão de seletores;
-- duas instâncias de GATE 3 apareceram simultaneamente sem contaminação de
-  estado;
-- valores permaneceram associados ao slot interno durante alterações
-  estruturais em outro slot.
-
-Limitação de cobertura do último log: não há evento explícito de bypass do
-GATE 3, embora o usuário tenha confirmado que a validação ocorreu sem problemas.
-
-Fixtures físicas de regressão principais:
+A Fase 33 candidata adiciona FILTER e elevou a suíte offline para:
 
 ```text
-tests/fixtures/mboost_gain/
-tests/fixtures/comp1_parameters/
-tests/fixtures/comp2_parameters/
-tests/fixtures/comp3_parameters/
-tests/fixtures/e_boost_parameters/
-tests/fixtures/ac_boost_parameters/
-tests/fixtures/bb_boost_parameters/
-tests/fixtures/rc_boost_parameters/
-tests/fixtures/fat_boost_parameters/
-tests/fixtures/ac_woody_parameters/
-tests/fixtures/ac_sim_parameters/
-tests/fixtures/gate1_parameters/
-tests/fixtures/gate2_parameters/
-tests/fixtures/gate3_parameters/
+Ran 409 tests
+OK
 ```
+
+A candidata cobre 55 fixtures físicas do FILTER nos slots humanos 1 e 2, os
+seis seletores, RATE numérico com SYNC desligado, as onze divisões com SYNC
+ligado, defaults implícitos `10` e `1/4`, ausência de evento RATE automático na
+transição de SYNC, e a descoberta de que os índices `41–42` do envelope 0x1C
+não são o class_id estrutural.
+
+O estado derivado não cria `EffectParameterEvent` sintético: snapshots marcam
+`value_origin = derived_device_rule`, enquanto pacotes reais usam
+`observed_usb`. Se RATE `0–10` chegar antes de SYNC, o monitor mostra
+`aguardando SYNC` para não escolher um domínio por suposição.
+
+Validação física da Fase 33: **aprovada** no monitor principal, incluindo RATE
+condicionado por SYNC e coexistência com efeito DYN.
 
 ## 12. Limitações e cuidados conhecidos
 
@@ -1281,3 +1262,58 @@ classe encerrada integralmente no projeto.
 4. promover por fast-forward à `main`;
 5. voltar à branch de pesquisa e confirmar a árvore limpa;
 6. escolher a próxima classe e criar uma nova branch para ela.
+
+## 20. Atualização atual — Fase 33 aprovada: FREQ / FILTER
+
+A Fase 33 inicia a branch `research/freq-parameters` com o FILTER. Foram
+confirmados STEP 1–4, RATE e SYNC nos seletores 0–5. RATE mantém o seletor 4,
+mas muda de domínio conforme SYNC: numérico `0–100` quando desligado e onze
+divisões rítmicas (`0–10`) quando ligado.
+
+A pedaleira redefine RATE visualmente para `10` ao desligar SYNC e para `1/4`
+ao ligar, sem transmitir um pacote RATE separado. A implementação representa
+esses defaults como regra derivada declarativa, não como observação USB.
+
+As capturas FREQ também provaram que os índices `41–42` do envelope 0x1C
+continuam `00 00`, portanto não identificam a classe estrutural. A resolução
+segue usando o efeito real presente no slot da cadeia.
+
+Evidências preservadas:
+
+```text
+55 fixtures físicas
+slot humano 1 → 41
+slot humano 2 → 14
+10 fontes de captura controladas
+```
+
+Validação offline:
+
+```text
+Ran 409 tests
+OK
+```
+
+### Validação física consolidada
+
+A validação no monitor principal foi aprovada com `DYN / COMP1` no slot humano
+1 e `FREQ / Filter` no slot humano 2. STEP 1–4 responderam de forma independente
+e RATE permaneceu numérico enquanto SYNC ainda estava desligado. Ao receber
+`SYNC = ON`, sem evento RATE adicional, o monitor derivou imediatamente
+`RATE: 1/4`; movimentos posteriores exibiram `1/4d` e retorno a `1/4`. Ao
+receber `SYNC = OFF`, novamente sem evento RATE adicional, o monitor derivou
+`RATE: 10`. A coexistência com a classe DYN permaneceu estável.
+
+O log ao vivo não cobriu bypass nem reordenação visual durante esta sessão. A
+resolução física dos slots humanos 1 e 2 permanece coberta pelas capturas
+controladas preservadas na fase.
+
+### Próximo passo exato
+
+1. executar a suíte completa, `compileall` e `git diff --check`;
+2. adicionar somente os arquivos da Fase 33 ao índice;
+3. criar o commit da Fase 33 em `research/freq-parameters`;
+4. enviar a branch ao remoto;
+5. promover por fast-forward à `main`;
+6. voltar para `research/freq-parameters` e confirmar a árvore limpa;
+7. iniciar o próximo efeito da classe FREQ.

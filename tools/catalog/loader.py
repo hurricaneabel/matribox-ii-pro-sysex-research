@@ -221,6 +221,85 @@ def _parse_parameter(document: Mapping[str, Any], path: Path) -> ParameterDefini
         }
     display = MappingProxyType(normalized_display)
 
+    raw_value_domain = document.get("value_domain", {})
+    if not isinstance(raw_value_domain, dict):
+        raise _fail(path, "campo 'value_domain' deve ser objeto")
+    normalized_value_domain: dict[str, Any] = {}
+    if raw_value_domain:
+        controller_parameter = raw_value_domain.get("controller_parameter")
+        if not isinstance(controller_parameter, str) or not controller_parameter.strip():
+            raise _fail(path, "value_domain.controller_parameter deve ser texto não vazio")
+        if controller_parameter == key:
+            raise _fail(path, "value_domain não pode depender do próprio parâmetro")
+        reset_on_change = raw_value_domain.get("reset_on_controller_change", True)
+        if not isinstance(reset_on_change, bool):
+            raise _fail(path, "value_domain.reset_on_controller_change deve ser booleano")
+        raw_states = raw_value_domain.get("states")
+        if not isinstance(raw_states, list) or not raw_states:
+            raise _fail(path, "value_domain.states deve ser lista não vazia")
+        normalized_states: list[dict[str, Any]] = []
+        controller_values: set[tuple[type, Any]] = set()
+        for state in raw_states:
+            if not isinstance(state, dict):
+                raise _fail(path, "cada estado de value_domain deve ser objeto")
+            controller_value = state.get("controller_value")
+            if isinstance(controller_value, (dict, list)) or controller_value is None:
+                raise _fail(path, "value_domain.states.controller_value inválido")
+            identity = (type(controller_value), controller_value)
+            if identity in controller_values:
+                raise _fail(path, "value_domain possui controller_value duplicado")
+            controller_values.add(identity)
+            default_value = state.get("default_value")
+            if isinstance(default_value, bool) or not isinstance(default_value, (int, float)):
+                raise _fail(path, "value_domain.states.default_value deve ser número")
+            if minimum is not None and default_value < minimum:
+                raise _fail(path, "value_domain default abaixo do range")
+            if maximum is not None and default_value > maximum:
+                raise _fail(path, "value_domain default acima do range")
+            presentation = state.get("presentation")
+            if not isinstance(presentation, dict):
+                raise _fail(path, "value_domain.states.presentation deve ser objeto")
+            kind = presentation.get("kind")
+            normalized_presentation: dict[str, Any] = {"kind": kind}
+            if kind == "numeric":
+                pass
+            elif kind == "enum":
+                raw_domain_choices = presentation.get("choices")
+                if not isinstance(raw_domain_choices, list) or not raw_domain_choices:
+                    raise _fail(path, "presentation enum deve declarar choices")
+                choices_list: list[dict[str, Any]] = []
+                seen_values: set[int] = set()
+                seen_labels: set[str] = set()
+                for choice in raw_domain_choices:
+                    if not isinstance(choice, dict):
+                        raise _fail(path, "choice de value_domain deve ser objeto")
+                    wire_value = choice.get("value")
+                    label = choice.get("label")
+                    if isinstance(wire_value, bool) or not isinstance(wire_value, int):
+                        raise _fail(path, "choice value de value_domain deve ser inteiro")
+                    if not isinstance(label, str) or not label.strip():
+                        raise _fail(path, "choice label de value_domain inválido")
+                    if wire_value in seen_values or label in seen_labels:
+                        raise _fail(path, "choices duplicadas em value_domain")
+                    seen_values.add(wire_value); seen_labels.add(label)
+                    choices_list.append({"value": wire_value, "label": label})
+                if int(default_value) not in seen_values:
+                    raise _fail(path, "default enum de value_domain não está nas choices")
+                normalized_presentation["choices"] = choices_list
+            else:
+                raise _fail(path, f"presentation.kind de value_domain não suportado: {kind!r}")
+            normalized_states.append({
+                "controller_value": controller_value,
+                "default_value": default_value,
+                "presentation": normalized_presentation,
+            })
+        normalized_value_domain = {
+            "controller_parameter": controller_parameter,
+            "reset_on_controller_change": reset_on_change,
+            "states": normalized_states,
+        }
+    value_domain = MappingProxyType(normalized_value_domain)
+
     protocol = document.get("protocol")
     protocol_profile: str | None = None
     value_codec: str | None = None
@@ -269,6 +348,7 @@ def _parse_parameter(document: Mapping[str, Any], path: Path) -> ParameterDefini
         unit=unit,
         choices=choices,
         display=display,
+        value_domain=value_domain,
         protocol_profile=protocol_profile,
         value_codec=value_codec,
         message_match=message_match,
@@ -309,6 +389,14 @@ def _parse_effect(
         raise _fail(path, "há chaves de parâmetros duplicadas")
     if len(parameter_orders) != len(set(parameter_orders)):
         raise _fail(path, "há ordens de parâmetros duplicadas")
+    parameter_by_key = {parameter.key: parameter for parameter in parameters}
+    for parameter in parameters:
+        controller_key = parameter.value_domain.get("controller_parameter") if parameter.value_domain else None
+        if controller_key is not None and controller_key not in parameter_by_key:
+            raise _fail(
+                path,
+                f"value_domain de {parameter.key} referencia controlador inexistente: {controller_key}",
+            )
     if sorted(parameter_orders) != list(range(1, len(parameter_orders) + 1)):
         raise _fail(path, "display_order dos parâmetros deve ser contínuo a partir de 1")
 

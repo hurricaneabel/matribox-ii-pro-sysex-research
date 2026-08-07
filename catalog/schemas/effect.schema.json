@@ -221,6 +221,85 @@
               ]
             }
           }
+        },
+        "value_domain": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "controller_parameter",
+            "states"
+          ],
+          "properties": {
+            "controller_parameter": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "reset_on_controller_change": {
+              "type": "boolean"
+            },
+            "states": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "controller_value",
+                  "default_value",
+                  "presentation"
+                ],
+                "properties": {
+                  "controller_value": {
+                    "type": [
+                      "boolean",
+                      "integer",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "default_value": {
+                    "type": "number"
+                  },
+                  "presentation": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "numeric",
+                          "enum"
+                        ]
+                      },
+                      "choices": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "value",
+                            "label"
+                          ],
+                          "properties": {
+                            "value": {
+                              "type": "integer"
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

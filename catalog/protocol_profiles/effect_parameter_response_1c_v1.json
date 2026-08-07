@@ -33,7 +33,12 @@
         41,
         42
       ],
-      "encoding": "nibble_pair"
+      "encoding": "nibble_pair",
+      "semantic_status": "opaque_not_structural_effect_class_id",
+      "observed_values": [
+        0
+      ],
+      "note": "FREQ/FILTER mantém 00 00 apesar de a classe estrutural FREQ usar class_id 1; não usar este campo para resolver a classe do efeito."
     },
     "value": {
       "start_index": 55,
@@ -63,8 +68,8 @@
     }
   },
   "validation": {
-    "status": "physically_validated_for_dyn_parameterized_effects_through_gate3",
-    "physical_fixture_count": 458,
+    "status": "physically_validated_for_dyn_and_freq_filter_parameters",
+    "physical_fixture_count": 513,
     "effects_observed": [
       "dyn.comp1",
       "dyn.comp2",
@@ -79,7 +84,8 @@
       "dyn.ac_sim",
       "dyn.gate_1",
       "dyn.gate_2",
-      "dyn.gate_3"
+      "dyn.gate_3",
+      "freq.filter"
     ],
     "internal_slots_observed": [
       1,
@@ -92,7 +98,7 @@
     "multiple_parameters": true,
     "visual_reordering_independent": true,
     "effect_identity_source": "current_chain",
-    "notes": "Os bytes 21–22 mantêm 01 04 entre efeitos e não identificam model_id. A Fase 32 confirmou que o valor físico ocupa oito nibbles nos índices 55–62. Codecs legados selecionam os quatro nibbles superiores; GATE 3 usa o float32 completo.",
+    "notes": "Os bytes 21–22 continuam endereço opaco compartilhado. A Fase 32 confirmou oito nibbles físicos de valor. A Fase 33 confirmou que os índices 41–42 também não são o class_id estrutural: FILTER/FREQ transmite 00 00 embora FREQ seja classe 1. A identidade do efeito e da classe deve vir da cadeia atual.",
     "multiple_value_types": true,
     "boolean_values_observed": [
       0,
@@ -109,7 +115,12 @@
       62
     ],
     "full_float32_values_observed": true,
-    "time_values_in_milliseconds": true
+    "time_values_in_milliseconds": true,
+    "parameter_envelope_class_field_is_structural_class_id": false,
+    "freq_filter_structural_class_id": 1,
+    "freq_filter_envelope_class_field_observed": 0,
+    "conditional_parameter_domains": true,
+    "implicit_device_defaults_without_separate_parameter_event": true
   },
   "fixed_segments": [
     {

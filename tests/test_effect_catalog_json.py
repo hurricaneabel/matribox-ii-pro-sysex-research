@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 10)
+        self.assertEqual(self.catalog.catalog_version, 11)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -484,9 +484,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "dyn.e_boost",
                 "dyn.ac_woody",
                 "dyn.gate_1",
+                "freq.filter",
             }
         ]
-        self.assertEqual(len(pending), 253)
+        self.assertEqual(len(pending), 252)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -513,6 +514,41 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         self.assertEqual(full_codec["encoded_length"], 8)
         self.assertEqual(full_codec["kind"], "float32_as_nibbles")
 
+    def test_filter_has_conditional_rate_domain(self) -> None:
+        effect = self.catalog.effect_by_key("freq.filter")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("step_1", "step_2", "step_3", "step_4", "rate", "sync"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1, 2, 3, 4, 5),
+        )
+        rate = effect.parameters[4]
+        self.assertEqual(rate.value_type, "integer")
+        self.assertEqual((rate.minimum, rate.maximum, rate.step), (0, 100, 1))
+        domain = dict(rate.value_domain)
+        self.assertEqual(domain["controller_parameter"], "sync")
+        self.assertTrue(domain["reset_on_controller_change"])
+        states = domain["states"]
+        self.assertEqual(states[0]["controller_value"], False)
+        self.assertEqual(states[0]["default_value"], 10)
+        self.assertEqual(states[0]["presentation"]["kind"], "numeric")
+        self.assertEqual(states[1]["controller_value"], True)
+        self.assertEqual(states[1]["default_value"], 4)
+        self.assertEqual(
+            tuple(choice["label"] for choice in states[1]["presentation"]["choices"]),
+            ("1/1", "1/2", "1/2d", "1/2t", "1/4", "1/4d", "1/4t", "1/8", "1/8d", "1/8t", "1/16"),
+        )
+        self.assertEqual(effect.parameters[5].value_type, "boolean")
+
+    def test_parameter_envelope_class_field_is_not_structural_class_id(self) -> None:
+        profile = self.catalog.protocol_profile_by_key("effect_parameter_response_1c_v1").document
+        self.assertEqual(profile["fields"]["class_id"]["semantic_status"], "opaque_not_structural_effect_class_id")
+        self.assertFalse(profile["validation"]["parameter_envelope_class_field_is_structural_class_id"])
+
     def test_historical_facade_is_backwards_compatible(self) -> None:
         self.assertIs(facade.EFFECT_CLASSES, self.catalog.classes)
         self.assertEqual(facade.DYN_CLASS_ID, 0x00)
@@ -538,6 +574,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 structural_snapshot(exported.classes),
                 structural_snapshot(self.catalog.classes),
             )
+            exported_filter = exported.effect_by_key("freq.filter")
             exported_mboost = exported.effect_by_key("dyn.m_boost")
             exported_comp1 = exported.effect_by_key("dyn.comp1")
             exported_comp2 = exported.effect_by_key("dyn.comp2")
@@ -551,6 +588,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_e_boost = exported.effect_by_key("dyn.e_boost")
             exported_ac_woody = exported.effect_by_key("dyn.ac_woody")
             exported_gate1 = exported.effect_by_key("dyn.gate_1")
+            self.assertEqual(
+                exported_filter.parameters,
+                self.catalog.effect_by_key("freq.filter").parameters,
+            )
             self.assertEqual(
                 exported_mboost.parameters,
                 self.catalog.effect_by_key("dyn.m_boost").parameters,

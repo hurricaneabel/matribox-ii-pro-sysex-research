@@ -389,9 +389,9 @@ class EffectParameterDecoder:
         except KeyError:
             return None
 
-        if signal.class_id is not None and signal.class_id != effect_class.class_id:
-            return None
-
+        # O campo historicamente chamado ``class_id`` no envelope 0x1C não
+        # identifica a classe estrutural: as capturas FREQ/FILTER mantêm 0x00
+        # exatamente como DYN. A identidade confiável continua vindo da cadeia.
         candidates = self._candidate_parameters_for_effect(signal, effect)
         if not candidates:
             return None
@@ -460,8 +460,6 @@ class EffectParameterDecoder:
 
         resolved: list[EffectParameterEvent] = []
         for effect_class in self.catalog.classes:
-            if signal.class_id is not None and effect_class.class_id != signal.class_id:
-                continue
             for effect in effect_class.models:
                 event = self.resolve_signal(signal, effect.key)
                 if event is not None:

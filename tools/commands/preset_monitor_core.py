@@ -43,7 +43,8 @@ from tools.parameters.decoder import (
     parse_effect_parameter_signal,
     resolve_effect_parameter_signal,
 )
-from tools.parameters.state import EffectParameterState
+from tools.catalog.models import ParameterDefinition
+from tools.parameters.state import EffectParameterState, ResolvedParameterValue
 from tools.commands.preset_state import (
     PresetEvent,
     build_current_preset_query,
@@ -104,6 +105,7 @@ class PresetParameterSnapshot:
     value: int | float | bool | str | None
     unit: str | None = None
     display_text: str | None = None
+    value_origin: str | None = None
 
     @property
     def ready(self) -> bool:
@@ -286,6 +288,43 @@ def _resolve_effect_names(
     )
 
 
+def _format_domain_value(
+    parameter: ParameterDefinition,
+    resolved: ResolvedParameterValue,
+    event: EffectParameterEvent | None,
+) -> str | None:
+    if resolved.value is None:
+        return None
+    if resolved.domain_ambiguous:
+        controller = parameter.value_domain.get("controller_parameter", "controlador")
+        return f"aguardando {str(controller).upper()}"
+    state = resolved.domain_state
+    if state is not None:
+        presentation = state.get("presentation", {})
+        if isinstance(presentation, dict):
+            kind = presentation.get("kind")
+            if kind == "enum":
+                choices = presentation.get("choices", [])
+                if isinstance(choices, list):
+                    for choice in choices:
+                        if isinstance(choice, dict) and choice.get("value") == resolved.value:
+                            label = choice.get("label")
+                            if isinstance(label, str):
+                                return label
+            elif kind == "numeric":
+                value = resolved.value
+                if isinstance(value, float) and value.is_integer():
+                    return str(int(value))
+                return str(value)
+    if event is not None:
+        return event.display_value
+    value = resolved.value
+    if isinstance(value, bool):
+        return "ligado" if value else "desligado"
+    value_text = str(int(value)) if isinstance(value, float) and value.is_integer() else str(value)
+    return f"{value_text} {parameter.unit}" if parameter.unit else value_text
+
+
 def build_effect_snapshots(
     chain_state: ChainOrderState,
     parameter_state: EffectParameterState | None = None,
@@ -329,13 +368,23 @@ def build_effect_snapshots(
                     if parameter_state is not None
                     else None
                 )
+                resolved = (
+                    parameter_state.resolve_parameter(
+                        record.internal_slot_id,
+                        effect.key,
+                        parameter,
+                    )
+                    if parameter_state is not None
+                    else ResolvedParameterValue(value=None, origin=None)
+                )
                 parameter_snapshots.append(
                     PresetParameterSnapshot(
                         key=parameter.key,
                         name=parameter.name,
-                        value=event.value if event is not None else None,
+                        value=resolved.value,
                         unit=parameter.unit,
-                        display_text=event.display_value if event is not None else None,
+                        display_text=_format_domain_value(parameter, resolved, event),
+                        value_origin=resolved.origin,
                     )
                 )
 

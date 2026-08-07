@@ -1,0 +1,1335 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "FREQ",
+    "class_id": 1,
+    "key": "freq.filter",
+    "name": "Filter",
+    "model_id": 25,
+    "secondary_selector": 1
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "parameter_envelope_class_field": {
+      "indices": [
+        41,
+        42
+      ],
+      "observed_value": 0,
+      "semantic": "opaque_not_structural_effect_class_id",
+      "evidence": "FREQ Filter transmits 00 00 although structural FREQ class_id is 1."
+    },
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa model_id."
+    },
+    "boolean_encoding": {
+      "parameter": "sync",
+      "false": 0,
+      "true": 1
+    }
+  },
+  "parameters": [
+    {
+      "key": "step_1",
+      "name": "STEP 1",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "step_2",
+      "name": "STEP 2",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "step_3",
+      "name": "STEP 3",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "step_4",
+      "name": "STEP 4",
+      "selector": 3,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "rate",
+      "name": "RATE",
+      "selector": 4,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1,
+      "value_domain": {
+        "controller_parameter": "sync",
+        "reset_on_controller_change": true,
+        "states": [
+          {
+            "controller_value": false,
+            "default_value": 10,
+            "presentation": {
+              "kind": "numeric"
+            }
+          },
+          {
+            "controller_value": true,
+            "default_value": 4,
+            "presentation": {
+              "kind": "enum",
+              "choices": [
+                {
+                  "value": 0,
+                  "label": "1/1"
+                },
+                {
+                  "value": 1,
+                  "label": "1/2"
+                },
+                {
+                  "value": 2,
+                  "label": "1/2d"
+                },
+                {
+                  "value": 3,
+                  "label": "1/2t"
+                },
+                {
+                  "value": 4,
+                  "label": "1/4"
+                },
+                {
+                  "value": 5,
+                  "label": "1/4d"
+                },
+                {
+                  "value": 6,
+                  "label": "1/4t"
+                },
+                {
+                  "value": 7,
+                  "label": "1/8"
+                },
+                {
+                  "value": 8,
+                  "label": "1/8d"
+                },
+                {
+                  "value": 9,
+                  "label": "1/8t"
+                },
+                {
+                  "value": 10,
+                  "label": "1/16"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "sync",
+      "name": "SYNC",
+      "selector": 5,
+      "value_type": "boolean",
+      "minimum": 0,
+      "maximum": 1,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    {
+      "file": "STEP1_FIRST_DUMP.pcapng",
+      "role": "step1_range"
+    },
+    {
+      "file": "STEP2_FIRST_DUMP.pcapng",
+      "role": "step2_range"
+    },
+    {
+      "file": "STEP3_FIRST_DUMP.pcapng",
+      "role": "step3_range"
+    },
+    {
+      "file": "STEP4_FIRST_DUMP.pcapng",
+      "role": "step4_range"
+    },
+    {
+      "file": "RATE_FIRST_DUMP.pcapng",
+      "role": "rate_sync_off_numeric_range"
+    },
+    {
+      "file": "SYNC_FIRST_DUMP_TOGGLE.pcapng",
+      "role": "sync_toggle"
+    },
+    {
+      "file": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "role": "rate_sync_on_all_divisions_and_back_to_1_4"
+    },
+    {
+      "file": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION 2 pra onde sabemos que o valor padrao é 10.pcapng",
+      "role": "corrected_sync_off_on_off_default_transition"
+    },
+    {
+      "file": "FILTER_ALL_PARAMETERS_SLOT1_SYNC_DOMAIN_TRANSITION.pcapng",
+      "role": "combined_slot1_sync_domain_transition"
+    },
+    {
+      "file": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "role": "slot2_short_validation"
+    }
+  ],
+  "rate_sync_on_divisions": {
+    "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+    "note": "Nome original sugere transição de SYNC, mas o conteúdo contém somente selector 4 percorrendo divisões.",
+    "wire_mapping": [
+      {
+        "value": 0,
+        "label": "1/1"
+      },
+      {
+        "value": 1,
+        "label": "1/2"
+      },
+      {
+        "value": 2,
+        "label": "1/2d"
+      },
+      {
+        "value": 3,
+        "label": "1/2t"
+      },
+      {
+        "value": 4,
+        "label": "1/4"
+      },
+      {
+        "value": 5,
+        "label": "1/4d"
+      },
+      {
+        "value": 6,
+        "label": "1/4t"
+      },
+      {
+        "value": 7,
+        "label": "1/8"
+      },
+      {
+        "value": 8,
+        "label": "1/8d"
+      },
+      {
+        "value": 9,
+        "label": "1/8t"
+      },
+      {
+        "value": 10,
+        "label": "1/16"
+      }
+    ],
+    "final_value": {
+      "value": 4,
+      "label": "1/4"
+    }
+  },
+  "sync_default_transition_validation": {
+    "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION 2 pra onde sabemos que o valor padrao é 10.pcapng",
+    "received_events": [
+      {
+        "parameter": "sync",
+        "value": true
+      },
+      {
+        "parameter": "sync",
+        "value": false
+      }
+    ],
+    "visual_device_behavior": {
+      "sync_on_rate_default": "1/4",
+      "sync_off_rate_default": 10
+    },
+    "rate_events_emitted_automatically": false,
+    "result": "defaults_are_device_side_implicit_state_changes_not_separate_rate_usb_events"
+  },
+  "combination_capture_validation": {
+    "source": "FILTER_ALL_PARAMETERS_SLOT1_SYNC_DOMAIN_TRANSITION.pcapng",
+    "sequence": [
+      "step_1_51",
+      "step_2_52",
+      "step_3_53",
+      "step_4_54",
+      "rate_numeric_55",
+      "sync_on",
+      "rate_1_4d",
+      "rate_1_4",
+      "sync_off",
+      "steps_back_to_50"
+    ],
+    "result": "same_rate_selector_changes_domain_under_sync_and_sync_transition_does_not_emit_default_rate_packet"
+  },
+  "slot2_validation": {
+    "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+    "sequence": [
+      "step_1_61_50",
+      "step_2_62_50",
+      "step_3_63_50",
+      "step_4_64_50",
+      "rate_65_10",
+      "sync_on",
+      "rate_1_4d_1_4",
+      "sync_off"
+    ],
+    "result": "same_selectors_codec_and_conditional_rate_domain_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "RATE uses selector 4 in both domains.",
+    "SYNC OFF exposes numeric RATE 0-100 and device visually resets RATE to 10 when entering this domain.",
+    "SYNC ON exposes eleven named divisions using wire values 0-10 and device visually resets RATE to 1/4 (wire value 4).",
+    "Implicit RATE defaults are not emitted as separate selector-4 USB messages when SYNC toggles.",
+    "Envelope indices 41-42 remain 00 00 in FREQ, proving this field is not the structural effect class_id."
+  ],
+  "physical_binary_fixtures": 55,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_rate_000.bin",
+      "source": "RATE_FIRST_DUMP.pcapng",
+      "source_role": "rate_sync_off_numeric_range",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "fca39794785689eb0594d56f4e222c258dedd831bb68c4669176dba4b5cafa5c",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition",
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_001.bin",
+      "source": "RATE_FIRST_DUMP.pcapng",
+      "source_role": "rate_sync_off_numeric_range",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "a887b23dd999dbcfba88a4d313e9a989c1838bb20cfa613d9aea4dfdda6bffa2",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition",
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_002.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 2,
+      "value": 2,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        0
+      ],
+      "sha256": "fa3e0b27555350cabb31612a47e36587f2d8334c155febd1a22b9309153f16b6",
+      "contexts_observed": [
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_003.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 3,
+      "value": 3,
+      "encoded_value": [
+        4,
+        0,
+        4,
+        0
+      ],
+      "sha256": "73ca2d792ccd06842d381dbe92c63e6c9cba53863b33553ce32759eb03269c41",
+      "contexts_observed": [
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_004.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 4,
+      "value": 4,
+      "encoded_value": [
+        8,
+        0,
+        4,
+        0
+      ],
+      "sha256": "48a540ef114247679bbd9a6a292354f61d6b9d11fcf0797b8ae5f59ae66ae88f",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition",
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_005.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 5,
+      "value": 5,
+      "encoded_value": [
+        10,
+        0,
+        4,
+        0
+      ],
+      "sha256": "a93f487059edee5fe41ce5106b940475d0171dd30bf6f69b7e2a96f5524a291a",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition",
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_006.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 6,
+      "value": 6,
+      "encoded_value": [
+        12,
+        0,
+        4,
+        0
+      ],
+      "sha256": "64ac447057b28f8d6f8a496aa6c57af67a684645bf7586ce90f937fbaca58020",
+      "contexts_observed": [
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_007.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 7,
+      "value": 7,
+      "encoded_value": [
+        14,
+        0,
+        4,
+        0
+      ],
+      "sha256": "23c01b851df2268ae051e92fda47128183c2c5902fe6d452f6c6914ac4f80554",
+      "contexts_observed": [
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_008.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 8,
+      "value": 8,
+      "encoded_value": [
+        0,
+        0,
+        4,
+        1
+      ],
+      "sha256": "329c07623c6057eadb3ee6a3bc12f8b10d04861e0463d1ce99841375fdacf407",
+      "contexts_observed": [
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_009.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 9,
+      "value": 9,
+      "encoded_value": [
+        1,
+        0,
+        4,
+        1
+      ],
+      "sha256": "ea12217a0c5de81c9282043aecb64f20573a4d5ed8090161801e2a421893507d",
+      "contexts_observed": [
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_010.bin",
+      "source": "FILTER_SYNC_OFF_ON_OFF_DEFAULT_RATE_TRANSITION.pcapng",
+      "source_role": "rate_sync_on_all_divisions_and_back_to_1_4",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 10,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "352080e854c382d7808eb8dffca0297723cf628c6b8f082ed036fdeb8e4c594f",
+      "contexts_observed": [
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot1_rate_050.bin",
+      "source": "RATE_FIRST_DUMP.pcapng",
+      "source_role": "rate_sync_off_numeric_range",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "4a6a010d1ce2239d0fd4c13c65e537d158022f9a8ff656374e3a1ae6f16199f6",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition"
+      ]
+    },
+    {
+      "file": "slot1_rate_055.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT1_SYNC_DOMAIN_TRANSITION.pcapng",
+      "source_role": "combined_slot1_sync_domain_transition",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 55,
+      "value": 55,
+      "encoded_value": [
+        5,
+        12,
+        4,
+        2
+      ],
+      "sha256": "150cc4fd220feed6c9175122d3414e4a5cb7828803ffaa81f05029eb6ea69417",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition"
+      ]
+    },
+    {
+      "file": "slot1_rate_099.bin",
+      "source": "RATE_FIRST_DUMP.pcapng",
+      "source_role": "rate_sync_off_numeric_range",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 99,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "d38ba5cb1885f908bc2ec633a5941d3a4e90a76583e155774e93b951bb127ba4",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition"
+      ]
+    },
+    {
+      "file": "slot1_rate_100.bin",
+      "source": "RATE_FIRST_DUMP.pcapng",
+      "source_role": "rate_sync_off_numeric_range",
+      "slot": 1,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 100,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "47451eaeaa490070ece9c76064f3a45f3e09d98fd1bc0c76a507421da86fbbaa",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition"
+      ]
+    },
+    {
+      "file": "slot1_step1_000.bin",
+      "source": "STEP1_FIRST_DUMP.pcapng",
+      "source_role": "step1_range",
+      "slot": 1,
+      "parameter": "step_1",
+      "selector": 0,
+      "wire_value": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "1be53be20f9a69b150a1a0500a03082ae8c43126c33a6c5f6e1ce4588860bf23"
+    },
+    {
+      "file": "slot1_step1_001.bin",
+      "source": "STEP1_FIRST_DUMP.pcapng",
+      "source_role": "step1_range",
+      "slot": 1,
+      "parameter": "step_1",
+      "selector": 0,
+      "wire_value": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "58441bb9dd21eb30fc6d32ec2be610b261b13fcd7c473de5aa21af3ec9a72eef"
+    },
+    {
+      "file": "slot1_step1_050.bin",
+      "source": "STEP1_FIRST_DUMP.pcapng",
+      "source_role": "step1_range",
+      "slot": 1,
+      "parameter": "step_1",
+      "selector": 0,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "da4f0948097e17db667f72a570ad4d943bf8e8dc1dcafa991df0b6a166ef69d6"
+    },
+    {
+      "file": "slot1_step1_051.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT1_SYNC_DOMAIN_TRANSITION.pcapng",
+      "source_role": "combined_slot1_sync_domain_transition",
+      "slot": 1,
+      "parameter": "step_1",
+      "selector": 0,
+      "wire_value": 51,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "9d47064de6ebb8ec52cbed3dfe87d5847dda02bb48d9787b593be7ddf296b2d6"
+    },
+    {
+      "file": "slot1_step1_099.bin",
+      "source": "STEP1_FIRST_DUMP.pcapng",
+      "source_role": "step1_range",
+      "slot": 1,
+      "parameter": "step_1",
+      "selector": 0,
+      "wire_value": 99,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "04399e3e1676a978fc71d2e809aed722452c0ca7292b2823c4f1ad12f38b4dc1"
+    },
+    {
+      "file": "slot1_step1_100.bin",
+      "source": "STEP1_FIRST_DUMP.pcapng",
+      "source_role": "step1_range",
+      "slot": 1,
+      "parameter": "step_1",
+      "selector": 0,
+      "wire_value": 100,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "1e051082356d5d9e912342fb47c15972bd6f79b2c46d11a2f04ee2b2fc61d17e"
+    },
+    {
+      "file": "slot1_step2_000.bin",
+      "source": "STEP2_FIRST_DUMP.pcapng",
+      "source_role": "step2_range",
+      "slot": 1,
+      "parameter": "step_2",
+      "selector": 1,
+      "wire_value": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "dc3259437462590c708ff4c49d10f62aeedba2a20ad9d50723d44b089b8be75a"
+    },
+    {
+      "file": "slot1_step2_001.bin",
+      "source": "STEP2_FIRST_DUMP.pcapng",
+      "source_role": "step2_range",
+      "slot": 1,
+      "parameter": "step_2",
+      "selector": 1,
+      "wire_value": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "eb72aec976752ad39d128741f4408773cb49d075a04565b914f214e8f95ee09f"
+    },
+    {
+      "file": "slot1_step2_050.bin",
+      "source": "STEP2_FIRST_DUMP.pcapng",
+      "source_role": "step2_range",
+      "slot": 1,
+      "parameter": "step_2",
+      "selector": 1,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e42e132dd9144d1667058129c1b2b11e4dc244b81faf4bacf812ab7e408f82cc"
+    },
+    {
+      "file": "slot1_step2_052.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT1_SYNC_DOMAIN_TRANSITION.pcapng",
+      "source_role": "combined_slot1_sync_domain_transition",
+      "slot": 1,
+      "parameter": "step_2",
+      "selector": 1,
+      "wire_value": 52,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "f59ae9151c3ad40cd1bc79d7e64d5287f71e0c16764c623c350f20f7c01df742"
+    },
+    {
+      "file": "slot1_step2_099.bin",
+      "source": "STEP2_FIRST_DUMP.pcapng",
+      "source_role": "step2_range",
+      "slot": 1,
+      "parameter": "step_2",
+      "selector": 1,
+      "wire_value": 99,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "b840f88664d089538bc66425d0a2ed22eb9f6a231fdaea67f6c5f80df538157e"
+    },
+    {
+      "file": "slot1_step2_100.bin",
+      "source": "STEP2_FIRST_DUMP.pcapng",
+      "source_role": "step2_range",
+      "slot": 1,
+      "parameter": "step_2",
+      "selector": 1,
+      "wire_value": 100,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "f115a51d619b302f5ca0e0119a57a5bf98e03757ce3cf92d0b02a4a0a52f6dd3"
+    },
+    {
+      "file": "slot1_step3_000.bin",
+      "source": "STEP3_FIRST_DUMP.pcapng",
+      "source_role": "step3_range",
+      "slot": 1,
+      "parameter": "step_3",
+      "selector": 2,
+      "wire_value": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "7e60bb3a349b962a053e1a8f1dbcfed15e604540e44d7da26555c70ef9ba1535"
+    },
+    {
+      "file": "slot1_step3_001.bin",
+      "source": "STEP3_FIRST_DUMP.pcapng",
+      "source_role": "step3_range",
+      "slot": 1,
+      "parameter": "step_3",
+      "selector": 2,
+      "wire_value": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "13d3563b468469fab0fb7559f48a2a845d05d320ba83afb8cae7eb60985449b2"
+    },
+    {
+      "file": "slot1_step3_050.bin",
+      "source": "STEP3_FIRST_DUMP.pcapng",
+      "source_role": "step3_range",
+      "slot": 1,
+      "parameter": "step_3",
+      "selector": 2,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "58fad23151e0aa4f809ff190450cf0d4ba9e5b6fb4eda75112476ba2a48c1969"
+    },
+    {
+      "file": "slot1_step3_053.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT1_SYNC_DOMAIN_TRANSITION.pcapng",
+      "source_role": "combined_slot1_sync_domain_transition",
+      "slot": 1,
+      "parameter": "step_3",
+      "selector": 2,
+      "wire_value": 53,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "192820ac89c2ce11606eab4733613a41b65dd314619362870c97d462660cace7"
+    },
+    {
+      "file": "slot1_step3_099.bin",
+      "source": "STEP3_FIRST_DUMP.pcapng",
+      "source_role": "step3_range",
+      "slot": 1,
+      "parameter": "step_3",
+      "selector": 2,
+      "wire_value": 99,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "bcecf5202c0a78fa268ea71dcba7d201dfe75663727e3a89deddf425cd94367b"
+    },
+    {
+      "file": "slot1_step3_100.bin",
+      "source": "STEP3_FIRST_DUMP.pcapng",
+      "source_role": "step3_range",
+      "slot": 1,
+      "parameter": "step_3",
+      "selector": 2,
+      "wire_value": 100,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "77ece721c016981b45b84b6ef5af94cefc8d0c8bbcc505441e9ed0bf78e608e1"
+    },
+    {
+      "file": "slot1_step4_000.bin",
+      "source": "STEP4_FIRST_DUMP.pcapng",
+      "source_role": "step4_range",
+      "slot": 1,
+      "parameter": "step_4",
+      "selector": 3,
+      "wire_value": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ace0c44092c11561fa0cedea5673fcdb07466a61da664db3a45112d2bdf83b69"
+    },
+    {
+      "file": "slot1_step4_001.bin",
+      "source": "STEP4_FIRST_DUMP.pcapng",
+      "source_role": "step4_range",
+      "slot": 1,
+      "parameter": "step_4",
+      "selector": 3,
+      "wire_value": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "18a594a108c9eb59a6e6e9269aa00902d6847d42863b742dbf6455fc23ec628e"
+    },
+    {
+      "file": "slot1_step4_050.bin",
+      "source": "STEP4_FIRST_DUMP.pcapng",
+      "source_role": "step4_range",
+      "slot": 1,
+      "parameter": "step_4",
+      "selector": 3,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "bfbc1aec504b523e17df4fe72fc782a9e9968f3dd4f744b00b7517db28eaf6a0"
+    },
+    {
+      "file": "slot1_step4_054.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT1_SYNC_DOMAIN_TRANSITION.pcapng",
+      "source_role": "combined_slot1_sync_domain_transition",
+      "slot": 1,
+      "parameter": "step_4",
+      "selector": 3,
+      "wire_value": 54,
+      "value": 54,
+      "encoded_value": [
+        5,
+        8,
+        4,
+        2
+      ],
+      "sha256": "3c49b5cf7f39dcb951c5ac9e8c80c16ba1e50305719898bdda872ed5adc50d65"
+    },
+    {
+      "file": "slot1_step4_099.bin",
+      "source": "STEP4_FIRST_DUMP.pcapng",
+      "source_role": "step4_range",
+      "slot": 1,
+      "parameter": "step_4",
+      "selector": 3,
+      "wire_value": 99,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "e4a9a19169858a8f0d0653056d76b52631336c61712ed696317496b2c4e61359"
+    },
+    {
+      "file": "slot1_step4_100.bin",
+      "source": "STEP4_FIRST_DUMP.pcapng",
+      "source_role": "step4_range",
+      "slot": 1,
+      "parameter": "step_4",
+      "selector": 3,
+      "wire_value": 100,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "c4c50f99a486ea66066fa6aaac853950c2a664d1b76b7e24975b6dff0886d202"
+    },
+    {
+      "file": "slot1_sync_off.bin",
+      "source": "SYNC_FIRST_DUMP_TOGGLE.pcapng",
+      "source_role": "sync_toggle",
+      "slot": 1,
+      "parameter": "sync",
+      "selector": 5,
+      "wire_value": 0,
+      "value": false,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "8d7a34b5b0e1fc4d1d8c3143782bc7da56bfe97f1fc38b81bfe0d07ed935eae2"
+    },
+    {
+      "file": "slot1_sync_on.bin",
+      "source": "SYNC_FIRST_DUMP_TOGGLE.pcapng",
+      "source_role": "sync_toggle",
+      "slot": 1,
+      "parameter": "sync",
+      "selector": 5,
+      "wire_value": 1,
+      "value": true,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "38c861b6932ee048e4585ce07bcb4e58c8801fc23f5636ba01a347717601c424"
+    },
+    {
+      "file": "slot2_rate_004.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 4,
+      "value": 4,
+      "encoded_value": [
+        8,
+        0,
+        4,
+        0
+      ],
+      "sha256": "3615714d3e8207b791f734ac48c80e82b231352928ba2aafc9057496ec4ed07a",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition",
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot2_rate_005.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 5,
+      "value": 5,
+      "encoded_value": [
+        10,
+        0,
+        4,
+        0
+      ],
+      "sha256": "5f1c177592a8958f4588c6bdfaee95ddc424cedcd5666f7478c4e197a720c854",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition",
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot2_rate_010.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 10,
+      "value": 10,
+      "encoded_value": [
+        2,
+        0,
+        4,
+        1
+      ],
+      "sha256": "7a7571ee4760fe37749a7f0c1079e004df6f1e0c7818d2d03b775ec529337036",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition",
+        "sync_on_division"
+      ]
+    },
+    {
+      "file": "slot2_rate_065.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "rate",
+      "selector": 4,
+      "wire_value": 65,
+      "value": 65,
+      "encoded_value": [
+        8,
+        2,
+        4,
+        2
+      ],
+      "sha256": "4769f26fb2874e853255ed51869603a764f4d33afbe9caa52a8d578dedb8baf9",
+      "contexts_observed": [
+        "sync_off_numeric_or_transition"
+      ]
+    },
+    {
+      "file": "slot2_step1_050.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "step_1",
+      "selector": 0,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "34ce8bb478fc5d148f2de67228a7231bb954f45e67235d53a29264d55a9776a9"
+    },
+    {
+      "file": "slot2_step1_061.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "step_1",
+      "selector": 0,
+      "wire_value": 61,
+      "value": 61,
+      "encoded_value": [
+        7,
+        4,
+        4,
+        2
+      ],
+      "sha256": "01e44c3bbb13f4503e181fc31ee90bb4f34eda4a4e14314850fc84f35ece958a"
+    },
+    {
+      "file": "slot2_step2_050.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "step_2",
+      "selector": 1,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "c63f1fd080224b7de1107ff8b14bc35756832bfcb075688e16c4bd1a2c5ce2d3"
+    },
+    {
+      "file": "slot2_step2_062.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "step_2",
+      "selector": 1,
+      "wire_value": 62,
+      "value": 62,
+      "encoded_value": [
+        7,
+        8,
+        4,
+        2
+      ],
+      "sha256": "0e9ae63060c308b9a48560677d118b35ba20f404aae2b396a408b57aa4828a98"
+    },
+    {
+      "file": "slot2_step3_050.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "step_3",
+      "selector": 2,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "d1cf7a7cf97492f26c6ea45dd29a460b8e29d95e68e4b35f157b0a7003b7ab80"
+    },
+    {
+      "file": "slot2_step3_063.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "step_3",
+      "selector": 2,
+      "wire_value": 63,
+      "value": 63,
+      "encoded_value": [
+        7,
+        12,
+        4,
+        2
+      ],
+      "sha256": "3f119471e044ca01dc47310881f1aa808d3f3039c13f196aec2058e40a4cc5e5"
+    },
+    {
+      "file": "slot2_step4_050.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "step_4",
+      "selector": 3,
+      "wire_value": 50,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "61410a86b192080a9429f0256ee6a6ebe456580300af9244d13cbf072bca5d6e"
+    },
+    {
+      "file": "slot2_step4_064.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "step_4",
+      "selector": 3,
+      "wire_value": 64,
+      "value": 64,
+      "encoded_value": [
+        8,
+        0,
+        4,
+        2
+      ],
+      "sha256": "e76995f1c7d0167fec458a61a5337de4534245399d072391284123fee07bd53e"
+    },
+    {
+      "file": "slot2_sync_off.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "sync",
+      "selector": 5,
+      "wire_value": 0,
+      "value": false,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "56a0f4c62c7c07928947cf9f690c97711b3ef701bc43d0189a716ad693db5e6b"
+    },
+    {
+      "file": "slot2_sync_on.bin",
+      "source": "FILTER_ALL_PARAMETERS_SLOT2_SHORT_VALIDATION.pcapng",
+      "source_role": "slot2_short_validation",
+      "slot": 2,
+      "parameter": "sync",
+      "selector": 5,
+      "wire_value": 1,
+      "value": true,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "8faa3023eb144830f9fbf8103236a50bccfbfbd620e21316c490c01d94eeb4b5"
+    }
+  ]
+}

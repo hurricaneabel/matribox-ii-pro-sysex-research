@@ -35,6 +35,7 @@ AC_SIM_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_sim_parameters"
 EBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "e_boost_parameters"
 AC_WOODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_woody_parameters"
 GATE1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate1_parameters"
+FILTER_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "filter_parameters"
 
 
 def make_chain(*, internal_slot_id: int, effect_key: str) -> ChainOrderState:
@@ -1303,6 +1304,144 @@ class Phase31EvidenceManifestTests(unittest.TestCase):
         self.assertEqual(
             manifest["slot2_validation"]["result"],
             "same_selectors_codec_and_enum_mapping_on_internal_slot_2",
+        )
+
+
+class FilterConditionalRateParameterTests(unittest.TestCase):
+    def test_all_physical_filter_fixtures_decode_by_chain_effect_context(self) -> None:
+        fixtures = sorted(FILTER_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 55)
+        manifest = json.loads(
+            (FILTER_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        expected = {item["file"]: item for item in manifest["fixtures"]}
+        observed_slots = set()
+        observed_parameters = set()
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                signal = parse_effect_parameter_signal(fixture.read_bytes())
+                self.assertIsNotNone(signal)
+                assert signal is not None
+                # O campo 41-42 permanece 0 em FREQ; a classe estrutural vem da cadeia.
+                self.assertEqual(signal.class_id, 0)
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(), effect_key="freq.filter"
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                item = expected[fixture.name]
+                observed_slots.add(event.human_slot)
+                observed_parameters.add(event.parameter_key)
+                self.assertEqual(event.class_id, 1)
+                self.assertEqual(event.class_key, "freq")
+                self.assertEqual(event.human_slot, item["slot"])
+                self.assertEqual(event.parameter_key, item["parameter"])
+                self.assertEqual(event.value, item["value"])
+        self.assertEqual(observed_slots, {1, 2})
+        self.assertEqual(
+            observed_parameters,
+            {"step_1", "step_2", "step_3", "step_4", "rate", "sync"},
+        )
+
+    def test_filter_rate_defaults_are_derived_without_fabricating_usb_event(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="freq.filter"))
+        root = FILTER_FIXTURE_ROOT
+
+        update = core.feed((root / "slot1_rate_055.bin").read_bytes())
+        assert update.snapshot is not None
+        rate = update.snapshot.effects[0].parameters[4]
+        self.assertEqual((rate.value, rate.display_value, rate.value_origin), (55, "55", "observed_usb"))
+
+        update = core.feed((root / "slot1_sync_on.bin").read_bytes())
+        self.assertIsNotNone(update.parameter_event)
+        assert update.parameter_event is not None
+        self.assertEqual(update.parameter_event.parameter_key, "sync")
+        assert update.snapshot is not None
+        rate = update.snapshot.effects[0].parameters[4]
+        sync = update.snapshot.effects[0].parameters[5]
+        self.assertEqual((rate.value, rate.display_value, rate.value_origin), (4, "1/4", "derived_device_rule"))
+        self.assertEqual((sync.value, sync.display_value, sync.value_origin), (True, "ligado", "observed_usb"))
+        self.assertIsNone(core.parameter_state.event_for(0, "freq.filter", "rate"))
+
+        update = core.feed((root / "slot1_rate_005.bin").read_bytes())
+        assert update.snapshot is not None
+        rate = update.snapshot.effects[0].parameters[4]
+        self.assertEqual((rate.value, rate.display_value, rate.value_origin), (5, "1/4d", "observed_usb"))
+
+        update = core.feed((root / "slot1_sync_off.bin").read_bytes())
+        assert update.snapshot is not None
+        rate = update.snapshot.effects[0].parameters[4]
+        self.assertEqual((rate.value, rate.display_value, rate.value_origin), (10, "10", "derived_device_rule"))
+        self.assertIsNone(core.parameter_state.event_for(0, "freq.filter", "rate"))
+
+    def test_filter_rate_waits_for_sync_when_wire_value_is_ambiguous(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="freq.filter"))
+        update = core.feed((FILTER_FIXTURE_ROOT / "slot1_rate_005.bin").read_bytes())
+        assert update.snapshot is not None
+        rate = update.snapshot.effects[0].parameters[4]
+        self.assertEqual(rate.value, 5)
+        self.assertEqual(rate.display_value, "aguardando SYNC")
+        self.assertEqual(rate.value_origin, "observed_usb")
+
+    def test_filter_slot2_preserves_conditional_domain(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="freq.filter"))
+        root = FILTER_FIXTURE_ROOT
+        for filename in (
+            "slot2_step1_061.bin",
+            "slot2_step2_062.bin",
+            "slot2_step3_063.bin",
+            "slot2_step4_064.bin",
+            "slot2_rate_065.bin",
+        ):
+            core.feed((root / filename).read_bytes())
+        update = core.feed((root / "slot2_sync_on.bin").read_bytes())
+        assert update.snapshot is not None
+        self.assertEqual(
+            tuple(parameter.display_value for parameter in update.snapshot.effects[0].parameters),
+            ("61", "62", "63", "64", "1/4", "ligado"),
+        )
+        update = core.feed((root / "slot2_rate_005.bin").read_bytes())
+        assert update.snapshot is not None
+        self.assertEqual(update.snapshot.effects[0].parameters[4].display_value, "1/4d")
+        update = core.feed((root / "slot2_sync_off.bin").read_bytes())
+        assert update.snapshot is not None
+        self.assertEqual(update.snapshot.effects[0].parameters[4].display_value, "10")
+
+    def test_monitor_lists_filter_parameters_in_catalog_order(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=0, effect_key="freq.filter"))
+        snapshot = core.snapshot
+        assert snapshot is not None
+        self.assertEqual(
+            tuple(parameter.name for parameter in snapshot.effects[0].parameters),
+            ("STEP 1", "STEP 2", "STEP 3", "STEP 4", "RATE", "SYNC"),
+        )
+
+
+class Phase33FilterEvidenceManifestTests(unittest.TestCase):
+    def test_manifest_preserves_two_domains_implicit_defaults_and_two_slots(self) -> None:
+        manifest = json.loads(
+            (FILTER_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["effect"]["key"], "freq.filter")
+        self.assertEqual(manifest["effect"]["class_id"], 1)
+        self.assertEqual(manifest["physical_binary_fixtures"], 55)
+        self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+        self.assertEqual(len(manifest["controlled_capture_sources"]), 10)
+        self.assertEqual(
+            tuple(parameter["selector"] for parameter in manifest["parameters"]),
+            (0, 1, 2, 3, 4, 5),
+        )
+        self.assertEqual(
+            tuple(item["label"] for item in manifest["rate_sync_on_divisions"]["wire_mapping"]),
+            ("1/1", "1/2", "1/2d", "1/2t", "1/4", "1/4d", "1/4t", "1/8", "1/8d", "1/8t", "1/16"),
+        )
+        transition = manifest["sync_default_transition_validation"]
+        self.assertFalse(transition["rate_events_emitted_automatically"])
+        self.assertEqual(transition["visual_device_behavior"]["sync_off_rate_default"], 10)
+        self.assertEqual(transition["visual_device_behavior"]["sync_on_rate_default"], "1/4")
+        self.assertEqual(
+            manifest["protocol"]["parameter_envelope_class_field"]["semantic"],
+            "opaque_not_structural_effect_class_id",
         )
 
 

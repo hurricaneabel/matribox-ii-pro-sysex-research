@@ -210,6 +210,39 @@ Com essa aprovação, os **14 modelos da classe DYN** e seus **47 parâmetros**
 estão catalogados e validados. DYN é a primeira classe de efeitos concluída
 integralmente no projeto.
 
+A Fase 33 inicia a classe `FREQ` com o `FREQ / Filter` e introduz o primeiro
+parâmetro de domínio condicionado do projeto:
+
+```text
+STEP 1 → inteiro 0–100, seletor 0
+STEP 2 → inteiro 0–100, seletor 1
+STEP 3 → inteiro 0–100, seletor 2
+STEP 4 → inteiro 0–100, seletor 3
+RATE   → seletor 4, domínio dependente de SYNC
+SYNC   → booleano, seletor 5
+```
+
+Com `SYNC` desligado, `RATE` é numérico `0–100` e a pedaleira redefine
+implicitamente o valor para `10` ao entrar nesse domínio. Com `SYNC` ligado,
+`RATE` usa onze divisões rítmicas (`1/1` até `1/16`) nos valores físicos
+`0–10` e a pedaleira redefine implicitamente para `1/4` (`wire 4`). Essas
+redefinições não chegam como mensagens `RATE` separadas: o estado do monitor é
+derivado de uma regra declarativa catalogada e marcado internamente como
+`derived_device_rule`, sem fabricar evento USB. Foram preservadas 55 fixtures
+físicas nos slots humanos 1 e 2. A Fase 33 também comprovou que os índices
+`41–42` do envelope `0x1C` não são o `class_id` estrutural: FILTER/FREQ transmite
+`00 00` embora a classe estrutural FREQ seja `1`; a identidade continua vindo
+da cadeia atual.
+
+
+A validação física da Fase 33 foi aprovada no monitor principal com o FILTER no
+slot humano 2 ao lado de `DYN / COMP1`. STEP 1–4 e RATE numérico atualizaram de
+forma independente. Ao receber somente `SYNC = ON`, o monitor derivou
+corretamente `RATE: 1/4`; as mudanças seguintes exibiram as divisões rítmicas
+observadas e, ao receber somente `SYNC = OFF`, o monitor derivou corretamente
+`RATE: 10`. A coexistência DYN/FREQ permaneceu estável, confirmando também a
+correção da interpretação dos índices `41–42` do envelope `0x1C`.
+
 O gerenciador flexível de escrita continua disponível em:
 
 ```powershell
@@ -587,12 +620,11 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-A classe DYN foi encerrada com a aprovação física da Fase 32. O próximo passo é
-consolidar o commit final da branch `research/dyn-parameters`, promovê-lo por
-fast-forward à `main` e somente então escolher a próxima classe de efeitos.
-
-A próxima classe deverá usar uma branch de pesquisa própria. Importação de IR e
-CLONE permanece um subsistema separado de arquivos externos.
+A classe DYN permanece encerrada e a investigação atual ocorre na branch
+`research/freq-parameters`. A Fase 33 do `FREQ / Filter` está implementada e
+fisicamente aprovada, incluindo os defaults derivados de `SYNC`. A próxima
+investigação FREQ pode seguir para OCTAVER ou outro modelo simples. Importação de IR e CLONE permanece um subsistema separado
+de arquivos externos.
 
 ## Continuidade entre chats
 
