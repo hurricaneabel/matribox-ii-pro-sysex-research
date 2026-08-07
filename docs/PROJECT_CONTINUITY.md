@@ -3,9 +3,9 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 35 — FREQ / DUAL MELODY fisicamente aprovada e promovida; modo `--live` do monitor fisicamente aprovado
-> **Trabalho atual:** consolidar a melhoria pós-Fase 35 do monitor (`--live` e `--log`) sem alterar o protocolo SysEx
-> **Próximo passo:** commitar a melhoria do monitor em `research/freq-parameters`, promover por fast-forward à `main` e depois investigar a hidratação inicial dos parâmetros salvos ou iniciar a Fase 36
+> **Marco consolidado:** Fase 41 — FREQ / Tape Mod fisicamente aprovado
+> **Trabalho atual:** concluir publicação da pesquisa FREQ pelo usuário
+> **Próximo passo:** integrar `research/freq-parameters` na `main`
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/freq-parameters`
 
@@ -33,6 +33,8 @@ funcionalidade aprovada**. A atualização deve registrar:
   `research/dyn-parameters`; não criar uma branch por efeito individual.
 - O usuário extrai pacotes ZIP manualmente; não é necessário fornecer comandos
   de extração.
+- Reservar o preset 56B para descoberta/captura e o 56C para validação física;
+  o 56C pode manter doze efeitos para testar início, meio e fim da cadeia.
 - A suíte oficial usa `unittest`, não `pytest`.
 - Nunca executar `git add`, commit ou limpeza antes da aprovação dos testes
   físicos quando a mudança envolver comunicação MIDI.
@@ -91,8 +93,10 @@ O estado atual já permite:
   `s` conforme o catálogo;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e 61 parâmetros confirmados por
-  capturas em quatorze efeitos DYN e três efeitos FREQ a partir de um catálogo
+- hidratar valores persistidos dos parâmetros catalogados ao carregar o preset
+  e após adicionar, substituir ou reordenar efeitos;
+- carregar as 16 classes, 267 efeitos e 80 parâmetros confirmados por
+  capturas em quatorze efeitos DYN e sete efeitos FREQ a partir de um catálogo
   JSON versionado e independente de Python/Windows;
 - representar parâmetros com domínio condicionado, como RATE do FILTER, sem
   fabricar mensagens USB para defaults implícitos do dispositivo.
@@ -126,24 +130,27 @@ como:
 
 ```text
   2. DYN / M-BOOST — ligado
-     GAIN: aguardando alteração
+     GAIN: 50
 
   3. DYN / COMP1 — ligado
-     SUSTAIN: aguardando alteração
-     VOLUME: aguardando alteração
+     SUSTAIN: 20
+     VOLUME: 50
 
   4. DYN / E-BOOST — ligado
-     GAIN: aguardando alteração
-     +3dB: aguardando alteração
-     BRIGHT: aguardando alteração
+     GAIN: 40
+     +3dB: desligado
+     BRIGHT: ligado
 ```
 
-Depois do primeiro evento `0x1C`, o valor real substitui o texto de espera.
+Os valores são hidratados pelo dump inicial. Eventos `0x1C` posteriores
+substituem imediatamente o valor salvo da instância correta.
 
 ### Comportamentos fisicamente confirmados
 
 - A troca de preset atualiza endereço, nome, etiqueta e solicita a nova cadeia.
 - A mudança da ordem dos efeitos redesenha a cadeia na ordem correta.
+- Adicionar, substituir ou reordenar efeitos solicita um novo dump somente
+  leitura e hidrata os parâmetros do estado estrutural atualizado.
 - Ligar ou desligar um efeito atualiza imediatamente somente o estado daquele
   slot, sem solicitar um novo dump completo.
 - A inicialização após ligar a pedaleira possui reenvios automáticos; não é mais
@@ -411,8 +418,9 @@ tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 
 M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC-BOOST, BB-BOOST, RC-BOOST,
 FAT BOOST, AC WOODY, AC SIM, GATE 1, GATE 2 e GATE 3 são os quatorze efeitos
-DYN preenchidos. FILTER, OCTAVER e DUAL MELODY são os três primeiros efeitos FREQ parametrizados. Os outros 250
-efeitos permanecem explicitamente `pending`, sem parâmetros presumidos.
+DYN preenchidos. FILTER, OCTAVER, DUAL MELODY, PITCH, HARMONY D, PITCH S e
+RING MOD são os sete primeiros efeitos FREQ parametrizados. Os outros 246 efeitos permanecem explicitamente
+`pending`, sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
 
@@ -436,8 +444,9 @@ O estado guarda o último valor por slot interno, efeito e parâmetro. Eventos
 são rejeitados quando o seletor não pertence ao efeito atual. Valores são
 descartados ao trocar preset ou substituir o efeito.
 
-O valor inicial ainda não é extraído do dump. Após carregar o preset, o monitor
-mostra `aguardando alteração` até receber o primeiro evento ao vivo.
+Desde a Fase 36, o valor inicial é extraído do dump `0x10`. Mudanças
+estruturais disparam uma nova consulta somente leitura para hidratar efeitos
+adicionados ou substituídos.
 
 Relatório:
 
@@ -1478,15 +1487,11 @@ interno real e ao modelo presente na cadeia. Nenhuma escrita de parâmetro foi
 implementada; a assimetria host->device de HI VOL/LOW VOL permanece apenas como
 evidência para uma pesquisa futura.
 
-### Próximo passo exato
+### Consolidação histórica
 
-1. revisar o escopo final da Fase 35 em `research/freq-parameters`;
-2. adicionar somente os arquivos desta fase ao índice;
-3. executar `git diff --cached --stat` e `git diff --cached --check`;
-4. criar o commit da Fase 35 e enviar `research/freq-parameters`;
-5. promover o mesmo commit por `git merge --ff-only` para `main` e enviar;
-6. voltar para `research/freq-parameters` e confirmar árvore limpa;
-7. iniciar a Fase 36 com o próximo efeito da classe FREQ.
+A Fase 35 e a melhoria 35A foram fisicamente aprovadas, promovidas à `main` e
+serviram como base estável para a Fase 36. Os passos de branch e promoção desta
+etapa já foram concluídos.
 
 ## 23. Melhoria pós-Fase 35 — painel `--live` e log compacto
 
@@ -1532,18 +1537,135 @@ tools/commands/matribox_monitor.py
 tests/test_matribox_monitor_output.py
 ```
 
-### Limitação conhecida preservada
+### Fase 36 consolidada
 
-Os parâmetros catalogados ainda começam como `aguardando alteração` ao carregar
-um preset. O dump estrutural `0x10` é usado atualmente para cadeia e bypass,
-mas os valores persistidos dos parâmetros ainda não foram localizados dentro do
-payload de 1.211 bytes. Eventos `0x1C` continuam sendo a fonte dos valores em
-tempo real após o usuário alterar um controle.
+Os parâmetros catalogados são hidratados pelo bloco `273–992` do dump `0x10`.
+Cada slot possui 60 bytes e quinze posições float32, endereçadas pelo
+`parameter_selector`. Eventos `0x1C` continuam prevalecendo em tempo real.
+A suíte offline possui 443 testes aprovados. Carga inicial, adição, substituição,
+reordenação, mudança de classe e parâmetros em tempo real foram aprovados
+fisicamente no painel `--live`.
 
 ### Próximo passo exato
 
-1. consolidar esta melhoria em `research/freq-parameters`;
-2. promover o mesmo commit por fast-forward à `main`;
-3. voltar à branch de pesquisa e confirmar árvore limpa;
-4. antes do próximo efeito, decidir entre investigar de forma não destrutiva a
-   hidratação dos valores salvos a partir do dump `0x10` ou iniciar a Fase 36.
+1. revisar o pacote final da Fase 37;
+2. executar commit e push em `research/freq-parameters` pelo usuário;
+3. manter `main` como marco estável até a consolidação planejada da pesquisa;
+4. seguir para `FREQ / Harmony D` ou outro efeito escolhido.
+
+## 24. Atualização atual — candidata da Fase 37: FREQ / Pitch
+
+Quatro capturas de reabertura do editor oficial confirmaram o Pitch no slot
+interno 0 como `class_id = 0x01`, `model_id = 0x24`. O bloco salvo possui cinco
+seletores consecutivos: HI PITCH 0, LOW PITCH 1, WET 2, DRY 3 e RANGE 4.
+
+As faixas são `0–12`, `-12–0` e três vezes `0–100`. Os defaults implícitos são
+`12 / 0 / 50 / 50 / 50`. LOW PITCH usa `float32` negativo nativo, confirmado
+por `-12`, `-9` e `-8`. A candidata incrementa `catalog_version` para 14,
+totaliza 18 efeitos parametrizados, 66 parâmetros catalogados e 249 efeitos
+pendentes.
+
+A hidratação não ganhou código específico: o leitor genérico da Fase 36 resolve
+os valores pelo seletor cadastrado. A validação física foi aprovada com duas
+instâncias de Pitch simultâneas, Filter e COMP1 na mesma cadeia. Os valores
+iniciais foram hidratados corretamente; efeitos adicionados receberam seus
+defaults; e os cinco controles acompanharam alterações em tempo real sem
+colisão entre instâncias. Nenhuma escrita de parâmetro foi implementada.
+
+## 25. Atualização atual — candidata da Fase 38: FREQ / Harmony D
+
+Três dumps de reabertura e uma varredura ao vivo confirmaram MIX, KEY, MODE,
+INTERVAL 1, INTERVAL 2 e SMOOTH. Os seletores são `0, 1, 2, 3, 4, 6`; o seletor
+5 é uma lacuna física e não foi inventado. KEY, MODE e INTERVAL usam enums
+nomeados; SMOOTH usa booleano. Defaults: `50 / C / MAJOR / +3RD / +5TH / OFF`.
+
+O catálogo passa à versão 15, com 19 efeitos parametrizados, 72 parâmetros e
+248 efeitos pendentes. A suíte offline possui 447 testes aprovados.
+
+A validação física foi aprovada com duas instâncias simultâneas. Cada uma
+preservou MIX, KEY, MODE, INTERVAL 1, INTERVAL 2 e SMOOTH independentes. Os
+valores foram hidratados, acompanharam alterações em tempo real e coexistiram
+com COMP1, WAH e DRV sem colisões.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/freq-parameters`;
+2. revisar e executar commit e push pelo usuário;
+3. manter `main` sem integração até encerrar a pesquisa FREQ;
+4. iniciar `FREQ / Pitch S` ou outro efeito escolhido.
+
+## 26. Atualização atual — candidata da Fase 39: FREQ / Pitch S
+
+Três dumps completos e uma varredura ao vivo confirmaram RANGE 0, POSITION 1,
+MIX 2 e LEVEL 3. RANGE é enum de seis rótulos de oitava; os demais parâmetros
+usam 0–100. Defaults: `+1 OCT / 0 / 100 / 100`.
+
+Um `10.0` residual apareceu no seletor 4 dos dumps, mas não existe controle ou
+resposta ao vivo correspondente. O catálogo não declara esse seletor, e o teste
+de hidratação confirma que ele é ignorado. O catálogo passa à versão 16, com 20
+efeitos parametrizados, 76 parâmetros e 247 efeitos pendentes. A suíte offline
+possui 449 testes aprovados.
+
+A validação física foi aprovada no preset 56C com os doze slots ocupados. Duas
+instâncias de Pitch S em regiões diferentes da cadeia mantiveram RANGE,
+POSITION, MIX e LEVEL independentes, incluindo `-1 OCT` e `+/-2 OCT`. A
+coexistência com múltiplos COMP1 não produziu colisões.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/freq-parameters`;
+2. revisar e executar commit e push pelo usuário;
+3. manter `main` sem integração até encerrar a pesquisa FREQ;
+4. iniciar `FREQ / Ring Mod` usando 56B para descoberta e 56C para validação.
+
+## 27. Atualização atual — candidata da Fase 40: FREQ / Ring Mod
+
+Três dumps completos e uma varredura ao vivo confirmaram MIX 0, FREQ. 1,
+FINE 2 e TONE 3. FINE usa -50–50 com negativos nativos; os demais controles
+usam 0–100. Defaults: `50 / 50 / 0 / 50`.
+
+O `10.0` residual no seletor 4 não corresponde a um controle e é ignorado pelo
+catálogo. A candidata eleva `catalog_version` para 17, com 21 efeitos
+parametrizados, 80 parâmetros e 246 efeitos pendentes. A suíte offline possui
+451 testes aprovados.
+
+A validação física foi aprovada no preset 56C com doze efeitos. Duas instâncias
+de Ring Mod nas posições 4 e 12 mantiveram MIX, FREQ., FINE e TONE
+independentes. MIX 0, FINE `-33` e FINE `20` foram exibidos corretamente e a
+coexistência com múltiplos COMP1 não produziu colisões.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/freq-parameters`;
+2. revisar e executar commit e push pelo usuário;
+3. manter `main` sem integração até encerrar a pesquisa FREQ;
+4. iniciar `FREQ / Tape Mod` usando 56B para descoberta e 56C para validação.
+
+## 28. Atualização atual — Fase 41 consolidada: FREQ / Tape Mod
+
+As capturas ao vivo confirmaram SATURATION 0, MIX 1, VOLUME 2 e HIGH CUT 3,
+todos em 0–100. Cada parâmetro percorreu 0, 1, 50, 99 e 100. Um conjunto
+combinado `61 / 62 / 63 / 64` e uma validação no segundo slot confirmaram que o
+envelope continua vinculado ao slot interno.
+
+Três dumps completos após reabrir o aplicativo confirmaram `50 / 50 / 50 / 50`,
+`21 / 43 / 65 / 87` e `22 / 44 / 66 / 88`. O `10.0` residual no seletor 4
+não corresponde a um controle e é ignorado. A fase eleva
+`catalog_version` para 18, com 22 efeitos parametrizados, 84 parâmetros e 245
+efeitos pendentes.
+
+O Tape Mod encerra o catálogo de parâmetros conhecido da classe FREQ. A
+integração continua somente leitura e reutiliza integralmente a hidratação
+genérica da Fase 36.
+
+A validação física final usou o preset 56C com os doze slots ocupados. Duas
+instâncias nas posições visuais 4 e 12 preservaram respectivamente
+`30 / 31 / 21 / 30` e `81 / 80 / 70 / 71`. Múltiplos COMP1 coexistiram sem
+colisão. A Fase 41 e a pesquisa de parâmetros FREQ estão aprovadas.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/freq-parameters`;
+2. revisar, executar commit e publicar essa branch pelo usuário;
+3. integrar `research/freq-parameters` na `main` com merge explícito;
+4. publicar a `main` e confirmar que ambas apontam para o histórico esperado.

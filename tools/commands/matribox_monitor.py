@@ -456,6 +456,16 @@ def print_snapshot(snapshot) -> None:
     print(format_monitor_snapshot(snapshot))
 
 
+def should_refresh_after_structural_change(update) -> bool:
+    """Indica mudança que exige novo dump para hidratar efeitos adicionados."""
+
+    return (
+        update.preset_event is None
+        and update.chain_changed
+        and update.chain_state is not None
+    )
+
+
 def refresh_current_chain(
     input_port,
     output_port,
@@ -498,6 +508,7 @@ def refresh_current_chain(
                 if verbose
                 else None
             ),
+            require_complete_dump=True,
         )
 
         if result.interrupted:
@@ -658,6 +669,17 @@ def main() -> int:
                     if update.snapshot is not None:
                         present_snapshot(update.snapshot)
 
+                    refresh_current_chain(
+                        input_port,
+                        output_port,
+                        core,
+                        arguments,
+                        on_snapshot=present_snapshot,
+                        verbose=not arguments.live,
+                    )
+                    continue
+
+                if should_refresh_after_structural_change(update):
                     refresh_current_chain(
                         input_port,
                         output_port,

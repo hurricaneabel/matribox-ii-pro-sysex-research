@@ -7,7 +7,222 @@
   "name": "Pitch",
   "model_id": 36,
   "secondary_selector": 1,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "high_pitch",
+      "name": "HI PITCH",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 12,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          12
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "multiple_parameters": true,
+        "physical_saved_dump_count": 4,
+        "saved_dump_defaults": 12,
+        "evidence": "docs/phases/FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "low_pitch",
+      "name": "LOW PITCH",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": -12,
+        "maximum": 0,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          -12,
+          0
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "multiple_parameters": true,
+        "physical_saved_dump_count": 4,
+        "saved_dump_defaults": 0,
+        "evidence": "docs/phases/FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md",
+        "monitor_integration_physical_validation": "pending",
+        "signed_numeric_encoding": "native_float32_negative",
+        "signed_values_physically_observed": [
+          -12,
+          -9,
+          -8,
+          0
+        ]
+      }
+    },
+    {
+      "key": "wet",
+      "name": "WET",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "multiple_parameters": true,
+        "physical_saved_dump_count": 4,
+        "saved_dump_defaults": 50,
+        "evidence": "docs/phases/FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "dry",
+      "name": "DRY",
+      "display_order": 4,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 3,
+        "multiple_parameters": true,
+        "physical_saved_dump_count": 4,
+        "saved_dump_defaults": 50,
+        "evidence": "docs/phases/FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "range",
+      "name": "RANGE",
+      "display_order": 5,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 4,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 4,
+        "multiple_parameters": true,
+        "physical_saved_dump_count": 4,
+        "saved_dump_defaults": 50,
+        "evidence": "docs/phases/FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    }
+  ]
 }

@@ -29,3 +29,9 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 34 | `FREQ_OCTAVER_PARAMETERS_PHASE34.md` | OCTAVER com LOW OCT/HIGH OCT/DRY e validação dos slots 1 e 2 |
 | 35 | `FREQ_DUAL_MELODY_SIGNED_PARAMETERS_PHASE35.md` | DUAL MELODY com primeiro intervalo assinado nativo em float32 |
 | 35A | `MONITOR_LIVE_MODE_PHASE35A.md` | painel `--live` em buffer alternativo e `--log` compacto, sem alterar o protocolo |
+| 36 | `PRESET_PARAMETER_HYDRATION_PHASE36.md` | hidratação inicial pelo dump `0x10` |
+| 37 | `FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md` | PITCH com cinco seletores consecutivos, LOW PITCH assinado e defaults salvos |
+| 38 | `FREQ_HARMONY_D_ENUM_PARAMETERS_PHASE38.md` | HARMONY D com KEY, MODE, dois INTERVALS e lacuna física antes de SMOOTH |
+| 39 | `FREQ_PITCH_S_RANGE_PARAMETERS_PHASE39.md` | PITCH S com RANGE enum e rejeição de campo residual do slot |
+| 40 | `FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md` | RING MOD com FINE assinado e rejeição de campo residual |
+| 41 | `FREQ_TAPE_MOD_PARAMETERS_PHASE41.md` | TAPE MOD com quatro controles 0–100 e conclusão do catálogo FREQ |

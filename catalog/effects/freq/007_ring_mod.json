@@ -7,7 +7,186 @@
   "name": "Ring Mod",
   "model_id": 47,
   "secondary_selector": 1,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "mix",
+      "name": "MIX",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "multiple_parameters": true,
+        "saved_dump_default": 50,
+        "physical_saved_dump_count": 3,
+        "physical_live_sweep": true,
+        "evidence": "docs/phases/FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "freq",
+      "name": "FREQ.",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "multiple_parameters": true,
+        "saved_dump_default": 50,
+        "physical_saved_dump_count": 3,
+        "physical_live_sweep": true,
+        "evidence": "docs/phases/FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    },
+    {
+      "key": "fine",
+      "name": "FINE",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": -50,
+        "maximum": 50,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          -50,
+          50
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "multiple_parameters": true,
+        "saved_dump_default": 0,
+        "physical_saved_dump_count": 3,
+        "physical_live_sweep": true,
+        "evidence": "docs/phases/FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md",
+        "monitor_integration_physical_validation": "pending",
+        "signed_numeric_encoding": "native_float32_negative",
+        "signed_values_physically_observed": [
+          -49,
+          -17,
+          -16,
+          -1
+        ],
+        "documented_domain_minimum": -50
+      }
+    },
+    {
+      "key": "tone",
+      "name": "TONE",
+      "display_order": 4,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 3,
+        "multiple_parameters": true,
+        "saved_dump_default": 50,
+        "physical_saved_dump_count": 3,
+        "physical_live_sweep": true,
+        "evidence": "docs/phases/FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md",
+        "monitor_integration_physical_validation": "pending"
+      }
+    }
+  ]
 }

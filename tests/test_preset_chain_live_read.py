@@ -31,6 +31,14 @@ PRESET_FIXTURE = (
     / "preset_dump_chain"
     / "56A_GATE3_ON.bin"
 )
+STRUCTURAL_FIXTURE = (
+    PROJECT_ROOT
+    / "tests"
+    / "fixtures"
+    / "structural_effect_state"
+    / "phase15"
+    / "BASELINE.bin"
+)
 
 
 class FakeClock:
@@ -220,6 +228,33 @@ class PresetChainLiveReadTests(unittest.TestCase):
         self.assertEqual(query[8], 0x11)
         self.assertEqual(query[9], 0x10)
         self.assertEqual(query[31:33], bytes((0x0D, 0x0C)))
+
+    def test_required_dump_ignores_intermediate_structural_response(self) -> None:
+        core = make_ready_core()
+        input_port = FakeInputPort(
+            [
+                create_mido_sysex(STRUCTURAL_FIXTURE.read_bytes()),
+                *self.fragments,
+            ]
+        )
+        output_port = FakeOutputPort()
+        clock = FakeClock()
+
+        result = read_preset_chain_state(
+            input_port,
+            output_port,
+            core,
+            "56A",
+            load_delay_seconds=0,
+            timeout_seconds=1.0,
+            poll_interval_seconds=0.01,
+            monotonic=clock.monotonic,
+            sleeper=clock.sleep,
+            require_complete_dump=True,
+        )
+
+        self.assertTrue(result.complete)
+        self.assertIn("threshold", core.parameter_state.as_mapping()[0])
 
 
 if __name__ == "__main__":

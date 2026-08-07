@@ -1598,3 +1598,139 @@ monitor conhece quais parâmetros pertencem ao efeito pelo catálogo, mas exibe
 Uma pesquisa futura deve verificar se esses valores estão presentes no dump
 `0x10` descomprimido de 1.211 bytes antes de considerar qualquer nova consulta
 ou comando de escrita.
+
+## Fase 36 — parâmetros persistidos no dump 0x10
+
+Capturas controladas localizaram os parâmetros salvos no intervalo `273–992`
+do payload descomprimido. São doze blocos de 60 bytes e quinze valores float32
+little-endian por bloco. A posição usa o seletor físico:
+
+```text
+offset = 273 + internal_slot_id * 60 + parameter_selector * 4
+```
+
+Inteiros, booleanos, enums e negativos usam a mesma representação. O FILTER
+persiste RATE e SYNC separadamente: `4/ON` representa `1/4` e `10/OFF` o
+default numérico. A apresentação precisa conhecer SYNC antes de formatar RATE.
+A candidata não envia nenhum comando adicional.
+
+A validação física confirmou a hidratação no carregamento inicial. Respostas
+estruturais emitidas ao adicionar um efeito não incluem o bloco persistido de
+parâmetros; por isso, a candidata solicita novamente o mesmo dump `0x10` após
+mudanças estruturais. A consulta continua somente leitura.
+
+A versão refinada foi aprovada fisicamente adicionando, substituindo e
+reordenando efeitos, alterando classes e movimentando parâmetros em tempo real.
+FILTER, COMP1 e Dual Melody coexistiram com valores hidratados e atualizações
+independentes. A Fase 36 encerrou com 443 testes offline aprovados.
+
+## Fase 37 — PITCH no dump salvo
+
+Quatro capturas de reabertura confirmaram `FREQ / Pitch` como `class_id 0x01`,
+`model_id 0x24`, com cinco valores `float32` consecutivos no bloco do slot:
+
+```text
+selector 0 = HI PITCH  (0..12, default 12)
+selector 1 = LOW PITCH (-12..0, default 0)
+selector 2 = WET       (0..100, default 50)
+selector 3 = DRY       (0..100, default 50)
+selector 4 = RANGE     (0..100, default 50)
+```
+
+LOW PITCH persiste valores negativos nativos, incluindo `-12`, sem conversão
+por índice. Os dumps completos possuem 1.211 bytes e obedecem à fórmula da Fase
+36. Não existe lacuna de seletor nem domínio condicional. A evidência inicial
+foi obtida do estado salvo `0x10`; a validação posterior no monitor confirmou
+também as alterações `0x1C`, duas instâncias simultâneas e reidratação após
+adição de efeitos.
+
+## Fase 38 — HARMONY D, enums musicais e seletor 5 ausente
+
+`FREQ / Harmony D` usa `class_id 0x01`, `model_id 0x4E` e seis parâmetros:
+
+```text
+0 MIX | 1 KEY | 2 MODE | 3 INTERVAL 1 | 4 INTERVAL 2 | 6 SMOOTH
+```
+
+O seletor 5 não apareceu no dump nem nas respostas recebidas e não deve ser
+preenchido por inferência. KEY usa índices 0–11 na ordem cromática C–B. MODE
+usa 0–7 para MAJOR, MINOR, H. MINOR, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN e
+LOCRIAN. Ambos os INTERVALS usam 0–13: `-OCT`, `-7TH` até `-2ND`, `+2ND` até
+`+7TH` e `+OCT`. SMOOTH usa booleano 0/1.
+
+Os defaults persistidos são MIX 50, KEY C, MODE MAJOR, INTERVAL 1 +3RD,
+INTERVAL 2 +5TH e SMOOTH desligado. Três dumps `0x10` completos e uma varredura
+com 50 respostas `0x1C` sustentam o mapa. O arquivo de captura nomeado `LIMITS`
+contém efetivamente o conjunto B `24 / E / PHRYGIAN / -4TH / +7TH / ON`; a
+divergência do nome foi preservada na documentação.
+
+A integração final foi aprovada fisicamente com duas instâncias simultâneas de
+Harmony D. MIX, KEY, MODE, INTERVAL 1, INTERVAL 2 e SMOOTH mantiveram valores
+independentes por slot, acompanharam alterações em tempo real e coexistiram com
+efeitos FREQ, DYN, WAH e DRV.
+
+## Fase 39 — PITCH S e campo residual fora do catálogo
+
+`FREQ / Pitch S` usa `class_id 0x01`, `model_id 0x55` e quatro seletores:
+
+```text
+0 RANGE | 1 POSITION | 2 MIX | 3 LEVEL
+```
+
+RANGE mapeia 0–5 para `-2 OCT`, `-1 OCT`, `+1 OCT`, `+2 OCT`, `+/-1 OCT` e
+`+/-2 OCT`. POSITION, MIX e LEVEL usam 0–100. Defaults persistidos:
+`+1 OCT / 0 / 100 / 100`.
+
+Os dumps continham ainda `10.0` no seletor 4, sem controle correspondente e
+sem resposta ao vivo observada. Trata-se de estado residual do slot, não de um
+quinto parâmetro. O catálogo limitado aos seletores 0–3 impede que a hidratação
+promova esse valor antigo para o estado atual.
+
+A validação física final usou uma cadeia com os doze slots ocupados. Duas
+instâncias de Pitch S, posicionadas em regiões diferentes, preservaram estados
+independentes e coexistiram com múltiplos COMP1. Isso confirma que o mapa
+continua vinculado ao slot interno real mesmo sob ocupação máxima.
+
+## Fase 40 — RING MOD e FINE assinado
+
+`FREQ / Ring Mod` usa `class_id 0x01`, `model_id 0x2F` e quatro seletores:
+
+```text
+0 MIX | 1 FREQ. | 2 FINE | 3 TONE
+```
+
+MIX, FREQ. e TONE usam 0–100. FINE usa -50–50 e preserva valores negativos
+nativos no mesmo codec float32. Defaults: `50 / 50 / 0 / 50`. Três dumps
+completos e uma varredura ao vivo confirmaram o mapa. O valor 9 extra acionado
+em FREQ. foi identificado pela ordem informada e tratado como evidência válida.
+
+O seletor 4 continha novamente `10.0` residual, sem controle ou resposta ao vivo
+correspondente. O catálogo limitado a 0–3 impede sua hidratação.
+
+A validação física final confirmou duas instâncias simultâneas nas posições
+visuais 4 e 12 de uma cadeia com os doze slots ocupados. FINE preservou `-33` e
+`20` independentemente, MIX aceitou zero e não houve colisão com múltiplos
+COMP1.
+
+## Fase 41 — TAPE MOD e conclusão da classe FREQ
+
+`FREQ / Tape Mod` usa `class_id 0x01`, `model_id 0x33` e quatro seletores:
+
+```text
+0 SATURATION | 1 MIX | 2 VOLUME | 3 HIGH CUT
+```
+
+Todos usam 0–100 e default persistido 50. As varreduras ao vivo confirmaram
+0, 1, 50, 99 e 100 individualmente, além do conjunto `61 / 62 / 63 / 64` e de
+uma repetição no segundo slot.
+
+Três dumps `0x10` completos confirmaram os conjuntos `50 / 50 / 50 / 50`,
+`21 / 43 / 65 / 87` e `22 / 44 / 66 / 88`. Como em Pitch S e Ring Mod, o
+seletor 4 contém `10.0` residual sem controle correspondente. O catálogo limita
+a hidratação aos seletores 0–3. Com este mapa, todos os efeitos conhecidos da
+classe FREQ possuem seus parâmetros documentados.
+
+A validação física final confirmou duas instâncias independentes nas posições
+visuais 4 e 12 de uma cadeia com doze efeitos. Os conjuntos
+`30 / 31 / 21 / 30` e `81 / 80 / 70 / 71` foram hidratados corretamente e
+coexistiram com múltiplos COMP1. A classe FREQ está consolidada.

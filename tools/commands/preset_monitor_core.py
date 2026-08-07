@@ -51,6 +51,15 @@ from tools.commands.preset_state import (
     calculate_protocol_checksum,
     parse_preset_event,
 )
+from tools.commands.preset_dump_state import (
+    PresetDumpStateError,
+    decode_chain_state_from_decompressed_preset_dump,
+    decompress_preset_dump,
+)
+from tools.parameters.preset_dump import (
+    PresetParameterDumpError,
+    decode_saved_parameter_events,
+)
 
 
 SESSION_HANDSHAKE: Final = bytes.fromhex(
@@ -657,6 +666,57 @@ class PresetMonitorCore:
             self._last_snapshot = current_snapshot
 
         return current_snapshot, snapshot_changed
+
+    def hydrate_saved_parameters(
+        self,
+        decompressed_dump: bytes | bytearray,
+    ) -> int:
+        """Carrega valores persistidos para a cadeia atual sem enviar SysEx."""
+
+        if self.current_chain is None:
+            raise ValueError("A cadeia deve ser aplicada antes dos parâmetros.")
+        events = decode_saved_parameter_events(
+            decompressed_dump,
+            self.current_chain,
+            self.parameter_state.catalog,
+        )
+        applied = 0
+        for event in events:
+            if self.parameter_state.origin_for(
+                event.internal_slot_id,
+                event.effect_key,
+                event.parameter_key,
+            ) == "observed_usb":
+                continue
+            self.parameter_state.apply(
+                event,
+                origin="saved_preset_dump",
+            )
+            applied += 1
+        return applied
+
+    def apply_preset_dump(
+        self,
+        preset_dump: bytes | bytearray,
+    ) -> ChainOrderState:
+        """Aplica cadeia, bypass e parâmetros do mesmo dump ``0x10``."""
+
+        raw_container = bytes(preset_dump)
+        decompressed, backend = decompress_preset_dump(raw_container)
+        chain_state = decode_chain_state_from_decompressed_preset_dump(
+            decompressed,
+            raw_container=raw_container,
+            decompressor_backend=backend,
+        )
+        self.apply_chain_state(chain_state)
+        try:
+            self.hydrate_saved_parameters(decompressed)
+        except PresetParameterDumpError as error:
+            raise PresetDumpStateError(str(error)) from error
+        current_snapshot = self.snapshot
+        if current_snapshot is not None:
+            self._last_snapshot = current_snapshot
+        return chain_state
 
     def feed(
         self,

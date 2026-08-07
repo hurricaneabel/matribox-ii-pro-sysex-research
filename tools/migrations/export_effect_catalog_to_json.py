@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 13
+CATALOG_VERSION = 18
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -1185,6 +1185,371 @@ DUAL_MELODY_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
 )
 
 
+PITCH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": display_order,
+        "value_type": "integer",
+        "range": {"minimum": minimum, "maximum": maximum, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [minimum, maximum],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "multiple_parameters": True,
+            "physical_saved_dump_count": 4,
+            "saved_dump_defaults": default,
+            "evidence": "docs/phases/FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md",
+            "monitor_integration_physical_validation": "pending",
+            **(
+                {
+                    "signed_numeric_encoding": "native_float32_negative",
+                    "signed_values_physically_observed": [-12, -9, -8, 0],
+                }
+                if key == "low_pitch"
+                else {}
+            ),
+        },
+    }
+    for display_order, (key, name, selector, minimum, maximum, default) in enumerate(
+        (
+            ("high_pitch", "HI PITCH", 0, 0, 12, 12),
+            ("low_pitch", "LOW PITCH", 1, -12, 0, 0),
+            ("wet", "WET", 2, 0, 100, 50),
+            ("dry", "DRY", 3, 0, 100, 50),
+            ("range", "RANGE", 4, 0, 100, 50),
+        ),
+        start=1,
+    )
+)
+
+
+HARMONY_D_KEY_CHOICES = (
+    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+)
+HARMONY_D_MODE_CHOICES = (
+    "MAJOR", "MINOR", "H. MINOR", "DORIAN", "PHRYGIAN", "LYDIAN",
+    "MIXOLYDIAN", "LOCRIAN",
+)
+HARMONY_D_INTERVAL_CHOICES = (
+    "-OCT", "-7TH", "-6TH", "-5TH", "-4TH", "-3RD", "-2ND",
+    "+2ND", "+3RD", "+4TH", "+5TH", "+6TH", "+7TH", "+OCT",
+)
+
+
+HARMONY_D_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "mix",
+        "name": "MIX",
+        "display_order": 1,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 0,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 0,
+            "multiple_parameters": True,
+            "saved_dump_default": 50,
+            "physical_saved_dump_count": 3,
+            "physical_live_response_count": 4,
+            "evidence": "docs/phases/FREQ_HARMONY_D_ENUM_PARAMETERS_PHASE38.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    *(
+        {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "enum",
+            "range": {"minimum": 0, "maximum": len(labels) - 1, "step": 1},
+            "choices": [
+                {"value": value, "label": label}
+                for value, label in enumerate(labels)
+            ],
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "enum_wire_values_validated": list(range(len(labels))),
+                "internal_slots_observed": [1],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "multiple_parameters": True,
+                "saved_dump_default": default,
+                "physical_saved_dump_count": 3,
+                "physical_live_sweep": True,
+                "evidence": "docs/phases/FREQ_HARMONY_D_ENUM_PARAMETERS_PHASE38.md",
+                "monitor_integration_physical_validation": "pending",
+            },
+        }
+        for key, name, order, selector, labels, default in (
+            ("key", "KEY", 2, 1, HARMONY_D_KEY_CHOICES, 0),
+            ("mode", "MODE", 3, 2, HARMONY_D_MODE_CHOICES, 0),
+            ("interval_1", "INTERVAL 1", 4, 3, HARMONY_D_INTERVAL_CHOICES, 8),
+            ("interval_2", "INTERVAL 2", 5, 4, HARMONY_D_INTERVAL_CHOICES, 10),
+        )
+    ),
+    {
+        "key": "smooth",
+        "name": "SMOOTH",
+        "display_order": 6,
+        "value_type": "boolean",
+        "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 6,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 6,
+            "incoming_selector_gap": 5,
+            "multiple_parameters": True,
+            "saved_dump_default": False,
+            "boolean_encoding": {"false": 0, "true": 1},
+            "physical_saved_dump_count": 3,
+            "physical_live_response_count": 2,
+            "evidence": "docs/phases/FREQ_HARMONY_D_ENUM_PARAMETERS_PHASE38.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+)
+
+
+PITCH_S_RANGE_CHOICES = (
+    "-2 OCT", "-1 OCT", "+1 OCT", "+2 OCT", "+/-1 OCT", "+/-2 OCT",
+)
+
+
+PITCH_S_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "range",
+        "name": "RANGE",
+        "display_order": 1,
+        "value_type": "enum",
+        "range": {"minimum": 0, "maximum": 5, "step": 1},
+        "choices": [
+            {"value": value, "label": label}
+            for value, label in enumerate(PITCH_S_RANGE_CHOICES)
+        ],
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 0,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "enum_wire_values_validated": [0, 1, 2, 3, 4, 5],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 0,
+            "multiple_parameters": True,
+            "saved_dump_default": 2,
+            "physical_saved_dump_count": 3,
+            "physical_live_sweep": True,
+            "evidence": "docs/phases/FREQ_PITCH_S_RANGE_PARAMETERS_PHASE39.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+    *(
+        {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "range_validated": [0, 100],
+                "internal_slots_observed": [1],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "multiple_parameters": True,
+                "saved_dump_default": default,
+                "physical_saved_dump_count": 3,
+                "physical_live_sweep": True,
+                "evidence": "docs/phases/FREQ_PITCH_S_RANGE_PARAMETERS_PHASE39.md",
+                "monitor_integration_physical_validation": "pending",
+            },
+        }
+        for key, name, order, selector, default in (
+            ("position", "POSITION", 2, 1, 0),
+            ("mix", "MIX", 3, 2, 100),
+            ("level", "LEVEL", 4, 3, 100),
+        )
+    ),
+)
+
+
+RING_MOD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": minimum, "maximum": maximum, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [minimum, maximum],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "multiple_parameters": True,
+            "saved_dump_default": default,
+            "physical_saved_dump_count": 3,
+            "physical_live_sweep": True,
+            "evidence": "docs/phases/FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md",
+            "monitor_integration_physical_validation": "pending",
+            **(
+                {
+                    "signed_numeric_encoding": "native_float32_negative",
+                    "signed_values_physically_observed": [-49, -17, -16, -1],
+                    "documented_domain_minimum": -50,
+                }
+                if key == "fine"
+                else {}
+            ),
+        },
+    }
+    for key, name, order, selector, minimum, maximum, default in (
+        ("mix", "MIX", 1, 0, 0, 100, 50),
+        ("freq", "FREQ.", 2, 1, 0, 100, 50),
+        ("fine", "FINE", 3, 2, -50, 50, 0),
+        ("tone", "TONE", 4, 3, 0, 100, 50),
+    )
+)
+
+
+TAPE_MOD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "multiple_parameters": True,
+            "saved_dump_default": 50,
+            "physical_saved_dump_count": 3,
+            "physical_live_sweep": True,
+            "second_slot_live_validation": True,
+            "evidence": "docs/phases/FREQ_TAPE_MOD_PARAMETERS_PHASE41.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    }
+    for key, name, order, selector in (
+        ("saturation", "SATURATION", 1, 0),
+        ("mix", "MIX", 2, 1),
+        ("volume", "VOLUME", 3, 2),
+        ("high_cut", "HIGH CUT", 4, 3),
+    )
+)
+
+
 FILTER_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple([{'key': 'step_1',
   'name': 'STEP 1',
   'display_order': 1,
@@ -1408,6 +1773,26 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "freq.dual_melody" and not parameters:
         parameters = list(DUAL_MELODY_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "freq.pitch" and not parameters:
+        parameters = list(PITCH_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "freq.harmony_d" and not parameters:
+        parameters = list(HARMONY_D_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "freq.pitch_s" and not parameters:
+        parameters = list(PITCH_S_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "freq.ring_mod" and not parameters:
+        parameters = list(RING_MOD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "freq.tape_mod" and not parameters:
+        parameters = list(TAPE_MOD_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:

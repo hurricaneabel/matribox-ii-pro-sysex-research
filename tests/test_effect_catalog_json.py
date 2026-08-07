@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 13)
+        self.assertEqual(self.catalog.catalog_version, 18)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -487,9 +487,14 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "freq.filter",
                 "freq.octaver",
                 "freq.dual_melody",
+                "freq.pitch",
+                "freq.harmony_d",
+                "freq.pitch_s",
+                "freq.ring_mod",
+                "freq.tape_mod",
             }
         ]
-        self.assertEqual(len(pending), 250)
+        self.assertEqual(len(pending), 245)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -571,6 +576,145 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             [-24, -23, -14, -13, -12, -1],
         )
 
+    def test_pitch_has_five_consecutive_saved_parameter_selectors(self) -> None:
+        effect = self.catalog.effect_by_key("freq.pitch")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("high_pitch", "low_pitch", "wet", "dry", "range"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3, 4),
+        )
+        self.assertEqual(
+            tuple(
+                (parameter.minimum, parameter.maximum, parameter.step)
+                for parameter in effect.parameters
+            ),
+            ((0, 12, 1), (-12, 0, 1), (0, 100, 1), (0, 100, 1), (0, 100, 1)),
+        )
+        self.assertEqual(
+            tuple(parameter.validation["saved_dump_defaults"] for parameter in effect.parameters),
+            (12, 0, 50, 50, 50),
+        )
+        self.assertEqual(
+            effect.parameters[1].validation["signed_numeric_encoding"],
+            "native_float32_negative",
+        )
+
+    def test_harmony_d_has_named_enums_and_physical_selector_gap(self) -> None:
+        effect = self.catalog.effect_by_key("freq.harmony_d")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("mix", "key", "mode", "interval_1", "interval_2", "smooth"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3, 4, 6),
+        )
+        self.assertEqual(tuple(effect.parameters[1].choices.values()), (
+            "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        ))
+        self.assertEqual(tuple(effect.parameters[2].choices.values()), (
+            "MAJOR", "MINOR", "H. MINOR", "DORIAN", "PHRYGIAN", "LYDIAN",
+            "MIXOLYDIAN", "LOCRIAN",
+        ))
+        expected_intervals = (
+            "-OCT", "-7TH", "-6TH", "-5TH", "-4TH", "-3RD", "-2ND",
+            "+2ND", "+3RD", "+4TH", "+5TH", "+6TH", "+7TH", "+OCT",
+        )
+        self.assertEqual(tuple(effect.parameters[3].choices.values()), expected_intervals)
+        self.assertEqual(tuple(effect.parameters[4].choices.values()), expected_intervals)
+        self.assertEqual(effect.parameters[5].value_type, "boolean")
+        self.assertEqual(effect.parameters[5].validation["incoming_selector_gap"], 5)
+
+    def test_pitch_s_has_named_range_and_three_numeric_parameters(self) -> None:
+        effect = self.catalog.effect_by_key("freq.pitch_s")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("range", "position", "mix", "level"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3),
+        )
+        self.assertEqual(
+            tuple(effect.parameters[0].choices.values()),
+            ("-2 OCT", "-1 OCT", "+1 OCT", "+2 OCT", "+/-1 OCT", "+/-2 OCT"),
+        )
+        self.assertEqual(effect.parameters[0].validation["saved_dump_default"], 2)
+        self.assertEqual(
+            tuple(
+                (parameter.minimum, parameter.maximum, parameter.step)
+                for parameter in effect.parameters[1:]
+            ),
+            ((0, 100, 1), (0, 100, 1), (0, 100, 1)),
+        )
+
+    def test_ring_mod_has_signed_fine_and_four_consecutive_selectors(self) -> None:
+        effect = self.catalog.effect_by_key("freq.ring_mod")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("mix", "freq", "fine", "tone"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3),
+        )
+        self.assertEqual(
+            tuple(
+                (parameter.minimum, parameter.maximum, parameter.step)
+                for parameter in effect.parameters
+            ),
+            ((0, 100, 1), (0, 100, 1), (-50, 50, 1), (0, 100, 1)),
+        )
+        self.assertEqual(
+            effect.parameters[2].validation["signed_numeric_encoding"],
+            "native_float32_negative",
+        )
+
+    def test_tape_mod_has_four_validated_numeric_parameters(self) -> None:
+        effect = self.catalog.effect_by_key("freq.tape_mod")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("saturation", "mix", "volume", "high_cut"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3),
+        )
+        for parameter in effect.parameters:
+            self.assertEqual(
+                (parameter.minimum, parameter.maximum, parameter.step),
+                (0, 100, 1),
+            )
+            self.assertEqual(parameter.validation["saved_dump_default"], 50)
+
     def test_filter_has_conditional_rate_domain(self) -> None:
         effect = self.catalog.effect_by_key("freq.filter")
         self.assertEqual(effect.parameter_catalog_status, "physically_validated")
@@ -634,6 +778,11 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_filter = exported.effect_by_key("freq.filter")
             exported_octaver = exported.effect_by_key("freq.octaver")
             exported_dual_melody = exported.effect_by_key("freq.dual_melody")
+            exported_pitch = exported.effect_by_key("freq.pitch")
+            exported_harmony_d = exported.effect_by_key("freq.harmony_d")
+            exported_pitch_s = exported.effect_by_key("freq.pitch_s")
+            exported_ring_mod = exported.effect_by_key("freq.ring_mod")
+            exported_tape_mod = exported.effect_by_key("freq.tape_mod")
             exported_mboost = exported.effect_by_key("dyn.m_boost")
             exported_comp1 = exported.effect_by_key("dyn.comp1")
             exported_comp2 = exported.effect_by_key("dyn.comp2")
@@ -658,6 +807,26 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_dual_melody.parameters,
                 self.catalog.effect_by_key("freq.dual_melody").parameters,
+            )
+            self.assertEqual(
+                exported_pitch.parameters,
+                self.catalog.effect_by_key("freq.pitch").parameters,
+            )
+            self.assertEqual(
+                exported_harmony_d.parameters,
+                self.catalog.effect_by_key("freq.harmony_d").parameters,
+            )
+            self.assertEqual(
+                exported_pitch_s.parameters,
+                self.catalog.effect_by_key("freq.pitch_s").parameters,
+            )
+            self.assertEqual(
+                exported_ring_mod.parameters,
+                self.catalog.effect_by_key("freq.ring_mod").parameters,
+            )
+            self.assertEqual(
+                exported_tape_mod.parameters,
+                self.catalog.effect_by_key("freq.tape_mod").parameters,
             )
             self.assertEqual(
                 exported_mboost.parameters,

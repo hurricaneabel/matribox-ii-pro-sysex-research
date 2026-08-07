@@ -59,9 +59,48 @@ python -m tools.commands.matribox_monitor --live --log data/dumps/monitor_live.t
 O arquivo de log registra eventos como mudanças de parâmetro e bypass, enquanto
 a tela permanece limpa. `data/dumps/` continua fora do Git.
 
-O primeiro parâmetro interno concluído é o `GAIN` do `DYN / M-BOOST`. O monitor
-mostra `GAIN: aguardando alteração` até receber o primeiro evento ao vivo e,
-depois, atualiza o valor da instância correta. O validador histórico permanece:
+A Fase 36 hidrata os valores iniciais dos parâmetros catalogados
+diretamente do dump somente leitura `0x10`. São doze slots de 60 bytes, com
+quinze posições float32 endereçadas pelo seletor do parâmetro. Eventos ao vivo
+continuam prevalecendo. O monitor também solicita um novo dump somente leitura
+após mudanças estruturais para hidratar efeitos adicionados. A validação offline
+passou com 443 testes. Carga, adição, substituição, reordenação, mudança de
+classe e parâmetros ao vivo foram aprovados fisicamente.
+
+A Fase 37 cadastra o `FREQ / Pitch`: HI PITCH `0–12`, LOW PITCH
+`-12–0` e WET/DRY/RANGE `0–100`. Quatro dumps físicos confirmaram seletores
+0–4, defaults `12 / 0 / 50 / 50 / 50` e LOW PITCH negativo nativo. A suíte
+offline passou com 445 testes. A validação física aprovou hidratação, adição de
+efeitos, alterações em tempo real e duas instâncias independentes.
+
+A Fase 38 adiciona `FREQ / Harmony D` com MIX, KEY, MODE,
+INTERVAL 1, INTERVAL 2 e SMOOTH. Os três enums musicais são apresentados por
+nome, e o catálogo preserva a lacuna física entre INTERVAL 2 (seletor 4) e
+SMOOTH (seletor 6). A suíte offline passou com 447 testes. A validação física
+aprovou duas instâncias, hidratação e alterações em tempo real.
+
+A Fase 39 adiciona `FREQ / Pitch S`: RANGE enum, POSITION, MIX e
+LEVEL. O catálogo limita o efeito aos seletores 0–3 e ignora corretamente um
+valor residual encontrado no seletor 4 do slot reutilizado. A suíte offline
+passou com 449 testes. A validação física aprovou duas instâncias em uma cadeia
+com doze efeitos, hidratação e alterações em tempo real.
+
+A Fase 40 adiciona `FREQ / Ring Mod` com MIX, FREQ., FINE e TONE.
+FINE preserva valores negativos nativos de -50 a 50. Como no Pitch S, um campo
+residual no seletor 4 é ignorado por não pertencer ao efeito. A suíte offline
+passou com 451 testes. A validação física aprovou duas instâncias em uma cadeia
+com doze efeitos, incluindo FINE negativo e positivo.
+
+A Fase 41 adiciona o último efeito FREQ, `Tape Mod`, com
+SATURATION, MIX, VOLUME e HIGH CUT em 0–100. Três dumps de reabertura confirmam
+os defaults `50 / 50 / 50 / 50` e dois conjuntos distintos; as capturas ao vivo
+também cobrem limites e o segundo slot. O seletor residual 4 é ignorado. A
+validação física final aprovou duas instâncias nas posições 4 e 12 de uma
+cadeia cheia. Com isso, a pesquisa de parâmetros da classe FREQ está concluída.
+
+O primeiro parâmetro interno concluído foi o `GAIN` do `DYN / M-BOOST`. Desde a
+Fase 36, o monitor hidrata o valor salvo antes do primeiro evento ao vivo e
+depois atualiza a instância correta. O validador histórico permanece:
 
 ```powershell
 python -m tools.experiments.validate_mboost_gain_live
@@ -690,13 +729,17 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-A classe DYN permanece encerrada e a investigação atual ocorre na branch
-`research/freq-parameters`. As Fases 33 (`FREQ / Filter`), 34 (`FREQ / Octaver`)
-e 35 (`FREQ / Dual Melody`) estão fisicamente aprovadas e consolidadas. O
-próximo trabalho deve iniciar a Fase 36 com o próximo efeito da classe FREQ,
-mantendo a mesma rotina de captura, implementação, validação física e promoção
-por fast-forward à `main`. Importação de IR e CLONE permanece um subsistema
-separado de arquivos externos.
+A classe DYN permanece encerrada. As Fases 33 (`FREQ / Filter`), 34 (`FREQ /
+Octaver`), 35 (`FREQ / Dual Melody`) e 36 (hidratação pelo dump) estão
+fisicamente aprovadas. A Fase 37 adiciona `FREQ / Pitch` com HI PITCH, LOW
+PITCH, WET, DRY e RANGE, incluindo hidratação dos defaults salvos e LOW PITCH
+negativo. A integração física também foi aprovada. O `Harmony D` foi igualmente
+aprovado com enums nomeados e múltiplas instâncias. O `Pitch S` também foi
+aprovado sob ocupação máxima da cadeia. O `Ring Mod` também foi aprovado com
+duas instâncias independentes. O `Tape Mod` encerrou a classe FREQ com duas
+instâncias nas posições 4 e 12. O próximo marco é integrar a branch de pesquisa
+na `main` após revisão do usuário.
+Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats
 
