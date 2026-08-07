@@ -252,6 +252,28 @@ python -m tools.experiments.manage_effect_chain
 Ele permite adicionar, substituir e excluir efeitos nos slots internos de
 `1` a `12`.
 
+
+A Fase 34 adiciona o `FREQ / Octaver` usando somente a infraestrutura genérica
+já validada:
+
+```text
+LOW OCT  → inteiro 0–100, seletor 0
+HIGH OCT → inteiro 0–100, seletor 1
+DRY      → inteiro 0–100, seletor 2
+```
+
+As capturas individuais, combinada e short corrigida confirmam os três
+seletores, o codec `upper_float32_nibbles_v1` e os slots humanos 1 e 2. Foram
+preservadas 24 fixtures físicas. A primeira short havia sido feita novamente
+no slot humano 1 e foi explicitamente excluída da evidência de segundo slot; a
+captura corrigida com bytes de slot `00 01` é a fonte válida. Nenhuma alteração
+do decoder, codec ou monitor foi necessária. A validação física foi aprovada no
+monitor principal: o OCTAVER respondeu no slot humano 2 ao lado de DYN / COMP1,
+manteve LOW OCT/HIGH OCT/DRY após bypass OFF/ON e coexistiu com FILTER. Duas
+instâncias simultâneas mantiveram estados independentes e uma terceira instância
+foi validada mais adiante na cadeia, sem contaminar as anteriores.
+
+
 ## Catálogo confirmado
 
 Até esta etapa foram catalogadas **16 classes** e **267 posições/modelos**.
@@ -621,10 +643,10 @@ Os testes usam presets dedicados e alterações reversíveis.
 ## Próxima investigação
 
 A classe DYN permanece encerrada e a investigação atual ocorre na branch
-`research/freq-parameters`. A Fase 33 do `FREQ / Filter` está implementada e
-fisicamente aprovada, incluindo os defaults derivados de `SYNC`. A próxima
-investigação FREQ pode seguir para OCTAVER ou outro modelo simples. Importação de IR e CLONE permanece um subsistema separado
-de arquivos externos.
+`research/freq-parameters`. As Fases 33 (`FREQ / Filter`) e 34 (`FREQ / Octaver`)
+estão implementadas e fisicamente aprovadas. O próximo passo é consolidar a Fase
+34 por commit/fast-forward e então seguir para o próximo efeito FREQ. Importação
+de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats
 
