@@ -34,3 +34,4 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 38 | `FREQ_HARMONY_D_ENUM_PARAMETERS_PHASE38.md` | HARMONY D com KEY, MODE, dois INTERVALS e lacuna física antes de SMOOTH |
 | 39 | `FREQ_PITCH_S_RANGE_PARAMETERS_PHASE39.md` | PITCH S com RANGE enum e rejeição de campo residual do slot |
 | 40 | `FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md` | RING MOD com FINE assinado e rejeição de campo residual |
+| 41 | `FREQ_TAPE_MOD_PARAMETERS_PHASE41.md` | TAPE MOD com quatro controles 0–100 e conclusão do catálogo FREQ |

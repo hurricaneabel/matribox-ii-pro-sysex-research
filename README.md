@@ -91,6 +91,13 @@ residual no seletor 4 é ignorado por não pertencer ao efeito. A suíte offline
 passou com 451 testes. A validação física aprovou duas instâncias em uma cadeia
 com doze efeitos, incluindo FINE negativo e positivo.
 
+A Fase 41 adiciona o último efeito FREQ, `Tape Mod`, com
+SATURATION, MIX, VOLUME e HIGH CUT em 0–100. Três dumps de reabertura confirmam
+os defaults `50 / 50 / 50 / 50` e dois conjuntos distintos; as capturas ao vivo
+também cobrem limites e o segundo slot. O seletor residual 4 é ignorado. A
+validação física final aprovou duas instâncias nas posições 4 e 12 de uma
+cadeia cheia. Com isso, a pesquisa de parâmetros da classe FREQ está concluída.
+
 O primeiro parâmetro interno concluído foi o `GAIN` do `DYN / M-BOOST`. Desde a
 Fase 36, o monitor hidrata o valor salvo antes do primeiro evento ao vivo e
 depois atualiza a instância correta. O validador histórico permanece:
@@ -729,7 +736,9 @@ PITCH, WET, DRY e RANGE, incluindo hidratação dos defaults salvos e LOW PITCH
 negativo. A integração física também foi aprovada. O `Harmony D` foi igualmente
 aprovado com enums nomeados e múltiplas instâncias. O `Pitch S` também foi
 aprovado sob ocupação máxima da cadeia. O `Ring Mod` também foi aprovado com
-duas instâncias independentes. O próximo efeito FREQ é o `Tape Mod`.
+duas instâncias independentes. O `Tape Mod` encerrou a classe FREQ com duas
+instâncias nas posições 4 e 12. O próximo marco é integrar a branch de pesquisa
+na `main` após revisão do usuário.
 Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats

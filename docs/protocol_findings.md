@@ -1711,3 +1711,26 @@ A validação física final confirmou duas instâncias simultâneas nas posiçõ
 visuais 4 e 12 de uma cadeia com os doze slots ocupados. FINE preservou `-33` e
 `20` independentemente, MIX aceitou zero e não houve colisão com múltiplos
 COMP1.
+
+## Fase 41 — TAPE MOD e conclusão da classe FREQ
+
+`FREQ / Tape Mod` usa `class_id 0x01`, `model_id 0x33` e quatro seletores:
+
+```text
+0 SATURATION | 1 MIX | 2 VOLUME | 3 HIGH CUT
+```
+
+Todos usam 0–100 e default persistido 50. As varreduras ao vivo confirmaram
+0, 1, 50, 99 e 100 individualmente, além do conjunto `61 / 62 / 63 / 64` e de
+uma repetição no segundo slot.
+
+Três dumps `0x10` completos confirmaram os conjuntos `50 / 50 / 50 / 50`,
+`21 / 43 / 65 / 87` e `22 / 44 / 66 / 88`. Como em Pitch S e Ring Mod, o
+seletor 4 contém `10.0` residual sem controle correspondente. O catálogo limita
+a hidratação aos seletores 0–3. Com este mapa, todos os efeitos conhecidos da
+classe FREQ possuem seus parâmetros documentados.
+
+A validação física final confirmou duas instâncias independentes nas posições
+visuais 4 e 12 de uma cadeia com doze efeitos. Os conjuntos
+`30 / 31 / 21 / 30` e `81 / 80 / 70 / 71` foram hidratados corretamente e
+coexistiram com múltiplos COMP1. A classe FREQ está consolidada.

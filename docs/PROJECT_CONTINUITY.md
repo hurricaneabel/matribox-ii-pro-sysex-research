@@ -3,9 +3,9 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 40 — FREQ / Ring Mod fisicamente aprovado
-> **Trabalho atual:** consolidar e publicar a Fase 40 pelo usuário
-> **Próximo passo:** iniciar FREQ / Tape Mod
+> **Marco consolidado:** Fase 41 — FREQ / Tape Mod fisicamente aprovado
+> **Trabalho atual:** concluir publicação da pesquisa FREQ pelo usuário
+> **Próximo passo:** integrar `research/freq-parameters` na `main`
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/freq-parameters`
 
@@ -1640,3 +1640,32 @@ coexistência com múltiplos COMP1 não produziu colisões.
 2. revisar e executar commit e push pelo usuário;
 3. manter `main` sem integração até encerrar a pesquisa FREQ;
 4. iniciar `FREQ / Tape Mod` usando 56B para descoberta e 56C para validação.
+
+## 28. Atualização atual — Fase 41 consolidada: FREQ / Tape Mod
+
+As capturas ao vivo confirmaram SATURATION 0, MIX 1, VOLUME 2 e HIGH CUT 3,
+todos em 0–100. Cada parâmetro percorreu 0, 1, 50, 99 e 100. Um conjunto
+combinado `61 / 62 / 63 / 64` e uma validação no segundo slot confirmaram que o
+envelope continua vinculado ao slot interno.
+
+Três dumps completos após reabrir o aplicativo confirmaram `50 / 50 / 50 / 50`,
+`21 / 43 / 65 / 87` e `22 / 44 / 66 / 88`. O `10.0` residual no seletor 4
+não corresponde a um controle e é ignorado. A fase eleva
+`catalog_version` para 18, com 22 efeitos parametrizados, 84 parâmetros e 245
+efeitos pendentes.
+
+O Tape Mod encerra o catálogo de parâmetros conhecido da classe FREQ. A
+integração continua somente leitura e reutiliza integralmente a hidratação
+genérica da Fase 36.
+
+A validação física final usou o preset 56C com os doze slots ocupados. Duas
+instâncias nas posições visuais 4 e 12 preservaram respectivamente
+`30 / 31 / 21 / 30` e `81 / 80 / 70 / 71`. Múltiplos COMP1 coexistiram sem
+colisão. A Fase 41 e a pesquisa de parâmetros FREQ estão aprovadas.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/freq-parameters`;
+2. revisar, executar commit e publicar essa branch pelo usuário;
+3. integrar `research/freq-parameters` na `main` com merge explícito;
+4. publicar a `main` e confirmar que ambas apontam para o histórico esperado.
