@@ -1598,3 +1598,28 @@ monitor conhece quais parâmetros pertencem ao efeito pelo catálogo, mas exibe
 Uma pesquisa futura deve verificar se esses valores estão presentes no dump
 `0x10` descomprimido de 1.211 bytes antes de considerar qualquer nova consulta
 ou comando de escrita.
+
+## Fase 36 — parâmetros persistidos no dump 0x10
+
+Capturas controladas localizaram os parâmetros salvos no intervalo `273–992`
+do payload descomprimido. São doze blocos de 60 bytes e quinze valores float32
+little-endian por bloco. A posição usa o seletor físico:
+
+```text
+offset = 273 + internal_slot_id * 60 + parameter_selector * 4
+```
+
+Inteiros, booleanos, enums e negativos usam a mesma representação. O FILTER
+persiste RATE e SYNC separadamente: `4/ON` representa `1/4` e `10/OFF` o
+default numérico. A apresentação precisa conhecer SYNC antes de formatar RATE.
+A candidata não envia nenhum comando adicional.
+
+A validação física confirmou a hidratação no carregamento inicial. Respostas
+estruturais emitidas ao adicionar um efeito não incluem o bloco persistido de
+parâmetros; por isso, a candidata solicita novamente o mesmo dump `0x10` após
+mudanças estruturais. A consulta continua somente leitura.
+
+A versão refinada foi aprovada fisicamente adicionando, substituindo e
+reordenando efeitos, alterando classes e movimentando parâmetros em tempo real.
+FILTER, COMP1 e Dual Melody coexistiram com valores hidratados e atualizações
+independentes. A Fase 36 encerrou com 443 testes offline aprovados.

@@ -26,7 +26,6 @@ from tools.commands.preset_dump_state import (
     PresetDumpCollector,
     PresetDumpStateError,
     build_preset_dump_query,
-    decode_chain_state_from_preset_dump,
 )
 from tools.commands.preset_monitor_core import (
     PresetMonitorCore,
@@ -501,6 +500,7 @@ def read_preset_chain_state(
     on_update: Callable[[PresetMonitorUpdate], None] | None = None,
     on_query: Callable[[int, int], None] | None = None,
     on_progress: Callable[[int, int], None] | None = None,
+    require_complete_dump: bool = False,
 ) -> PresetChainReadResult:
     """Solicita e reconstrói a cadeia atual sem executar escrita de efeito.
 
@@ -585,7 +585,10 @@ def read_preset_chain_state(
                     ),
                 )
 
-            if update.chain_state is not None:
+            if (
+                update.chain_state is not None
+                and not require_complete_dump
+            ):
                 core.apply_chain_state(update.chain_state)
                 return PresetChainReadResult(
                     chain_state=update.chain_state,
@@ -619,7 +622,7 @@ def read_preset_chain_state(
                 continue
 
             try:
-                chain_state = decode_chain_state_from_preset_dump(
+                chain_state = core.apply_preset_dump(
                     dump_update.preset_dump
                 )
             except PresetDumpStateError:
@@ -641,8 +644,6 @@ def read_preset_chain_state(
                     covered_bytes=dump_update.covered_bytes,
                     total_size=dump_update.total_size,
                 )
-
-            core.apply_chain_state(chain_state)
 
             return PresetChainReadResult(
                 chain_state=chain_state,

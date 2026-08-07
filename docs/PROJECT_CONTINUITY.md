@@ -3,11 +3,11 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 35 — FREQ / DUAL MELODY fisicamente aprovada e promovida; modo `--live` do monitor fisicamente aprovado
-> **Trabalho atual:** consolidar a melhoria pós-Fase 35 do monitor (`--live` e `--log`) sem alterar o protocolo SysEx
-> **Próximo passo:** commitar a melhoria do monitor em `research/freq-parameters`, promover por fast-forward à `main` e depois investigar a hidratação inicial dos parâmetros salvos ou iniciar a Fase 36
+> **Marco consolidado:** Fase 36 — hidratação inicial e reidratação estrutural fisicamente aprovadas
+> **Trabalho atual:** consolidar e publicar a Fase 36 na `main`
+> **Próximo passo:** iniciar a próxima pesquisa de parâmetros FREQ ou avançar para a arquitetura do aplicativo controlador
 > **Branch estável:** `main`
-> **Branch de pesquisa atual:** `research/freq-parameters`
+> **Branch de pesquisa atual:** nenhuma; a candidata está sendo consolidada diretamente na `main`
 
 ## 1. Como usar este documento
 
@@ -91,6 +91,8 @@ O estado atual já permite:
   `s` conforme o catálogo;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
+- hidratar valores persistidos dos parâmetros catalogados ao carregar o preset
+  e após adicionar, substituir ou reordenar efeitos;
 - carregar as 16 classes, 267 efeitos e 61 parâmetros confirmados por
   capturas em quatorze efeitos DYN e três efeitos FREQ a partir de um catálogo
   JSON versionado e independente de Python/Windows;
@@ -126,24 +128,27 @@ como:
 
 ```text
   2. DYN / M-BOOST — ligado
-     GAIN: aguardando alteração
+     GAIN: 50
 
   3. DYN / COMP1 — ligado
-     SUSTAIN: aguardando alteração
-     VOLUME: aguardando alteração
+     SUSTAIN: 20
+     VOLUME: 50
 
   4. DYN / E-BOOST — ligado
-     GAIN: aguardando alteração
-     +3dB: aguardando alteração
-     BRIGHT: aguardando alteração
+     GAIN: 40
+     +3dB: desligado
+     BRIGHT: ligado
 ```
 
-Depois do primeiro evento `0x1C`, o valor real substitui o texto de espera.
+Os valores são hidratados pelo dump inicial. Eventos `0x1C` posteriores
+substituem imediatamente o valor salvo da instância correta.
 
 ### Comportamentos fisicamente confirmados
 
 - A troca de preset atualiza endereço, nome, etiqueta e solicita a nova cadeia.
 - A mudança da ordem dos efeitos redesenha a cadeia na ordem correta.
+- Adicionar, substituir ou reordenar efeitos solicita um novo dump somente
+  leitura e hidrata os parâmetros do estado estrutural atualizado.
 - Ligar ou desligar um efeito atualiza imediatamente somente o estado daquele
   slot, sem solicitar um novo dump completo.
 - A inicialização após ligar a pedaleira possui reenvios automáticos; não é mais
@@ -436,8 +441,9 @@ O estado guarda o último valor por slot interno, efeito e parâmetro. Eventos
 são rejeitados quando o seletor não pertence ao efeito atual. Valores são
 descartados ao trocar preset ou substituir o efeito.
 
-O valor inicial ainda não é extraído do dump. Após carregar o preset, o monitor
-mostra `aguardando alteração` até receber o primeiro evento ao vivo.
+Desde a Fase 36, o valor inicial é extraído do dump `0x10`. Mudanças
+estruturais disparam uma nova consulta somente leitura para hidratar efeitos
+adicionados ou substituídos.
 
 Relatório:
 
@@ -1478,15 +1484,11 @@ interno real e ao modelo presente na cadeia. Nenhuma escrita de parâmetro foi
 implementada; a assimetria host->device de HI VOL/LOW VOL permanece apenas como
 evidência para uma pesquisa futura.
 
-### Próximo passo exato
+### Consolidação histórica
 
-1. revisar o escopo final da Fase 35 em `research/freq-parameters`;
-2. adicionar somente os arquivos desta fase ao índice;
-3. executar `git diff --cached --stat` e `git diff --cached --check`;
-4. criar o commit da Fase 35 e enviar `research/freq-parameters`;
-5. promover o mesmo commit por `git merge --ff-only` para `main` e enviar;
-6. voltar para `research/freq-parameters` e confirmar árvore limpa;
-7. iniciar a Fase 36 com o próximo efeito da classe FREQ.
+A Fase 35 e a melhoria 35A foram fisicamente aprovadas, promovidas à `main` e
+serviram como base estável para a Fase 36. Os passos de branch e promoção desta
+etapa já foram concluídos.
 
 ## 23. Melhoria pós-Fase 35 — painel `--live` e log compacto
 
@@ -1532,18 +1534,20 @@ tools/commands/matribox_monitor.py
 tests/test_matribox_monitor_output.py
 ```
 
-### Limitação conhecida preservada
+### Fase 36 consolidada
 
-Os parâmetros catalogados ainda começam como `aguardando alteração` ao carregar
-um preset. O dump estrutural `0x10` é usado atualmente para cadeia e bypass,
-mas os valores persistidos dos parâmetros ainda não foram localizados dentro do
-payload de 1.211 bytes. Eventos `0x1C` continuam sendo a fonte dos valores em
-tempo real após o usuário alterar um controle.
+Os parâmetros catalogados são hidratados pelo bloco `273–992` do dump `0x10`.
+Cada slot possui 60 bytes e quinze posições float32, endereçadas pelo
+`parameter_selector`. Eventos `0x1C` continuam prevalecendo em tempo real.
+A suíte offline possui 443 testes aprovados. Carga inicial, adição, substituição,
+reordenação, mudança de classe e parâmetros em tempo real foram aprovados
+fisicamente no painel `--live`.
 
 ### Próximo passo exato
 
-1. consolidar esta melhoria em `research/freq-parameters`;
-2. promover o mesmo commit por fast-forward à `main`;
-3. voltar à branch de pesquisa e confirmar árvore limpa;
-4. antes do próximo efeito, decidir entre investigar de forma não destrutiva a
-   hidratação dos valores salvos a partir do dump `0x10` ou iniciar a Fase 36.
+1. confirmar a publicação do commit da Fase 36 na `main`;
+2. manter `main` como base estável fisicamente aprovada;
+3. escolher entre iniciar o próximo efeito FREQ pendente ou começar a camada de
+   aplicação multiplataforma sobre o protocolo já confirmado;
+4. preservar o método de capturas controladas e validação física antes de cada
+   nova consolidação.

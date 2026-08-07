@@ -290,17 +290,38 @@ def decode_chain_state_from_preset_dump(
 
     raw_container = bytes(container)
     decompressed_dump, backend_name = decompress_preset_dump(raw_container)
+    return decode_chain_state_from_decompressed_preset_dump(
+        decompressed_dump,
+        raw_container=raw_container,
+        decompressor_backend=backend_name,
+    )
+
+
+def decode_chain_state_from_decompressed_preset_dump(
+    decompressed_dump: bytes | bytearray,
+    *,
+    raw_container: bytes | bytearray = b"",
+    decompressor_backend: str = "already_decompressed",
+) -> ChainOrderState:
+    """Extrai a cadeia de um payload de preset já descomprimido."""
+
+    raw_decompressed = bytes(decompressed_dump)
+    raw_message = bytes(raw_container)
     structural_payload = extract_structural_payload_from_preset_dump(
-        decompressed_dump
+        raw_decompressed
     )
 
     try:
         structural_state = parse_decompressed_structural_payload(
             structural_payload,
-            raw_message=raw_container,
-            decoded_container=raw_container,
-            compressed_size=len(raw_container) - PRESET_DUMP_HEADER_SIZE,
-            decompressor_backend=backend_name,
+            raw_message=raw_message,
+            decoded_container=raw_message,
+            compressed_size=(
+                len(raw_message) - PRESET_DUMP_HEADER_SIZE
+                if raw_message
+                else len(raw_decompressed)
+            ),
+            decompressor_backend=decompressor_backend,
             # Alguns presets preservam dados ocultos em slots fora da ordem.
             strict_inactive_slots=False,
         )
@@ -309,5 +330,5 @@ def decode_chain_state_from_preset_dump(
 
     return chain_order_state_from_structural_state(
         structural_state,
-        raw_message=raw_container,
+        raw_message=raw_message,
     )

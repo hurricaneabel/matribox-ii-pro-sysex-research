@@ -95,6 +95,15 @@ def _validate_numeric_value(
     return normalized
 
 
+def normalize_parameter_value(
+    value: int | float,
+    parameter: ParameterDefinition,
+) -> ParameterValue:
+    """Normaliza um valor numérico já decodificado conforme o catálogo."""
+
+    return _validate_numeric_value(value, parameter)
+
+
 def select_codec_encoded_value(
     encoded_value: bytes | bytearray,
     codec: ValueCodec,

@@ -22,6 +22,7 @@ from tools.commands.matribox_monitor import (
     format_live_screen,
     parse_arguments,
     redraw_screen,
+    should_refresh_after_structural_change,
     write_compact_log_entries,
 )
 from tools.commands.preset_monitor_core import PresetMonitorSnapshot
@@ -195,6 +196,35 @@ class CompactLogTests(unittest.TestCase):
             stream.getvalue(),
             "04:15:21 slot=9 Dual Melody LOW PITCH -11\n",
         )
+
+
+class StructuralRefreshTests(unittest.TestCase):
+    def test_structural_change_requests_parameter_rehydration(self) -> None:
+        update = SimpleNamespace(
+            preset_event=None,
+            chain_changed=True,
+            chain_state=object(),
+        )
+
+        self.assertTrue(should_refresh_after_structural_change(update))
+
+    def test_bypass_change_does_not_request_full_dump(self) -> None:
+        update = SimpleNamespace(
+            preset_event=None,
+            chain_changed=True,
+            chain_state=None,
+        )
+
+        self.assertFalse(should_refresh_after_structural_change(update))
+
+    def test_preset_change_uses_existing_refresh_path(self) -> None:
+        update = SimpleNamespace(
+            preset_event=object(),
+            chain_changed=True,
+            chain_state=object(),
+        )
+
+        self.assertFalse(should_refresh_after_structural_change(update))
 
 
 if __name__ == "__main__":

@@ -59,9 +59,17 @@ python -m tools.commands.matribox_monitor --live --log data/dumps/monitor_live.t
 O arquivo de log registra eventos como mudanças de parâmetro e bypass, enquanto
 a tela permanece limpa. `data/dumps/` continua fora do Git.
 
-O primeiro parâmetro interno concluído é o `GAIN` do `DYN / M-BOOST`. O monitor
-mostra `GAIN: aguardando alteração` até receber o primeiro evento ao vivo e,
-depois, atualiza o valor da instância correta. O validador histórico permanece:
+A Fase 36 hidrata os valores iniciais dos parâmetros catalogados
+diretamente do dump somente leitura `0x10`. São doze slots de 60 bytes, com
+quinze posições float32 endereçadas pelo seletor do parâmetro. Eventos ao vivo
+continuam prevalecendo. O monitor também solicita um novo dump somente leitura
+após mudanças estruturais para hidratar efeitos adicionados. A validação offline
+passou com 443 testes. Carga, adição, substituição, reordenação, mudança de
+classe e parâmetros ao vivo foram aprovados fisicamente.
+
+O primeiro parâmetro interno concluído foi o `GAIN` do `DYN / M-BOOST`. Desde a
+Fase 36, o monitor hidrata o valor salvo antes do primeiro evento ao vivo e
+depois atualiza a instância correta. O validador histórico permanece:
 
 ```powershell
 python -m tools.experiments.validate_mboost_gain_live
@@ -690,13 +698,12 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-A classe DYN permanece encerrada e a investigação atual ocorre na branch
-`research/freq-parameters`. As Fases 33 (`FREQ / Filter`), 34 (`FREQ / Octaver`)
-e 35 (`FREQ / Dual Melody`) estão fisicamente aprovadas e consolidadas. O
-próximo trabalho deve iniciar a Fase 36 com o próximo efeito da classe FREQ,
-mantendo a mesma rotina de captura, implementação, validação física e promoção
-por fast-forward à `main`. Importação de IR e CLONE permanece um subsistema
-separado de arquivos externos.
+A classe DYN permanece encerrada. As Fases 33 (`FREQ / Filter`), 34 (`FREQ /
+Octaver`), 35 (`FREQ / Dual Melody`) e 36 (hidratação pelo dump) estão
+fisicamente aprovadas e consolidadas. O próximo trabalho pode iniciar o próximo
+efeito pendente da classe FREQ ou avançar para a camada do aplicativo
+multiplataforma, mantendo a rotina de captura, validação física e consolidação.
+Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats
 
