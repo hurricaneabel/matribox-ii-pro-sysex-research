@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 11)
+        self.assertEqual(self.catalog.catalog_version, 12)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -485,9 +485,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "dyn.ac_woody",
                 "dyn.gate_1",
                 "freq.filter",
+                "freq.octaver",
             }
         ]
-        self.assertEqual(len(pending), 252)
+        self.assertEqual(len(pending), 251)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -513,6 +514,24 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         self.assertEqual(codec["configuration"]["input_slice"], [4, 8])
         self.assertEqual(full_codec["encoded_length"], 8)
         self.assertEqual(full_codec["kind"], "float32_as_nibbles")
+
+    def test_octaver_has_three_validated_integer_parameters(self) -> None:
+        effect = self.catalog.effect_by_key("freq.octaver")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("low_oct", "high_oct", "dry"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1, 2),
+        )
+        for parameter in effect.parameters:
+            self.assertEqual(parameter.value_type, "integer")
+            self.assertEqual((parameter.minimum, parameter.maximum, parameter.step), (0, 100, 1))
+            self.assertEqual(parameter.protocol_profile, "effect_parameter_response_1c_v1")
+            self.assertEqual(parameter.value_codec, "upper_float32_nibbles_v1")
 
     def test_filter_has_conditional_rate_domain(self) -> None:
         effect = self.catalog.effect_by_key("freq.filter")
@@ -575,6 +594,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 structural_snapshot(self.catalog.classes),
             )
             exported_filter = exported.effect_by_key("freq.filter")
+            exported_octaver = exported.effect_by_key("freq.octaver")
             exported_mboost = exported.effect_by_key("dyn.m_boost")
             exported_comp1 = exported.effect_by_key("dyn.comp1")
             exported_comp2 = exported.effect_by_key("dyn.comp2")
@@ -591,6 +611,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_filter.parameters,
                 self.catalog.effect_by_key("freq.filter").parameters,
+            )
+            self.assertEqual(
+                exported_octaver.parameters,
+                self.catalog.effect_by_key("freq.octaver").parameters,
             )
             self.assertEqual(
                 exported_mboost.parameters,

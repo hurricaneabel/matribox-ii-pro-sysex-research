@@ -1,0 +1,490 @@
+{
+  "schema_version": 1,
+  "effect": {
+    "class": "FREQ",
+    "class_id": 1,
+    "key": "freq.octaver",
+    "name": "Octaver",
+    "model_id": 33,
+    "secondary_selector": 1
+  },
+  "protocol": {
+    "command": 28,
+    "message_length": 70,
+    "slot_indices": [
+      39,
+      40
+    ],
+    "parameter_selector_index": 48,
+    "value_indices": [
+      59,
+      60,
+      61,
+      62
+    ],
+    "parameter_marker_index": 63,
+    "parameter_type_index": 64,
+    "value_codec": "upper_float32_nibbles_v1",
+    "effect_identity_source": "current_chain",
+    "parameter_envelope_class_field": {
+      "indices": [
+        41,
+        42
+      ],
+      "observed_value": [
+        0,
+        0
+      ],
+      "note": "Campo opaco; nas capturas FREQ permanece 00 00 e não representa a classe estrutural FREQ."
+    },
+    "observed_parameter_address": {
+      "indices": [
+        21,
+        22
+      ],
+      "value": [
+        1,
+        4
+      ],
+      "note": "Endereço opaco compartilhado; não representa model_id ou class_id estrutural."
+    }
+  },
+  "parameters": [
+    {
+      "key": "low_oct",
+      "name": "LOW OCT",
+      "selector": 0,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "high_oct",
+      "name": "HIGH OCT",
+      "selector": 1,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    },
+    {
+      "key": "dry",
+      "name": "DRY",
+      "selector": 2,
+      "value_type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "step": 1
+    }
+  ],
+  "controlled_capture_sources": [
+    "octaver_lowoct_first_dump.pcapng",
+    "octaver_highoct_firstdump.pcapng",
+    "octaver_dry_first_comp.pcapng",
+    "octaver_combined_values_dump.pcapng",
+    "octaver_short_dump_corrigido.pcapng"
+  ],
+  "excluded_capture_sources": [
+    {
+      "source": "octaver_short_dump.pcapng",
+      "reason": "A primeira short foi capturada novamente no slot humano 1; substituída por octaver_short_dump_corrigido.pcapng no slot humano 2."
+    }
+  ],
+  "combination_capture_validation": {
+    "source": "octaver_combined_values_dump.pcapng",
+    "sequence": [
+      "low_oct_51",
+      "high_oct_52",
+      "dry_53",
+      "low_oct_50",
+      "high_oct_50",
+      "dry_50"
+    ],
+    "result": "independent_messages_per_parameter"
+  },
+  "slot2_validation": {
+    "source": "octaver_short_dump_corrigido.pcapng",
+    "sequence": [
+      "low_oct_61",
+      "low_oct_50",
+      "high_oct_62",
+      "high_oct_50",
+      "dry_63",
+      "dry_50"
+    ],
+    "result": "same_selectors_and_codec_on_internal_slot_2"
+  },
+  "capture_observations": [
+    "As três capturas individuais confirmam 0, 1, 50, 99, 100 e retorno a 50 para cada seletor.",
+    "A captura combinada confirma valores únicos 51, 52 e 53, um por parâmetro, antes do retorno a 50.",
+    "A primeira captura short permaneceu no slot humano 1 e foi excluída da evidência de segundo slot; a captura corrigida confirma o slot humano 2."
+  ],
+  "physical_binary_fixtures": 24,
+  "internal_slots_observed": [
+    1,
+    2
+  ],
+  "fixtures": [
+    {
+      "file": "slot1_dry_000.bin",
+      "source": "octaver_dry_first_comp.pcapng",
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "41e9bf34db5ee6c53e5876fd27222758a6523b9d25dd97a0ea8ba6ee99cf7290"
+    },
+    {
+      "file": "slot1_dry_001.bin",
+      "source": "octaver_dry_first_comp.pcapng",
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "367bb0e91a6b86b1ab4b105ee72f875a55aa2be2db0bdd68d93ad337a9f66755"
+    },
+    {
+      "file": "slot1_dry_050.bin",
+      "source": "octaver_dry_first_comp.pcapng",
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e57f29f7c4c8db56292a711d9401d962daaad680caea1b028dd52e90b3e620de"
+    },
+    {
+      "file": "slot1_dry_053.bin",
+      "source": "octaver_combined_values_dump.pcapng",
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 53,
+      "encoded_value": [
+        5,
+        4,
+        4,
+        2
+      ],
+      "sha256": "c60fe62cd3f7094dabc8c7ffb026bd866431068f98d212256842e607eb561c29"
+    },
+    {
+      "file": "slot1_dry_099.bin",
+      "source": "octaver_dry_first_comp.pcapng",
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "a7e7c93e710d84c1dccc8b1b6af0d4cf07324623226f4b8ca486d489955e143b"
+    },
+    {
+      "file": "slot1_dry_100.bin",
+      "source": "octaver_dry_first_comp.pcapng",
+      "slot": 1,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "7d773f74a5a1c4e51c5c363dada2263b1b6c2402e5a766bbe5c6e69b0a362870"
+    },
+    {
+      "file": "slot1_high_oct_000.bin",
+      "source": "octaver_highoct_firstdump.pcapng",
+      "slot": 1,
+      "parameter": "high_oct",
+      "selector": 1,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "9007a8d8e36aa60ef9bd95d612d41915c505d7adc18d3dad02964f4979244cf8"
+    },
+    {
+      "file": "slot1_high_oct_001.bin",
+      "source": "octaver_highoct_firstdump.pcapng",
+      "slot": 1,
+      "parameter": "high_oct",
+      "selector": 1,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "e3ce8f9e9c3ed8b647851d843f293bbc9b06db18fadf98a95f8dde6f6368c002"
+    },
+    {
+      "file": "slot1_high_oct_050.bin",
+      "source": "octaver_highoct_firstdump.pcapng",
+      "slot": 1,
+      "parameter": "high_oct",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "fe7825aed8b7108aec9b71e69e1ad6145e8809a03e4402cd239373ad5be23168"
+    },
+    {
+      "file": "slot1_high_oct_052.bin",
+      "source": "octaver_combined_values_dump.pcapng",
+      "slot": 1,
+      "parameter": "high_oct",
+      "selector": 1,
+      "value": 52,
+      "encoded_value": [
+        5,
+        0,
+        4,
+        2
+      ],
+      "sha256": "d5299f626fc572ef2a060c4c2091a1b072176a0ada731b76f0d2f2ef4ecb50e1"
+    },
+    {
+      "file": "slot1_high_oct_099.bin",
+      "source": "octaver_highoct_firstdump.pcapng",
+      "slot": 1,
+      "parameter": "high_oct",
+      "selector": 1,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "02f44487ea8183a927fe6762298f8ee01cd6976deaee43e23b05708f4f128316"
+    },
+    {
+      "file": "slot1_high_oct_100.bin",
+      "source": "octaver_highoct_firstdump.pcapng",
+      "slot": 1,
+      "parameter": "high_oct",
+      "selector": 1,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "e44aa87996f7cb698adad0df09e46d264e758c1134dd07a6db68d2fa6c6e8c1b"
+    },
+    {
+      "file": "slot1_low_oct_000.bin",
+      "source": "octaver_lowoct_first_dump.pcapng",
+      "slot": 1,
+      "parameter": "low_oct",
+      "selector": 0,
+      "value": 0,
+      "encoded_value": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d8043ac5ec532de444d017440baa066bbacbcd400a59d5e8403e84cd425d26c0"
+    },
+    {
+      "file": "slot1_low_oct_001.bin",
+      "source": "octaver_lowoct_first_dump.pcapng",
+      "slot": 1,
+      "parameter": "low_oct",
+      "selector": 0,
+      "value": 1,
+      "encoded_value": [
+        8,
+        0,
+        3,
+        15
+      ],
+      "sha256": "922a8c3367999587033e2d8dc5a71a46920969373b40a75d340c8709ebb2be01"
+    },
+    {
+      "file": "slot1_low_oct_050.bin",
+      "source": "octaver_lowoct_first_dump.pcapng",
+      "slot": 1,
+      "parameter": "low_oct",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "f028acdd81a05fada5a0a75eb195bfa3a0c7fe26f1300b595664ec0a855757f6"
+    },
+    {
+      "file": "slot1_low_oct_051.bin",
+      "source": "octaver_combined_values_dump.pcapng",
+      "slot": 1,
+      "parameter": "low_oct",
+      "selector": 0,
+      "value": 51,
+      "encoded_value": [
+        4,
+        12,
+        4,
+        2
+      ],
+      "sha256": "a45e885909a207a3a53a6dbfae58233de522c1074a7f9c9adca17e81a72a358d"
+    },
+    {
+      "file": "slot1_low_oct_099.bin",
+      "source": "octaver_lowoct_first_dump.pcapng",
+      "slot": 1,
+      "parameter": "low_oct",
+      "selector": 0,
+      "value": 99,
+      "encoded_value": [
+        12,
+        6,
+        4,
+        2
+      ],
+      "sha256": "a6f0f8e25d44b04af7839b1d673e613a986fad9524f3fd48e31f14121e8585c9"
+    },
+    {
+      "file": "slot1_low_oct_100.bin",
+      "source": "octaver_lowoct_first_dump.pcapng",
+      "slot": 1,
+      "parameter": "low_oct",
+      "selector": 0,
+      "value": 100,
+      "encoded_value": [
+        12,
+        8,
+        4,
+        2
+      ],
+      "sha256": "29e810278561834bab5d0e4b174835cb38721ab1e1179e4b20c414d8a3d0c355"
+    },
+    {
+      "file": "slot2_dry_050.bin",
+      "source": "octaver_short_dump_corrigido.pcapng",
+      "slot": 2,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "272ebf56afe2183c204a93fa41229d22992fb659e3bd97acb7680562ed268cc2"
+    },
+    {
+      "file": "slot2_dry_063.bin",
+      "source": "octaver_short_dump_corrigido.pcapng",
+      "slot": 2,
+      "parameter": "dry",
+      "selector": 2,
+      "value": 63,
+      "encoded_value": [
+        7,
+        12,
+        4,
+        2
+      ],
+      "sha256": "da71c35cfe08415a9dacce48b2fbe4abc6eff9dab87bdc4f8c1bad0558d531c2"
+    },
+    {
+      "file": "slot2_high_oct_050.bin",
+      "source": "octaver_short_dump_corrigido.pcapng",
+      "slot": 2,
+      "parameter": "high_oct",
+      "selector": 1,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "a4676386ba3d788bccaa92b13c3a8c8267b12faa770f2884964200017a7217f3"
+    },
+    {
+      "file": "slot2_high_oct_062.bin",
+      "source": "octaver_short_dump_corrigido.pcapng",
+      "slot": 2,
+      "parameter": "high_oct",
+      "selector": 1,
+      "value": 62,
+      "encoded_value": [
+        7,
+        8,
+        4,
+        2
+      ],
+      "sha256": "40312dfa4a0119312bf8f101b26de89888ec749308cadb13e0857d937f182989"
+    },
+    {
+      "file": "slot2_low_oct_050.bin",
+      "source": "octaver_short_dump_corrigido.pcapng",
+      "slot": 2,
+      "parameter": "low_oct",
+      "selector": 0,
+      "value": 50,
+      "encoded_value": [
+        4,
+        8,
+        4,
+        2
+      ],
+      "sha256": "ccb0ca0f82c6c684af3a87dfa7d7d9584383a5791a15d6ade37a304e8764b432"
+    },
+    {
+      "file": "slot2_low_oct_061.bin",
+      "source": "octaver_short_dump_corrigido.pcapng",
+      "slot": 2,
+      "parameter": "low_oct",
+      "selector": 0,
+      "value": 61,
+      "encoded_value": [
+        7,
+        4,
+        4,
+        2
+      ],
+      "sha256": "7745931858e483536ee23eb5f4139f5e316faffdc2a28f1d2f9f4ad5dfc40274"
+    }
+  ]
+}

@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 11
+CATALOG_VERSION = 12
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -1089,6 +1089,49 @@ GATE3_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
 
 
 
+OCTAVER_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": display_order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1, 2],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "multiple_parameters": True,
+            "physical_fixture_count": 24,
+            "evidence": "docs/phases/FREQ_OCTAVER_PARAMETERS_PHASE34.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    }
+    for display_order, (key, name, selector) in enumerate(
+        (
+            ("low_oct", "LOW OCT", 0),
+            ("high_oct", "HIGH OCT", 1),
+            ("dry", "DRY", 2),
+        ),
+        start=1,
+    )
+)
+
+
 FILTER_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple([{'key': 'step_1',
   'name': 'STEP 1',
   'display_order': 1,
@@ -1304,6 +1347,10 @@ def _effect_document(
 
     if effect_key == "freq.filter" and not parameters:
         parameters = list(FILTER_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "freq.octaver" and not parameters:
+        parameters = list(OCTAVER_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:

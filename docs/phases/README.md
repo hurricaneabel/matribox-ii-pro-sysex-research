@@ -26,3 +26,4 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 31 | `DYN_AC_SIM_ENUM_PARAMETERS_PHASE31.md` | AC SIM com BODY/TOP/VOLUME e MODE enum nomeado |
 | 32 | `DYN_GATE3_TIME_PARAMETERS_PHASE32.md` | GATE 3 com float32 completo e tempos adaptativos em ms/s |
 | 33 | `FREQ_FILTER_PARAMETERS_PHASE33.md` | FILTER com RATE condicionado por SYNC e defaults implícitos derivados |
+| 34 | `FREQ_OCTAVER_PARAMETERS_PHASE34.md` | OCTAVER com LOW OCT/HIGH OCT/DRY e validação dos slots 1 e 2 |

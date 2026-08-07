@@ -22,7 +22,7 @@ Os 16 índices de classe e os 267 efeitos foram exportados do catálogo Python
 histórico. Todos preservam menu, nome, ID de classe, ID de modelo e seletor
 secundário.
 
-Quatorze efeitos DYN e um efeito FREQ possuem parâmetros internos catalogados, totalizando 53
+Quatorze efeitos DYN e dois efeitos FREQ possuem parâmetros internos catalogados, totalizando 56
 controles físicos:
 
 ```text
@@ -41,6 +41,7 @@ GATE 2  | THRESHOLD, ATTACK, RELEASE         | inteiro 0–100 | seletores 0–2
 AC SIM  | BODY, TOP, VOLUME, MODE             | inteiros + enum nomeado | seletores 0–3
 GATE 3  | THRESHOLD, RATIO, ATTACK, RELEASE, HOLD | inteiros + tempos em ms | seletores 0–4
 FILTER  | STEP 1, STEP 2, STEP 3, STEP 4, RATE, SYNC | inteiros + domínio condicionado + booleano | seletores 0–5
+OCTAVER | LOW OCT, HIGH OCT, DRY             | inteiro 0–100 | seletores 0–2
 ```
 
 No AC SIM, `MODE` usa os mesmos valores numéricos do codec compartilhado,
@@ -69,7 +70,7 @@ O comando `0x1C` não identifica sozinho o modelo do efeito. O slot recebido é
 cruzado com a cadeia estrutural atual; somente então o seletor é interpretado
 dentro do efeito correto.
 
-Os outros 252 efeitos permanecem com:
+Os outros 251 efeitos permanecem com:
 
 ```json
 "parameter_catalog_status": "pending",

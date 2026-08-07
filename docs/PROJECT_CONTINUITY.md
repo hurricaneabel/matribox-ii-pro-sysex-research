@@ -3,9 +3,9 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 33 — FREQ / FILTER fisicamente aprovado com RATE condicionado por SYNC
-> **Trabalho atual:** Fase 33 pronta para commit e promoção à `main`
-> **Próximo passo:** commitar a Fase 33 em `research/freq-parameters`, promover por fast-forward à `main` e iniciar o próximo efeito FREQ
+> **Marco consolidado:** Fase 33 — FREQ / FILTER fisicamente aprovado e promovido
+> **Trabalho atual:** Fase 34 — FREQ / OCTAVER implementada, aguardando validação física no monitor
+> **Próximo passo:** validar OCTAVER fisicamente nos slots humanos 1 e 2; somente depois preparar commit e promoção à `main`
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/freq-parameters`
 
@@ -91,8 +91,8 @@ O estado atual já permite:
   `s` conforme o catálogo;
 - apresentar parâmetros catalogados no monitor principal e manter valores
   separados por slot interno, efeito e parâmetro;
-- carregar as 16 classes, 267 efeitos e 53 parâmetros confirmados por
-  capturas em quatorze efeitos DYN e um efeito FREQ a partir de um catálogo
+- carregar as 16 classes, 267 efeitos e 56 parâmetros confirmados por
+  capturas em quatorze efeitos DYN e dois efeitos FREQ a partir de um catálogo
   JSON versionado e independente de Python/Windows;
 - representar parâmetros com domínio condicionado, como RATE do FILTER, sem
   fabricar mensagens USB para defaults implícitos do dispositivo.
@@ -378,7 +378,7 @@ tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 
 M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC-BOOST, BB-BOOST, RC-BOOST,
 FAT BOOST, AC WOODY, AC SIM, GATE 1, GATE 2 e GATE 3 são os quatorze efeitos
-DYN preenchidos. FILTER é o primeiro efeito FREQ parametrizado. Os outros 252
+DYN preenchidos. FILTER e OCTAVER são os dois primeiros efeitos FREQ parametrizados. Os outros 251
 efeitos permanecem explicitamente `pending`, sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
@@ -503,11 +503,11 @@ necessário para desambiguar casos como modelos AMP distintos com o mesmo ID.
 
 O catálogo usa JSON Schema Draft 2020-12, caminhos relativos portáteis e
 versões explícitas. Ele pode ser consumido pelo laboratório Python e, no
-futuro, por Kotlin/Android e desktop. Nesta candidata há 53 parâmetros
+futuro, por Kotlin/Android e desktop. Nesta candidata há 56 parâmetros
 fisicamente confirmados em quatorze efeitos DYN e um FREQ. O AC SIM usa
 `value_type: enum`, o GATE 3 usa `float32_nibbles_v1` e apresentação de tempo,
 e o FILTER introduz `value_domain` controlado por outro parâmetro. Os outros
-252 efeitos permanecem sem dados inventados.
+251 efeitos permanecem sem dados inventados.
 
 ## 10. Histórico consolidado das Fases 14–24
 
@@ -1317,3 +1317,71 @@ controladas preservadas na fase.
 5. promover por fast-forward à `main`;
 6. voltar para `research/freq-parameters` e confirmar a árvore limpa;
 7. iniciar o próximo efeito da classe FREQ.
+
+## 21. Atualização atual — Fase 34 aprovada: FREQ / OCTAVER
+
+A Fase 34 adiciona o segundo efeito parametrizado da classe FREQ sem alterar o
+motor principal. As capturas físicas confirmaram:
+
+```text
+LOW OCT  = seletor 0, inteiro 0–100
+HIGH OCT = seletor 1, inteiro 0–100
+DRY      = seletor 2, inteiro 0–100
+```
+
+Os três controles usam `effect_parameter_response_1c_v1` com
+`upper_float32_nibbles_v1`. A identidade continua sendo resolvida pela cadeia
+estrutural atual; o envelope 0x1C não identifica sozinho a classe ou o modelo.
+
+Evidências preservadas:
+
+```text
+24 fixtures físicas
+slot humano 1 → 18
+slot humano 2 → 6
+```
+
+As três capturas individuais preservam 0, 1, 50, 99 e 100. A captura combinada
+adiciona 51, 52 e 53 para LOW OCT, HIGH OCT e DRY. A primeira short foi feita
+novamente no slot humano 1 e não conta como validação de segundo slot; a short
+corrigida confirma `00 01` e os valores 61/62/63 com retorno a 50.
+
+Não houve necessidade de alterar decoder, codec, estado de parâmetros ou
+monitor. `catalog_version` passa a 12. O catálogo fica com 16 efeitos
+parametrizados, 56 parâmetros catalogados e 251 efeitos pendentes.
+
+Validação offline consolidada:
+
+```text
+Ran 413 tests
+OK
+compileall: aprovado
+```
+
+### Validação física consolidada
+
+O monitor reconheceu `FREQ / Octaver` no slot humano 2 ao lado de `DYN / COMP1`.
+LOW OCT, HIGH OCT e DRY responderam de forma independente; a primeira instância
+foi estabilizada em 37/74/30. O bypass OFF/ON preservou os três valores.
+
+FILTER foi adicionado à mesma cadeia sem alterar o estado do OCTAVER. Depois,
+uma segunda instância de OCTAVER recebeu 54/37/58 enquanto a primeira manteve
+37/74/30. A cadeia foi ampliada ainda mais e uma terceira instância no slot
+humano 7 recebeu 52/73/42, novamente sem contaminar as anteriores. A integração
+física está aprovada para múltiplas instâncias, coexistência entre classes e
+slots distantes.
+
+O primeiro `git diff --check` após a candidata apontou somente uma linha em
+branco excedente no fim de `docs/protocol_findings.md`. O pacote documental de
+aprovação remove essa linha antes do commit final.
+
+### Próximo passo exato
+
+1. extrair o pacote documental final da Fase 34 na raiz;
+2. executar a suíte completa, `compileall` e `git diff --check`;
+3. adicionar somente os arquivos da Fase 34 ao índice;
+4. criar o commit da Fase 34 em `research/freq-parameters`;
+5. enviar a branch ao remoto;
+6. promover por fast-forward à `main`;
+7. voltar para `research/freq-parameters` e confirmar `nothing to commit`;
+8. iniciar o próximo efeito da classe FREQ.

@@ -36,6 +36,7 @@ EBOOST_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "e_boost_parameters"
 AC_WOODY_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "ac_woody_parameters"
 GATE1_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "gate1_parameters"
 FILTER_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "filter_parameters"
+OCTAVER_FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "octaver_parameters"
 
 
 def make_chain(*, internal_slot_id: int, effect_key: str) -> ChainOrderState:
@@ -1306,6 +1307,80 @@ class Phase31EvidenceManifestTests(unittest.TestCase):
             "same_selectors_codec_and_enum_mapping_on_internal_slot_2",
         )
 
+
+
+
+class OctaverParameterTests(unittest.TestCase):
+    def test_all_physical_octaver_fixtures_decode_by_chain_effect_context(self) -> None:
+        fixtures = sorted(OCTAVER_FIXTURE_ROOT.glob("*.bin"))
+        self.assertEqual(len(fixtures), 24)
+        manifest = json.loads(
+            (OCTAVER_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        expected = {item["file"]: item for item in manifest["fixtures"]}
+        observed_slots = set()
+        observed_parameters = set()
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture.name):
+                event = parse_effect_parameter_response(
+                    fixture.read_bytes(), effect_key="freq.octaver"
+                )
+                self.assertIsNotNone(event)
+                assert event is not None
+                item = expected[fixture.name]
+                observed_slots.add(event.human_slot)
+                observed_parameters.add(event.parameter_key)
+                self.assertEqual(event.class_id, 1)
+                self.assertEqual(event.class_key, "freq")
+                self.assertEqual(event.human_slot, item["slot"])
+                self.assertEqual(event.parameter_key, item["parameter"])
+                self.assertEqual(event.value, item["value"])
+        self.assertEqual(observed_slots, {1, 2})
+        self.assertEqual(observed_parameters, {"low_oct", "high_oct", "dry"})
+
+    def test_octaver_slot2_updates_three_independent_parameters(self) -> None:
+        core = prepare_core(make_chain(internal_slot_id=1, effect_key="freq.octaver"))
+        for filename in (
+            "slot2_low_oct_061.bin",
+            "slot2_high_oct_062.bin",
+            "slot2_dry_063.bin",
+        ):
+            update = core.feed((OCTAVER_FIXTURE_ROOT / filename).read_bytes())
+            self.assertIsNotNone(update.parameter_event)
+        assert update.snapshot is not None
+        effect = update.snapshot.effects[0]
+        self.assertEqual(
+            tuple(parameter.name for parameter in effect.parameters),
+            ("LOW OCT", "HIGH OCT", "DRY"),
+        )
+        self.assertEqual(
+            tuple(parameter.value for parameter in effect.parameters),
+            (61, 62, 63),
+        )
+        formatted = format_monitor_snapshot(update.snapshot)
+        self.assertIn("LOW OCT: 61", formatted)
+        self.assertIn("HIGH OCT: 62", formatted)
+        self.assertIn("DRY: 63", formatted)
+
+    def test_octaver_manifest_preserves_corrected_slot2_evidence(self) -> None:
+        manifest = json.loads(
+            (OCTAVER_FIXTURE_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["effect"]["key"], "freq.octaver")
+        self.assertEqual(manifest["physical_binary_fixtures"], 24)
+        self.assertEqual(manifest["internal_slots_observed"], [1, 2])
+        self.assertEqual(
+            tuple(parameter["selector"] for parameter in manifest["parameters"]),
+            (0, 1, 2),
+        )
+        self.assertEqual(
+            manifest["slot2_validation"]["result"],
+            "same_selectors_and_codec_on_internal_slot_2",
+        )
+        self.assertEqual(
+            manifest["excluded_capture_sources"][0]["source"],
+            "octaver_short_dump.pcapng",
+        )
 
 class FilterConditionalRateParameterTests(unittest.TestCase):
     def test_all_physical_filter_fixtures_decode_by_chain_effect_context(self) -> None:

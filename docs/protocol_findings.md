@@ -1493,3 +1493,35 @@ As capturas também mostraram `00 00` nos índices `41–42` do envelope 0x1C,
 embora FREQ tenha class_id estrutural 1. Esse campo deixa de ser tratado como
 classe estrutural; a cadeia atual é a fonte da identidade da classe e do modelo.
 Foram preservadas 55 fixtures nos slots humanos 1 e 2.
+
+## Fase 34 — OCTAVER, três controles contínuos e segundo slot corrigido
+
+As capturas do `FREQ / Octaver` confirmaram três seletores no mesmo comando
+`0x1C` usado pelos efeitos anteriores:
+
+```text
+LOW OCT = 0 | HIGH OCT = 1 | DRY = 2
+```
+
+Todos são inteiros `0–100` com passo 1 e usam `upper_float32_nibbles_v1`. As
+capturas individuais confirmam os extremos e pontos 0, 1, 50, 99 e 100; a
+captura combinada confirma independência por meio dos valores 51, 52 e 53.
+
+A primeira short permaneceu no slot humano 1. Ela foi excluída como evidência
+de segundo slot e substituída por `octaver_short_dump_corrigido.pcapng`, que
+transmite `00 01` nos índices de slot e confirma LOW OCT 61→50, HIGH OCT 62→50
+e DRY 63→50. Foram preservadas 24 fixtures físicas únicas.
+
+Nenhum novo codec ou comportamento especial foi necessário. A correção de
+classe do envelope 0x1C feita na Fase 33 permite resolver OCTAVER/FREQ pela
+cadeia estrutural sem regressão dos efeitos DYN.
+
+### Validação física do OCTAVER no monitor
+
+A integração ao monitor foi aprovada com OCTAVER coexistindo com DYN / COMP1 e
+FILTER. O primeiro OCTAVER preservou LOW OCT 37, HIGH OCT 74 e DRY 30 através
+de bypass OFF/ON. Uma segunda instância recebeu 54/37/58 sem alterar a primeira.
+A cadeia foi expandida e uma terceira instância no slot humano 7 recebeu
+52/73/42 sem contaminação dos estados anteriores, reforçando que a resolução de
+parâmetros continua vinculada ao slot interno real e ao modelo presente na
+cadeia.
