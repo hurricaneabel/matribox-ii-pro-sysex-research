@@ -7,7 +7,356 @@
   "name": "AUTO WAH",
   "model_id": 21,
   "secondary_selector": 1,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "depth",
+      "name": "DEPTH",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "saved_dump_default": 50,
+        "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "rate",
+      "name": "RATE",
+      "display_order": 2,
+      "value_type": "number",
+      "range": {
+        "minimum": 0,
+        "maximum": 10,
+        "step": 0.1
+      },
+      "unit": null,
+      "value_domain": {
+        "controller_parameter": "sync",
+        "reset_on_controller_change": true,
+        "states": [
+          {
+            "controller_value": false,
+            "default_value": 0.5,
+            "presentation": {
+              "kind": "numeric",
+              "unit": "Hz",
+              "decimals": 1
+            }
+          },
+          {
+            "controller_value": true,
+            "default_value": 4,
+            "presentation": {
+              "kind": "enum",
+              "choices": [
+                {
+                  "value": 0,
+                  "label": "1/1"
+                },
+                {
+                  "value": 1,
+                  "label": "1/2"
+                },
+                {
+                  "value": 2,
+                  "label": "1/2D"
+                },
+                {
+                  "value": 3,
+                  "label": "1/2T"
+                },
+                {
+                  "value": 4,
+                  "label": "1/4"
+                },
+                {
+                  "value": 5,
+                  "label": "1/4D"
+                },
+                {
+                  "value": 6,
+                  "label": "1/4T"
+                },
+                {
+                  "value": 7,
+                  "label": "1/8"
+                },
+                {
+                  "value": 8,
+                  "label": "1/8D"
+                },
+                {
+                  "value": 9,
+                  "label": "1/8T"
+                },
+                {
+                  "value": 10,
+                  "label": "1/16"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0.1,
+          10.0
+        ],
+        "step_validated": 0.1,
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "conditional_domain_controller": "sync",
+        "sync_off_default": 0.5,
+        "sync_on_default_wire_value": 4,
+        "sync_on_default_label": "1/4",
+        "saved_dump_float32": true,
+        "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "saved_dump_default": 50,
+        "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "low",
+      "name": "LOW",
+      "display_order": 4,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 3,
+        "saved_dump_default": 25,
+        "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "q",
+      "name": "Q",
+      "display_order": 5,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 4,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 4,
+        "saved_dump_default": 70,
+        "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "high",
+      "name": "HIGH",
+      "display_order": 6,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 5,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 5,
+        "saved_dump_default": 60,
+        "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "sync",
+      "name": "SYNC",
+      "display_order": 7,
+      "value_type": "boolean",
+      "range": {
+        "minimum": 0,
+        "maximum": 1,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 6,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 6,
+        "saved_dump_default": 1,
+        "boolean_encoding": {
+          "false": 0,
+          "true": 1
+        },
+        "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    }
+  ]
 }

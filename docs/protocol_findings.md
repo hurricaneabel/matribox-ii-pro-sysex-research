@@ -1734,3 +1734,118 @@ A validação física final confirmou duas instâncias independentes nas posiç�
 visuais 4 e 12 de uma cadeia com doze efeitos. Os conjuntos
 `30 / 31 / 21 / 30` e `81 / 80 / 70 / 71` foram hidratados corretamente e
 coexistiram com múltiplos COMP1. A classe FREQ está consolidada.
+
+## Fase 42 — VOKS WAH e início da classe WAH
+
+`WAH / VOKS WAH` usa `class_id 0x02`, `model_id 0x01` e seletor secundário
+`0x05`. O mapa de parâmetros é:
+
+```text
+0 RANGE | 1 Q | 2 VOLUME | 3 POSITION
+```
+
+Todos usam 0–100 e default persistido 50. Três dumps `0x10` completos
+confirmaram `50 / 50 / 50 / 50`, `21 / 43 / 65 / 87` e
+`22 / 44 / 66 / 88`. A varredura `0x1C` confirmou 0, 1, 50, 99 e 100 para os
+quatro seletores.
+
+Os seletores salvos 4, 5 e 6 contêm `100.0`, `100.0` e `1.0`, respectivamente,
+sem controles correspondentes e sem eventos ao vivo. O catálogo limitado a
+0–3 impede a hidratação desses resíduos.
+
+A validação física final confirmou duas instâncias independentes nas posições
+visuais 4 e 12 de uma cadeia cheia. Os conjuntos `83 / 67 / 63 / 100` e
+`2 / 24 / 11 / 3` foram hidratados corretamente e coexistiram com múltiplos
+COMP1. A Fase 42 está consolidada.
+
+## Fase 43 — CRY WAH
+
+`WAH / CRY WAH` usa `class_id 0x02`, `model_id 0x08` e seletor secundário
+`0x05`. RANGE, Q, VOLUME e POSITION ocupam os seletores consecutivos 0–3,
+todos com faixa 0–100 e default 50.
+
+Três dumps completos confirmaram os conjuntos `50 / 50 / 50 / 50`,
+`21 / 43 / 65 / 87` e `22 / 44 / 66 / 88`. A varredura ao vivo confirmou
+0, 1, 50, 99 e 100. Os valores residuais `100 / 100 / 1` dos seletores 4–6
+não possuem controles correspondentes e são rejeitados pelo catálogo.
+
+A validação física final confirmou VOKS WAH na posição visual 4 e CRY WAH na
+posição 12 de uma cadeia cheia. Os estados `27 / 12 / 34 / 6` e
+`72 / 81 / 85 / 89` permaneceram independentes e coexistiram com múltiplos
+COMP1. A Fase 43 está consolidada.
+
+## Fase 44 — RACK WAH e EQ no seletor 4
+
+`WAH / RACK WAH` usa `class_id 0x02`, `model_id 0x0A` e seletor secundário
+`0x05`. RANGE, Q, VOLUME e POSITION ocupam 0–3. EQ ocupa o seletor 4 e transmite
+booleanos 0/1.
+
+A captura combinada continha um dump completo com `21 / 43 / 65 / 87 / 0`,
+seguido por eventos ao vivo `22 / 44 / 66 / 88` e EQ `1 → 0 → 1`. Isso elimina
+a hipótese anterior de EQ no seletor 6. Os seletores 5 e 6 mantêm resíduos 100
+e 1 sem controles correspondentes e são ignorados.
+
+A validação física final confirmou RACK WAH na posição visual 12 de uma cadeia
+cheia com `66 / 39 / 34 / 66 / OFF`. O estado booleano foi hidratado e exibido
+corretamente, sem colisão com múltiplos COMP1. A Fase 44 está consolidada.
+
+## Fase 45 — BASS WAH validado sem captura própria
+
+`WAH / BASS WAH` usa a identidade estrutural `02 / 07 / 05`. RANGE, Q, VOLUME
+e POSITION foram provisoriamente associados aos seletores 0–3 com base em VOKS,
+CRY e RACK WAH, que repetiram o mesmo prefixo de layout.
+
+A entrada começou como inferida e foi testada no monitor com duas instâncias em
+uma cadeia cheia. A posição 4 preservou `23 / 28 / 0 / 23`; a posição 12,
+`84 / 88 / 84 / 81`. A independência por slot e VOLUME zero foram confirmados.
+O efeito foi promovido para `physically_validated` sem PCAPNG próprio.
+
+## Fase 46 — TOUCH WAH e MODE enum
+
+`WAH / TOUCH WAH` usa a identidade `02 / 0F / 01`. Os seletores são:
+
+```text
+0 SENSE | 1 RANGE | 2 Q | 3 MIX | 4 MODE
+```
+
+MODE mapeia GUITAR para 0 e BASS para 1. A captura combinada confirmou o dump
+`21 / 43 / 65 / 87 / 1`, eventos numéricos `22 / 44 / 66 / 88`, limites de
+SENSE e alternância 0/1. Os resíduos 100 e 1 nos seletores 5–6 ficam fora do
+catálogo. A validação final confirmou hidratação, alterações em tempo real e
+MODE GUITAR/BASS em uma cadeia cheia. A Fase 46 está aprovada.
+
+## Fase 47 — AUTO WAH com RATE condicionado por SYNC
+
+`WAH / AUTO WAH` usa a identidade `02 / 15 / 01`. O mapa confirmado é:
+
+```text
+0 DEPTH | 1 RATE | 2 VOLUME | 3 LOW | 4 Q | 5 HIGH | 6 SYNC
+```
+
+DEPTH, VOLUME, LOW, Q e HIGH usam inteiros 0–100. SYNC usa 0/1. RATE é o único
+controle que exige o codec float32 completo: com SYNC OFF transmite 0,1–10,0
+Hz em passos de 0,1; com SYNC ON transmite o índice inteiro das onze divisões
+de 1/1 a 1/16.
+
+Os dumps descomprimidos de 1.211 bytes preservaram
+`50 / 4 / 50 / 25 / 70 / 60 / 1`,
+`21 / 3.7 / 43 / 65 / 87 / 32 / 0` e
+`22 / 8 / 44 / 66 / 88 / 33 / 1`. A varredura ao vivo confirmou todos os
+seletores, os limites numéricos, 3,7 Hz e os wire values rítmicos 0–10.
+
+O catálogo declara SYNC como controlador de RATE. A hidratação ordena o
+controlador antes do dependente e o estado invalida um RATE antigo quando o
+domínio muda. O monitor apresenta o domínio livre com uma casa decimal e `Hz`,
+e o domínio sincronizado com rótulos como `1/8D`. A integração física final do
+monitor foi aprovada.
+
+O teste inicial revelou que a checagem genérica do passo usava tolerância
+absoluta insuficiente para alguns `float32`: 4,2, 4,3, 4,7 e 4,8 podiam ser
+rejeitados apesar de válidos. O decoder passou a comparar com o múltiplo mais
+próximo no domínio do valor e a devolver o decimal normalizado. Uma regressão
+exaustiva cobre os 100 décimos válidos entre 0,1 e 10,0.
+
+A validação final confirmou alterações ao vivo nos dois domínios. Uma instância
+na posição visual 12 preservou DEPTH 58, RATE 8,7 Hz, VOLUME 100, LOW 54, Q 70,
+HIGH 60 e SYNC OFF, coexistindo com múltiplos COMP1. A Fase 47 encerra a classe
+WAH.

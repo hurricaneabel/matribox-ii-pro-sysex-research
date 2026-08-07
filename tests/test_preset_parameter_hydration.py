@@ -18,6 +18,7 @@ from tools.parameters.preset_dump import (
     PresetParameterDumpError,
     decode_saved_parameter_events,
 )
+from tools.parameters.codecs import ParameterCodecError, normalize_parameter_value
 from tools.parameters.state import EffectParameterState
 
 
@@ -79,6 +80,20 @@ def make_dump(values: dict[tuple[int, int], float]) -> bytes:
 
 
 class SavedParameterDumpDecoderTests(unittest.TestCase):
+    def test_auto_wah_accepts_every_float32_tenth_from_point_one_to_ten(self) -> None:
+        rate = CATALOG.effect_by_key("wah.auto_wah").parameters[1]
+        for tenths in range(1, 101):
+            expected = tenths / 10
+            physical_float32 = struct.unpack(
+                "<f", struct.pack("<f", expected)
+            )[0]
+            with self.subTest(rate=expected, physical_float32=physical_float32):
+                normalized = normalize_parameter_value(physical_float32, rate)
+                self.assertAlmostEqual(float(normalized), expected, places=7)
+
+        with self.assertRaises(ParameterCodecError):
+            normalize_parameter_value(4.25, rate)
+
     def test_same_selector_uses_sixty_byte_stride_between_slots(self) -> None:
         chain = make_chain((0, "dyn.m_boost"), (1, "dyn.m_boost"))
         events = decode_saved_parameter_events(
@@ -271,6 +286,196 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
             tuple(parameter.display_value for parameter in snapshot.parameters),
             ("21", "43", "65", "87"),
         )
+
+    def test_voks_wah_hydrates_four_values_and_ignores_residual_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 21,
+                (0, 1): 43,
+                (0, 2): 65,
+                (0, 3): 87,
+                (0, 4): 100,
+                (0, 5): 100,
+                (0, 6): 1,
+            }),
+            make_chain((0, "wah.voks_wah")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("range", 21),
+                ("q", 43),
+                ("volume", 65),
+                ("position", 87),
+            ),
+        )
+
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        snapshot = build_effect_snapshots(
+            make_chain((0, "wah.voks_wah")), state
+        )[0]
+        self.assertEqual(
+            tuple(parameter.display_value for parameter in snapshot.parameters),
+            ("21", "43", "65", "87"),
+        )
+
+    def test_cry_wah_hydrates_four_values_and_ignores_residual_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 22,
+                (0, 1): 44,
+                (0, 2): 66,
+                (0, 3): 88,
+                (0, 4): 100,
+                (0, 5): 100,
+                (0, 6): 1,
+            }),
+            make_chain((0, "wah.cry_wah")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("range", 22),
+                ("q", 44),
+                ("volume", 66),
+                ("position", 88),
+            ),
+        )
+
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        snapshot = build_effect_snapshots(
+            make_chain((0, "wah.cry_wah")), state
+        )[0]
+        self.assertEqual(
+            tuple(parameter.display_value for parameter in snapshot.parameters),
+            ("22", "44", "66", "88"),
+        )
+
+    def test_rack_wah_hydrates_eq_and_ignores_residual_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 21,
+                (0, 1): 43,
+                (0, 2): 65,
+                (0, 3): 87,
+                (0, 4): 0,
+                (0, 5): 100,
+                (0, 6): 1,
+            }),
+            make_chain((0, "wah.rack_wah")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("range", 21),
+                ("q", 43),
+                ("volume", 65),
+                ("position", 87),
+                ("eq", False),
+            ),
+        )
+
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        snapshot = build_effect_snapshots(
+            make_chain((0, "wah.rack_wah")), state
+        )[0]
+        self.assertEqual(
+            tuple(parameter.display_value for parameter in snapshot.parameters),
+            ("21", "43", "65", "87", "desligado"),
+        )
+
+    def test_inferred_bass_wah_hydrates_only_four_cataloged_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 31,
+                (0, 1): 42,
+                (0, 2): 53,
+                (0, 3): 64,
+                (0, 4): 100,
+                (0, 5): 100,
+                (0, 6): 1,
+            }),
+            make_chain((0, "wah.bass_wah")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("range", 31), ("q", 42), ("volume", 53), ("position", 64)),
+        )
+
+    def test_touch_wah_hydrates_named_mode_and_ignores_residual_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 21,
+                (0, 1): 43,
+                (0, 2): 65,
+                (0, 3): 87,
+                (0, 4): 1,
+                (0, 5): 100,
+                (0, 6): 1,
+            }),
+            make_chain((0, "wah.touch_wah")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("sense", 21),
+                ("range", 43),
+                ("q", 65),
+                ("mix", 87),
+                ("mode", "BASS"),
+            ),
+        )
+
+    def test_auto_wah_hydrates_sync_on_rate_domain(self) -> None:
+        chain = make_chain((0, "wah.auto_wah"))
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 22, (0, 1): 8, (0, 2): 44, (0, 3): 66,
+                (0, 4): 88, (0, 5): 33, (0, 6): 1,
+            }),
+            chain,
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("sync", True), ("depth", 22), ("rate", 8),
+                ("volume", 44), ("low", 66), ("q", 88), ("high", 33),
+            ),
+        )
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        by_key = {
+            parameter.key: parameter
+            for parameter in build_effect_snapshots(chain, state)[0].parameters
+        }
+        self.assertEqual(by_key["rate"].display_value, "1/8D")
+
+    def test_auto_wah_hydrates_decimal_rate_with_sync_off(self) -> None:
+        chain = make_chain((0, "wah.auto_wah"))
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 21, (0, 1): 3.7, (0, 2): 43, (0, 3): 65,
+                (0, 4): 87, (0, 5): 32, (0, 6): 0,
+            }),
+            chain,
+        )
+        state = EffectParameterState()
+        for event in events:
+            state.apply(event, origin="saved_preset_dump")
+        by_key = {
+            parameter.key: parameter
+            for parameter in build_effect_snapshots(chain, state)[0].parameters
+        }
+        self.assertAlmostEqual(float(by_key["rate"].value), 3.7, places=5)
+        self.assertEqual(by_key["rate"].display_value, "3.7 Hz")
+        self.assertEqual(by_key["sync"].value, False)
 
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(

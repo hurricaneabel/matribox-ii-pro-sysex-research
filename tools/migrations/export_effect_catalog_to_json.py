@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 18
+CATALOG_VERSION = 25
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -774,6 +774,133 @@ AC_SIM_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
             "physical_fixture_count": 30,
             "evidence": "docs/phases/DYN_AC_SIM_ENUM_PARAMETERS_PHASE31.md",
             "monitor_integration_physical_validation": "pending",
+        },
+    },
+)
+
+
+AUTO_WAH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    {
+        "key": "depth",
+        "name": "DEPTH",
+        "display_order": 1,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": 0, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": {
+            "offline": True, "physical": True, "read_only": True,
+            "range_validated": [0, 100], "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain", "parameter_selector": 0,
+            "saved_dump_default": 50,
+            "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+            "monitor_integration_physical_validation": "approved",
+        },
+    },
+    {
+        "key": "rate",
+        "name": "RATE",
+        "display_order": 2,
+        "value_type": "number",
+        "range": {"minimum": 0, "maximum": 10, "step": 0.1},
+        "unit": None,
+        "value_domain": {
+            "controller_parameter": "sync",
+            "reset_on_controller_change": True,
+            "states": [
+                {
+                    "controller_value": False,
+                    "default_value": 0.5,
+                    "presentation": {"kind": "numeric", "unit": "Hz", "decimals": 1},
+                },
+                {
+                    "controller_value": True,
+                    "default_value": 4,
+                    "presentation": {
+                        "kind": "enum",
+                        "choices": [
+                            {"value": 0, "label": "1/1"},
+                            {"value": 1, "label": "1/2"},
+                            {"value": 2, "label": "1/2D"},
+                            {"value": 3, "label": "1/2T"},
+                            {"value": 4, "label": "1/4"},
+                            {"value": 5, "label": "1/4D"},
+                            {"value": 6, "label": "1/4T"},
+                            {"value": 7, "label": "1/8"},
+                            {"value": 8, "label": "1/8D"},
+                            {"value": 9, "label": "1/8T"},
+                            {"value": 10, "label": "1/16"},
+                        ],
+                    },
+                },
+            ],
+        },
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": 1, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": {
+            "offline": True, "physical": True, "read_only": True,
+            "range_validated": [0.1, 10.0], "step_validated": 0.1,
+            "internal_slots_observed": [1], "effect_identity_source": "current_chain",
+            "parameter_selector": 1, "conditional_domain_controller": "sync",
+            "sync_off_default": 0.5, "sync_on_default_wire_value": 4,
+            "sync_on_default_label": "1/4", "saved_dump_float32": True,
+            "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+            "monitor_integration_physical_validation": "approved",
+        },
+    },
+    *(
+        {
+            "key": key, "name": name, "display_order": order,
+            "value_type": "integer", "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+            },
+            "validation": {
+                "offline": True, "physical": True, "read_only": True,
+                "range_validated": [0, 100], "internal_slots_observed": [1],
+                "effect_identity_source": "current_chain", "parameter_selector": selector,
+                "saved_dump_default": default,
+                "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+                "monitor_integration_physical_validation": "approved",
+            },
+        }
+        for key, name, order, selector, default in (
+            ("volume", "VOLUME", 3, 2, 50),
+            ("low", "LOW", 4, 3, 25),
+            ("q", "Q", 5, 4, 70),
+            ("high", "HIGH", 6, 5, 60),
+        )
+    ),
+    {
+        "key": "sync", "name": "SYNC", "display_order": 7,
+        "value_type": "boolean", "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": 6, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": {
+            "offline": True, "physical": True, "read_only": True,
+            "internal_slots_observed": [1], "effect_identity_source": "current_chain",
+            "parameter_selector": 6, "saved_dump_default": 1,
+            "boolean_encoding": {"false": 0, "true": 1},
+            "evidence": "docs/phases/WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md",
+            "monitor_integration_physical_validation": "approved",
         },
     },
 )
@@ -1550,6 +1677,286 @@ TAPE_MOD_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
 )
 
 
+VOKS_WAH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "multiple_parameters": True,
+            "saved_dump_default": 50,
+            "physical_saved_dump_count": 3,
+            "physical_live_sweep": True,
+            "evidence": "docs/phases/WAH_VOKS_WAH_PARAMETERS_PHASE42.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    }
+    for key, name, order, selector in (
+        ("range", "RANGE", 1, 0),
+        ("q", "Q", 2, 1),
+        ("volume", "VOLUME", 3, 2),
+        ("position", "POSITION", 4, 3),
+    )
+)
+
+
+CRY_WAH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "multiple_parameters": True,
+            "saved_dump_default": 50,
+            "physical_saved_dump_count": 3,
+            "physical_live_sweep": True,
+            "evidence": "docs/phases/WAH_CRY_WAH_PARAMETERS_PHASE43.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    }
+    for key, name, order, selector in (
+        ("range", "RANGE", 1, 0),
+        ("q", "Q", 2, 1),
+        ("volume", "VOLUME", 3, 2),
+        ("position", "POSITION", 4, 3),
+    )
+)
+
+
+RACK_WAH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    *(
+        {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "range_validated": [0, 100],
+                "internal_slots_observed": [1],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "multiple_parameters": True,
+                "saved_dump_default": 50,
+                "physical_combined_capture": True,
+                "evidence": "docs/phases/WAH_RACK_WAH_EQ_PARAMETERS_PHASE44.md",
+                "monitor_integration_physical_validation": "pending",
+            },
+        }
+        for key, name, order, selector in (
+            ("range", "RANGE", 1, 0),
+            ("q", "Q", 2, 1),
+            ("volume", "VOLUME", 3, 2),
+            ("position", "POSITION", 4, 3),
+        )
+    ),
+    {
+        "key": "eq",
+        "name": "EQ",
+        "display_order": 5,
+        "value_type": "boolean",
+        "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 4,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 4,
+            "multiple_parameters": True,
+            "saved_dump_default": 1,
+            "boolean_encoding": {"false": 0, "true": 1},
+            "physical_combined_capture": True,
+            "evidence": "docs/phases/WAH_RACK_WAH_EQ_PARAMETERS_PHASE44.md",
+            "monitor_integration_physical_validation": "pending",
+        },
+    },
+)
+
+
+BASS_WAH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [0, 100],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_default": 50,
+            "inference_sources": ["wah.voks_wah", "wah.cry_wah", "wah.rack_wah"],
+            "evidence": "docs/phases/WAH_BASS_WAH_INFERRED_PARAMETERS_PHASE45.md",
+            "monitor_integration_physical_validation": "approved",
+            "physical_validation_without_pcapng": True,
+        },
+    }
+    for key, name, order, selector in (
+        ("range", "RANGE", 1, 0),
+        ("q", "Q", 2, 1),
+        ("volume", "VOLUME", 3, 2),
+        ("position", "POSITION", 4, 3),
+    )
+)
+
+
+TOUCH_WAH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
+    *(
+        {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "range_validated": [0, 100],
+                "internal_slots_observed": [1],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_default": 50,
+                "physical_combined_capture": True,
+                "evidence": "docs/phases/WAH_TOUCH_WAH_MODE_PARAMETERS_PHASE46.md",
+                "monitor_integration_physical_validation": "approved",
+            },
+        }
+        for key, name, order, selector in (
+            ("sense", "SENSE", 1, 0),
+            ("range", "RANGE", 2, 1),
+            ("q", "Q", 3, 2),
+            ("mix", "MIX", 4, 3),
+        )
+    ),
+    {
+        "key": "mode",
+        "name": "MODE",
+        "display_order": 5,
+        "value_type": "enum",
+        "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "choices": [
+            {"value": 0, "label": "GUITAR"},
+            {"value": 1, "label": "BASS"},
+        ],
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": 4,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": 4,
+            "saved_dump_default": 0,
+            "physical_combined_capture": True,
+            "evidence": "docs/phases/WAH_TOUCH_WAH_MODE_PARAMETERS_PHASE46.md",
+            "monitor_integration_physical_validation": "approved",
+        },
+    },
+)
+
+
 FILTER_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple([{'key': 'step_1',
   'name': 'STEP 1',
   'display_order': 1,
@@ -1793,6 +2200,30 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "freq.tape_mod" and not parameters:
         parameters = list(TAPE_MOD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "wah.voks_wah" and not parameters:
+        parameters = list(VOKS_WAH_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "wah.cry_wah" and not parameters:
+        parameters = list(CRY_WAH_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "wah.rack_wah" and not parameters:
+        parameters = list(RACK_WAH_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "wah.bass_wah" and not parameters:
+        parameters = list(BASS_WAH_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "wah.touch_wah":
+        parameters = list(TOUCH_WAH_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "wah.auto_wah":
+        parameters = list(AUTO_WAH_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:

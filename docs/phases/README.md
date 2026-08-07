@@ -35,3 +35,9 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 39 | `FREQ_PITCH_S_RANGE_PARAMETERS_PHASE39.md` | PITCH S com RANGE enum e rejeição de campo residual do slot |
 | 40 | `FREQ_RING_MOD_SIGNED_PARAMETERS_PHASE40.md` | RING MOD com FINE assinado e rejeição de campo residual |
 | 41 | `FREQ_TAPE_MOD_PARAMETERS_PHASE41.md` | TAPE MOD com quatro controles 0–100 e conclusão do catálogo FREQ |
+| 42 | `WAH_VOKS_WAH_PARAMETERS_PHASE42.md` | VOKS WAH com quatro controles 0–100 e início da classe WAH |
+| 43 | `WAH_CRY_WAH_PARAMETERS_PHASE43.md` | CRY WAH com quatro controles 0–100 e resíduos 4–6 rejeitados |
+| 44 | `WAH_RACK_WAH_EQ_PARAMETERS_PHASE44.md` | RACK WAH com EQ booleano no seletor 4 |
+| 45 | `WAH_BASS_WAH_INFERRED_PARAMETERS_PHASE45.md` | BASS WAH inferido da família e aprovado fisicamente sem PCAPNG |
+| 46 | `WAH_TOUCH_WAH_MODE_PARAMETERS_PHASE46.md` | TOUCH WAH com MODE GUITAR/BASS no seletor 4 |
+| 47 | `WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md` | AUTO WAH com RATE decimal/ritmo condicionado por SYNC |

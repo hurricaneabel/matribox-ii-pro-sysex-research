@@ -3,11 +3,11 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 41 — FREQ / Tape Mod fisicamente aprovado
-> **Trabalho atual:** concluir publicação da pesquisa FREQ pelo usuário
-> **Próximo passo:** integrar `research/freq-parameters` na `main`
+> **Marco consolidado:** Fase 45 — WAH / BASS WAH aprovado sem PCAPNG
+> **Trabalho atual:** candidata da Fase 46 — WAH / TOUCH WAH implementada offline
+> **Próximo passo:** validar TOUCH WAH fisicamente no monitor `--live`
 > **Branch estável:** `main`
-> **Branch de pesquisa atual:** `research/freq-parameters`
+> **Branch de pesquisa atual:** `research/wah-parameters`
 
 ## 1. Como usar este documento
 
@@ -1669,3 +1669,144 @@ colisão. A Fase 41 e a pesquisa de parâmetros FREQ estão aprovadas.
 2. revisar, executar commit e publicar essa branch pelo usuário;
 3. integrar `research/freq-parameters` na `main` com merge explícito;
 4. publicar a `main` e confirmar que ambas apontam para o histórico esperado.
+
+## 29. Atualização atual — Fase 42 consolidada: WAH / VOKS WAH
+
+Três dumps de reabertura confirmaram RANGE 0, Q 1, VOLUME 2 e POSITION 3,
+todos em 0–100 e com default 50. Os conjuntos persistidos foram
+`50 / 50 / 50 / 50`, `21 / 43 / 65 / 87` e `22 / 44 / 66 / 88`. A identidade
+estrutural é `class_id 0x02`, `model_id 0x01`, seletor secundário `0x05`.
+
+A varredura ao vivo confirmou 0, 1, 50, 99 e 100 em cada controle. Os campos
+4–6 do dump contêm `100 / 100 / 1`, sem controles ou respostas ao vivo
+correspondentes, e por isso são ignorados. A fase eleva
+`catalog_version` para 19, com 23 efeitos parametrizados, 88 parâmetros e 244
+efeitos pendentes.
+
+A validação física final usou uma cadeia com doze efeitos. Duas instâncias nas
+posições 4 e 12 preservaram respectivamente `83 / 67 / 63 / 100` e
+`2 / 24 / 11 / 3`, coexistindo com múltiplos COMP1 sem colisões.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/wah-parameters`;
+2. revisar e publicar a Fase 42 pelo usuário quando desejado;
+3. manter a `main` como marco estável durante a pesquisa WAH;
+4. iniciar `WAH / Cry Wah` com o protocolo enxuto de descoberta.
+
+## 30. Atualização atual — Fase 43 consolidada: WAH / CRY WAH
+
+CRY WAH usa `class_id 0x02`, `model_id 0x08` e seletor secundário `0x05`.
+RANGE, Q, VOLUME e POSITION ocupam os seletores 0–3, usam 0–100 e default 50.
+Os dumps confirmaram `50 / 50 / 50 / 50`, `21 / 43 / 65 / 87` e
+`22 / 44 / 66 / 88`; a varredura ao vivo cobriu 0, 1, 50, 99 e 100.
+
+Os resíduos `100 / 100 / 1` nos seletores 4–6 são ignorados. A candidata eleva
+o catálogo à versão 20, com 24 efeitos parametrizados, 92 parâmetros e 243
+efeitos pendentes.
+
+A validação física final usou uma cadeia com doze efeitos. VOKS WAH na posição
+4 preservou `27 / 12 / 34 / 6`; CRY WAH na posição 12 preservou
+`72 / 81 / 85 / 89`. Os dois modelos e múltiplos COMP1 coexistiram sem
+colisões, confirmando resolução por identidade estrutural.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/wah-parameters`;
+2. revisar e publicar a Fase 43 pelo usuário quando desejado;
+3. manter a `main` estável durante a pesquisa WAH;
+4. iniciar `WAH / Rack Wah` com o protocolo enxuto.
+
+## 31. Atualização atual — Fase 44 consolidada: WAH / RACK WAH
+
+Uma captura combinada confirmou `class_id 0x02`, `model_id 0x0A` e seletor
+secundário `0x05`. RANGE, Q, VOLUME e POSITION usam 0–3; EQ usa o seletor 4 e
+booleanos 0/1. O dump preservou `21 / 43 / 65 / 87 / OFF`; os eventos ao vivo
+confirmaram `22 / 44 / 66 / 88` e `ON → OFF → ON`.
+
+Os seletores 5 e 6 contêm resíduos 100 e 1 e são ignorados. O catálogo passa à
+versão 21, com 25 efeitos parametrizados, 97 parâmetros e 242 pendentes.
+
+A validação física final usou uma cadeia com doze efeitos. RACK WAH na posição
+12 preservou `66 / 39 / 34 / 66 / OFF`, coexistindo com múltiplos COMP1. O EQ
+foi apresentado corretamente como desligado.
+
+### Próximo passo exato
+
+1. aplicar o pacote final em `research/wah-parameters`;
+2. revisar e publicar a Fase 44 pelo usuário quando desejado;
+3. manter a `main` estável durante a pesquisa WAH;
+4. iniciar `WAH / Bass Wah` com o protocolo enxuto.
+
+## 32. Atualização atual — Fase 45 consolidada: WAH / BASS WAH
+
+BASS WAH foi implementado sem nova captura, com base na repetição física do
+mapa RANGE 0, Q 1, VOLUME 2 e POSITION 3 em VOKS, CRY e RACK WAH. A identidade
+estrutural já conhecida é `class_id 0x02`, `model_id 0x07` e seletor secundário
+`0x05`.
+
+O efeito foi inicialmente testado como `partially_cataloged`. A validação física
+com duas instâncias confirmou o mapa sem PCAPNG: posição 4 com
+`23 / 28 / 0 / 23` e posição 12 com `84 / 88 / 84 / 81`. O efeito passa a
+`physically_validated`; o catálogo passa à versão 23, com 26 efeitos
+parametrizados, 101 parâmetros e 241 pendentes.
+
+### Próximo passo exato
+
+1. aplicar o pacote final em `research/wah-parameters`;
+2. revisar e publicar a Fase 45 pelo usuário quando desejado;
+3. manter a `main` estável durante a pesquisa WAH;
+4. iniciar `WAH / Touch Wah`.
+
+## 33. Atualização atual — Fase 46 consolidada: WAH / TOUCH WAH
+
+TOUCH WAH usa `class_id 0x02`, `model_id 0x0F` e seletor secundário `0x01`.
+SENSE, RANGE, Q e MIX ocupam 0–3. MODE ocupa 4, com GUITAR 0 e BASS 1. O dump
+preservou `21 / 43 / 65 / 87 / BASS`; eventos ao vivo confirmaram
+`22 / 44 / 66 / 88`, limites de SENSE e alternância do MODE.
+
+Os seletores 5–6 contêm resíduos `100 / 1`. O catálogo passa à versão 24, com
+27 efeitos parametrizados, 106 parâmetros e 240 pendentes.
+
+A validação no monitor confirmou hidratação e alterações em tempo real, MODE
+GUITAR/BASS e funcionamento em regiões distintas de uma cadeia cheia.
+
+### Próximo passo exato
+
+1. manter a Fase 46 em `research/wah-parameters`;
+2. implementar e validar o último efeito WAH;
+3. consolidar a documentação completa da classe;
+4. integrar na `main` somente após aprovação do usuário.
+
+## 34. Atualização atual — Fase 47 consolidada: WAH / AUTO WAH
+
+AUTO WAH usa `class_id 0x02`, `model_id 0x15` e seletor secundário `0x01`.
+DEPTH, RATE, VOLUME, LOW, Q, HIGH e SYNC ocupam os seletores 0–6. Os três dumps
+reabertos confirmaram o padrão e os conjuntos controlados com SYNC desligado e
+ligado.
+
+RATE usa `float32_nibbles_v1`: com SYNC OFF, aceita 0,1–10,0 Hz em passos de
+0,1; com SYNC ON, os valores 0–10 representam de 1/1 até 1/16. O dump preservou
+3,7 Hz sem perda e 1/8D como wire value 8. O mecanismo condicionado já usado
+por FREQ / Filter foi reutilizado, incluindo hidratação do controlador antes do
+dependente e invalidação do RATE quando SYNC muda.
+
+O catálogo passa à versão 25, com 28 efeitos parametrizados, 113 parâmetros e
+239 pendentes. A suíte offline cobre catálogo, codec completo, hidratação dos
+dois domínios e apresentação com unidade Hz.
+
+O primeiro teste físico encontrou descartes esporádicos em RATE decimal por
+tolerância excessivamente rígida ao passo 0,1. A correção normaliza o ruído de
+float32 para o décimo mais próximo. Todos os valores de 0,1 a 10,0 estão
+cobertos por regressão, enquanto 4,25 permanece inválido.
+
+A validação física final confirmou os dois domínios, alterações em tempo real e
+uma instância no fim da cadeia com `58 / 8,7 Hz / 100 / 54 / 70 / 60 / OFF`.
+A classe WAH está encerrada.
+
+### Próximo passo exato
+
+1. aplicar o pacote final em `research/wah-parameters`;
+2. executar a suíte offline completa;
+3. criar os commits e publicar a branch pelo usuário;
+4. integrar `research/wah-parameters` na `main` com merge explícito e publicar.
