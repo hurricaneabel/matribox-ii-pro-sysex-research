@@ -123,6 +123,28 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
             ),
         )
 
+    def test_pitch_hydrates_five_consecutive_values_and_signed_low_pitch(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 3,
+                (0, 1): -9,
+                (0, 2): 21,
+                (0, 3): 43,
+                (0, 4): 65,
+            }),
+            make_chain((0, "freq.pitch")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (
+                ("high_pitch", 3),
+                ("low_pitch", -9),
+                ("wet", 21),
+                ("dry", 43),
+                ("range", 65),
+            ),
+        )
+
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(
             make_dump({(0, 0): 31.5, (0, 1): 67}),

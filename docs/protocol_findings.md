@@ -1623,3 +1623,23 @@ A versão refinada foi aprovada fisicamente adicionando, substituindo e
 reordenando efeitos, alterando classes e movimentando parâmetros em tempo real.
 FILTER, COMP1 e Dual Melody coexistiram com valores hidratados e atualizações
 independentes. A Fase 36 encerrou com 443 testes offline aprovados.
+
+## Fase 37 — PITCH no dump salvo
+
+Quatro capturas de reabertura confirmaram `FREQ / Pitch` como `class_id 0x01`,
+`model_id 0x24`, com cinco valores `float32` consecutivos no bloco do slot:
+
+```text
+selector 0 = HI PITCH  (0..12, default 12)
+selector 1 = LOW PITCH (-12..0, default 0)
+selector 2 = WET       (0..100, default 50)
+selector 3 = DRY       (0..100, default 50)
+selector 4 = RANGE     (0..100, default 50)
+```
+
+LOW PITCH persiste valores negativos nativos, incluindo `-12`, sem conversão
+por índice. Os dumps completos possuem 1.211 bytes e obedecem à fórmula da Fase
+36. Não existe lacuna de seletor nem domínio condicional. A evidência inicial
+foi obtida do estado salvo `0x10`; a validação posterior no monitor confirmou
+também as alterações `0x1C`, duas instâncias simultâneas e reidratação após
+adição de efeitos.

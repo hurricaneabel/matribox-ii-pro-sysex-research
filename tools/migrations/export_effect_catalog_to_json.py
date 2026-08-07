@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 13
+CATALOG_VERSION = 14
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -1185,6 +1185,60 @@ DUAL_MELODY_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
 )
 
 
+PITCH_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple(
+    {
+        "key": key,
+        "name": name,
+        "display_order": display_order,
+        "value_type": "integer",
+        "range": {"minimum": minimum, "maximum": maximum, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "upper_float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {
+                "parameter_selector": selector,
+                "parameter_marker": 1,
+                "parameter_type": 1,
+            },
+        },
+        "validation": {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "range_validated": [minimum, maximum],
+            "internal_slots_observed": [1],
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "multiple_parameters": True,
+            "physical_saved_dump_count": 4,
+            "saved_dump_defaults": default,
+            "evidence": "docs/phases/FREQ_PITCH_SAVED_PARAMETERS_PHASE37.md",
+            "monitor_integration_physical_validation": "pending",
+            **(
+                {
+                    "signed_numeric_encoding": "native_float32_negative",
+                    "signed_values_physically_observed": [-12, -9, -8, 0],
+                }
+                if key == "low_pitch"
+                else {}
+            ),
+        },
+    }
+    for display_order, (key, name, selector, minimum, maximum, default) in enumerate(
+        (
+            ("high_pitch", "HI PITCH", 0, 0, 12, 12),
+            ("low_pitch", "LOW PITCH", 1, -12, 0, 0),
+            ("wet", "WET", 2, 0, 100, 50),
+            ("dry", "DRY", 3, 0, 100, 50),
+            ("range", "RANGE", 4, 0, 100, 50),
+        ),
+        start=1,
+    )
+)
+
+
 FILTER_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = tuple([{'key': 'step_1',
   'name': 'STEP 1',
   'display_order': 1,
@@ -1408,6 +1462,10 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "freq.dual_melody" and not parameters:
         parameters = list(DUAL_MELODY_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "freq.pitch" and not parameters:
+        parameters = list(PITCH_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:

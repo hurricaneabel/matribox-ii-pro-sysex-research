@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 13)
+        self.assertEqual(self.catalog.catalog_version, 14)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -487,9 +487,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "freq.filter",
                 "freq.octaver",
                 "freq.dual_melody",
+                "freq.pitch",
             }
         ]
-        self.assertEqual(len(pending), 250)
+        self.assertEqual(len(pending), 249)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -571,6 +572,37 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             [-24, -23, -14, -13, -12, -1],
         )
 
+    def test_pitch_has_five_consecutive_saved_parameter_selectors(self) -> None:
+        effect = self.catalog.effect_by_key("freq.pitch")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("high_pitch", "low_pitch", "wet", "dry", "range"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3, 4),
+        )
+        self.assertEqual(
+            tuple(
+                (parameter.minimum, parameter.maximum, parameter.step)
+                for parameter in effect.parameters
+            ),
+            ((0, 12, 1), (-12, 0, 1), (0, 100, 1), (0, 100, 1), (0, 100, 1)),
+        )
+        self.assertEqual(
+            tuple(parameter.validation["saved_dump_defaults"] for parameter in effect.parameters),
+            (12, 0, 50, 50, 50),
+        )
+        self.assertEqual(
+            effect.parameters[1].validation["signed_numeric_encoding"],
+            "native_float32_negative",
+        )
+
     def test_filter_has_conditional_rate_domain(self) -> None:
         effect = self.catalog.effect_by_key("freq.filter")
         self.assertEqual(effect.parameter_catalog_status, "physically_validated")
@@ -634,6 +666,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_filter = exported.effect_by_key("freq.filter")
             exported_octaver = exported.effect_by_key("freq.octaver")
             exported_dual_melody = exported.effect_by_key("freq.dual_melody")
+            exported_pitch = exported.effect_by_key("freq.pitch")
             exported_mboost = exported.effect_by_key("dyn.m_boost")
             exported_comp1 = exported.effect_by_key("dyn.comp1")
             exported_comp2 = exported.effect_by_key("dyn.comp2")
@@ -658,6 +691,10 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_dual_melody.parameters,
                 self.catalog.effect_by_key("freq.dual_melody").parameters,
+            )
+            self.assertEqual(
+                exported_pitch.parameters,
+                self.catalog.effect_by_key("freq.pitch").parameters,
             )
             self.assertEqual(
                 exported_mboost.parameters,

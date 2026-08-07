@@ -3,11 +3,11 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 36 — hidratação inicial e reidratação estrutural fisicamente aprovadas
-> **Trabalho atual:** consolidar e publicar a Fase 36 na `main`
-> **Próximo passo:** iniciar a próxima pesquisa de parâmetros FREQ ou avançar para a arquitetura do aplicativo controlador
+> **Marco consolidado:** Fase 37 — FREQ / Pitch e hidratação fisicamente aprovados
+> **Trabalho atual:** consolidar e publicar a Fase 37 pelo usuário
+> **Próximo passo:** iniciar FREQ / Harmony D ou outro efeito escolhido
 > **Branch estável:** `main`
-> **Branch de pesquisa atual:** nenhuma; a candidata está sendo consolidada diretamente na `main`
+> **Branch de pesquisa atual:** `research/freq-parameters`
 
 ## 1. Como usar este documento
 
@@ -93,8 +93,8 @@ O estado atual já permite:
   separados por slot interno, efeito e parâmetro;
 - hidratar valores persistidos dos parâmetros catalogados ao carregar o preset
   e após adicionar, substituir ou reordenar efeitos;
-- carregar as 16 classes, 267 efeitos e 61 parâmetros confirmados por
-  capturas em quatorze efeitos DYN e três efeitos FREQ a partir de um catálogo
+- carregar as 16 classes, 267 efeitos e 66 parâmetros confirmados por
+  capturas em quatorze efeitos DYN e quatro efeitos FREQ a partir de um catálogo
   JSON versionado e independente de Python/Windows;
 - representar parâmetros com domínio condicionado, como RATE do FILTER, sem
   fabricar mensagens USB para defaults implícitos do dispositivo.
@@ -416,8 +416,9 @@ tests/fixtures/effect_catalog/legacy_catalog_snapshot.json
 
 M-BOOST, COMP1, COMP2, COMP3, E-BOOST, AC-BOOST, BB-BOOST, RC-BOOST,
 FAT BOOST, AC WOODY, AC SIM, GATE 1, GATE 2 e GATE 3 são os quatorze efeitos
-DYN preenchidos. FILTER, OCTAVER e DUAL MELODY são os três primeiros efeitos FREQ parametrizados. Os outros 250
-efeitos permanecem explicitamente `pending`, sem parâmetros presumidos.
+DYN preenchidos. FILTER, OCTAVER, DUAL MELODY e PITCH são os quatro primeiros
+efeitos FREQ parametrizados. Os outros 249 efeitos permanecem explicitamente
+`pending`, sem parâmetros presumidos.
 
 ### 6.6 Motor genérico de parâmetros — Fase 23B
 
@@ -1545,9 +1546,26 @@ fisicamente no painel `--live`.
 
 ### Próximo passo exato
 
-1. confirmar a publicação do commit da Fase 36 na `main`;
-2. manter `main` como base estável fisicamente aprovada;
-3. escolher entre iniciar o próximo efeito FREQ pendente ou começar a camada de
-   aplicação multiplataforma sobre o protocolo já confirmado;
-4. preservar o método de capturas controladas e validação física antes de cada
-   nova consolidação.
+1. revisar o pacote final da Fase 37;
+2. executar commit e push em `research/freq-parameters` pelo usuário;
+3. manter `main` como marco estável até a consolidação planejada da pesquisa;
+4. seguir para `FREQ / Harmony D` ou outro efeito escolhido.
+
+## 24. Atualização atual — candidata da Fase 37: FREQ / Pitch
+
+Quatro capturas de reabertura do editor oficial confirmaram o Pitch no slot
+interno 0 como `class_id = 0x01`, `model_id = 0x24`. O bloco salvo possui cinco
+seletores consecutivos: HI PITCH 0, LOW PITCH 1, WET 2, DRY 3 e RANGE 4.
+
+As faixas são `0–12`, `-12–0` e três vezes `0–100`. Os defaults implícitos são
+`12 / 0 / 50 / 50 / 50`. LOW PITCH usa `float32` negativo nativo, confirmado
+por `-12`, `-9` e `-8`. A candidata incrementa `catalog_version` para 14,
+totaliza 18 efeitos parametrizados, 66 parâmetros catalogados e 249 efeitos
+pendentes.
+
+A hidratação não ganhou código específico: o leitor genérico da Fase 36 resolve
+os valores pelo seletor cadastrado. A validação física foi aprovada com duas
+instâncias de Pitch simultâneas, Filter e COMP1 na mesma cadeia. Os valores
+iniciais foram hidratados corretamente; efeitos adicionados receberam seus
+defaults; e os cinco controles acompanharam alterações em tempo real sem
+colisão entre instâncias. Nenhuma escrita de parâmetro foi implementada.
