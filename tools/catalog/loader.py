@@ -262,7 +262,20 @@ def _parse_parameter(document: Mapping[str, Any], path: Path) -> ParameterDefini
             kind = presentation.get("kind")
             normalized_presentation: dict[str, Any] = {"kind": kind}
             if kind == "numeric":
-                pass
+                unit = presentation.get("unit")
+                if unit is not None:
+                    if not isinstance(unit, str) or not unit.strip():
+                        raise _fail(path, "presentation numeric unit deve ser texto não vazio")
+                    normalized_presentation["unit"] = unit
+                decimals = presentation.get("decimals")
+                if decimals is not None:
+                    if (
+                        isinstance(decimals, bool)
+                        or not isinstance(decimals, int)
+                        or not 0 <= decimals <= 6
+                    ):
+                        raise _fail(path, "presentation numeric decimals deve estar entre 0 e 6")
+                    normalized_presentation["decimals"] = decimals
             elif kind == "enum":
                 raw_domain_choices = presentation.get("choices")
                 if not isinstance(raw_domain_choices, list) or not raw_domain_choices:

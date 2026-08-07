@@ -83,14 +83,27 @@ def _validate_numeric_value(
         )
 
     if parameter.step is not None and parameter.minimum is not None:
-        steps = (
-            float(comparable_value) - float(parameter.minimum)
-        ) / float(parameter.step)
-        if abs(steps - round(steps)) > tolerance:
+        minimum = float(parameter.minimum)
+        step = float(parameter.step)
+        steps = (float(comparable_value) - minimum) / step
+        nearest_step = round(steps)
+        snapped_value = minimum + nearest_step * step
+        # Valores decimais transmitidos como float32 carregam o ruído binário
+        # normal do formato (por exemplo, 4.2 chega como 4.199999809265137).
+        # Compare no domínio do valor, com tolerância relativa apropriada ao
+        # float32, em vez de exigir que a divisão pelo passo seja quase exata.
+        step_tolerance = max(
+            tolerance,
+            abs(float(comparable_value)) * 1e-6,
+            abs(step) * 1e-5,
+        )
+        if abs(float(comparable_value) - snapped_value) > step_tolerance:
             raise ParameterCodecError(
                 f"{parameter.name} não respeita o passo {parameter.step}: "
                 f"{comparable_value}."
             )
+        if parameter.value_type == "number":
+            normalized = snapped_value
 
     return normalized
 

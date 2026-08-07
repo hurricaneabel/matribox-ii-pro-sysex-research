@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 18)
+        self.assertEqual(self.catalog.catalog_version, 25)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -492,9 +492,15 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "freq.pitch_s",
                 "freq.ring_mod",
                 "freq.tape_mod",
+                "wah.voks_wah",
+                "wah.cry_wah",
+                "wah.rack_wah",
+                "wah.bass_wah",
+                "wah.touch_wah",
+                "wah.auto_wah",
             }
         ]
-        self.assertEqual(len(pending), 245)
+        self.assertEqual(len(pending), 239)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -715,6 +721,155 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             )
             self.assertEqual(parameter.validation["saved_dump_default"], 50)
 
+    def test_voks_wah_has_four_validated_numeric_parameters(self) -> None:
+        effect = self.catalog.effect_by_key("wah.voks_wah")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(effect.model_id, 0x01)
+        self.assertEqual(effect.secondary_selector, 0x05)
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("range", "q", "volume", "position"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3),
+        )
+        for parameter in effect.parameters:
+            self.assertEqual(
+                (parameter.minimum, parameter.maximum, parameter.step),
+                (0, 100, 1),
+            )
+            self.assertEqual(parameter.validation["saved_dump_default"], 50)
+
+    def test_cry_wah_has_four_validated_numeric_parameters(self) -> None:
+        effect = self.catalog.effect_by_key("wah.cry_wah")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual(effect.model_id, 0x08)
+        self.assertEqual(effect.secondary_selector, 0x05)
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("range", "q", "volume", "position"),
+        )
+        self.assertEqual(
+            tuple(
+                dict(parameter.message_match)["parameter_selector"]
+                for parameter in effect.parameters
+            ),
+            (0, 1, 2, 3),
+        )
+        for parameter in effect.parameters:
+            self.assertEqual(
+                (parameter.minimum, parameter.maximum, parameter.step),
+                (0, 100, 1),
+            )
+            self.assertEqual(parameter.validation["saved_dump_default"], 50)
+
+    def test_rack_wah_has_four_numeric_parameters_and_boolean_eq(self) -> None:
+        effect = self.catalog.effect_by_key("wah.rack_wah")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual((effect.model_id, effect.secondary_selector), (0x0A, 0x05))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("range", "q", "volume", "position", "eq"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1, 2, 3, 4),
+        )
+        self.assertEqual(effect.parameters[4].value_type, "boolean")
+        self.assertEqual(effect.parameters[4].validation["saved_dump_default"], 1)
+        self.assertEqual(
+            dict(effect.parameters[4].validation["boolean_encoding"]),
+            {"false": 0, "true": 1},
+        )
+
+    def test_bass_wah_has_four_physically_validated_parameters(self) -> None:
+        effect = self.catalog.effect_by_key("wah.bass_wah")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual((effect.model_id, effect.secondary_selector), (0x07, 0x05))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("range", "q", "volume", "position"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1, 2, 3),
+        )
+        for parameter in effect.parameters:
+            self.assertTrue(parameter.validation["physical"])
+            self.assertEqual(
+                parameter.identification_status,
+                "validated_with_chain_effect_context",
+            )
+            self.assertTrue(
+                parameter.validation["physical_validation_without_pcapng"]
+            )
+
+    def test_touch_wah_has_four_numeric_parameters_and_named_mode(self) -> None:
+        effect = self.catalog.effect_by_key("wah.touch_wah")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual((effect.model_id, effect.secondary_selector), (0x0F, 0x01))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("sense", "range", "q", "mix", "mode"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1, 2, 3, 4),
+        )
+        mode = effect.parameters[4]
+        self.assertEqual(mode.value_type, "enum")
+        self.assertEqual(tuple(mode.choices.values()), ("GUITAR", "BASS"))
+        self.assertEqual(mode.validation["saved_dump_default"], 0)
+        for parameter in effect.parameters:
+            self.assertEqual(
+                parameter.validation["monitor_integration_physical_validation"],
+                "approved",
+            )
+
+    def test_auto_wah_has_conditional_rate_domain(self) -> None:
+        effect = self.catalog.effect_by_key("wah.auto_wah")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual(effect.capabilities, ("parameters",))
+        self.assertEqual((effect.model_id, effect.secondary_selector), (0x15, 0x01))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("depth", "rate", "volume", "low", "q", "high", "sync"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1, 2, 3, 4, 5, 6),
+        )
+        rate = effect.parameters[1]
+        self.assertEqual(rate.value_type, "number")
+        self.assertEqual((rate.minimum, rate.maximum, rate.step), (0, 10, 0.1))
+        self.assertEqual(rate.value_codec, "float32_nibbles_v1")
+        states = rate.value_domain["states"]
+        self.assertEqual(states[0]["default_value"], 0.5)
+        self.assertEqual(
+            states[0]["presentation"],
+            {"kind": "numeric", "unit": "Hz", "decimals": 1},
+        )
+        self.assertEqual(states[1]["default_value"], 4)
+        self.assertEqual(
+            tuple(choice["label"] for choice in states[1]["presentation"]["choices"]),
+            ("1/1", "1/2", "1/2D", "1/2T", "1/4", "1/4D", "1/4T", "1/8", "1/8D", "1/8T", "1/16"),
+        )
+        self.assertEqual(effect.parameters[6].value_type, "boolean")
+        self.assertEqual(effect.parameters[6].validation["saved_dump_default"], 1)
+        for parameter in effect.parameters:
+            self.assertEqual(
+                parameter.validation["monitor_integration_physical_validation"],
+                "approved",
+            )
+
     def test_filter_has_conditional_rate_domain(self) -> None:
         effect = self.catalog.effect_by_key("freq.filter")
         self.assertEqual(effect.parameter_catalog_status, "physically_validated")
@@ -783,6 +938,12 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_pitch_s = exported.effect_by_key("freq.pitch_s")
             exported_ring_mod = exported.effect_by_key("freq.ring_mod")
             exported_tape_mod = exported.effect_by_key("freq.tape_mod")
+            exported_voks_wah = exported.effect_by_key("wah.voks_wah")
+            exported_cry_wah = exported.effect_by_key("wah.cry_wah")
+            exported_rack_wah = exported.effect_by_key("wah.rack_wah")
+            exported_bass_wah = exported.effect_by_key("wah.bass_wah")
+            exported_touch_wah = exported.effect_by_key("wah.touch_wah")
+            exported_auto_wah = exported.effect_by_key("wah.auto_wah")
             exported_mboost = exported.effect_by_key("dyn.m_boost")
             exported_comp1 = exported.effect_by_key("dyn.comp1")
             exported_comp2 = exported.effect_by_key("dyn.comp2")
@@ -827,6 +988,30 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_tape_mod.parameters,
                 self.catalog.effect_by_key("freq.tape_mod").parameters,
+            )
+            self.assertEqual(
+                exported_voks_wah.parameters,
+                self.catalog.effect_by_key("wah.voks_wah").parameters,
+            )
+            self.assertEqual(
+                exported_cry_wah.parameters,
+                self.catalog.effect_by_key("wah.cry_wah").parameters,
+            )
+            self.assertEqual(
+                exported_rack_wah.parameters,
+                self.catalog.effect_by_key("wah.rack_wah").parameters,
+            )
+            self.assertEqual(
+                exported_bass_wah.parameters,
+                self.catalog.effect_by_key("wah.bass_wah").parameters,
+            )
+            self.assertEqual(
+                exported_touch_wah.parameters,
+                self.catalog.effect_by_key("wah.touch_wah").parameters,
+            )
+            self.assertEqual(
+                exported_auto_wah.parameters,
+                self.catalog.effect_by_key("wah.auto_wah").parameters,
             )
             self.assertEqual(
                 exported_mboost.parameters,

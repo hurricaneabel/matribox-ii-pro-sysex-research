@@ -322,9 +322,17 @@ def _format_domain_value(
                                 return label
             elif kind == "numeric":
                 value = resolved.value
-                if isinstance(value, float) and value.is_integer():
-                    return str(int(value))
-                return str(value)
+                decimals = presentation.get("decimals")
+                if isinstance(decimals, int) and not isinstance(decimals, bool):
+                    value_text = f"{float(value):.{decimals}f}"
+                else:
+                    value_text = (
+                        str(int(value))
+                        if isinstance(value, float) and value.is_integer()
+                        else str(value)
+                    )
+                unit = presentation.get("unit")
+                return f"{value_text} {unit}" if isinstance(unit, str) else value_text
     if event is not None:
         return event.display_value
     value = resolved.value
