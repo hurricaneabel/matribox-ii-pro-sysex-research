@@ -75,7 +75,30 @@ Etiqueta: -
 After startup, preset changes made on the physical pedal must update the
 terminal without another current-preset query.
 
-## Commit boundary
+## Main monitor output modes after Phase 35
 
-Do not commit this live adapter until the cold-start validation succeeds from
-a freshly powered pedal.
+The consolidated command keeps the historical append-only behavior by default:
+
+```powershell
+python -m tools.commands.matribox_monitor
+```
+
+A physically validated dashboard mode is also available:
+
+```powershell
+python -m tools.commands.matribox_monitor --live
+```
+
+`--live` uses the terminal alternate screen, redraws the complete frame, hides
+progress messages that would corrupt the dashboard, and restores the normal
+terminal when interrupted. It does not change any MIDI/SysEx behavior.
+
+A compact event log can be written independently of the screen mode:
+
+```powershell
+python -m tools.commands.matribox_monitor --live --log data/dumps/monitor_live.txt
+```
+
+The final implementation was physically approved on Windows Terminal/PowerShell
+after correcting stale characters from shorter frames. The complete suite has
+428 passing tests at this milestone.

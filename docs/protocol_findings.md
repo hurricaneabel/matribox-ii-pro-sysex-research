@@ -1576,3 +1576,25 @@ MELODY em posições diferentes da cadeia mantiveram estados independentes.
 A suíte final permaneceu íntegra com 418 testes aprovados, além de `compileall`
 e `git diff --check`. O catálogo encerra a fase com 17 efeitos parametrizados,
 61 parâmetros catalogados, 250 efeitos pendentes e `catalog_version = 13`.
+
+## Melhoria pós-Fase 35 — modos de saída do monitor (sem nova descoberta SysEx)
+
+O monitor principal passou a oferecer `--live` e `--log`, mas essa mudança é
+apenas de apresentação e persistência local. Ela não acrescenta nenhum comando
+SysEx e não altera nenhuma conclusão de protocolo registrada acima.
+
+O modo padrão permanece append-only. `--live` utiliza um buffer alternativo do
+terminal e redesenha o quadro completo após cada atualização; mensagens de
+progresso que poderiam interferir no painel são silenciadas somente nesse modo.
+`--log ARQUIVO` registra eventos compactos já decodificados pelo motor existente.
+
+A validação física confirmou que o quadro único acompanha parâmetros e bypass
+sem resíduos da renderização anterior. A suíte passou de 418 para 428 testes.
+
+Permanece uma fronteira de protocolo ainda não resolvida: ao carregar um preset,
+os valores salvos dos parâmetros não são hidratados pelo estado inicial. O
+monitor conhece quais parâmetros pertencem ao efeito pelo catálogo, mas exibe
+`aguardando alteração` até receber o primeiro evento `0x1C` daquele parâmetro.
+Uma pesquisa futura deve verificar se esses valores estão presentes no dump
+`0x10` descomprimido de 1.211 bytes antes de considerar qualquer nova consulta
+ou comando de escrita.

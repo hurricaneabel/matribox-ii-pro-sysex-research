@@ -28,3 +28,4 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 33 | `FREQ_FILTER_PARAMETERS_PHASE33.md` | FILTER com RATE condicionado por SYNC e defaults implícitos derivados |
 | 34 | `FREQ_OCTAVER_PARAMETERS_PHASE34.md` | OCTAVER com LOW OCT/HIGH OCT/DRY e validação dos slots 1 e 2 |
 | 35 | `FREQ_DUAL_MELODY_SIGNED_PARAMETERS_PHASE35.md` | DUAL MELODY com primeiro intervalo assinado nativo em float32 |
+| 35A | `MONITOR_LIVE_MODE_PHASE35A.md` | painel `--live` em buffer alternativo e `--log` compacto, sem alterar o protocolo |

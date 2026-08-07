@@ -35,6 +35,30 @@ estado ligado/desligado e valores de parâmetros já catalogados. A leitura da
 cadeia é não destrutiva e possui reenvios automáticos para a primeira
 comunicação após ligar a pedaleira.
 
+Após a Fase 35, o mesmo comando ganhou dois modos de apresentação sem alterar
+o protocolo MIDI. O modo tradicional permanece append-only e é o recomendado
+para pesquisa e preservação de evidências:
+
+```powershell
+python -m tools.commands.matribox_monitor
+```
+
+Para uso cotidiano, `--live` abre um buffer alternativo do terminal e redesenha
+o mesmo painel a cada atualização, sem acumular um novo bloco para cada evento:
+
+```powershell
+python -m tools.commands.matribox_monitor --live
+```
+
+O modo painel pode preservar simultaneamente um histórico compacto das mudanças:
+
+```powershell
+python -m tools.commands.matribox_monitor --live --log data/dumps/monitor_live.txt
+```
+
+O arquivo de log registra eventos como mudanças de parâmetro e bypass, enquanto
+a tela permanece limpa. `data/dumps/` continua fora do Git.
+
 O primeiro parâmetro interno concluído é o `GAIN` do `DYN / M-BOOST`. O monitor
 mostra `GAIN: aguardando alteração` até receber o primeiro evento ao vivo e,
 depois, atualiza o valor da instância correta. O validador histórico permanece:

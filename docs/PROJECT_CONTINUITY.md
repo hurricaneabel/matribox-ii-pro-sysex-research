@@ -3,9 +3,9 @@
 > Documento oficial de retomada entre conversas.
 >
 > **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 35 — FREQ / DUAL MELODY fisicamente aprovada
-> **Trabalho atual:** Fase 35 concluída; branch de pesquisa pronta para a próxima investigação FREQ
-> **Próximo passo:** consolidar este estado em `research/freq-parameters`, promover por fast-forward à `main` e iniciar a Fase 36 com o próximo efeito FREQ
+> **Marco consolidado:** Fase 35 — FREQ / DUAL MELODY fisicamente aprovada e promovida; modo `--live` do monitor fisicamente aprovado
+> **Trabalho atual:** consolidar a melhoria pós-Fase 35 do monitor (`--live` e `--log`) sem alterar o protocolo SysEx
+> **Próximo passo:** commitar a melhoria do monitor em `research/freq-parameters`, promover por fast-forward à `main` e depois investigar a hidratação inicial dos parâmetros salvos ou iniciar a Fase 36
 > **Branch estável:** `main`
 > **Branch de pesquisa atual:** `research/freq-parameters`
 
@@ -150,6 +150,39 @@ Depois do primeiro evento `0x1C`, o valor real substitui o texto de espera.
   necessário encerrar e executar o monitor uma segunda vez.
 - O monitor é somente leitura durante a consulta da cadeia. Ele não move,
   substitui, liga/desliga nem salva efeitos.
+
+### Modos de saída do monitor
+
+O comportamento histórico continua sendo o padrão e permanece append-only:
+
+```powershell
+python -m tools.commands.matribox_monitor
+```
+
+Esse modo não apaga a saída anterior e continua recomendado para pesquisa,
+validação física e evidências que precisam ser compartilhadas.
+
+O modo painel, validado fisicamente após a Fase 35, usa o buffer alternativo do
+terminal, oculta o cursor durante a execução e redesenha o quadro inteiro após
+cada mudança:
+
+```powershell
+python -m tools.commands.matribox_monitor --live
+```
+
+A saída de progresso da inicialização e do dump é silenciada somente nesse modo
+para impedir escrita concorrente sobre o painel. Ao encerrar com `Ctrl+C`, o
+cursor e o buffer normal do terminal são restaurados.
+
+Opcionalmente, um log compacto pode ser mantido enquanto o painel permanece
+limpo:
+
+```powershell
+python -m tools.commands.matribox_monitor --live --log data/dumps/monitor_live.txt
+```
+
+O `--log` não altera a comunicação MIDI; apenas persiste eventos já observados
+pelo monitor. O diretório `data/dumps/` permanece ignorado pelo Git.
 
 ### Validadores de parâmetro
 
@@ -1454,3 +1487,63 @@ evidência para uma pesquisa futura.
 5. promover o mesmo commit por `git merge --ff-only` para `main` e enviar;
 6. voltar para `research/freq-parameters` e confirmar árvore limpa;
 7. iniciar a Fase 36 com o próximo efeito da classe FREQ.
+
+## 23. Melhoria pós-Fase 35 — painel `--live` e log compacto
+
+Depois de consolidar a Fase 35, o monitor recebeu uma melhoria exclusivamente
+de apresentação. Nenhum comando SysEx, parser estrutural, codec, catálogo ou
+regra de resolução de parâmetros foi alterado.
+
+O modo histórico continua sendo o padrão e imprime cada snapshot em sequência.
+O novo `--live` utiliza buffer alternativo ANSI, restaura o terminal ao sair e
+redesenha a tela inteira a cada atualização. A primeira candidata ainda deixava
+quadros no histórico do terminal; a segunda passou a usar buffer alternativo;
+a terceira, fisicamente aprovada, passou também a limpar cada quadro antes do
+redesenho e a silenciar mensagens de progresso que poderiam escrever por cima
+do painel.
+
+O novo `--log ARQUIVO` preserva um histórico compacto independente da forma de
+apresentação. Em combinação com `--live`, permite uso cotidiano com tela limpa
+e evidência textual das alterações. Exemplos esperados:
+
+```text
+04:15:20 slot=9 Dual Melody LOW PITCH -12
+04:15:21 slot=9 Dual Melody LOW PITCH -11
+04:15:24 slot=9 Dual Melody LOW PITCH 0
+```
+
+A validação física confirmou que o painel final permanece em uma única tela e
+atualiza valores sem resíduos de caracteres do quadro anterior. O modo normal
+permanece disponível sem mudança de comportamento.
+
+Validação offline da candidata aprovada:
+
+```text
+Ran 428 tests
+OK
+compileall: aprovado
+git diff --check: aprovado
+```
+
+Arquivos funcionais da melhoria:
+
+```text
+tools/commands/matribox_monitor.py
+tests/test_matribox_monitor_output.py
+```
+
+### Limitação conhecida preservada
+
+Os parâmetros catalogados ainda começam como `aguardando alteração` ao carregar
+um preset. O dump estrutural `0x10` é usado atualmente para cadeia e bypass,
+mas os valores persistidos dos parâmetros ainda não foram localizados dentro do
+payload de 1.211 bytes. Eventos `0x1C` continuam sendo a fonte dos valores em
+tempo real após o usuário alterar um controle.
+
+### Próximo passo exato
+
+1. consolidar esta melhoria em `research/freq-parameters`;
+2. promover o mesmo commit por fast-forward à `main`;
+3. voltar à branch de pesquisa e confirmar árvore limpa;
+4. antes do próximo efeito, decidir entre investigar de forma não destrutiva a
+   hidratação dos valores salvos a partir do dump `0x10` ou iniciar a Fase 36.
