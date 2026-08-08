@@ -761,6 +761,10 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 As classes de parâmetros **DYN, FREQ, WAH, DRIVE, AMP, CAB, IR e EQ estão concluídas**. A Fase 73 encerra os cinco EQs em `physically_validated`. O catálogo permanece na versão 54, com **201 efeitos fisicamente validados**, **827 parâmetros catalogados** e **66 efeitos ainda sem parâmetros** em outras classes.
 
+A Fase 74 conclui fisicamente a primeira família MOD: **11/11 modelos `physically_validated` e 38 parâmetros**, ancorados no E-CHORUS e confirmados no monitor ao vivo. O estado consolidado é `catalog_version = 55`, **212 `physically_validated`**, **0 `partially_cataloged`**, **55 `pending`** e **865 parâmetros catalogados**.
+
+A Fase 75 abre como candidatos **FLANGER, FLANGER N e BASS JET**, inferindo o layout `DEPTH / RATE / PRE DELAY / FEEDBACK / SYNC` e reaproveitando o RATE/SYNC já validado. O estado candidato é `catalog_version = 56`, **212 `physically_validated`**, **3 `partially_cataloged`**, **52 `pending`** e **880 parâmetros catalogados**. Se algum dos três divergir no teste ao vivo, somente esse modelo exigirá PCAPNG específico.
+
 GUITAR EQ 1 provou selectors 0..4 para bandas `-50..50` e selector 5 para VOLUME; CALIF EQ provou somente selectors 0..4 e rejeita o residual salvo `selector 5 = 50`. O teste final `--live --log` confirmou valores exatos nos cinco modelos, incluindo extremos `-50/+50` e volumes nos quatro EQs que os expõem.
 
 ## Continuidade entre chats
@@ -785,3 +789,12 @@ docs/protocol_findings.md
 ```
 
 Esse arquivo é a fonte técnica principal da pesquisa.
+
+A Fase 75 foi promovida após validação física de **FLANGER, FLANGER N e BASS JET**: os três modelos estão `physically_validated` com 15 parâmetros confirmados. A Fase 76 também foi promovida após validação física de **TREM JET e PAN PHASER**: os dois RATE/SYNC independentes e todos os controles corresponderam à pedaleira. O estado consolidado é `catalog_version = 57`, **217 `physically_validated`**, **0 `partially_cataloged`**, **50 `pending`** e **893 parâmetros catalogados**.
+
+A Fase 77 foi promovida após validação física de **PHASER ST, U-VIBE e BIAS TREM** no monitor ao vivo. Os enums `WARM/SHARP` e `CHORUS/VIBRATO`, os controles RATE/SYNC e o parâmetro BIAS corresponderam integralmente à pedaleira. O estado consolidado é `catalog_version = 58`, **220 `physically_validated`**, **0 `partially_cataloged`**, **47 `pending`** e **906 parâmetros catalogados**.
+
+
+### Estado de pesquisa — Fase 78 candidata
+
+A classe MOD está **concluída em 23/23 modelos fisicamente validados**. A Fase 78 fechou D-CHORUS, M-CHORUS, DETUNE e LOFI BIT; D-CHORUS exigiu apenas a correção wire `0..3` → UI MODE `1..4`. Estado global: `catalog_version = 59`, **224 efeitos fisicamente validados**, **0 candidatos**, **43 pending** em classes posteriores e **922 parâmetros catalogados**. Consolidação: `docs/phases/MOD_CLASS_CONSOLIDATION_PHASE78.md`.
