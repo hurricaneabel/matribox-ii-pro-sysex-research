@@ -10,7 +10,7 @@
   "capabilities": [
     "parameters"
   ],
-  "parameter_catalog_status": "partially_cataloged",
+  "parameter_catalog_status": "physically_validated",
   "parameters": [
     {
       "key": "flg_depth",
@@ -26,7 +26,7 @@
       "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "float32_nibbles_v1",
-        "identification_status": "inferred_from_validated_family_schema",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
           "parameter_selector": 0,
           "parameter_marker": 1,
@@ -35,14 +35,14 @@
       },
       "validation": {
         "offline": true,
-        "physical": false,
+        "physical": true,
         "read_only": true,
         "effect_identity_source": "current_chain",
         "parameter_selector": 0,
-        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CANDIDATES_PHASE76.md",
-        "monitor_integration_physical_validation": "pending",
+        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md",
+        "monitor_integration_physical_validation": "approved",
         "candidate_family": "phase76_mod_dual_sync_family",
-        "candidate_requires_live_validation": true,
+        "candidate_requires_live_validation": false,
         "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
         "full_float32_required": true,
         "saved_dump_default": 50,
@@ -51,7 +51,9 @@
         "range_validated": [
           0,
           100
-        ]
+        ],
+        "monitor_validation_source": "user_live_monitor_mod_dual_sync_phase76_with_log",
+        "monitor_validation_result": "trem_jet_and_pan_phaser_all_values_exact_to_device"
       }
     },
     {
@@ -136,7 +138,7 @@
       "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "float32_nibbles_v1",
-        "identification_status": "inferred_from_validated_family_schema",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
           "parameter_selector": 1,
           "parameter_marker": 1,
@@ -145,14 +147,14 @@
       },
       "validation": {
         "offline": true,
-        "physical": false,
+        "physical": true,
         "read_only": true,
         "effect_identity_source": "current_chain",
         "parameter_selector": 1,
-        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CANDIDATES_PHASE76.md",
-        "monitor_integration_physical_validation": "pending",
+        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md",
+        "monitor_integration_physical_validation": "approved",
         "candidate_family": "phase76_mod_dual_sync_family",
-        "candidate_requires_live_validation": true,
+        "candidate_requires_live_validation": false,
         "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
         "full_float32_required": true,
         "conditional_domain_controller": "flg_sync",
@@ -166,7 +168,9 @@
           0.1,
           10.0
         ],
-        "step_validated": 0.1
+        "step_validated": 0.1,
+        "monitor_validation_source": "user_live_monitor_mod_dual_sync_phase76_with_log",
+        "monitor_validation_result": "trem_jet_and_pan_phaser_all_values_exact_to_device"
       }
     },
     {
@@ -183,7 +187,7 @@
       "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "float32_nibbles_v1",
-        "identification_status": "inferred_from_validated_family_schema",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
           "parameter_selector": 2,
           "parameter_marker": 1,
@@ -192,14 +196,14 @@
       },
       "validation": {
         "offline": true,
-        "physical": false,
+        "physical": true,
         "read_only": true,
         "effect_identity_source": "current_chain",
         "parameter_selector": 2,
-        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CANDIDATES_PHASE76.md",
-        "monitor_integration_physical_validation": "pending",
+        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md",
+        "monitor_integration_physical_validation": "approved",
         "candidate_family": "phase76_mod_dual_sync_family",
-        "candidate_requires_live_validation": true,
+        "candidate_requires_live_validation": false,
         "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
         "full_float32_required": true,
         "saved_dump_default": 50,
@@ -208,7 +212,9 @@
         "range_validated": [
           0,
           100
-        ]
+        ],
+        "monitor_validation_source": "user_live_monitor_mod_dual_sync_phase76_with_log",
+        "monitor_validation_result": "trem_jet_and_pan_phaser_all_values_exact_to_device"
       }
     },
     {
@@ -225,7 +231,7 @@
       "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "float32_nibbles_v1",
-        "identification_status": "inferred_from_validated_family_schema",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
           "parameter_selector": 3,
           "parameter_marker": 1,
@@ -234,14 +240,14 @@
       },
       "validation": {
         "offline": true,
-        "physical": false,
+        "physical": true,
         "read_only": true,
         "effect_identity_source": "current_chain",
         "parameter_selector": 3,
-        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CANDIDATES_PHASE76.md",
-        "monitor_integration_physical_validation": "pending",
+        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md",
+        "monitor_integration_physical_validation": "approved",
         "candidate_family": "phase76_mod_dual_sync_family",
-        "candidate_requires_live_validation": true,
+        "candidate_requires_live_validation": false,
         "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
         "full_float32_required": true,
         "saved_dump_default": 50,
@@ -250,7 +256,9 @@
         "range_validated": [
           0,
           100
-        ]
+        ],
+        "monitor_validation_source": "user_live_monitor_mod_dual_sync_phase76_with_log",
+        "monitor_validation_result": "trem_jet_and_pan_phaser_all_values_exact_to_device"
       }
     },
     {
@@ -335,7 +343,7 @@
       "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "float32_nibbles_v1",
-        "identification_status": "inferred_from_validated_family_schema",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
           "parameter_selector": 4,
           "parameter_marker": 1,
@@ -344,14 +352,14 @@
       },
       "validation": {
         "offline": true,
-        "physical": false,
+        "physical": true,
         "read_only": true,
         "effect_identity_source": "current_chain",
         "parameter_selector": 4,
-        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CANDIDATES_PHASE76.md",
-        "monitor_integration_physical_validation": "pending",
+        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md",
+        "monitor_integration_physical_validation": "approved",
         "candidate_family": "phase76_mod_dual_sync_family",
-        "candidate_requires_live_validation": true,
+        "candidate_requires_live_validation": false,
         "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
         "full_float32_required": true,
         "conditional_domain_controller": "trm_sync",
@@ -365,7 +373,9 @@
           0.1,
           10.0
         ],
-        "step_validated": 0.1
+        "step_validated": 0.1,
+        "monitor_validation_source": "user_live_monitor_mod_dual_sync_phase76_with_log",
+        "monitor_validation_result": "trem_jet_and_pan_phaser_all_values_exact_to_device"
       }
     },
     {
@@ -382,7 +392,7 @@
       "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "float32_nibbles_v1",
-        "identification_status": "inferred_from_validated_family_schema",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
           "parameter_selector": 5,
           "parameter_marker": 1,
@@ -391,14 +401,14 @@
       },
       "validation": {
         "offline": true,
-        "physical": false,
+        "physical": true,
         "read_only": true,
         "effect_identity_source": "current_chain",
         "parameter_selector": 5,
-        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CANDIDATES_PHASE76.md",
-        "monitor_integration_physical_validation": "pending",
+        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md",
+        "monitor_integration_physical_validation": "approved",
         "candidate_family": "phase76_mod_dual_sync_family",
-        "candidate_requires_live_validation": true,
+        "candidate_requires_live_validation": false,
         "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
         "full_float32_required": true,
         "saved_dump_default": 0,
@@ -406,7 +416,9 @@
         "boolean_encoding": {
           "false": 0,
           "true": 1
-        }
+        },
+        "monitor_validation_source": "user_live_monitor_mod_dual_sync_phase76_with_log",
+        "monitor_validation_result": "trem_jet_and_pan_phaser_all_values_exact_to_device"
       }
     },
     {
@@ -423,7 +435,7 @@
       "protocol": {
         "profile": "effect_parameter_response_1c_v1",
         "value_codec": "float32_nibbles_v1",
-        "identification_status": "inferred_from_validated_family_schema",
+        "identification_status": "validated_with_chain_effect_context",
         "message_match": {
           "parameter_selector": 6,
           "parameter_marker": 1,
@@ -432,14 +444,14 @@
       },
       "validation": {
         "offline": true,
-        "physical": false,
+        "physical": true,
         "read_only": true,
         "effect_identity_source": "current_chain",
         "parameter_selector": 6,
-        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CANDIDATES_PHASE76.md",
-        "monitor_integration_physical_validation": "pending",
+        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md",
+        "monitor_integration_physical_validation": "approved",
         "candidate_family": "phase76_mod_dual_sync_family",
-        "candidate_requires_live_validation": true,
+        "candidate_requires_live_validation": false,
         "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
         "full_float32_required": true,
         "saved_dump_default": 0,
@@ -447,7 +459,9 @@
         "boolean_encoding": {
           "false": 0,
           "true": 1
-        }
+        },
+        "monitor_validation_source": "user_live_monitor_mod_dual_sync_phase76_with_log",
+        "monitor_validation_result": "trem_jet_and_pan_phaser_all_values_exact_to_device"
       }
     }
   ]
