@@ -202,7 +202,8 @@
           "properties": {
             "kind": {
               "enum": [
-                "duration_milliseconds"
+                "duration_milliseconds",
+                "numeric_with_sentinels"
               ]
             },
             "seconds_threshold": {
@@ -219,6 +220,27 @@
                 ".",
                 ","
               ]
+            },
+            "sentinels": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "value",
+                  "label"
+                ],
+                "properties": {
+                  "value": {
+                    "type": "number"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
             }
           }
         },

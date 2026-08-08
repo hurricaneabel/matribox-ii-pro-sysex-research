@@ -32,6 +32,52 @@ from tools.parameters.codecs import (
 MATRIBOX_HEADER = bytes.fromhex("F0 21 25 4D 50")
 
 
+
+
+def format_parameter_value(
+    value: ParameterValue,
+    unit: str | None,
+    display: Mapping[str, Any],
+) -> str:
+    """Formata valores de parâmetros sem perder sentinelas físicas."""
+
+    kind = display.get("kind")
+    if kind == "duration_milliseconds":
+        milliseconds = float(value)
+        threshold = float(display.get("seconds_threshold", 1000))
+        if milliseconds < threshold:
+            if milliseconds.is_integer():
+                return f"{int(milliseconds)} ms"
+            return f"{milliseconds:g} ms"
+        decimals = int(display.get("seconds_decimals", 1))
+        value_text = f"{milliseconds / 1000:.{decimals}f}"
+        if display.get("decimal_separator", ",") == ",":
+            value_text = value_text.replace(".", ",")
+        return f"{value_text} s"
+    if kind == "numeric_with_sentinels":
+        sentinels = display.get("sentinels", ())
+        if isinstance(sentinels, (list, tuple)):
+            for sentinel in sentinels:
+                if not isinstance(sentinel, Mapping):
+                    continue
+                sentinel_value = sentinel.get("value")
+                label = sentinel.get("label")
+                if (
+                    isinstance(sentinel_value, (int, float))
+                    and not isinstance(sentinel_value, bool)
+                    and isinstance(label, str)
+                    and float(value) == float(sentinel_value)
+                ):
+                    return label
+    if isinstance(value, bool):
+        value_text = "ligado" if value else "desligado"
+    elif isinstance(value, float) and value.is_integer():
+        value_text = str(int(value))
+    else:
+        value_text = str(value)
+    return f"{value_text} {unit}" if unit else value_text
+
+
 class EffectParameterProtocolError(ValueError):
     """Mensagem reconhecida como parâmetro, mas estruturalmente inválida."""
 
@@ -82,23 +128,7 @@ class EffectParameterEvent:
 
     @property
     def display_value(self) -> str:
-        if self.display.get("kind") == "duration_milliseconds":
-            milliseconds = float(self.value)
-            threshold = float(self.display.get("seconds_threshold", 1000))
-            if milliseconds < threshold:
-                if milliseconds.is_integer():
-                    return f"{int(milliseconds)} ms"
-                return f"{milliseconds:g} ms"
-            decimals = int(self.display.get("seconds_decimals", 1))
-            value_text = f"{milliseconds / 1000:.{decimals}f}"
-            if self.display.get("decimal_separator", ",") == ",":
-                value_text = value_text.replace(".", ",")
-            return f"{value_text} s"
-        if isinstance(self.value, bool):
-            value_text = "ligado" if self.value else "desligado"
-        else:
-            value_text = str(self.value)
-        return f"{value_text} {self.unit}" if self.unit else value_text
+        return format_parameter_value(self.value, self.unit, self.display)
 
 
 def _field_document(profile: ProtocolProfile, field_name: str) -> Mapping[str, Any]:

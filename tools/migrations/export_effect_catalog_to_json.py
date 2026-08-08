@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 50
+CATALOG_VERSION = 52
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -2831,6 +2831,149 @@ AC_PREAMP_2_PARAMETER_SEEDS = _phase69_amp_seeds(
 )
 
 
+def _validated_phase70_cab_seeds(
+    *,
+    saved_values: tuple[int, int, int],
+    evidence_source: str,
+) -> tuple[dict[str, Any], ...]:
+    """Parâmetros CAB confirmados por dump salvo + eventos 0x1C físicos."""
+
+    controls = (
+        ("volume", "VOLUME", 1, 0, 100, None, None),
+        ("low_cut", "LOW CUT", 5, 19, 2000, "Hz", (19, "OFF")),
+        ("high_cut", "HIGH CUT", 6, 2000, 20001, "Hz", (20001, "OFF")),
+    )
+    defaults = (50, 19, 20001)
+    result: list[dict[str, Any]] = []
+    for order, ((key, name, selector, minimum, maximum, unit, sentinel), default, saved) in enumerate(
+        zip(controls, defaults, saved_values), start=1
+    ):
+        parameter: dict[str, Any] = {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {
+                "minimum": minimum,
+                "maximum": maximum,
+                "step": 1,
+            },
+            "unit": unit,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_default": default,
+                "saved_dump_default_source": "user_reported_official_ui",
+                "saved_dump_value": saved,
+                "selector_mapping_source": "pcapng_saved_dump_and_live_1c",
+                "full_float32_required": True,
+                "evidence": "docs/phases/CAB_SUPERO_DOUBLE_BASS_PARAMETERS_PHASE70.md",
+                "capture_source": evidence_source,
+                "monitor_integration_physical_validation": "approved",
+                "monitor_validation_source": "user_live_monitor_phase70",
+                "monitor_validation_result": "hydration_and_live_values_exact_to_device",
+                "range_validated": [minimum, maximum],
+            },
+        }
+        if sentinel is not None:
+            parameter["display"] = {
+                "kind": "numeric_with_sentinels",
+                "sentinels": [
+                    {"value": sentinel[0], "label": sentinel[1]}
+                ],
+            }
+            parameter["validation"]["off_wire_value"] = sentinel[0]
+        result.append(parameter)
+    return tuple(result)
+
+
+SUPERO_1X6_PARAMETER_SEEDS = _validated_phase70_cab_seeds(
+    saved_values=(37, 630, 15500),
+    evidence_source="CAB01_SUPERO_1X6_01..05 captures",
+)
+DOUBLE_BASS_PARAMETER_SEEDS = _validated_phase70_cab_seeds(
+    saved_values=(28, 956, 13262),
+    evidence_source="CAB02_DOUBLE_BASS_01..02 captures",
+)
+
+
+def _validated_phase71_cab_shared_schema_seeds() -> tuple[dict[str, Any], ...]:
+    """Schema compartilhado CAB aprovado fisicamente em todos os modelos."""
+
+    controls = (
+        ("volume", "VOLUME", 1, 0, 100, None, None),
+        ("low_cut", "LOW CUT", 5, 19, 2000, "Hz", (19, "OFF")),
+        ("high_cut", "HIGH CUT", 6, 2000, 20001, "Hz", (20001, "OFF")),
+    )
+    defaults = (50, 19, 20001)
+    result: list[dict[str, Any]] = []
+    for order, (key, name, selector, minimum, maximum, unit, sentinel) in enumerate(controls, start=1):
+        parameter: dict[str, Any] = {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {
+                "minimum": minimum,
+                "maximum": maximum,
+                "step": 1,
+            },
+            "unit": unit,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_default": defaults[order - 1],
+                "saved_dump_default_source": "user_reported_official_ui",
+                "selector_mapping_source": "phase70_shared_schema_confirmed_across_all_cabs_phase71",
+                "full_float32_required": True,
+                "evidence": "docs/phases/CAB_CLASS_CONSOLIDATION_PHASE71.md",
+                "monitor_integration_physical_validation": "approved",
+                "monitor_validation_source": "user_live_monitor_all_cabs_phase71",
+                "monitor_validation_result": "all_models_parameter_changes_and_float_values_exact_to_device",
+                "range_validated": [minimum, maximum],
+            },
+        }
+        if sentinel is not None:
+            parameter["display"] = {
+                "kind": "numeric_with_sentinels",
+                "sentinels": [
+                    {"value": sentinel[0], "label": sentinel[1]}
+                ],
+            }
+            parameter["validation"]["off_wire_value"] = sentinel[0]
+        result.append(parameter)
+    return tuple(result)
+
+
+CAB_SHARED_PARAMETER_SEEDS = _validated_phase71_cab_shared_schema_seeds()
+
+
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
     {
         "key": "gain",
@@ -4498,6 +4641,18 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "amp.ac_preamp_2":
         parameters = list(AC_PREAMP_2_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "cab.supero_1x6":
+        parameters = list(SUPERO_1X6_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "cab.double_bass":
+        parameters = list(DOUBLE_BASS_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key.startswith("cab.") and not parameters:
+        parameters = list(CAB_SHARED_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:
