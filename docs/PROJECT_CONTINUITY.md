@@ -2240,3 +2240,46 @@ GUITAR EQ 1 e CALIF EQ foram capturados por PCAPNG. GUITAR EQ 1 confirmou select
 Todos os valores de banda usam `float32_nibbles_v1` diretamente em `-50..50`, default 0. VOLUME usa `0..100`, default 50. Após a candidata, o usuário executou `matribox_monitor --live --log eq_phase73_validation.txt` e testou os cinco modelos no hardware. Ele confirmou que cada valor mostrado pela pedaleira correspondeu exatamente ao script. O log registrou todas as bandas dos cinco modelos, extremos `-50/+50`, valores intermediários assinados e VOLUME nos quatro modelos que expõem esse controle.
 
 A classe termina com **5/5 `physically_validated`**, **29 parâmetros EQ**, nenhum `partially_cataloged`/`pending` em EQ, `catalog_version = 54`, **201 efeitos fisicamente validados**, **827 parâmetros catalogados** e **66 efeitos ainda sem parâmetros** em outras classes. A consolidação completa está em `docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md`.
+
+
+## Fase 74 — MOD RATE/SYNC family concluída
+
+O E-CHORUS foi capturado profundamente e confirmou selectors 0=DEPTH, 1=RATE, 2=VOLUME, 3=SYNC, RATE float32 0.1–10.0 Hz quando OFF e enum wire 0..10 quando ON. O usuário confirmou que alternar SYNC reseta RATE para 0.5 Hz (OFF) ou 1/4 (ON). O schema foi aplicado a 11 modelos/subconjuntos e depois validado fisicamente um por um no `matribox_monitor --live --log`; o usuário confirmou correspondência integral com a pedaleira. Estado final: `catalog_version = 55`, 212 `physically_validated`, 0 `partially_cataloged`, 55 `pending`, 865 parâmetros. Consolidação: `docs/phases/MOD_RATE_SYNC_FAMILY_CONSOLIDATION_PHASE74.md`.
+
+## Fase 75 — candidatos FLANGER / FLANGER N / BASS JET
+
+Após a conclusão física da primeira família MOD, FLANGER, FLANGER N e BASS JET foram agrupados pelo layout de interface informado como idêntico: DEPTH, RATE, PRE DELAY, FEEDBACK, SYNC. DEPTH/PRE DELAY/FEEDBACK usam 0..100 default 50; RATE e SYNC reutilizam integralmente o domínio fisicamente validado na Fase 74, incluindo reset para 0.5 Hz ao desligar SYNC e 1/4 ao ligar.
+
+Sem PCAPNG adicional, os três entram como candidatos `partially_cataloged` com hipótese de selectors 0=DEPTH, 1=RATE, 2=PRE DELAY, 3=FEEDBACK, 4=SYNC. A estratégia é validar diretamente no `matribox_monitor --live --log`; somente um modelo divergente exigirá captura específica. Estado candidato: `catalog_version = 56`, 212 `physically_validated`, 3 `partially_cataloged`, 52 `pending` e 880 parâmetros. Documento: `docs/phases/MOD_FLANGER_FAMILY_CANDIDATES_PHASE75.md`.
+
+## Fase 75 — consolidação FLANGER / FLANGER N / BASS JET
+
+O usuário confirmou no monitor ao vivo que os três candidatos da Fase 75 correspondem 100% aos valores da pedaleira. Os três foram promovidos para `physically_validated`; schema final: selectors 0=DEPTH, 1=RATE, 2=PRE DELAY, 3=FEEDBACK, 4=SYNC. Total: 15 parâmetros físicos.
+
+## Fase 76 — candidatos TREM JET / PAN PHASER
+
+TREM JET e PAN PHASER foram inicialmente inferidos pela ordem oficial informada pelo usuário e reutilização do RATE/SYNC validado. TREM JET usa selectors 0..6 para FLG DEPTH, FLG RATE, FEEDBACK, TRM DEPTH, TRM RATE, FLG SYNC, TRM SYNC. PAN PHASER usa selectors 0..5 para PHS DEPTH, PHS RATE, PAN DEPTH, PAN RATE, PHS SYNC, PAN SYNC. Cada RATE aponta para seu próprio controlador SYNC e reseta independentemente. O usuário testou ambos no monitor ao vivo e confirmou correspondência de 100% com a pedaleira. Estado final da fase: catalog_version 57; 217 físicos; 0 candidatos; 50 pendentes; 893 parâmetros. Consolidação: `docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md`.
+
+## Fase 77 — candidatos PHASER ST / U-VIBE / BIAS TREM
+
+Após 16/23 MODs fisicamente validados, a próxima leva usa inferência controlada. PHASER ST assume COLOR/RATE/SYNC nos selectors 0/1/2 (`WARM=0`, `SHARP=1`). U-VIBE assume DEPTH/RATE/VOLUME/MODE/SYNC em 0..4 (`CHORUS=0`, `VIBRATO=1`). BIAS TREM assume DEPTH/RATE/VOLUME/SYNC/BIAS em 0..4. RATE/SYNC reutiliza integralmente o schema validado na Fase 74; DEPTH/VOLUME/BIAS usam 0..100. Os três são `partially_cataloged` até teste físico. Estado candidato: catalog_version 58; 217 físicos; 3 candidatos; 47 pendentes; 906 parâmetros.
+
+
+### Fase 77 — MOD enum/bias consolidada
+
+PHASER ST, U-VIBE e BIAS TREM foram testados no `matribox_monitor --live --log mod_phase77_enum_bias_validation.txt`. O usuário confirmou correspondência de 100% entre os valores exibidos pelo script e pela pedaleira. O log confirmou `WARM/SHARP` em PHASER ST, `CHORUS/VIBRATO` em U-VIBE, BIAS 0..100 em BIAS TREM e o RATE/SYNC compartilhado nos três. Os três modelos foram promovidos para `physically_validated`. Estado final da fase: `catalog_version = 58`; 220 físicos; 0 candidatos; 47 pendentes; 906 parâmetros. Consolidação: `docs/phases/MOD_ENUM_BIAS_FAMILY_CONSOLIDATION_PHASE77.md`.
+
+## Fase 78 — quatro MOD finais candidatos
+
+D-CHORUS, M-CHORUS, DETUNE e LOFI BIT completam a abertura de parâmetros da classe MOD. D-CHORUS infere MODE no selector 0 com valores 1..4; M-CHORUS usa MIX/RATE/FILTER/DEPTH L/DEPTH C/DEPTH R/SYNC em 0..6; DETUNE usa DETUNE/WET/DRY em 0..2 com DETUNE assinado -50..50 cents; LOFI BIT usa MIX/KRUSH/BIT/HI CUT/LO CUT em 0..4. Os quatro ficam candidatos até teste físico. Estado: catalog_version 59; 220 físicos; 4 candidatos; 43 pendentes; 922 parâmetros.
+
+### Fase 78 — correção D-CHORUS após teste ao vivo
+
+M-CHORUS, DETUNE e LOFI BIT foram confirmados 100% no monitor e promovidos para `physically_validated`. D-CHORUS revelou enum zero-based no wire e one-based na interface: 0→1, 1→2, 2→3, 3→4. O default UI 1 corresponde ao wire 0. A correção fica como único candidato MOD aguardando reteste curto. Estado intermediário: catalog_version 59; 223 físicos; 1 candidato; 43 pendentes; 922 parâmetros.
+
+
+### Fase 78 — classe MOD concluída
+
+Após a correção zero-based do D-CHORUS, o usuário repetiu o teste físico e confirmou que MODE 1/2/3/4 agora corresponde exatamente aos wires 0/1/2/3. D-CHORUS foi promovido para `physically_validated`. M-CHORUS, DETUNE e LOFI BIT já haviam sido confirmados integralmente no teste anterior.
+
+A classe MOD encerra em **23/23 `physically_validated`**, **95 parâmetros MOD**, nenhum `pending` ou `partially_cataloged` dentro da classe. O estado global permanece `catalog_version = 59`, com **224 efeitos fisicamente validados**, **0 `partially_cataloged`**, **43 `pending`** em classes posteriores e **922 parâmetros catalogados**. Consolidação completa: `docs/phases/MOD_CLASS_CONSOLIDATION_PHASE78.md`.

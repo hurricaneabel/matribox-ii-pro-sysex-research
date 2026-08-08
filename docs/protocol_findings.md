@@ -2182,3 +2182,48 @@ A Fase 72 aplicou esse schema aos 20 IRs como candidatos somente-leitura. Em seg
 GUITAR EQ 1 confirmou por dump e eventos `0x1C` cinco bandas em selectors 0..4 e VOLUME no selector 5. As bandas transmitem valores assinados nativos `-50..50` com `float32_nibbles_v1`; VOLUME usa `0..100`. Defaults informados pela interface e confirmados no anchor são 0 para bandas e 50 para volume.
 
 CALIF EQ confirmou selectors 0..4 para suas cinco bandas e nenhum VOLUME visível. O valor persistido `selector 5 = 50` é resíduo do slot e permanece fora do catálogo. Após aplicar os layouts aos cinco EQs, o usuário validou todos no `matribox_monitor --live --log`, comparando os valores do script com a pedaleira e confirmando correspondência integral. A classe encerra com 5/5 `physically_validated` e 29 parâmetros.
+
+
+### MOD E-CHORUS RATE/SYNC — Fase 74
+
+E-CHORUS (`class_id=8`, `model_id=1`, `secondary_selector=4`) usa selectors 0 DEPTH, 1 RATE, 2 VOLUME, 3 SYNC. RATE compartilha o selector 1 entre dois domínios: float32 0.1–10.0 Hz com SYNC OFF e enum wire 0..10 com SYNC ON. O usuário confirmou reset implícito de RATE a cada troca de SYNC: OFF→0.5 Hz e ON→1/4. Selector 4=50 observado no dump é resíduo não exposto.
+
+A família direta foi validada fisicamente em 11 modelos: E-CHORUS, B-CHORUS, VIBRATO, CE-ROTO, SINE TREM, TRIANGULE TREM, BBD ROTO, BBD PHASER, VIBE, TREMOLO e PHASER. O teste `--live --log` confirmou seletores e valores em todos; a comparação visual do usuário confirmou também a apresentação correta do domínio sincronizado. A família encerra com 38 parâmetros `physically_validated`.
+
+### MOD FLANGER family — Fase 75 candidata
+
+FLANGER (`model_id 17`), FLANGER N (`model_id 19`) e BASS JET (`model_id 18`) compartilham, segundo a interface observada pelo usuário, DEPTH/RATE/PRE DELAY/FEEDBACK/SYNC. A Fase 75 infere selectors 0..4 nessa mesma ordem. DEPTH, PRE DELAY e FEEDBACK usam 0..100 default 50; RATE/SYNC reaproveitam o protocolo já fisicamente validado na Fase 74, com RATE float32 0.1..10.0 Hz em OFF e enum wire 0..10 em ON.
+
+Os três permanecem `partially_cataloged` até validação física. Não há PCAP específico desta família neste estágio; se um candidato falhar, a captura será limitada ao modelo divergente.
+
+### MOD FLANGER family — Fase 75 final
+
+FLANGER, FLANGER N e BASS JET foram confirmados fisicamente no monitor: selectors 0..4 correspondem a DEPTH/RATE/PRE DELAY/FEEDBACK/SYNC, respectivamente. Todos os valores coincidiram com a pedaleira; os três modelos passam a `physically_validated`.
+
+### MOD dual-SYNC family — Fase 76 candidata
+
+TREM JET e PAN PHASER usam duas cadeias RATE/SYNC independentes. O layout foi confirmado fisicamente no monitor ao vivo. TREM JET: selectors 0..6 = FLG DEPTH, FLG RATE, FEEDBACK, TRM DEPTH, TRM RATE, FLG SYNC, TRM SYNC. PAN PHASER: selectors 0..5 = PHS DEPTH, PHS RATE, PAN DEPTH, PAN RATE, PHS SYNC, PAN SYNC. Cada RATE usa `float32_nibbles_v1`, domínio Hz com SYNC OFF e enum rítmico com SYNC ON; cada SYNC reseta somente seu RATE associado. O usuário confirmou que todos os valores mostrados pelo script corresponderam exatamente à pedaleira nos dois modelos.
+
+### MOD enum/bias family — Fase 77 candidata
+
+PHASER ST, U-VIBE e BIAS TREM entram como candidatos por inferência controlada, sem PCAPNG adicional. Todos reutilizam `float32_nibbles_v1` e o domínio RATE/SYNC fisicamente validado na Fase 74. PHASER ST infere selectors 0/1/2 para COLOR/RATE/SYNC, com COLOR candidato `WARM=0` e `SHARP=1`. U-VIBE infere selectors 0..4 para DEPTH/RATE/VOLUME/MODE/SYNC, com MODE candidato `CHORUS=0` e `VIBRATO=1`. BIAS TREM infere selectors 0..4 para DEPTH/RATE/VOLUME/SYNC/BIAS; BIAS usa 0..100, default 50. Os três permanecem `partially_cataloged` até confirmação física; qualquer divergência deve ser investigada somente no modelo afetado.
+
+
+## Fase 77 — MOD enum/bias validada fisicamente
+
+A validação ao vivo confirmou sem PCAPNG adicional os schemas inferidos de PHASER ST, U-VIBE e BIAS TREM. PHASER ST usa selectors 0/1/2 para COLOR/RATE/SYNC, com `WARM=0` e `SHARP=1`. U-VIBE usa 0..4 para DEPTH/RATE/VOLUME/MODE/SYNC, com `CHORUS=0` e `VIBRATO=1`. BIAS TREM usa 0..4 para DEPTH/RATE/VOLUME/SYNC/BIAS. O RATE/SYNC mantém o domínio já validado na Fase 74 e BIAS usa 0..100. O usuário confirmou correspondência de 100% entre monitor e pedaleira.
+
+### MOD quatro modelos finais — Fase 78 candidata
+
+D-CHORUS, M-CHORUS, DETUNE e LOFI BIT entram como candidatos por reutilização dos schemas já fisicamente validados. M-CHORUS herda RATE/SYNC da Fase 74; DETUNE reutiliza `float32_nibbles_v1` assinado para -50..50 cents; os demais numéricos são 0..100. Os selectors seguem a ordem visual informada e aguardam confirmação no monitor ao vivo.
+
+### Fase 78 — correção zero-based do D-CHORUS
+
+O teste ao vivo dos quatro MOD finais confirmou M-CHORUS, DETUNE e LOFI BIT integralmente. D-CHORUS mostrou deslocamento constante de uma posição: com MODE 1 na pedaleira o wire 0 não era reconhecido pela hipótese 1..4; MODE 2/3/4 produziam wire 1/2/3. O mapeamento correto é, portanto, wire 0..3 → UI 1..4. O default UI MODE 1 corresponde a wire 0. D-CHORUS permanece candidato somente até reteste da correção; os outros três são promovidos fisicamente.
+
+
+## Fase 78 — classe MOD concluída
+
+O reteste do D-CHORUS após a correção confirmou o mapeamento definitivo `wire 0..3` → UI `MODE 1..4`; o default é wire 0 / UI 1. Com isso, D-CHORUS passa a `physically_validated`. M-CHORUS, DETUNE e LOFI BIT já estavam confirmados pelo monitor ao vivo.
+
+A classe MOD encerra com 23/23 modelos fisicamente validados e 95 parâmetros. O protocolo reutiliza `float32_nibbles_v1` para numéricos e RATE, enum condicionado por SYNC para divisões rítmicas, dual-SYNC independente em TREM JET/PAN PHASER, enums nomeados em PHASER ST/U-VIBE, signed DETUNE -50..50 cents e D-CHORUS zero-based no wire/one-based na UI.

@@ -66,3 +66,17 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 - `IR_CLASS_CONSOLIDATION_PHASE72.md` — encerramento da classe IR: 20/20 fisicamente validados, schema compartilhado 1/5/6, float32 completo e 60 parâmetros.
 - `EQ_SHARED_PARAMETERS_PHASE73.md` — GUITAR EQ 1 e CALIF EQ ancoram os dois layouts; cinco EQs preparados inicialmente como candidatos com 29 parâmetros assinados/volume.
 - `EQ_CLASS_CONSOLIDATION_PHASE73.md` — encerramento da classe EQ: 5/5 fisicamente validados, valores assinados nativos, CALIF sem VOLUME e 29 parâmetros.
+
+- `MOD_RATE_SYNC_FAMILY_CANDIDATES_PHASE74.md` — abre 11 MODs candidatos baseados no schema RATE/SYNC ancorado no E-CHORUS.
+- `MOD_RATE_SYNC_FAMILY_CONSOLIDATION_PHASE74.md` — encerra a família: 11/11 fisicamente validados, 38 parâmetros e domínio RATE/SYNC confirmado ao vivo.
+- `MOD_FLANGER_FAMILY_CANDIDATES_PHASE75.md` — FLANGER, FLANGER N e BASS JET preparados como candidatos com layout DEPTH/RATE/PRE DELAY/FEEDBACK/SYNC.
+- `MOD_FLANGER_FAMILY_CONSOLIDATION_PHASE75.md` — fechamento físico de FLANGER, FLANGER N e BASS JET (3/3).
+- `MOD_DUAL_SYNC_FAMILY_CANDIDATES_PHASE76.md` — TREM JET e PAN PHASER candidatos com dois RATE/SYNC independentes.
+- `MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md` — TREM JET e PAN PHASER fisicamente validados com dois RATE/SYNC independentes.
+- `MOD_ENUM_BIAS_FAMILY_CANDIDATES_PHASE77.md` — PHASER ST, U-VIBE e BIAS TREM preparados como candidatos por reutilização do RATE/SYNC já validado e ordem natural dos controles.
+- `MOD_ENUM_BIAS_FAMILY_CONSOLIDATION_PHASE77.md` — PHASER ST, U-VIBE e BIAS TREM validados fisicamente; enums, RATE/SYNC e BIAS confirmados no monitor ao vivo.
+
+- `MOD_FINAL_FOUR_CANDIDATES_PHASE78.md` — D-CHORUS, M-CHORUS, DETUNE e LOFI BIT preparados como candidatos para concluir a classe MOD.
+- `MOD_FINAL_FOUR_D_CHORUS_CORRECTION_PHASE78.md` — promove M-CHORUS/DETUNE/LOFI BIT e corrige D-CHORUS para wire 0..3 → UI MODE 1..4, pendente apenas de reteste curto.
+
+- `MOD_CLASS_CONSOLIDATION_PHASE78.md` — encerra a classe MOD: 23/23 modelos fisicamente validados, 95 parâmetros MOD, RATE/SYNC compartilhado, dual-SYNC, enums e signed DETUNE consolidados.
