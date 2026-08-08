@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 34)
+        self.assertEqual(self.catalog.catalog_version, 39)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -507,9 +507,24 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "drv.full_od",
                 "drv.breaker_od",
                 "drv.gerden_od",
+                "drv.timmy_od",
+                "drv.master_od",
+                "drv.solar_fuzz",
+                "drv.fuzz_cream",
+                "drv.red_fuzz",
+                "drv.jp_dist",
+                "drv.dark_mouse",
+                "drv.plexi_dist",
+                "drv.master_dist",
+                "drv.dist_plus",
+                "drv.shark",
+                "drv.strive",
+                "drv.sardar_dist",
+                "drv.bass_od",
+                "drv.bass_dist",
             }
         ]
-        self.assertEqual(len(pending), 230)
+        self.assertEqual(len(pending), 215)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -1092,6 +1107,170 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "approved",
             )
             self.assertEqual(parameter.validation["internal_slots_observed"], [1, 5, 11])
+
+    def test_timmy_od_validates_four_controls_and_three_way_mode(self) -> None:
+        effect = self.catalog.effect_by_key("drv.timmy_od")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual((effect.model_id, effect.secondary_selector), (0x1E, 0x03))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("gain", "volume", "bass", "treble", "mode"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1, 2, 3, 4),
+        )
+        self.assertEqual(tuple(effect.parameters[4].choices.items()), ((0, "I"), (1, "II"), (2, "III")))
+        self.assertEqual(effect.parameters[4].validation["saved_dump_default_label"], "II")
+
+    def test_master_od_validates_five_numeric_controls(self) -> None:
+        effect = self.catalog.effect_by_key("drv.master_od")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual((effect.model_id, effect.secondary_selector), (0x0F, 0x03))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("gain", "volume", "bass", "middle", "treble"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1, 2, 3, 4),
+        )
+        self.assertEqual(
+            tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+            (21, 43, 65, 87, 32),
+        )
+        self.assertEqual(
+            tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+            (40, 50, 50, 50, 50),
+        )
+
+    def test_solar_fuzz_validates_two_controls_and_ignores_residuals(self) -> None:
+        effect = self.catalog.effect_by_key("drv.solar_fuzz")
+        self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+        self.assertEqual((effect.model_id, effect.secondary_selector), (0x26, 0x03))
+        self.assertEqual(
+            tuple(parameter.key for parameter in effect.parameters),
+            ("fuzz", "volume"),
+        )
+        self.assertEqual(
+            tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+            (0, 1),
+        )
+        for parameter in effect.parameters:
+            self.assertEqual(
+                parameter.validation["saved_dump_residual_selectors_ignored"],
+                [2, 3, 4],
+            )
+
+    def test_phase54_monitor_integrations_are_approved(self) -> None:
+        for effect_key in ("drv.timmy_od", "drv.master_od", "drv.solar_fuzz"):
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                for parameter in effect.parameters:
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+
+    def test_phase55_validates_three_known_drive_layouts(self) -> None:
+        cases = (
+            ("drv.fuzz_cream", 0x22, ("sustain", "tone", "volume"), (40, 50, 50)),
+            ("drv.red_fuzz", 0x24, ("fuzz", "volume"), (50, 50)),
+            ("drv.jp_dist", 0x2A, ("gain", "tone", "volume"), (50, 50, 50)),
+        )
+        for effect_key, model_id, keys, defaults in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x03))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    defaults,
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+
+    def test_phase56_validates_dark_plexi_and_master_dist_layouts(self) -> None:
+        cases = (
+            ("drv.dark_mouse", 0x2B, ("gain", "filter", "volume")),
+            ("drv.plexi_dist", 0x2D, ("gain", "volume", "bass", "middle", "treble")),
+            ("drv.master_dist", 0x2E, ("gain", "volume", "bass", "contour", "treble")),
+        )
+        for effect_key, model_id, keys in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x03))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertEqual(parameter.validation["saved_dump_default"], 50)
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+
+    def test_phase57_validates_dist_plus_shark_and_strive(self) -> None:
+        cases = (
+            ("drv.dist_plus", 0x29, ("gain", "volume")),
+            ("drv.shark", 0x30, ("gain", "tone", "volume")),
+            ("drv.strive", 0x32, ("gain", "tone", "volume", "mode")),
+        )
+        for effect_key, model_id, keys in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x03))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+        strive = self.catalog.effect_by_key("drv.strive")
+        self.assertEqual(tuple(strive.parameters[3].choices.items()), ((0, "I"), (1, "II"), (2, "III")))
+        self.assertEqual(strive.parameters[3].validation["saved_dump_default_label"], "I")
+
+    def test_phase58_validates_sardar_bass_od_and_bass_dist(self) -> None:
+        cases = (
+            ("drv.sardar_dist", 0x52, ("gain", "volume", "bass", "treble", "presence", "tight")),
+            ("drv.bass_od", 0x3F, ("gain", "tone", "volume", "mode", "blend")),
+            ("drv.bass_dist", 0x40, ("gain", "blend", "volume", "bass", "treble")),
+        )
+        for effect_key, model_id, keys in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x03))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertEqual(parameter.validation["monitor_integration_physical_validation"], "approved")
+        bass_od = self.catalog.effect_by_key("drv.bass_od")
+        self.assertEqual(tuple(bass_od.parameters[3].choices.items()), ((0, "NORMAL"), (1, "SCOOP"), (2, "EDGE")))
+        self.assertEqual(bass_od.parameters[3].validation["saved_dump_default_label"], "NORMAL")
 
     def test_filter_has_conditional_rate_domain(self) -> None:
         effect = self.catalog.effect_by_key("freq.filter")

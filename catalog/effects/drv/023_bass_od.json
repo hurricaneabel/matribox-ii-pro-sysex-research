@@ -7,7 +7,255 @@
   "name": "Bass OD",
   "model_id": 63,
   "secondary_selector": 3,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          2,
+          5
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "inference_sources": [
+          "drv.strive",
+          "drv.full_od"
+        ],
+        "evidence": "docs/phases/DRV_SARDAR_BASS_OD_DIST_INFERRED_PARAMETERS_PHASE58.md",
+        "monitor_integration_physical_validation": "approved",
+        "inference_target": "drv.bass_od"
+      }
+    },
+    {
+      "key": "tone",
+      "name": "TONE",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          2,
+          5
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "inference_sources": [
+          "drv.strive",
+          "drv.full_od"
+        ],
+        "evidence": "docs/phases/DRV_SARDAR_BASS_OD_DIST_INFERRED_PARAMETERS_PHASE58.md",
+        "monitor_integration_physical_validation": "approved",
+        "inference_target": "drv.bass_od"
+      }
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          2,
+          5
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "inference_sources": [
+          "drv.strive",
+          "drv.full_od"
+        ],
+        "evidence": "docs/phases/DRV_SARDAR_BASS_OD_DIST_INFERRED_PARAMETERS_PHASE58.md",
+        "monitor_integration_physical_validation": "approved",
+        "inference_target": "drv.bass_od"
+      }
+    },
+    {
+      "key": "mode",
+      "name": "MODE",
+      "display_order": 4,
+      "value_type": "enum",
+      "range": {
+        "minimum": 0,
+        "maximum": 2,
+        "step": 1
+      },
+      "choices": [
+        {
+          "value": 0,
+          "label": "NORMAL"
+        },
+        {
+          "value": 1,
+          "label": "SCOOP"
+        },
+        {
+          "value": 2,
+          "label": "EDGE"
+        }
+      ],
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "enum_wire_values_validated": [
+          0,
+          1,
+          2
+        ],
+        "internal_slots_observed": [
+          2,
+          5
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 3,
+        "saved_dump_default": 0,
+        "saved_dump_default_label": "NORMAL",
+        "saved_dump_default_source": "user_reported_official_ui",
+        "inference_sources": [
+          "drv.strive",
+          "drv.timmy_od"
+        ],
+        "evidence": "docs/phases/DRV_SARDAR_BASS_OD_DIST_INFERRED_PARAMETERS_PHASE58.md",
+        "monitor_integration_physical_validation": "approved",
+        "inference_target": "drv.bass_od"
+      }
+    },
+    {
+      "key": "blend",
+      "name": "BLEND",
+      "display_order": 5,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 4,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          2,
+          5
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 4,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "inference_sources": [
+          "drv.bass_dist"
+        ],
+        "evidence": "docs/phases/DRV_SARDAR_BASS_OD_DIST_INFERRED_PARAMETERS_PHASE58.md",
+        "monitor_integration_physical_validation": "approved",
+        "inference_target": "drv.bass_od"
+      }
+    }
+  ]
 }
