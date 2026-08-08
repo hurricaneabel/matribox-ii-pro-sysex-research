@@ -419,9 +419,10 @@ As definições portáteis ficam em `catalog/effects/`. A fachada histórica
 `tools/commands/effect_catalog.py` carrega esses JSONs sem quebrar os comandos
 antigos. Detalhes do protocolo continuam em `docs/protocol_findings.md`.
 
-Estado de parâmetros após a Fase 69: **115 efeitos fisicamente validados e 555
-parâmetros**, com DYN, FREQ, WAH, DRIVE e AMP concluídos. AMP representa 63
-modelos e 356 desses parâmetros.
+Estado de parâmetros após a Fase 71: **176 efeitos fisicamente validados e 738
+parâmetros**, com DYN, FREQ, WAH, DRIVE, AMP e CAB concluídos. CAB representa 61
+modelos e 183 desses parâmetros; seu schema compartilhado usa VOLUME no seletor 1,
+LOW CUT no 5 e HIGH CUT no 6 com `float32_nibbles_v1` completo.
 
 ## Últimas classes concluídas: blocos especiais
 
@@ -761,23 +762,21 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-As classes de parâmetros **DYN, FREQ, WAH, DRIVE e AMP estão concluídas**. A
-Fase 69 encerrou AMP com **63/63 modelos fisicamente validados** e **356
-parâmetros AMP**. O catálogo inteiro permanece na versão 50, com **115 efeitos
-parametrizados** e **555 parâmetros**.
+As classes de parâmetros **DYN, FREQ, WAH, DRIVE, AMP e CAB estão concluídas**.
+A Fase 71 encerrou CAB com **61/61 modelos fisicamente validados** e **183
+parâmetros CAB**. O catálogo está na versão 52, com **176 efeitos fisicamente
+validados**, **738 parâmetros catalogados** e **91 efeitos ainda sem parâmetros**
+em outras classes.
 
-A classe AMP inclui algumas exceções que não devem ser generalizadas pela ordem
-visual do editor: TWD DELUXE possui resíduos persistidos fora dos três controles
-reais; HALEN 51 usa PRESENCE no seletor 6 e deixa o seletor 5 não catalogado; A
-BASSVT possui MIDRANGE enum; F-2BASS possui BRIGHT booleano; e os modelos JP
-BRIT usam GAIN 2 no seletor 6. O resumo completo está em
-`docs/phases/AMP_CLASS_CONSOLIDATION_PHASE69.md`.
+CAB usa um schema compartilhado comprovado em toda a classe: VOLUME no seletor
+1, LOW CUT no 5 (`19 = OFF`, 20..2000 Hz) e HIGH CUT no 6
+(2000..20000 Hz, `20001 = OFF`), sempre com `float32_nibbles_v1` completo. A
+consolidação está em `docs/phases/CAB_CLASS_CONSOLIDATION_PHASE71.md`.
 
-Antes de iniciar outra classe, a branch `research/amp-parameters` deve passar
-pela suíte completa, `compileall` e `git diff --check`, seguida de revisão e
-consolidação. Depois disso, **CAB** é o próximo grupo natural na ordem do
-catálogo para pesquisa de parâmetros. Importação de IR e CLONE continua sendo
-um subsistema separado de arquivos externos.
+Antes de iniciar a próxima classe, a pesquisa CAB deve passar pela suíte
+completa, `compileall` e `git diff --check`, seguida de revisão e commit/merge.
+Importação de IR e CLONE continua sendo um subsistema separado de arquivos
+externos.
 
 ## Continuidade entre chats
 

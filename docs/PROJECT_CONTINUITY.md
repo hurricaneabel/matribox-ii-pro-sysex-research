@@ -2212,3 +2212,13 @@ Estado da suíte de encerramento:
 5. somente depois consolidar/commitir `research/amp-parameters`;
 6. iniciar a próxima classe de parâmetros ainda pendente, com CAB como próximo
    grupo natural na ordem do catálogo.
+
+## 53. Fases 70–71 — classe CAB concluída
+
+A pesquisa CAB começou com duas âncoras físicas. `SUPERO 1X6` foi capturado desde a abertura do aplicativo oficial, incluindo hidratação padrão e personalizada, sweeps separados de LOW CUT/HIGH CUT/VOLUME e eventos ao vivo. `DOUBLE BASS`, no extremo final da lista, confirmou o mesmo layout por dump salvo e alterações `0x1C`.
+
+O schema físico comum é VOLUME no seletor 1 (0..100, default 50), LOW CUT no seletor 5 (`19 = OFF`, 20..2000 Hz) e HIGH CUT no seletor 6 (2000..20000 Hz, `20001 = OFF`), todos decodificados com `float32_nibbles_v1` completo. Os seletores persistidos 2, 3 e 4 observados nas âncoras são resíduos do slot e não controles CAB.
+
+Na Fase 71 o schema foi aplicado aos 59 modelos restantes como candidatos. O usuário testou depois os 61 modelos individualmente no `matribox_monitor --live`, alterando os três parâmetros e comparando os valores com a pedaleira. Todos funcionaram corretamente, inclusive valores de frequência float32 e OFF. A classe termina com **61/61 `physically_validated`**, **183 parâmetros CAB**, nenhum `pending`/`partially_cataloged` em CAB, `catalog_version = 52`, **176 efeitos fisicamente validados**, **738 parâmetros catalogados** e **91 efeitos ainda sem parâmetros** em outras classes.
+
+A consolidação completa está em `docs/phases/CAB_CLASS_CONSOLIDATION_PHASE71.md`.

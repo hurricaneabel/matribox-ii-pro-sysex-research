@@ -59,3 +59,6 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 63 | `AMP_SUPERB_CALIF_CANDIDATES_PHASE63.md` | SUPERB OD, CALIF STAR CL e CALIF STAR OD validados fisicamente no monitor |
 | 64 | `AMP_BOG_CANDIDATES_PHASE64.md` | BOG SV CL, BOG SV OD e BOG XT BLUE preparados como candidatos somente-leitura |
 | 65–69 | `AMP_CLASS_CONSOLIDATION_PHASE69.md` | lotes acelerados, correção do HALEN 51 e conclusão física dos 63 AMP |
+- `CAB_SUPERO_DOUBLE_BASS_PARAMETERS_PHASE70.md` — abertura da classe CAB com SUPERO 1X6 + DOUBLE BASS fisicamente validados; hidratação, seletores 1/5/6, sentinelas OFF e float32 completo.
+- `CAB_CLASS_SHARED_SCHEMA_CANDIDATES_PHASE71.md` — schema CAB compartilhado aplicado aos 59 modelos restantes como candidatos; 2 âncoras físicas preservadas.
+- `CAB_CLASS_CONSOLIDATION_PHASE71.md` — encerramento da classe CAB: 61/61 fisicamente validados, schema compartilhado 1/5/6, float32 completo e 183 parâmetros.
