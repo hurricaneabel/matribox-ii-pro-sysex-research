@@ -1,0 +1,85 @@
+{
+  "phase": 72,
+  "result": "ir1_ir20_confirm_shared_cab_style_float32_schema",
+  "selectors": {
+    "volume": 1,
+    "low_cut": 5,
+    "high_cut": 6
+  },
+  "off_wire_values": {
+    "low_cut": 19,
+    "high_cut": 20001
+  },
+  "fixtures": [
+    {
+      "file": "ir1_volume_037.bin",
+      "effect": "ir.ir_1",
+      "parameter": "volume",
+      "value": 37,
+      "sha256": "e3e7c14080f2f86db62d6113944173e146352bd1321587fb1992199adec1e8d1"
+    },
+    {
+      "file": "ir1_low_cut_0637.bin",
+      "effect": "ir.ir_1",
+      "parameter": "low_cut",
+      "value": 637,
+      "sha256": "257471c1b000871b1cd53790c7cdacdb9bc68eec7063370c0330c3327b693757"
+    },
+    {
+      "file": "ir1_low_cut_off_0019.bin",
+      "effect": "ir.ir_1",
+      "parameter": "low_cut",
+      "value": 19,
+      "sha256": "984416fdf1759eccb53614cda611f3545df16bf375428f0cc34ffbd31db2e5ef"
+    },
+    {
+      "file": "ir1_high_cut_15371.bin",
+      "effect": "ir.ir_1",
+      "parameter": "high_cut",
+      "value": 15371,
+      "sha256": "5edecbb4a691e8c308c06308a0c0795154c450d57da2f733fe70236d25a9e4b7"
+    },
+    {
+      "file": "ir1_high_cut_off_20001.bin",
+      "effect": "ir.ir_1",
+      "parameter": "high_cut",
+      "value": 20001,
+      "sha256": "60a6ed7793ce4ee83cdf916bccb1e3e506f4efc562ded9e8a8fc05cd01be93be"
+    },
+    {
+      "file": "ir20_volume_082.bin",
+      "effect": "ir.ir_20",
+      "parameter": "volume",
+      "value": 82,
+      "sha256": "26bbf7ccdbc70d7045b140e906287aabaf02c5409bae6596129446ff1e378122"
+    },
+    {
+      "file": "ir20_low_cut_0953.bin",
+      "effect": "ir.ir_20",
+      "parameter": "low_cut",
+      "value": 953,
+      "sha256": "b0b7719b1e7fc4ee0b2b428be8d29edd6750cba2f1a398e3870c011fdf68be6c"
+    },
+    {
+      "file": "ir20_low_cut_off_0019.bin",
+      "effect": "ir.ir_20",
+      "parameter": "low_cut",
+      "value": 19,
+      "sha256": "776d2c32291a95d650d0bda160becd56c0070abdf1a40cad03bebbde257cdf10"
+    },
+    {
+      "file": "ir20_high_cut_13267.bin",
+      "effect": "ir.ir_20",
+      "parameter": "high_cut",
+      "value": 13267,
+      "sha256": "5a6494a00a438e17ac9e201a56a50ac546182364a1fde40c7c3e0deadea87540"
+    },
+    {
+      "file": "ir20_high_cut_off_20001.bin",
+      "effect": "ir.ir_20",
+      "parameter": "high_cut",
+      "value": 20001,
+      "sha256": "6bf8a32ce7446445a2b38b3f48643c1b04d4dd7811d596403a8552eca81ebeaf"
+    }
+  ]
+}

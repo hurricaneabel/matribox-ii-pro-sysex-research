@@ -419,10 +419,11 @@ As definições portáteis ficam em `catalog/effects/`. A fachada histórica
 `tools/commands/effect_catalog.py` carrega esses JSONs sem quebrar os comandos
 antigos. Detalhes do protocolo continuam em `docs/protocol_findings.md`.
 
-Estado de parâmetros após a Fase 71: **176 efeitos fisicamente validados e 738
-parâmetros**, com DYN, FREQ, WAH, DRIVE, AMP e CAB concluídos. CAB representa 61
-modelos e 183 desses parâmetros; seu schema compartilhado usa VOLUME no seletor 1,
-LOW CUT no 5 e HIGH CUT no 6 com `float32_nibbles_v1` completo.
+Estado de parâmetros após a conclusão da Fase 72: **196 efeitos fisicamente validados
+e 798 parâmetros catalogados**. DYN, FREQ, WAH, DRIVE, AMP, CAB e IR estão
+concluídos. IR 1 e IR 20 provaram por PCAPNG que a classe IR reutiliza VOLUME no
+seletor 1, LOW CUT no 5 e HIGH CUT no 6 com `float32_nibbles_v1` completo; depois,
+os 20 IRs foram validados individualmente no monitor e corresponderam à pedaleira.
 
 ## Últimas classes concluídas: blocos especiais
 
@@ -762,21 +763,15 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-As classes de parâmetros **DYN, FREQ, WAH, DRIVE, AMP e CAB estão concluídas**.
-A Fase 71 encerrou CAB com **61/61 modelos fisicamente validados** e **183
-parâmetros CAB**. O catálogo está na versão 52, com **176 efeitos fisicamente
-validados**, **738 parâmetros catalogados** e **91 efeitos ainda sem parâmetros**
-em outras classes.
+As classes de parâmetros **DYN, FREQ, WAH, DRIVE, AMP, CAB e IR estão concluídas**.
+A Fase 72 encerrou IR com 20/20 modelos fisicamente validados. O catálogo está na
+versão 53, com **196 efeitos fisicamente validados**, **798 parâmetros catalogados**
+e **71 efeitos ainda sem parâmetros** em outras classes.
 
-CAB usa um schema compartilhado comprovado em toda a classe: VOLUME no seletor
-1, LOW CUT no 5 (`19 = OFF`, 20..2000 Hz) e HIGH CUT no 6
-(2000..20000 Hz, `20001 = OFF`), sempre com `float32_nibbles_v1` completo. A
-consolidação está em `docs/phases/CAB_CLASS_CONSOLIDATION_PHASE71.md`.
-
-Antes de iniciar a próxima classe, a pesquisa CAB deve passar pela suíte
-completa, `compileall` e `git diff --check`, seguida de revisão e commit/merge.
-Importação de IR e CLONE continua sendo um subsistema separado de arquivos
-externos.
+IR reutiliza o schema comprovado de VOLUME no seletor 1, LOW CUT no 5
+(`19 = OFF`, 20..2000 Hz) e HIGH CUT no 6 (2000..20000 Hz, `20001 = OFF`), sempre
+com `float32_nibbles_v1` completo. Importação de WAV/IR de terceiros e CLONE
+continuam separados até o fim da catalogação de parâmetros.
 
 ## Continuidade entre chats
 

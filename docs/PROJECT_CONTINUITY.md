@@ -2222,3 +2222,13 @@ O schema físico comum é VOLUME no seletor 1 (0..100, default 50), LOW CUT no s
 Na Fase 71 o schema foi aplicado aos 59 modelos restantes como candidatos. O usuário testou depois os 61 modelos individualmente no `matribox_monitor --live`, alterando os três parâmetros e comparando os valores com a pedaleira. Todos funcionaram corretamente, inclusive valores de frequência float32 e OFF. A classe termina com **61/61 `physically_validated`**, **183 parâmetros CAB**, nenhum `pending`/`partially_cataloged` em CAB, `catalog_version = 52`, **176 efeitos fisicamente validados**, **738 parâmetros catalogados** e **91 efeitos ainda sem parâmetros** em outras classes.
 
 A consolidação completa está em `docs/phases/CAB_CLASS_CONSOLIDATION_PHASE71.md`.
+
+## 54. Fase 72 — IR: schema compartilhado e conclusão física
+
+IR 1 e IR 20 confirmaram por PCAPNG o mesmo layout de parâmetros usado por CAB: VOLUME no seletor 1, LOW CUT no 5 e HIGH CUT no 6, todos em `float32_nibbles_v1`. LOW CUT usa `19 = OFF` e 20..2000 Hz; HIGH CUT usa 2000..20000 Hz e `20001 = OFF`. Dumps salvos e eventos `0x1C` confirmaram os valores personalizados `37/637/15371` em IR 1 e `28/953/13267` em IR 20.
+
+Os 20 modelos IR foram preparados inicialmente como `partially_cataloged`. O usuário então testou IR 1..20 individualmente com `matribox_monitor --live --log ir_phase72_validation.txt`, alterando os controles e comparando os valores exibidos com a pedaleira. Ele confirmou que todos os 20 modelos corresponderam exatamente ao equipamento. O log registrou mudanças ao vivo em 19 modelos; IR 4 não gerou linha de parâmetro no TXT, mas foi confirmado fisicamente pelo usuário durante a validação manual.
+
+A classe termina com **20/20 `physically_validated`**, **60 parâmetros IR**, nenhum `pending`/`partially_cataloged` em IR, `catalog_version = 53`, **196 efeitos fisicamente validados**, **798 parâmetros catalogados** e **71 efeitos ainda sem parâmetros** em outras classes. A consolidação completa está em `docs/phases/IR_CLASS_CONSOLIDATION_PHASE72.md`.
+
+Importação de WAV/IR de terceiros permanece fora do escopo até o fim da catalogação de parâmetros das demais classes.
