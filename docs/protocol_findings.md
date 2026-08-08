@@ -2176,3 +2176,9 @@ Os seletores salvos 2, 3 e 4 permaneceram como resíduos nas duas âncoras e nã
 IR 1 (`model_id 0`) e IR 20 (`model_id 19`) confirmaram o mesmo protocolo de parâmetros: VOLUME selector 1, LOW CUT selector 5 e HIGH CUT selector 6 com `float32_nibbles_v1` completo. LOW CUT usa raw 19 para OFF; HIGH CUT usa raw 20001 para OFF. A hidratação `0x10` e os eventos `0x1C` convergem para os mesmos valores. Os resíduos persistidos 2/3/4 continuam fora do catálogo.
 
 A Fase 72 aplicou esse schema aos 20 IRs como candidatos somente-leitura. Em seguida, o usuário validou IR 1..20 individualmente no `matribox_monitor --live --log`, comparando os valores do script com a pedaleira e confirmando correspondência integral em todos os modelos. A classe encerra em 20/20 `physically_validated` e 60 parâmetros. Transferência/importação de arquivos WAV não é investigada nesta fase.
+
+## Fase 73 — EQ: selectors 0..5 e valores assinados
+
+GUITAR EQ 1 confirmou por dump e eventos `0x1C` cinco bandas em selectors 0..4 e VOLUME no selector 5. As bandas transmitem valores assinados nativos `-50..50` com `float32_nibbles_v1`; VOLUME usa `0..100`. Defaults informados pela interface e confirmados no anchor são 0 para bandas e 50 para volume.
+
+CALIF EQ confirmou selectors 0..4 para suas cinco bandas e nenhum VOLUME visível. O valor persistido `selector 5 = 50` é resíduo do slot e permanece fora do catálogo. Após aplicar os layouts aos cinco EQs, o usuário validou todos no `matribox_monitor --live --log`, comparando os valores do script com a pedaleira e confirmando correspondência integral. A classe encerra com 5/5 `physically_validated` e 29 parâmetros.
