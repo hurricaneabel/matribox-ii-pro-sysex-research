@@ -7,7 +7,153 @@
   "name": "CLASSICAL AC",
   "model_id": 66,
   "secondary_selector": 10,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase70_shared_schema_confirmed_across_all_cabs_phase71",
+        "full_float32_required": true,
+        "evidence": "docs/phases/CAB_CLASS_CONSOLIDATION_PHASE71.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_all_cabs_phase71",
+        "monitor_validation_result": "all_models_parameter_changes_and_float_values_exact_to_device",
+        "range_validated": [
+          0,
+          100
+        ]
+      }
+    },
+    {
+      "key": "low_cut",
+      "name": "LOW CUT",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 19,
+        "maximum": 2000,
+        "step": 1
+      },
+      "unit": "Hz",
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 5,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 5,
+        "saved_dump_default": 19,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase70_shared_schema_confirmed_across_all_cabs_phase71",
+        "full_float32_required": true,
+        "evidence": "docs/phases/CAB_CLASS_CONSOLIDATION_PHASE71.md",
+        "monitor_integration_physical_validation": "approved",
+        "off_wire_value": 19,
+        "monitor_validation_source": "user_live_monitor_all_cabs_phase71",
+        "monitor_validation_result": "all_models_parameter_changes_and_float_values_exact_to_device",
+        "range_validated": [
+          19,
+          2000
+        ]
+      },
+      "display": {
+        "kind": "numeric_with_sentinels",
+        "sentinels": [
+          {
+            "value": 19,
+            "label": "OFF"
+          }
+        ]
+      }
+    },
+    {
+      "key": "high_cut",
+      "name": "HIGH CUT",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 2000,
+        "maximum": 20001,
+        "step": 1
+      },
+      "unit": "Hz",
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 6,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 6,
+        "saved_dump_default": 20001,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase70_shared_schema_confirmed_across_all_cabs_phase71",
+        "full_float32_required": true,
+        "evidence": "docs/phases/CAB_CLASS_CONSOLIDATION_PHASE71.md",
+        "monitor_integration_physical_validation": "approved",
+        "off_wire_value": 20001,
+        "monitor_validation_source": "user_live_monitor_all_cabs_phase71",
+        "monitor_validation_result": "all_models_parameter_changes_and_float_values_exact_to_device",
+        "range_validated": [
+          2000,
+          20001
+        ]
+      },
+      "display": {
+        "kind": "numeric_with_sentinels",
+        "sentinels": [
+          {
+            "value": 20001,
+            "label": "OFF"
+          }
+        ]
+      }
+    }
+  ]
 }

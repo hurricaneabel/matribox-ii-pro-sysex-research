@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 50)
+        self.assertEqual(self.catalog.catalog_version, 52)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -465,11 +465,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 )
 
     def test_uncataloged_effects_do_not_invent_parameters(self) -> None:
-        pending = [
-            model
-            for effect_class in self.catalog.classes
-            for model in effect_class.models
-            if model.key not in {
+        parameterized_keys = {
                 "dyn.m_boost",
                 "dyn.comp1",
                 "dyn.comp2",
@@ -585,9 +581,19 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "amp.f_2bass",
                 "amp.ac_preamp",
                 "amp.ac_preamp_2",
+                "cab.supero_1x6",
+                "cab.double_bass",
             }
+        parameterized_keys.update(
+            model.key for model in self.catalog.class_by_key("cab").models
+        )
+        pending = [
+            model
+            for effect_class in self.catalog.classes
+            for model in effect_class.models
+            if model.key not in parameterized_keys
         ]
-        self.assertEqual(len(pending), 152)
+        self.assertEqual(len(pending), 91)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")

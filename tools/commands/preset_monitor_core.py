@@ -42,6 +42,7 @@ from tools.parameters.decoder import (
     EffectParameterProtocolError,
     parse_effect_parameter_signal,
     resolve_effect_parameter_signal,
+    format_parameter_value,
 )
 from tools.catalog.models import ParameterDefinition
 from tools.parameters.state import EffectParameterState, ResolvedParameterValue
@@ -335,11 +336,9 @@ def _format_domain_value(
                 return f"{value_text} {unit}" if isinstance(unit, str) else value_text
     if event is not None:
         return event.display_value
-    value = resolved.value
-    if isinstance(value, bool):
-        return "ligado" if value else "desligado"
-    value_text = str(int(value)) if isinstance(value, float) and value.is_integer() else str(value)
-    return f"{value_text} {parameter.unit}" if parameter.unit else value_text
+    return format_parameter_value(
+        resolved.value, parameter.unit, parameter.display
+    )
 
 
 def build_effect_snapshots(

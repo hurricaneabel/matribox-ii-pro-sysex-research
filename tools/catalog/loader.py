@@ -194,31 +194,57 @@ def _parse_parameter(document: Mapping[str, Any], path: Path) -> ParameterDefini
     normalized_display: dict[str, Any] = {}
     if raw_display:
         kind = raw_display.get("kind")
-        if kind != "duration_milliseconds":
+        if kind == "duration_milliseconds":
+            seconds_threshold = raw_display.get("seconds_threshold", 1000)
+            seconds_decimals = raw_display.get("seconds_decimals", 1)
+            decimal_separator = raw_display.get("decimal_separator", ",")
+            if (
+                isinstance(seconds_threshold, bool)
+                or not isinstance(seconds_threshold, (int, float))
+                or seconds_threshold <= 0
+            ):
+                raise _fail(path, "display.seconds_threshold deve ser número positivo")
+            if (
+                isinstance(seconds_decimals, bool)
+                or not isinstance(seconds_decimals, int)
+                or not 0 <= seconds_decimals <= 6
+            ):
+                raise _fail(path, "display.seconds_decimals deve ser inteiro entre 0 e 6")
+            if decimal_separator not in {".", ","}:
+                raise _fail(path, "display.decimal_separator deve ser '.' ou ','")
+            normalized_display = {
+                "kind": kind,
+                "seconds_threshold": seconds_threshold,
+                "seconds_decimals": seconds_decimals,
+                "decimal_separator": decimal_separator,
+            }
+        elif kind == "numeric_with_sentinels":
+            raw_sentinels = raw_display.get("sentinels")
+            if not isinstance(raw_sentinels, list) or not raw_sentinels:
+                raise _fail(path, "display.sentinels deve ser lista não vazia")
+            sentinels: list[dict[str, Any]] = []
+            seen_values: set[float] = set()
+            for sentinel in raw_sentinels:
+                if not isinstance(sentinel, dict):
+                    raise _fail(path, "cada display.sentinels deve ser objeto")
+                value = sentinel.get("value")
+                label = sentinel.get("label")
+                if isinstance(value, bool) or not isinstance(value, (int, float)):
+                    raise _fail(path, "display.sentinels.value deve ser número")
+                if not isinstance(label, str) or not label.strip():
+                    raise _fail(path, "display.sentinels.label deve ser texto não vazio")
+                comparable = float(value)
+                if comparable in seen_values:
+                    raise _fail(path, "display.sentinels possui valor duplicado")
+                if minimum is not None and value < minimum:
+                    raise _fail(path, "display.sentinels.value abaixo do range")
+                if maximum is not None and value > maximum:
+                    raise _fail(path, "display.sentinels.value acima do range")
+                seen_values.add(comparable)
+                sentinels.append({"value": value, "label": label})
+            normalized_display = {"kind": kind, "sentinels": sentinels}
+        else:
             raise _fail(path, f"display.kind não suportado: {kind!r}")
-        seconds_threshold = raw_display.get("seconds_threshold", 1000)
-        seconds_decimals = raw_display.get("seconds_decimals", 1)
-        decimal_separator = raw_display.get("decimal_separator", ",")
-        if (
-            isinstance(seconds_threshold, bool)
-            or not isinstance(seconds_threshold, (int, float))
-            or seconds_threshold <= 0
-        ):
-            raise _fail(path, "display.seconds_threshold deve ser número positivo")
-        if (
-            isinstance(seconds_decimals, bool)
-            or not isinstance(seconds_decimals, int)
-            or not 0 <= seconds_decimals <= 6
-        ):
-            raise _fail(path, "display.seconds_decimals deve ser inteiro entre 0 e 6")
-        if decimal_separator not in {".", ","}:
-            raise _fail(path, "display.decimal_separator deve ser '.' ou ','")
-        normalized_display = {
-            "kind": kind,
-            "seconds_threshold": seconds_threshold,
-            "seconds_decimals": seconds_decimals,
-            "decimal_separator": decimal_separator,
-        }
     display = MappingProxyType(normalized_display)
 
     raw_value_domain = document.get("value_domain", {})

@@ -2164,3 +2164,9 @@ regressão de encerramento exige explicitamente que os 63 modelos AMP permaneça
 
 A consolidação completa da classe está em
 `docs/phases/AMP_CLASS_CONSOLIDATION_PHASE69.md`.
+
+## Fases 70–71 — CAB: schema compartilhado e conclusão física
+
+`SUPERO 1X6` e `DOUBLE BASS` provaram por PCAPNG que CAB persiste e responde VOLUME no seletor 1, LOW CUT no 5 e HIGH CUT no 6. Todos usam `float32_nibbles_v1` completo. LOW CUT transmite `19` para OFF e frequências 20..2000 diretamente em Hz; HIGH CUT transmite 2000..20000 diretamente e usa `20001` para OFF. Hidratação `0x10` e eventos ao vivo `0x1C` convergem para a mesma exibição.
+
+Os seletores salvos 2, 3 e 4 permaneceram como resíduos nas duas âncoras e não foram catalogados. Depois de aplicar o schema aos demais 59 CABs, o usuário validou todos os modelos individualmente no monitor ao vivo e confirmou correspondência integral com a pedaleira, inclusive valores float e OFF. CAB encerra em 61/61 `physically_validated` e 183 parâmetros.

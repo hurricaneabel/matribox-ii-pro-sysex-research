@@ -1,0 +1,106 @@
+{
+  "phase": 70,
+  "class": "CAB",
+  "result": "two_models_confirm_same_selectors_and_full_float32_codec",
+  "shared_selectors": {
+    "volume": 1,
+    "low_cut": 5,
+    "high_cut": 6
+  },
+  "off_sentinels": {
+    "low_cut": 19,
+    "high_cut": 20001
+  },
+  "fixtures": [
+    {
+      "file": "supero_volume_099.bin",
+      "effect": "cab.supero_1x6",
+      "parameter": "volume",
+      "selector": 1,
+      "value": 99,
+      "source": "CAB01_SUPERO_1X6_05_VOLUME_SWEEP.pcapng",
+      "sha256": "87b80bf89fe299b1812623f8ffa06528c35fe8336638e7d2a11d2136fbe15134"
+    },
+    {
+      "file": "supero_low_cut_0534.bin",
+      "effect": "cab.supero_1x6",
+      "parameter": "low_cut",
+      "selector": 5,
+      "value": 534,
+      "source": "CAB01_SUPERO_1X6_03_LOW_CUT_SWEEP.pcapng",
+      "sha256": "0be8e53bec017ac2a935b09e9e3288c3c3423afe459b47b38ac6e07d895bf5a7"
+    },
+    {
+      "file": "supero_low_cut_off_0019.bin",
+      "effect": "cab.supero_1x6",
+      "parameter": "low_cut",
+      "selector": 5,
+      "value": 19,
+      "source": "CAB01_SUPERO_1X6_03_LOW_CUT_SWEEP.pcapng",
+      "sha256": "776d2c32291a95d650d0bda160becd56c0070abdf1a40cad03bebbde257cdf10"
+    },
+    {
+      "file": "supero_high_cut_15501.bin",
+      "effect": "cab.supero_1x6",
+      "parameter": "high_cut",
+      "selector": 6,
+      "value": 15501,
+      "source": "CAB01_SUPERO_1X6_04_HIGH_CUT_SWEEP.pcapng",
+      "sha256": "7ae0f227cbcde4c8db64b725946246ca56b20e691489e67fe5945528831d9c9c"
+    },
+    {
+      "file": "supero_high_cut_off_20001.bin",
+      "effect": "cab.supero_1x6",
+      "parameter": "high_cut",
+      "selector": 6,
+      "value": 20001,
+      "source": "CAB01_SUPERO_1X6_04_HIGH_CUT_SWEEP.pcapng",
+      "sha256": "6bf8a32ce7446445a2b38b3f48643c1b04d4dd7811d596403a8552eca81ebeaf"
+    },
+    {
+      "file": "double_bass_volume_081.bin",
+      "effect": "cab.double_bass",
+      "parameter": "volume",
+      "selector": 1,
+      "value": 81,
+      "source": "CAB02_DOUBLE_BASS_02_PARAMETER_CONFIRMATION.pcapng",
+      "sha256": "7b7f6f6ff441553caa1a325193ed0c9d436941449303b70d249cc482635332dd"
+    },
+    {
+      "file": "double_bass_low_cut_0956.bin",
+      "effect": "cab.double_bass",
+      "parameter": "low_cut",
+      "selector": 5,
+      "value": 956,
+      "source": "CAB02_DOUBLE_BASS_02_PARAMETER_CONFIRMATION.pcapng",
+      "sha256": "bac8766df664d23966515390ed51b3cf8ade10a61434167891b67d41a48d7f6b"
+    },
+    {
+      "file": "double_bass_low_cut_off_0019.bin",
+      "effect": "cab.double_bass",
+      "parameter": "low_cut",
+      "selector": 5,
+      "value": 19,
+      "source": "CAB02_DOUBLE_BASS_02_PARAMETER_CONFIRMATION.pcapng",
+      "sha256": "776d2c32291a95d650d0bda160becd56c0070abdf1a40cad03bebbde257cdf10"
+    },
+    {
+      "file": "double_bass_high_cut_13262.bin",
+      "effect": "cab.double_bass",
+      "parameter": "high_cut",
+      "selector": 6,
+      "value": 13262,
+      "source": "CAB02_DOUBLE_BASS_02_PARAMETER_CONFIRMATION.pcapng",
+      "sha256": "6dec619f86818ea8a119a857024b06d291463c7563c296eda09945c3f01a1c07"
+    },
+    {
+      "file": "double_bass_high_cut_off_20001.bin",
+      "effect": "cab.double_bass",
+      "parameter": "high_cut",
+      "selector": 6,
+      "value": 20001,
+      "source": "CAB02_DOUBLE_BASS_02_PARAMETER_CONFIRMATION.pcapng",
+      "sha256": "6bf8a32ce7446445a2b38b3f48643c1b04d4dd7811d596403a8552eca81ebeaf"
+    }
+  ]
+}
