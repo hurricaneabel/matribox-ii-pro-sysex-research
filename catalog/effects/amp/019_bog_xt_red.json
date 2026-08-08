@@ -7,7 +7,250 @@
   "name": "BOG XT RED",
   "model_id": 110,
   "secondary_selector": 7,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "saved_dump_value": 3,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "physically_validated_from_official_ui_order",
+        "evidence": "user_physical_validation_phase65_monitor_live",
+        "monitor_integration_physical_validation": "approved",
+        "physical_validation_without_pcapng": true,
+        "range_validated": [
+          0,
+          100
+        ]
+      }
+    },
+    {
+      "key": "presence",
+      "name": "PRESENCE",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "saved_dump_value": 9,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "physically_validated_from_official_ui_order",
+        "evidence": "user_physical_validation_phase65_monitor_live",
+        "monitor_integration_physical_validation": "approved",
+        "physical_validation_without_pcapng": true,
+        "range_validated": [
+          0,
+          100
+        ]
+      }
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "saved_dump_value": 14,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "physically_validated_from_official_ui_order",
+        "evidence": "user_physical_validation_phase65_monitor_live",
+        "monitor_integration_physical_validation": "approved",
+        "physical_validation_without_pcapng": true,
+        "range_validated": [
+          0,
+          100
+        ]
+      }
+    },
+    {
+      "key": "bass",
+      "name": "BASS",
+      "display_order": 4,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 3,
+        "saved_dump_value": 20,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "physically_validated_from_official_ui_order",
+        "evidence": "user_physical_validation_phase65_monitor_live",
+        "monitor_integration_physical_validation": "approved",
+        "physical_validation_without_pcapng": true,
+        "range_validated": [
+          0,
+          100
+        ]
+      }
+    },
+    {
+      "key": "middle",
+      "name": "MIDDLE",
+      "display_order": 5,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 4,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 4,
+        "saved_dump_value": 25,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "physically_validated_from_official_ui_order",
+        "evidence": "user_physical_validation_phase65_monitor_live",
+        "monitor_integration_physical_validation": "approved",
+        "physical_validation_without_pcapng": true,
+        "range_validated": [
+          0,
+          100
+        ]
+      }
+    },
+    {
+      "key": "treble",
+      "name": "TREBLE",
+      "display_order": 6,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 5,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 5,
+        "saved_dump_value": 32,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "physically_validated_from_official_ui_order",
+        "evidence": "user_physical_validation_phase65_monitor_live",
+        "monitor_integration_physical_validation": "approved",
+        "physical_validation_without_pcapng": true,
+        "range_validated": [
+          0,
+          100
+        ]
+      }
+    }
+  ]
 }

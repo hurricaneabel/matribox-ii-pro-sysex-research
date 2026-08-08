@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 39
+CATALOG_VERSION = 50
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -1772,6 +1772,1065 @@ BASS_DIST_PARAMETER_SEEDS = _inferred_drive_numeric_seeds(
 )
 
 
+def _validated_amp_numeric_seeds(
+    *,
+    controls: tuple[tuple[str, str, int], ...],
+    defaults: tuple[int, ...],
+    saved_values: tuple[int, ...],
+    evidence: str,
+) -> tuple[dict[str, Any], ...]:
+    return tuple(
+        {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "range_validated": [0, 100],
+                "internal_slots_observed": [1],
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_value": saved_value,
+                "saved_dump_default": default,
+                "saved_dump_default_source": "user_reported_and_capture_confirmed",
+                "evidence": evidence,
+                "monitor_integration_physical_validation": "approved",
+            },
+        }
+        for (key, name, selector), default, saved_value, order in zip(
+            controls,
+            defaults,
+            saved_values,
+            range(1, len(controls) + 1),
+            strict=True,
+        )
+    )
+
+
+TWD_DELUXE_PARAMETER_SEEDS = _validated_amp_numeric_seeds(
+    controls=(("gain", "GAIN", 0), ("tone", "TONE", 1), ("volume", "VOLUME", 2)),
+    defaults=(30, 50, 50),
+    saved_values=(21, 43, 65),
+    evidence="docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+)
+
+
+B_MAN_N_PARAMETER_SEEDS = _validated_amp_numeric_seeds(
+    controls=(
+        ("gain", "GAIN", 0),
+        ("presence", "PRESENCE", 1),
+        ("volume", "VOLUME", 2),
+        ("bass", "BASS", 3),
+        ("middle", "MIDDLE", 4),
+        ("treble", "TREBLE", 5),
+    ),
+    defaults=(30, 50, 50, 50, 50, 50),
+    saved_values=(21, 32, 43, 54, 65, 76),
+    evidence="docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+)
+
+
+B_MAN_BRI_PARAMETER_SEEDS = _validated_amp_numeric_seeds(
+    controls=(
+        ("gain", "GAIN", 0),
+        ("presence", "PRESENCE", 1),
+        ("volume", "VOLUME", 2),
+        ("bass", "BASS", 3),
+        ("middle", "MIDDLE", 4),
+        ("treble", "TREBLE", 5),
+    ),
+    defaults=(35, 50, 50, 50, 50, 50),
+    saved_values=(23, 34, 45, 56, 67, 78),
+    evidence="docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+)
+
+
+def _validated_phase60_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int, str], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...],
+) -> tuple[dict[str, Any], ...]:
+    evidence = "docs/phases/AMP_DARK_SUPERO_CANDIDATES_PHASE60.md"
+    seeds: list[dict[str, Any]] = []
+    for order, ((key, name, selector, value_type), default, observed_value) in enumerate(
+        zip(controls, defaults, observed_values, strict=True),
+        start=1,
+    ):
+        is_boolean = value_type == "boolean"
+        validation: dict[str, Any] = {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_value": observed_value,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "selector_mapping_source": "physically_validated_from_official_ui_order",
+            "evidence": evidence,
+            "monitor_integration_physical_validation": "approved",
+            "physical_validation_without_pcapng": True,
+        }
+        if is_boolean:
+            validation["boolean_encoding"] = {"false": 0, "true": 1}
+        else:
+            validation["range_validated"] = [0, 100]
+        seeds.append(
+            {
+                "key": key,
+                "name": name,
+                "display_order": order,
+                "value_type": value_type,
+                "range": {
+                    "minimum": 0,
+                    "maximum": 1 if is_boolean else 100,
+                    "step": 1,
+                },
+                "unit": None,
+                "protocol": {
+                    "profile": "effect_parameter_response_1c_v1",
+                    "value_codec": "upper_float32_nibbles_v1",
+                    "identification_status": "validated_with_chain_effect_context",
+                    "message_match": {
+                        "parameter_selector": selector,
+                        "parameter_marker": 1,
+                        "parameter_type": 1,
+                    },
+                },
+                "validation": validation,
+            }
+        )
+    return tuple(seeds)
+
+
+DARK_DOUBLE_PARAMETER_SEEDS = _validated_phase60_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("volume", "VOLUME", 1, "integer"),
+        ("bass", "BASS", 2, "integer"),
+        ("middle", "MIDDLE", 3, "integer"),
+        ("treble", "TREBLE", 4, "integer"),
+        ("bright", "BRIGHT", 5, "boolean"),
+    ),
+    defaults=(35, 50, 50, 40, 60, 1),
+    observed_values=(19, 20, 19, 17, 9, 1),
+)
+
+DARK_DELUXE_PARAMETER_SEEDS = _validated_phase60_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("volume", "VOLUME", 1, "integer"),
+        ("bass", "BASS", 2, "integer"),
+        ("treble", "TREBLE", 3, "integer"),
+    ),
+    defaults=(30, 50, 50, 50),
+    observed_values=(65, 69, 74, 71),
+)
+
+SUPERO_2_CL_PARAMETER_SEEDS = _validated_phase60_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("tone", "TONE", 1, "integer"),
+        ("volume", "VOLUME", 2, "integer"),
+    ),
+    defaults=(30, 50, 50),
+    observed_values=(87, 75, 94),
+)
+
+
+def _validated_phase61_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int, str], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...],
+) -> tuple[dict[str, Any], ...]:
+    evidence = "docs/phases/AMP_SUPERO_VOKS_CANDIDATES_PHASE61.md"
+    seeds: list[dict[str, Any]] = []
+    for order, ((key, name, selector, value_type), default, observed_value) in enumerate(
+        zip(controls, defaults, observed_values, strict=True),
+        start=1,
+    ):
+        is_boolean = value_type == "boolean"
+        validation: dict[str, Any] = {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_value": observed_value,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "selector_mapping_source": "physically_validated_from_official_ui_order",
+            "evidence": evidence,
+            "monitor_integration_physical_validation": "approved",
+            "physical_validation_without_pcapng": True,
+        }
+        if is_boolean:
+            validation["boolean_encoding"] = {"false": 0, "true": 1}
+        else:
+            validation["range_validated"] = [0, 100]
+        seeds.append(
+            {
+                "key": key,
+                "name": name,
+                "display_order": order,
+                "value_type": value_type,
+                "range": {
+                    "minimum": 0,
+                    "maximum": 1 if is_boolean else 100,
+                    "step": 1,
+                },
+                "unit": None,
+                "protocol": {
+                    "profile": "effect_parameter_response_1c_v1",
+                    "value_codec": "upper_float32_nibbles_v1",
+                    "identification_status": "validated_with_chain_effect_context",
+                    "message_match": {
+                        "parameter_selector": selector,
+                        "parameter_marker": 1,
+                        "parameter_type": 1,
+                    },
+                },
+                "validation": validation,
+            }
+        )
+    return tuple(seeds)
+
+
+SUPERO_2_OD_PARAMETER_SEEDS = _validated_phase61_amp_seeds(
+    controls=(
+        ("gain_1", "GAIN 1", 0, "integer"),
+        ("tone_1", "TONE 1", 1, "integer"),
+        ("gain_2", "GAIN 2", 2, "integer"),
+        ("tone_2", "TONE 2", 3, "integer"),
+        ("volume", "VOLUME", 4, "integer"),
+    ),
+    defaults=(50, 50, 50, 50, 50),
+    observed_values=(21, 34, 9, 8, 23),
+)
+
+VOKS_15TB_PARAMETER_SEEDS = _validated_phase61_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("tone_cut", "TONE CUT", 1, "integer"),
+        ("volume", "VOLUME", 2, "integer"),
+        ("bass", "BASS", 3, "integer"),
+        ("treble", "TREBLE", 4, "integer"),
+    ),
+    defaults=(30, 60, 50, 50, 50),
+    observed_values=(48, 58, 66, 69, 66),
+)
+
+VOKS_30N_PARAMETER_SEEDS = _validated_phase61_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("tone_cut", "TONE CUT", 1, "integer"),
+        ("volume", "VOLUME", 2, "integer"),
+        ("bright", "BRIGHT", 3, "boolean"),
+    ),
+    defaults=(30, 50, 50, 0),
+    observed_values=(91, 90, 97, 1),
+)
+
+
+def _validated_phase62_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int, str], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...],
+    enum_choices: dict[str, tuple[tuple[int, str], ...]] | None = None,
+) -> tuple[dict[str, Any], ...]:
+    evidence = "docs/phases/AMP_VOKS_JAZZ_SUPERB_CANDIDATES_PHASE62.md"
+    enum_choices = enum_choices or {}
+    seeds: list[dict[str, Any]] = []
+    for order, ((key, name, selector, value_type), default, observed_value) in enumerate(
+        zip(controls, defaults, observed_values, strict=True),
+        start=1,
+    ):
+        is_boolean = value_type == "boolean"
+        is_enum = value_type == "enum"
+        choices = enum_choices.get(key, ())
+        validation: dict[str, Any] = {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_value": observed_value,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "selector_mapping_source": "physically_validated_from_official_ui_order",
+            "evidence": evidence,
+            "monitor_integration_physical_validation": "approved",
+            "physical_validation_without_pcapng": True,
+        }
+        if is_boolean:
+            validation["boolean_encoding"] = {"false": 0, "true": 1}
+        elif is_enum:
+            validation["enum_wire_values_validated"] = [value for value, _ in choices]
+        else:
+            validation["range_validated"] = [0, 100]
+        parameter: dict[str, Any] = {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": value_type,
+            "range": {
+                "minimum": 0,
+                "maximum": 1 if (is_boolean or is_enum) else 100,
+                "step": 1,
+            },
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": validation,
+        }
+        if is_enum:
+            parameter["choices"] = [
+                {"value": value, "label": label} for value, label in choices
+            ]
+        seeds.append(parameter)
+    return tuple(seeds)
+
+
+VOKS_30TB_PARAMETER_SEEDS = _validated_phase62_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("tone_cut", "TONE CUT", 1, "integer"),
+        ("volume", "VOLUME", 2, "integer"),
+        ("bass", "BASS", 3, "integer"),
+        ("treble", "TREBLE", 4, "integer"),
+        ("char", "CHAR", 5, "enum"),
+    ),
+    defaults=(30, 50, 50, 50, 50, 0),
+    observed_values=(2, 4, 3, 4, 4, 1),
+    enum_choices={"char": ((0, "COOL"), (1, "HOT"))},
+)
+
+JAZZ_120_PARAMETER_SEEDS = _validated_phase62_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("bass", "BASS", 1, "integer"),
+        ("middle", "MIDDLE", 2, "integer"),
+        ("treble", "TREBLE", 3, "integer"),
+        ("bright", "BRIGHT", 4, "boolean"),
+    ),
+    defaults=(50, 50, 50, 50, 0),
+    observed_values=(39, 55, 43, 55, 1),
+)
+
+SUPERB_CL_PARAMETER_SEEDS = _validated_phase62_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("presence", "PRESENCE", 1, "integer"),
+        ("volume", "VOLUME", 2, "integer"),
+        ("bass", "BASS", 3, "integer"),
+        ("middle", "MIDDLE", 4, "integer"),
+        ("treble", "TREBLE", 5, "integer"),
+    ),
+    defaults=(35, 50, 50, 50, 50, 50),
+    observed_values=(66, 74, 82, 88, 94, 100),
+)
+
+
+def _validated_phase63_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...],
+) -> tuple[dict[str, Any], ...]:
+    evidence = "docs/phases/AMP_SUPERB_CALIF_CANDIDATES_PHASE63.md"
+    seeds: list[dict[str, Any]] = []
+    for order, ((key, name, selector), default, observed_value) in enumerate(
+        zip(controls, defaults, observed_values, strict=True),
+        start=1,
+    ):
+        seeds.append(
+            {
+                "key": key,
+                "name": name,
+                "display_order": order,
+                "value_type": "integer",
+                "range": {
+                    "minimum": 0,
+                    "maximum": 100,
+                    "step": 1,
+                },
+                "unit": None,
+                "protocol": {
+                    "profile": "effect_parameter_response_1c_v1",
+                    "value_codec": "upper_float32_nibbles_v1",
+                    "identification_status": "validated_with_chain_effect_context",
+                    "message_match": {
+                        "parameter_selector": selector,
+                        "parameter_marker": 1,
+                        "parameter_type": 1,
+                    },
+                },
+                "validation": {
+                    "offline": True,
+                    "physical": True,
+                    "read_only": True,
+                    "effect_identity_source": "current_chain",
+                    "parameter_selector": selector,
+                    "saved_dump_value": observed_value,
+                    "saved_dump_default": default,
+                    "saved_dump_default_source": "user_reported_official_ui",
+                    "selector_mapping_source": "physically_validated_from_official_ui_order",
+                    "evidence": evidence,
+                    "monitor_integration_physical_validation": "approved",
+                    "physical_validation_without_pcapng": True,
+                    "range_validated": [0, 100],
+                },
+            }
+        )
+    return tuple(seeds)
+
+
+SUPERB_OD_PARAMETER_SEEDS = _validated_phase63_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0),
+        ("presence", "PRESENCE", 1),
+        ("volume", "VOLUME", 2),
+        ("bass", "BASS", 3),
+        ("middle", "MIDDLE", 4),
+        ("treble", "TREBLE", 5),
+    ),
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(3, 5, 7, 1, 4, 6),
+)
+
+CALIF_STAR_CL_PARAMETER_SEEDS = _validated_phase63_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0),
+        ("presence", "PRESENCE", 1),
+        ("volume", "VOLUME", 2),
+        ("bass", "BASS", 3),
+        ("middle", "MIDDLE", 4),
+        ("treble", "TREBLE", 5),
+    ),
+    defaults=(40, 50, 50, 50, 50, 50),
+    observed_values=(33, 41, 54, 62, 45, 62),
+)
+
+CALIF_STAR_OD_PARAMETER_SEEDS = _validated_phase63_amp_seeds(
+    controls=(
+        ("input", "INPUT", 0),
+        ("gain", "GAIN", 1),
+        ("presence", "PRESENCE", 2),
+        ("volume", "VOLUME", 3),
+        ("bass", "BASS", 4),
+        ("middle", "MIDDLE", 5),
+        ("treble", "TREBLE", 6),
+    ),
+    defaults=(50, 50, 50, 50, 50, 50, 50),
+    observed_values=(94, 93, 79, 90, 97, 88, 100),
+)
+
+
+def _validated_phase64_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int, str], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...],
+) -> tuple[dict[str, Any], ...]:
+    evidence = "docs/phases/AMP_BOG_CANDIDATES_PHASE64.md"
+    seeds: list[dict[str, Any]] = []
+    for order, ((key, name, selector, value_type), default, observed_value) in enumerate(
+        zip(controls, defaults, observed_values, strict=True),
+        start=1,
+    ):
+        is_boolean = value_type == "boolean"
+        validation: dict[str, Any] = {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_value": observed_value,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "selector_mapping_source": "physically_validated_from_official_ui_order",
+            "evidence": evidence,
+            "monitor_integration_physical_validation": "approved",
+            "physical_validation_without_pcapng": True,
+        }
+        if is_boolean:
+            validation["boolean_encoding"] = {"false": 0, "true": 1}
+        else:
+            validation["range_validated"] = [0, 100]
+        seeds.append({
+            "key": key, "name": name, "display_order": order,
+            "value_type": value_type,
+            "range": {"minimum": 0, "maximum": 1 if is_boolean else 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": validation,
+        })
+    return tuple(seeds)
+
+
+BOG_SV_CL_PARAMETER_SEEDS = _validated_phase64_amp_seeds(
+    controls=(("gain", "GAIN", 0, "integer"), ("presence", "PRESENCE", 1, "integer"), ("volume", "VOLUME", 2, "integer"), ("bass", "BASS", 3, "integer"), ("treble", "TREBLE", 4, "integer"), ("bright", "BRIGHT", 5, "boolean")),
+    defaults=(30, 50, 50, 50, 50, 0),
+    observed_values=(8, 12, 18, 13, 20, 1),
+)
+
+BOG_SV_OD_PARAMETER_SEEDS = _validated_phase64_amp_seeds(
+    controls=(("gain", "GAIN", 0, "integer"), ("presence", "PRESENCE", 1, "integer"), ("volume", "VOLUME", 2, "integer"), ("bass", "BASS", 3, "integer"), ("middle", "MIDDLE", 4, "integer"), ("treble", "TREBLE", 5, "integer")),
+    defaults=(30, 50, 50, 50, 50, 50),
+    observed_values=(23, 37, 60, 57, 43, 57),
+)
+
+BOG_XT_BLUE_PARAMETER_SEEDS = _validated_phase64_amp_seeds(
+    controls=(("gain", "GAIN", 0, "integer"), ("presence", "PRESENCE", 1, "integer"), ("volume", "VOLUME", 2, "integer"), ("bass", "BASS", 3, "integer"), ("middle", "MIDDLE", 4, "integer"), ("treble", "TREBLE", 5, "integer")),
+    defaults=(30, 50, 50, 50, 50, 50),
+    observed_values=(62, 73, 82, 88, 94, 100),
+)
+
+
+def _validated_phase65_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...],
+) -> tuple[dict[str, Any], ...]:
+    seeds: list[dict[str, Any]] = []
+    for order, ((key, name, selector), default, observed) in enumerate(
+        zip(controls, defaults, observed_values, strict=True), start=1
+    ):
+        seeds.append({
+            "key": key, "name": name, "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_value": observed,
+                "saved_dump_default": default,
+                "saved_dump_default_source": "user_reported_official_ui",
+                "selector_mapping_source": "physically_validated_from_official_ui_order",
+                "evidence": "user_physical_validation_phase65_monitor_live",
+                "monitor_integration_physical_validation": "approved",
+                "physical_validation_without_pcapng": True,
+                "range_validated": [0, 100],
+            },
+        })
+    return tuple(seeds)
+
+
+BOG_XT_RED_PARAMETER_SEEDS = _validated_phase65_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(3, 9, 14, 20, 25, 32),
+)
+DOCTOR_CL_PARAMETER_SEEDS = _validated_phase65_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("tone_cut", "TONE CUT", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(35, 50, 50, 50, 50, 50),
+    observed_values=(27, 41, 31, 43, 32, 42),
+)
+DOCTOR_OD_PARAMETER_SEEDS = _validated_phase65_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("tone_cut", "TONE CUT", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(35, 50, 50, 50, 50, 50),
+    observed_values=(37, 58, 64, 71, 68, 81),
+)
+DRAGON_CL_PARAMETER_SEEDS = _validated_phase65_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("volume", "VOLUME", 1), ("bass", "BASS", 2), ("middle", "MIDDLE", 3), ("treble", "TREBLE", 4)),
+    defaults=(35, 50, 50, 50, 50),
+    observed_values=(7, 11, 14, 10, 15),
+)
+DRAGON_CL_B_PARAMETER_SEEDS = _validated_phase65_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("volume", "VOLUME", 1), ("bass", "BASS", 2), ("middle", "MIDDLE", 3), ("treble", "TREBLE", 4)),
+    defaults=(20, 50, 50, 50, 50),
+    observed_values=(41, 58, 62, 44, 68),
+)
+DRAGON_OD_PARAMETER_SEEDS = _validated_phase65_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("volume", "VOLUME", 1), ("bass", "BASS", 2), ("middle", "MIDDLE", 3), ("treble", "TREBLE", 4)),
+    defaults=(30, 50, 50, 50, 50),
+    observed_values=(65, 76, 85, 89, 99),
+)
+SOL_100_CL_PARAMETER_SEEDS = _validated_phase65_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(30, 50, 50, 50, 50, 50),
+    observed_values=(41, 60, 40, 59, 41, 67),
+)
+SOL_100_OD_PARAMETER_SEEDS = _validated_phase65_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(80, 69, 89, 77, 90, 99),
+)
+
+
+def _validated_phase66_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...],
+) -> tuple[dict[str, Any], ...]:
+    seeds: list[dict[str, Any]] = []
+    for order, ((key, name, selector), default, observed) in enumerate(
+        zip(controls, defaults, observed_values, strict=True), start=1
+    ):
+        seeds.append({
+            "key": key, "name": name, "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_default": default,
+                "saved_dump_default_source": "user_reported_official_ui",
+                "selector_mapping_source": "physically_validated_from_official_ui_order",
+                "evidence": "user_physical_validation_phase66_monitor_live",
+                "monitor_integration_physical_validation": "approved",
+                "saved_dump_value": observed,
+                "physical_validation_without_pcapng": True,
+                "range_validated": [0, 100],
+            },
+        })
+    return tuple(seeds)
+
+
+SOL_100_LD_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(3, 0, 7, 0, 8, 0),
+)
+BRIT_45_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(25, 65, 50, 45, 50, 65),
+    observed_values=(4, 9, 13, 19, 29, 49),
+)
+BRIT_45_PLUS_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(45, 50, 50, 50, 50, 50),
+    observed_values=(10, 24, 39, 49, 28, 46),
+)
+BRIT_45JP_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain_1", "GAIN 1", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5), ("gain_2", "GAIN 2", 6)),
+    defaults=(50, 50, 50, 50, 50, 50, 50),
+    observed_values=(15, 23, 21, 13, 24, 31, 37),
+)
+BRIT_50_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(40, 50, 50, 50, 50, 50),
+    observed_values=(85, 78, 85, 87, 94, 100),
+)
+BRIT_50_PLUS_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(40, 50, 50, 50, 50, 50),
+    observed_values=(8, 0, 12, 100, 48, 66),
+)
+BRIT_50JP_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain_1", "GAIN 1", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5), ("gain_2", "GAIN 2", 6)),
+    defaults=(40, 50, 50, 50, 50, 50, 50),
+    observed_values=(3, 82, 29, 71, 34, 61, 37),
+)
+BRIT_SLP_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(75, 28, 73, 37, 35, 93),
+)
+BRIT_800_PARAMETER_SEEDS = _validated_phase66_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("presence", "PRESENCE", 1), ("volume", "VOLUME", 2), ("bass", "BASS", 3), ("middle", "MIDDLE", 4), ("treble", "TREBLE", 5)),
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(100, 63, 39, 86, 48, 73),
+)
+
+
+
+def _validated_phase67_amp_seeds(
+    *,
+    defaults: tuple[int, int, int, int, int, int],
+    observed_values: tuple[int, int, int, int, int, int],
+) -> tuple[dict[str, Any], ...]:
+    controls = (
+        ("gain", "GAIN", 0),
+        ("presence", "PRESENCE", 1),
+        ("volume", "VOLUME", 2),
+        ("bass", "BASS", 3),
+        ("middle", "MIDDLE", 4),
+        ("treble", "TREBLE", 5),
+    )
+    seeds: list[dict[str, Any]] = []
+    for order, ((key, name, selector), default, observed) in enumerate(
+        zip(controls, defaults, observed_values, strict=True), start=1
+    ):
+        seeds.append({
+            "key": key, "name": name, "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_default": default,
+                "saved_dump_default_source": "user_reported_official_ui",
+                "selector_mapping_source": "physically_validated_from_official_ui_order",
+                "evidence": "user_physical_validation_phase67_monitor_live",
+                "monitor_integration_physical_validation": "approved",
+                "saved_dump_value": observed,
+                "physical_validation_without_pcapng": True,
+                "range_validated": [0, 100],
+            },
+        })
+    return tuple(seeds)
+
+
+BRIT_900_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(0, 8, 100, 6, 17, 40))
+FLYMAN_1_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(8, 19, 100, 29, 54, 21))
+FLYMAN_2_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(70, 36, 73, 0, 55, 100))
+FLYMAN_PLUS_1_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(0, 82, 15, 100, 38, 65))
+FLYMAN_PLUS_2_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(100, 0, 71, 33, 100, 67))
+CALIF_IIC_PLUS_1_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(0, 100, 31, 66, 42, 86))
+CALIF_IIC_PLUS_2_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(100, 42, 0, 38, 87, 61))
+CALIF_IIC_PLUS_3_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(8, 89, 40, 67, 46, 100))
+CALIF_IV_LD_1_PARAMETER_SEEDS = _validated_phase67_amp_seeds(defaults=(50, 50, 50, 50, 50, 50), observed_values=(0, 85, 33, 76, 42, 100))
+
+
+def _phase68_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...] | None = None,
+) -> tuple[dict[str, Any], ...]:
+    if observed_values is not None and len(observed_values) != len(controls):
+        raise ValueError("observed_values deve corresponder aos controles da fase 68")
+
+    validated = observed_values is not None
+    seeds: list[dict[str, Any]] = []
+    for index, (order, ((key, name, selector), default)) in enumerate(
+        enumerate(zip(controls, defaults, strict=True), start=1)
+    ):
+        validation: dict[str, Any] = {
+            "offline": True,
+            "physical": validated,
+            "read_only": True,
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "selector_mapping_source": (
+                "physically_validated_from_monitor_live"
+                if validated
+                else "candidate_from_user_reported_official_ui_order"
+            ),
+            "evidence": (
+                "user_physical_validation_phase68_monitor_live"
+                if validated
+                else "user_reported_official_ui_phase68"
+            ),
+            "monitor_integration_physical_validation": (
+                "approved" if validated else "pending"
+            ),
+            "range_inferred": [0, 100],
+        }
+        identification_status = "candidate_from_user_reported_official_ui_order"
+        if validated:
+            validation.update({
+                "saved_dump_value": observed_values[index],
+                "physical_validation_without_pcapng": True,
+                "range_validated": [0, 100],
+            })
+            identification_status = "validated_with_chain_effect_context"
+
+        seeds.append({
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": 0, "maximum": 100, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": identification_status,
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": validation,
+        })
+    return tuple(seeds)
+
+
+_PHASE68_STANDARD_CONTROLS = (
+    ("gain", "GAIN", 0),
+    ("presence", "PRESENCE", 1),
+    ("volume", "VOLUME", 2),
+    ("bass", "BASS", 3),
+    ("middle", "MIDDLE", 4),
+    ("treble", "TREBLE", 5),
+)
+CALIF_IV_LD_2_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=_PHASE68_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(3, 9, 33, 100, 0, 77),
+)
+CALIF_IV_LD_3_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=_PHASE68_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(0, 100, 30, 70, 42, 74),
+)
+CALIF_DUAL_V_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=_PHASE68_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(8, 34, 0, 100, 83, 21),
+)
+CALIF_DUAL_M_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=_PHASE68_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(73, 0, 33, 67, 100, 42),
+)
+TANGER_R100_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("volume", "VOLUME", 1), ("bass", "BASS", 2), ("middle", "MIDDLE", 3), ("treble", "TREBLE", 4)),
+    defaults=(50, 50, 50, 50, 50),
+    observed_values=(0, 100, 0, 100, 17),
+)
+HALEN_51_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=(("gain", "GAIN", 0), ("volume", "VOLUME", 1), ("bass", "BASS", 2), ("middle", "MIDDLE", 3), ("treble", "TREBLE", 4), ("presence", "PRESENCE", 6)),
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(46, 53, 61, 71, 79, 48),
+)
+ENG_120_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=_PHASE68_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(15, 2, 4, 9, 100, 0),
+)
+ENG_120_PLUS_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=_PHASE68_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(20, 94, 44, 74, 99, 8),
+)
+DIZZY_VH_PARAMETER_SEEDS = _phase68_amp_seeds(
+    controls=_PHASE68_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(17, 95, 35, 93, 56, 89),
+)
+
+
+def _phase69_amp_seeds(
+    *,
+    controls: tuple[tuple[str, str, int, str], ...],
+    defaults: tuple[int, ...],
+    observed_values: tuple[int, ...],
+    enum_choices: dict[str, tuple[tuple[int, str], ...]] | None = None,
+) -> tuple[dict[str, Any], ...]:
+    enum_choices = enum_choices or {}
+    if len(observed_values) != len(controls):
+        raise ValueError("observed_values deve corresponder aos controles da fase 69")
+
+    seeds: list[dict[str, Any]] = []
+    for index, (order, ((key, name, selector, value_type), default)) in enumerate(
+        enumerate(zip(controls, defaults, strict=True), start=1)
+    ):
+        is_boolean = value_type == "boolean"
+        is_enum = value_type == "enum"
+        choices = enum_choices.get(key, ())
+        maximum = len(choices) - 1 if is_enum else (1 if is_boolean else 100)
+        validation: dict[str, Any] = {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_default": default,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "selector_mapping_source": "physically_validated_from_monitor_live",
+            "evidence": "docs/phases/AMP_CLASS_CONSOLIDATION_PHASE69.md",
+            "monitor_integration_physical_validation": "approved",
+            "saved_dump_value": observed_values[index],
+            "physical_validation_without_pcapng": True,
+        }
+        if is_boolean:
+            validation["boolean_encoding"] = {"false": 0, "true": 1}
+        elif is_enum:
+            validation["enum_wire_values_validated"] = [value for value, _ in choices]
+        else:
+            validation["range_inferred"] = [0, 100]
+            validation["range_validated"] = [0, 100]
+
+        parameter: dict[str, Any] = {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": value_type,
+            "range": {"minimum": 0, "maximum": maximum, "step": 1},
+            "unit": None,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "upper_float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": validation,
+        }
+        if is_enum:
+            parameter["choices"] = [
+                {"value": value, "label": label} for value, label in choices
+            ]
+        seeds.append(parameter)
+    return tuple(seeds)
+
+
+_PHASE69_STANDARD_CONTROLS = (
+    ("gain", "GAIN", 0, "integer"),
+    ("presence", "PRESENCE", 1, "integer"),
+    ("volume", "VOLUME", 2, "integer"),
+    ("bass", "BASS", 3, "integer"),
+    ("middle", "MIDDLE", 4, "integer"),
+    ("treble", "TREBLE", 5, "integer"),
+)
+DIZZY_VH_S_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=_PHASE69_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(0, 100, 23, 77, 40, 65),
+)
+DIZZY_VH_PLUS_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=_PHASE69_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(100, 0, 12, 88, 27, 66),
+)
+DIZZY_VH_PLUS_S_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=_PHASE69_STANDARD_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(74, 34, 100, 0, 37, 57),
+)
+A_BASSVT_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=(
+        ("gain", "GAIN", 0, "integer"),
+        ("bass", "BASS", 1, "integer"),
+        ("middle", "MIDDLE", 2, "integer"),
+        ("midrange", "MIDRANGE", 3, "enum"),
+        ("treble", "TREBLE", 4, "integer"),
+        ("volume", "VOLUME", 5, "integer"),
+    ),
+    defaults=(50, 50, 50, 1, 50, 50),
+    observed_values=(11, 92, 40, 3, 99, 1),
+    enum_choices={
+        "midrange": ((0, "220HZ"), (1, "450HZ"), (2, "800HZ"), (3, "1.6KHZ"), (4, "3KHZ")),
+    },
+)
+VOKS_BASS_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=(("volume", "VOLUME", 0, "integer"), ("bass", "BASS", 1, "integer"), ("treble", "TREBLE", 2, "integer")),
+    defaults=(50, 50, 50),
+    observed_values=(10, 93, 43),
+)
+CALI_BASS_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=(("gain", "GAIN", 0, "integer"), ("volume", "VOLUME", 1, "integer"), ("bass", "BASS", 2, "integer"), ("middle", "MIDDLE", 3, "integer"), ("treble", "TREBLE", 4, "integer")),
+    defaults=(50, 50, 50, 50, 50),
+    observed_values=(0, 100, 29, 88, 64),
+)
+A_BASSFT_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=(("volume", "VOLUME", 0, "integer"), ("bass", "BASS", 1, "integer"), ("treble", "TREBLE", 2, "integer")),
+    defaults=(50, 50, 50),
+    observed_values=(100, 38, 0),
+)
+F_2BASS_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=(("volume", "VOLUME", 0, "integer"), ("bright", "BRIGHT", 1, "boolean"), ("bass", "BASS", 2, "integer"), ("middle", "MIDDLE", 3, "integer"), ("treble", "TREBLE", 4, "integer")),
+    defaults=(50, 0, 50, 50, 50),
+    observed_values=(13, 0, 97, 77, 30),
+)
+_AC_PREAMP_CONTROLS = (
+    ("volume", "VOLUME", 0, "integer"),
+    ("tone", "TONE", 1, "integer"),
+    ("balance", "BALANCE", 2, "integer"),
+    ("eq_freq", "EQ FREQ", 3, "integer"),
+    ("eq_q", "EQ Q", 4, "integer"),
+    ("eq_gain", "EQ GAIN", 5, "integer"),
+)
+AC_PREAMP_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=_AC_PREAMP_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(0, 100, 15, 98, 38, 94),
+)
+AC_PREAMP_2_PARAMETER_SEEDS = _phase69_amp_seeds(
+    controls=_AC_PREAMP_CONTROLS,
+    defaults=(50, 50, 50, 50, 50, 50),
+    observed_values=(100, 78, 65, 0, 94, 29),
+)
+
+
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
     {
         "key": "gain",
@@ -3186,6 +4245,259 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key == "drv.bass_dist":
         parameters = list(BASS_DIST_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.twd_deluxe":
+        parameters = list(TWD_DELUXE_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.b_man_n":
+        parameters = list(B_MAN_N_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.b_man_bri":
+        parameters = list(B_MAN_BRI_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dark_double":
+        parameters = list(DARK_DOUBLE_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dark_deluxe":
+        parameters = list(DARK_DELUXE_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.supero_2_cl":
+        parameters = list(SUPERO_2_CL_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.supero_2_od":
+        parameters = list(SUPERO_2_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.voks_15tb":
+        parameters = list(VOKS_15TB_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.voks_30n":
+        parameters = list(VOKS_30N_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.voks_30tb":
+        parameters = list(VOKS_30TB_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.jazz_120":
+        parameters = list(JAZZ_120_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.superb_cl":
+        parameters = list(SUPERB_CL_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.superb_od":
+        parameters = list(SUPERB_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_star_cl":
+        parameters = list(CALIF_STAR_CL_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_star_od":
+        parameters = list(CALIF_STAR_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.bog_sv_cl":
+        parameters = list(BOG_SV_CL_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.bog_sv_od":
+        parameters = list(BOG_SV_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.bog_xt_blue":
+        parameters = list(BOG_XT_BLUE_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.bog_xt_red":
+        parameters = list(BOG_XT_RED_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.doctor_cl":
+        parameters = list(DOCTOR_CL_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.doctor_od":
+        parameters = list(DOCTOR_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dragon_cl":
+        parameters = list(DRAGON_CL_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dragon_cl_b":
+        parameters = list(DRAGON_CL_B_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dragon_od":
+        parameters = list(DRAGON_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.sol_100_cl":
+        parameters = list(SOL_100_CL_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.sol_100_od":
+        parameters = list(SOL_100_OD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+
+    elif effect_key == "amp.sol_100_ld":
+        parameters = list(SOL_100_LD_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_45":
+        parameters = list(BRIT_45_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_45_plus":
+        parameters = list(BRIT_45_PLUS_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_45jp":
+        parameters = list(BRIT_45JP_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_50":
+        parameters = list(BRIT_50_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_50_plus":
+        parameters = list(BRIT_50_PLUS_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_50jp":
+        parameters = list(BRIT_50JP_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_slp":
+        parameters = list(BRIT_SLP_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_800":
+        parameters = list(BRIT_800_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.brit_900":
+        parameters = list(BRIT_900_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.flyman_1":
+        parameters = list(FLYMAN_1_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.flyman_2":
+        parameters = list(FLYMAN_2_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.flyman_plus_1":
+        parameters = list(FLYMAN_PLUS_1_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.flyman_plus_2":
+        parameters = list(FLYMAN_PLUS_2_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_iic_plus_1":
+        parameters = list(CALIF_IIC_PLUS_1_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_iic_plus_2":
+        parameters = list(CALIF_IIC_PLUS_2_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_iic_plus_3":
+        parameters = list(CALIF_IIC_PLUS_3_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_iv_ld_1":
+        parameters = list(CALIF_IV_LD_1_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_iv_ld_2":
+        parameters = list(CALIF_IV_LD_2_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_iv_ld_3":
+        parameters = list(CALIF_IV_LD_3_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_dual_v":
+        parameters = list(CALIF_DUAL_V_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.calif_dual_m":
+        parameters = list(CALIF_DUAL_M_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.tanger_r100":
+        parameters = list(TANGER_R100_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.halen_51":
+        parameters = list(HALEN_51_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.eng_120":
+        parameters = list(ENG_120_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.eng_120_plus":
+        parameters = list(ENG_120_PLUS_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dizzy_vh":
+        parameters = list(DIZZY_VH_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dizzy_vh_s":
+        parameters = list(DIZZY_VH_S_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dizzy_vh_plus":
+        parameters = list(DIZZY_VH_PLUS_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.dizzy_vh_plus_s":
+        parameters = list(DIZZY_VH_PLUS_S_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.a_bassvt":
+        parameters = list(A_BASSVT_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.voks_bass":
+        parameters = list(VOKS_BASS_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.cali_bass":
+        parameters = list(CALI_BASS_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.a_bassft":
+        parameters = list(A_BASSFT_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.f_2bass":
+        parameters = list(F_2BASS_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.ac_preamp":
+        parameters = list(AC_PREAMP_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key == "amp.ac_preamp_2":
+        parameters = list(AC_PREAMP_2_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:

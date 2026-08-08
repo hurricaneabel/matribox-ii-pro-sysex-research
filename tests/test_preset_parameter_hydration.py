@@ -668,6 +668,286 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
                 events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
                 self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
 
+    def test_phase59_amp_effects_hydrate_expected_selectors_and_ignore_residuals(self) -> None:
+        cases = (
+            (
+                "amp.twd_deluxe",
+                {(0, 0): 21, (0, 1): 43, (0, 2): 65, (0, 3): 50, (0, 4): 50, (0, 5): 50},
+                (("gain", 21), ("tone", 43), ("volume", 65)),
+            ),
+            (
+                "amp.b_man_n",
+                {(0, 0): 21, (0, 1): 32, (0, 2): 43, (0, 3): 54, (0, 4): 65, (0, 5): 76},
+                (("gain", 21), ("presence", 32), ("volume", 43), ("bass", 54), ("middle", 65), ("treble", 76)),
+            ),
+            (
+                "amp.b_man_bri",
+                {(0, 0): 23, (0, 1): 34, (0, 2): 45, (0, 3): 56, (0, 4): 67, (0, 5): 78},
+                (("gain", 23), ("presence", 34), ("volume", 45), ("bass", 56), ("middle", 67), ("treble", 78)),
+            ),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
+
+    def test_phase61_amp_validated_hydrate_expected_selectors(self) -> None:
+        cases = (
+            (
+                "amp.supero_2_od",
+                {(0, 0): 11, (0, 1): 17, (0, 2): 23, (0, 3): 29, (0, 4): 31},
+                (("gain_1", 11), ("tone_1", 17), ("gain_2", 23), ("tone_2", 29), ("volume", 31)),
+            ),
+            (
+                "amp.voks_15tb",
+                {(0, 0): 44, (0, 1): 52, (0, 2): 61, (0, 3): 68, (0, 4): 74},
+                (("gain", 44), ("tone_cut", 52), ("volume", 61), ("bass", 68), ("treble", 74)),
+            ),
+            (
+                "amp.voks_30n",
+                {(0, 0): 83, (0, 1): 91, (0, 2): 97, (0, 3): 1},
+                (("gain", 83), ("tone_cut", 91), ("volume", 97), ("bright", True)),
+            ),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
+
+    def test_phase62_validated_amps_hydrate_expected_selectors(self) -> None:
+        cases = (
+            (
+                "amp.voks_30tb",
+                {(0, 0): 12, (0, 1): 18, (0, 2): 24, (0, 3): 29, (0, 4): 35, (0, 5): 1},
+                (("gain", 12), ("tone_cut", 18), ("volume", 24), ("bass", 29), ("treble", 35), ("char", "HOT")),
+            ),
+            (
+                "amp.jazz_120",
+                {(0, 0): 46, (0, 1): 53, (0, 2): 61, (0, 3): 68, (0, 4): 1},
+                (("gain", 46), ("bass", 53), ("middle", 61), ("treble", 68), ("bright", True)),
+            ),
+            (
+                "amp.superb_cl",
+                {(0, 0): 82, (0, 1): 87, (0, 2): 91, (0, 3): 94, (0, 4): 97, (0, 5): 100},
+                (("gain", 82), ("presence", 87), ("volume", 91), ("bass", 94), ("middle", 97), ("treble", 100)),
+            ),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
+
+    def test_phase63_validated_amps_hydrate_expected_selectors(self) -> None:
+        cases = (
+            (
+                "amp.superb_od",
+                {(0, 0): 11, (0, 1): 17, (0, 2): 23, (0, 3): 29, (0, 4): 34, (0, 5): 38},
+                (("gain", 11), ("presence", 17), ("volume", 23), ("bass", 29), ("middle", 34), ("treble", 38)),
+            ),
+            (
+                "amp.calif_star_cl",
+                {(0, 0): 44, (0, 1): 51, (0, 2): 57, (0, 3): 63, (0, 4): 68, (0, 5): 74},
+                (("gain", 44), ("presence", 51), ("volume", 57), ("bass", 63), ("middle", 68), ("treble", 74)),
+            ),
+            (
+                "amp.calif_star_od",
+                {(0, 0): 81, (0, 1): 86, (0, 2): 90, (0, 3): 93, (0, 4): 96, (0, 5): 98, (0, 6): 100},
+                (("input", 81), ("gain", 86), ("presence", 90), ("volume", 93), ("bass", 96), ("middle", 98), ("treble", 100)),
+            ),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
+
+    def test_phase64_validated_bog_amps_hydrate_expected_selectors(self) -> None:
+        cases = (
+            (
+                "amp.bog_sv_cl",
+                {(0, 0): 11, (0, 1): 17, (0, 2): 23, (0, 3): 29, (0, 4): 35, (0, 5): 1},
+                (("gain", 11), ("presence", 17), ("volume", 23), ("bass", 29), ("treble", 35), ("bright", True)),
+            ),
+            (
+                "amp.bog_sv_od",
+                {(0, 0): 44, (0, 1): 51, (0, 2): 58, (0, 3): 64, (0, 4): 69, (0, 5): 74},
+                (("gain", 44), ("presence", 51), ("volume", 58), ("bass", 64), ("middle", 69), ("treble", 74)),
+            ),
+            (
+                "amp.bog_xt_blue",
+                {(0, 0): 82, (0, 1): 87, (0, 2): 91, (0, 3): 94, (0, 4): 97, (0, 5): 100},
+                (("gain", 82), ("presence", 87), ("volume", 91), ("bass", 94), ("middle", 97), ("treble", 100)),
+            ),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
+
+    def test_phase65_validated_amps_hydrate_expected_selectors(self) -> None:
+        cases = (
+            (
+                "amp.bog_xt_red",
+                {(0, 0): 5, (0, 1): 10, (0, 2): 15, (0, 3): 20, (0, 4): 25, (0, 5): 30},
+                (("gain", 5), ("presence", 10), ("volume", 15), ("bass", 20), ("middle", 25), ("treble", 30)),
+            ),
+            (
+                "amp.doctor_cl",
+                {(0, 0): 32, (0, 1): 37, (0, 2): 42, (0, 3): 47, (0, 4): 52, (0, 5): 57},
+                (("gain", 32), ("tone_cut", 37), ("volume", 42), ("bass", 47), ("middle", 52), ("treble", 57)),
+            ),
+            (
+                "amp.doctor_od",
+                {(0, 0): 34, (0, 1): 39, (0, 2): 44, (0, 3): 49, (0, 4): 54, (0, 5): 59},
+                (("gain", 34), ("tone_cut", 39), ("volume", 44), ("bass", 49), ("middle", 54), ("treble", 59)),
+            ),
+            (
+                "amp.dragon_cl",
+                {(0, 0): 61, (0, 1): 66, (0, 2): 71, (0, 3): 76, (0, 4): 81},
+                (("gain", 61), ("volume", 66), ("bass", 71), ("middle", 76), ("treble", 81)),
+            ),
+            (
+                "amp.dragon_cl_b",
+                {(0, 0): 63, (0, 1): 68, (0, 2): 73, (0, 3): 78, (0, 4): 83},
+                (("gain", 63), ("volume", 68), ("bass", 73), ("middle", 78), ("treble", 83)),
+            ),
+            (
+                "amp.dragon_od",
+                {(0, 0): 65, (0, 1): 70, (0, 2): 75, (0, 3): 80, (0, 4): 85},
+                (("gain", 65), ("volume", 70), ("bass", 75), ("middle", 80), ("treble", 85)),
+            ),
+            (
+                "amp.sol_100_cl",
+                {(0, 0): 72, (0, 1): 78, (0, 2): 84, (0, 3): 90, (0, 4): 96, (0, 5): 100},
+                (("gain", 72), ("presence", 78), ("volume", 84), ("bass", 90), ("middle", 96), ("treble", 100)),
+            ),
+            (
+                "amp.sol_100_od",
+                {(0, 0): 91, (0, 1): 83, (0, 2): 75, (0, 3): 67, (0, 4): 59, (0, 5): 51},
+                (("gain", 91), ("presence", 83), ("volume", 75), ("bass", 67), ("middle", 59), ("treble", 51)),
+            ),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
+
+
+    def test_phase66_candidate_amps_hydrate_expected_selectors(self) -> None:
+        cases = (
+            ("amp.sol_100_ld", {(0, 0): 3, (0, 1): 7, (0, 2): 11, (0, 3): 15, (0, 4): 19, (0, 5): 23}, (("gain", 3), ("presence", 7), ("volume", 11), ("bass", 15), ("middle", 19), ("treble", 23))),
+            ("amp.brit_45", {(0, 0): 27, (0, 1): 31, (0, 2): 35, (0, 3): 39, (0, 4): 43, (0, 5): 47}, (("gain", 27), ("presence", 31), ("volume", 35), ("bass", 39), ("middle", 43), ("treble", 47))),
+            ("amp.brit_45_plus", {(0, 0): 51, (0, 1): 55, (0, 2): 59, (0, 3): 63, (0, 4): 67, (0, 5): 71}, (("gain", 51), ("presence", 55), ("volume", 59), ("bass", 63), ("middle", 67), ("treble", 71))),
+            ("amp.brit_45jp", {(0, 0): 4, (0, 1): 14, (0, 2): 24, (0, 3): 34, (0, 4): 44, (0, 5): 54, (0, 6): 64}, (("gain_1", 4), ("presence", 14), ("volume", 24), ("bass", 34), ("middle", 44), ("treble", 54), ("gain_2", 64))),
+            ("amp.brit_50", {(0, 0): 28, (0, 1): 38, (0, 2): 48, (0, 3): 58, (0, 4): 68, (0, 5): 78}, (("gain", 28), ("presence", 38), ("volume", 48), ("bass", 58), ("middle", 68), ("treble", 78))),
+            ("amp.brit_50_plus", {(0, 0): 33, (0, 1): 43, (0, 2): 53, (0, 3): 63, (0, 4): 73, (0, 5): 83}, (("gain", 33), ("presence", 43), ("volume", 53), ("bass", 63), ("middle", 73), ("treble", 83))),
+            ("amp.brit_50jp", {(0, 0): 36, (0, 1): 46, (0, 2): 56, (0, 3): 66, (0, 4): 76, (0, 5): 86, (0, 6): 96}, (("gain_1", 36), ("presence", 46), ("volume", 56), ("bass", 66), ("middle", 76), ("treble", 86), ("gain_2", 96))),
+            ("amp.brit_slp", {(0, 0): 61, (0, 1): 69, (0, 2): 77, (0, 3): 85, (0, 4): 93, (0, 5): 100}, (("gain", 61), ("presence", 69), ("volume", 77), ("bass", 85), ("middle", 93), ("treble", 100))),
+            ("amp.brit_800", {(0, 0): 8, (0, 1): 18, (0, 2): 28, (0, 3): 38, (0, 4): 48, (0, 5): 58}, (("gain", 8), ("presence", 18), ("volume", 28), ("bass", 38), ("middle", 48), ("treble", 58))),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
+
+    def test_phase67_candidate_amps_hydrate_expected_selectors(self) -> None:
+        cases = (
+            ("amp.brit_900", (3, 9, 14, 20, 25, 32)),
+            ("amp.flyman_1", (11, 18, 26, 34, 42, 50)),
+            ("amp.flyman_2", (17, 27, 37, 47, 57, 67)),
+            ("amp.flyman_plus_1", (23, 33, 43, 53, 63, 73)),
+            ("amp.flyman_plus_2", (29, 39, 49, 59, 69, 79)),
+            ("amp.calif_iic_plus_1", (35, 45, 55, 65, 75, 85)),
+            ("amp.calif_iic_plus_2", (41, 51, 61, 71, 81, 91)),
+            ("amp.calif_iic_plus_3", (47, 57, 67, 77, 87, 97)),
+            ("amp.calif_iv_ld_1", (62, 73, 82, 88, 94, 100)),
+        )
+        keys = ("gain", "presence", "volume", "bass", "middle", "treble")
+        for effect_key, observed in cases:
+            with self.subTest(effect=effect_key):
+                values = {(0, selector): value for selector, value in enumerate(observed)}
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(
+                    tuple((event.parameter_key, event.value) for event in events),
+                    tuple(zip(keys, observed, strict=True)),
+                )
+
+    def test_phase68_amp_hydration_including_halen_selector_gap(self) -> None:
+        standard_cases = (
+            ("amp.calif_iv_ld_2", (3, 11, 19, 27, 35, 43), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.calif_iv_ld_3", (8, 18, 28, 38, 48, 58), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.calif_dual_v", (13, 23, 33, 43, 53, 63), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.calif_dual_m", (17, 29, 41, 53, 65, 77), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.tanger_r100", (21, 34, 47, 60, 73), ("gain", "volume", "bass", "middle", "treble")),
+            ("amp.eng_120", (31, 45, 59, 73, 87, 100), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.eng_120_plus", (36, 48, 60, 72, 84, 96), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.dizzy_vh", (42, 53, 64, 75, 86, 97), ("gain", "presence", "volume", "bass", "middle", "treble")),
+        )
+        for effect_key, observed, keys in standard_cases:
+            with self.subTest(effect=effect_key):
+                values = {(0, selector): value for selector, value in enumerate(observed)}
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(
+                    tuple((event.parameter_key, event.value) for event in events),
+                    tuple(zip(keys, observed, strict=True)),
+                )
+
+        halen_values = {
+            (0, 0): 26,
+            (0, 1): 39,
+            (0, 2): 52,
+            (0, 3): 65,
+            (0, 4): 78,
+            (0, 5): 0,   # selector oculto/não catalogado observado no teste físico
+            (0, 6): 91,
+        }
+        halen_events = decode_saved_parameter_events(
+            make_dump(halen_values),
+            make_chain((0, "amp.halen_51")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in halen_events),
+            (("gain", 26), ("volume", 39), ("bass", 52), ("middle", 65), ("treble", 78), ("presence", 91)),
+        )
+
+
+    def test_phase69_final_amp_models_hydrate_expected_selectors(self) -> None:
+        standard_cases = (
+            ("amp.dizzy_vh_s", (11, 22, 33, 44, 55, 66), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.dizzy_vh_plus", (17, 27, 37, 47, 57, 67), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.dizzy_vh_plus_s", (23, 33, 43, 53, 63, 73), ("gain", "presence", "volume", "bass", "middle", "treble")),
+            ("amp.voks_bass", (31, 51, 71), ("volume", "bass", "treble")),
+            ("amp.cali_bass", (13, 29, 47, 65, 83), ("gain", "volume", "bass", "middle", "treble")),
+            ("amp.a_bassft", (19, 49, 79), ("volume", "bass", "treble")),
+            ("amp.ac_preamp", (12, 24, 36, 48, 60, 72), ("volume", "tone", "balance", "eq_freq", "eq_q", "eq_gain")),
+            ("amp.ac_preamp_2", (18, 30, 42, 54, 66, 78), ("volume", "tone", "balance", "eq_freq", "eq_q", "eq_gain")),
+        )
+        for effect_key, observed, keys in standard_cases:
+            with self.subTest(effect=effect_key):
+                values = {(0, selector): value for selector, value in enumerate(observed)}
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(
+                    tuple((event.parameter_key, event.value) for event in events),
+                    tuple(zip(keys, observed, strict=True)),
+                )
+
+        bassvt_events = decode_saved_parameter_events(
+            make_dump({(0, 0): 9, (0, 1): 21, (0, 2): 35, (0, 3): 3, (0, 4): 77, (0, 5): 91}),
+            make_chain((0, "amp.a_bassvt")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in bassvt_events),
+            (("gain", 9), ("bass", 21), ("middle", 35), ("midrange", "1.6KHZ"), ("treble", 77), ("volume", 91)),
+        )
+
+        f2_events = decode_saved_parameter_events(
+            make_dump({(0, 0): 26, (0, 1): 1, (0, 2): 48, (0, 3): 69, (0, 4): 88}),
+            make_chain((0, "amp.f_2bass")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in f2_events),
+            (("volume", 26), ("bright", True), ("bass", 48), ("middle", 69), ("treble", 88)),
+        )
+
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(
             make_dump({(0, 0): 31.5, (0, 1): 67}),
