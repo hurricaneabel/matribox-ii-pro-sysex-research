@@ -64,3 +64,5 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 - `CAB_CLASS_CONSOLIDATION_PHASE71.md` — encerramento da classe CAB: 61/61 fisicamente validados, schema compartilhado 1/5/6, float32 completo e 183 parâmetros.
 - `IR_SHARED_PARAMETERS_PHASE72.md` — IR 1/IR 20 confirmam o schema compartilhado 1/5/6 com float32 completo; 20 IRs preparados como candidatos, sem investigar importação de WAV.
 - `IR_CLASS_CONSOLIDATION_PHASE72.md` — encerramento da classe IR: 20/20 fisicamente validados, schema compartilhado 1/5/6, float32 completo e 60 parâmetros.
+- `EQ_SHARED_PARAMETERS_PHASE73.md` — GUITAR EQ 1 e CALIF EQ ancoram os dois layouts; cinco EQs preparados inicialmente como candidatos com 29 parâmetros assinados/volume.
+- `EQ_CLASS_CONSOLIDATION_PHASE73.md` — encerramento da classe EQ: 5/5 fisicamente validados, valores assinados nativos, CALIF sem VOLUME e 29 parâmetros.

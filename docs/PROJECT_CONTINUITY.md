@@ -2232,3 +2232,11 @@ Os 20 modelos IR foram preparados inicialmente como `partially_cataloged`. O usu
 A classe termina com **20/20 `physically_validated`**, **60 parâmetros IR**, nenhum `pending`/`partially_cataloged` em IR, `catalog_version = 53`, **196 efeitos fisicamente validados**, **798 parâmetros catalogados** e **71 efeitos ainda sem parâmetros** em outras classes. A consolidação completa está em `docs/phases/IR_CLASS_CONSOLIDATION_PHASE72.md`.
 
 Importação de WAV/IR de terceiros permanece fora do escopo até o fim da catalogação de parâmetros das demais classes.
+
+## 55. Fase 73 — EQ: cinco modelos concluídos
+
+GUITAR EQ 1 e CALIF EQ foram capturados por PCAPNG. GUITAR EQ 1 confirmou selectors 0..4 para as cinco bandas assinadas e selector 5 para VOLUME; o reopen personalizado confirmou `-37/-19/7/26/43/73`. CALIF EQ confirmou somente selectors 0..4 para as cinco bandas e mantém `selector 5 = 50` apenas como resíduo salvo, sem controle VOLUME visível.
+
+Todos os valores de banda usam `float32_nibbles_v1` diretamente em `-50..50`, default 0. VOLUME usa `0..100`, default 50. Após a candidata, o usuário executou `matribox_monitor --live --log eq_phase73_validation.txt` e testou os cinco modelos no hardware. Ele confirmou que cada valor mostrado pela pedaleira correspondeu exatamente ao script. O log registrou todas as bandas dos cinco modelos, extremos `-50/+50`, valores intermediários assinados e VOLUME nos quatro modelos que expõem esse controle.
+
+A classe termina com **5/5 `physically_validated`**, **29 parâmetros EQ**, nenhum `partially_cataloged`/`pending` em EQ, `catalog_version = 54`, **201 efeitos fisicamente validados**, **827 parâmetros catalogados** e **66 efeitos ainda sem parâmetros** em outras classes. A consolidação completa está em `docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md`.

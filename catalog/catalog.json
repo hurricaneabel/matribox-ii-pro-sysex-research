@@ -1,7 +1,7 @@
 {
   "$schema": "schemas/catalog.schema.json",
   "schema_version": 1,
-  "catalog_version": 53,
+  "catalog_version": 54,
   "device": {
     "manufacturer": "Sonicake",
     "model": "Matribox II Pro"

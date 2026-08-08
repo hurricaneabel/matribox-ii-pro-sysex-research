@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 53
+CATALOG_VERSION = 54
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -3032,6 +3032,174 @@ def _validated_phase72_ir_shared_schema_seeds() -> tuple[dict[str, Any], ...]:
 IR_SHARED_PARAMETER_SEEDS = _validated_phase72_ir_shared_schema_seeds()
 
 
+def _validated_phase73_eq_parameter_seeds(
+    effect_key: str,
+    bands: tuple[tuple[str, str], ...],
+    *,
+    include_volume: bool,
+    pcap_anchor: bool,
+) -> tuple[dict[str, Any], ...]:
+    """Schema EQ aprovado fisicamente nos cinco modelos da classe."""
+
+    parameters: list[dict[str, Any]] = []
+    for order, (key, name) in enumerate(bands, start=1):
+        selector = order - 1
+        validation: dict[str, Any] = {
+            "offline": True,
+            "physical": True,
+            "read_only": True,
+            "effect_identity_source": "current_chain",
+            "parameter_selector": selector,
+            "saved_dump_default": 0,
+            "saved_dump_default_source": "user_reported_official_ui",
+            "selector_mapping_source": (
+                "phase73_guitar_eq1_calif_eq_pcap"
+                if pcap_anchor
+                else "phase73_guitar_eq1_anchor_plus_all_eq_live_validation"
+            ),
+            "full_float32_required": True,
+            "evidence": "docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md",
+            "monitor_integration_physical_validation": "approved",
+            "monitor_validation_source": "user_live_monitor_all_eqs_phase73_with_log",
+            "monitor_validation_result": "all_5_models_parameter_values_exact_to_device",
+            "range_source": "user_reported_official_ui_and_phase73_anchor_sweeps",
+            "range_validated": [-50, 50],
+        }
+        if pcap_anchor:
+            validation["pcap_anchor"] = True
+            validation["pcap_range_observed"] = [-50, 50]
+        parameters.append(
+            {
+                "key": key,
+                "name": name,
+                "display_order": order,
+                "value_type": "integer",
+                "range": {"minimum": -50, "maximum": 50, "step": 1},
+                "unit": None,
+                "protocol": {
+                    "profile": "effect_parameter_response_1c_v1",
+                    "value_codec": "float32_nibbles_v1",
+                    "identification_status": "validated_with_chain_effect_context",
+                    "message_match": {
+                        "parameter_selector": selector,
+                        "parameter_marker": 1,
+                        "parameter_type": 1,
+                    },
+                },
+                "validation": validation,
+            }
+        )
+
+    if include_volume:
+        parameters.append(
+            {
+                "key": "volume",
+                "name": "VOLUME",
+                "display_order": 6,
+                "value_type": "integer",
+                "range": {"minimum": 0, "maximum": 100, "step": 1},
+                "unit": None,
+                "protocol": {
+                    "profile": "effect_parameter_response_1c_v1",
+                    "value_codec": "float32_nibbles_v1",
+                    "identification_status": "validated_with_chain_effect_context",
+                    "message_match": {
+                        "parameter_selector": 5,
+                        "parameter_marker": 1,
+                        "parameter_type": 1,
+                    },
+                },
+                "validation": {
+                    "offline": True,
+                    "physical": True,
+                    "read_only": True,
+                    "effect_identity_source": "current_chain",
+                    "parameter_selector": 5,
+                    "saved_dump_default": 50,
+                    "saved_dump_default_source": "user_reported_official_ui",
+                    "selector_mapping_source": (
+                        "phase73_guitar_eq1_pcap"
+                        if pcap_anchor
+                        else "phase73_guitar_eq1_anchor_plus_all_eq_live_validation"
+                    ),
+                    "full_float32_required": True,
+                    "evidence": "docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md",
+                    "monitor_integration_physical_validation": "approved",
+                    "monitor_validation_source": "user_live_monitor_all_eqs_phase73_with_log",
+                    "monitor_validation_result": "all_5_models_parameter_values_exact_to_device",
+                    "range_source": "user_reported_official_ui_and_phase73_guitar_eq1_sweep",
+                    "range_validated": [0, 100],
+                    **({"pcap_anchor": True, "pcap_range_observed": [0, 100]} if pcap_anchor else {}),
+                },
+            }
+        )
+    return tuple(parameters)
+
+
+EQ_PARAMETER_SEEDS: dict[str, tuple[dict[str, Any], ...]] = {
+    "eq.guitar_eq_1": _validated_phase73_eq_parameter_seeds(
+        "eq.guitar_eq_1",
+        (
+            ("band_125_hz", "125 Hz"),
+            ("band_400_hz", "400 Hz"),
+            ("band_800_hz", "800 Hz"),
+            ("band_1_6_khz", "1.6 kHz"),
+            ("band_4_khz", "4 kHz"),
+        ),
+        include_volume=True,
+        pcap_anchor=True,
+    ),
+    "eq.guitar_eq_2": _validated_phase73_eq_parameter_seeds(
+        "eq.guitar_eq_2",
+        (
+            ("band_100_hz", "100 Hz"),
+            ("band_500_hz", "500 Hz"),
+            ("band_1_khz", "1 kHz"),
+            ("band_3_khz", "3 kHz"),
+            ("band_6_khz", "6 kHz"),
+        ),
+        include_volume=True,
+        pcap_anchor=False,
+    ),
+    "eq.bass_eq_1": _validated_phase73_eq_parameter_seeds(
+        "eq.bass_eq_1",
+        (
+            ("band_33_hz", "33 Hz"),
+            ("band_150_hz", "150 Hz"),
+            ("band_600_hz", "600 Hz"),
+            ("band_2_khz", "2 kHz"),
+            ("band_8_khz", "8 kHz"),
+        ),
+        include_volume=True,
+        pcap_anchor=False,
+    ),
+    "eq.bass_eq_2": _validated_phase73_eq_parameter_seeds(
+        "eq.bass_eq_2",
+        (
+            ("band_50_hz", "50 Hz"),
+            ("band_120_hz", "120 Hz"),
+            ("band_400_hz", "400 Hz"),
+            ("band_800_hz", "800 Hz"),
+            ("band_4_5_khz", "4.5 kHz"),
+        ),
+        include_volume=True,
+        pcap_anchor=False,
+    ),
+    "eq.calif_eq": _validated_phase73_eq_parameter_seeds(
+        "eq.calif_eq",
+        (
+            ("band_80_hz", "80 Hz"),
+            ("band_240_hz", "240 Hz"),
+            ("band_750_hz", "750 Hz"),
+            ("band_2_2_khz", "2.2 kHz"),
+            ("band_6_6_khz", "6.6 kHz"),
+        ),
+        include_volume=False,
+        pcap_anchor=True,
+    ),
+}
+
+
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
     {
         "key": "gain",
@@ -4715,6 +4883,10 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key.startswith("ir."):
         parameters = list(IR_SHARED_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key in EQ_PARAMETER_SEEDS:
+        parameters = list(EQ_PARAMETER_SEEDS[effect_key])
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:

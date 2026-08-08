@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 53)
+        self.assertEqual(self.catalog.catalog_version, 54)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -590,13 +590,16 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         parameterized_keys.update(
             model.key for model in self.catalog.class_by_key("ir").models
         )
+        parameterized_keys.update(
+            model.key for model in self.catalog.class_by_key("eq").models
+        )
         pending = [
             model
             for effect_class in self.catalog.classes
             for model in effect_class.models
             if model.key not in parameterized_keys
         ]
-        self.assertEqual(len(pending), 71)
+        self.assertEqual(len(pending), 66)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
