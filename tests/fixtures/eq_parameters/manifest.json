@@ -1,0 +1,125 @@
+{
+  "phase": 73,
+  "class": "EQ",
+  "result": "guitar_eq_1_and_calif_eq_confirm_float32_selector_schemas",
+  "guitar_eq_1_selectors": {
+    "band_1": 0,
+    "band_2": 1,
+    "band_3": 2,
+    "band_4": 3,
+    "band_5": 4,
+    "volume": 5
+  },
+  "calif_eq_selectors": {
+    "band_1": 0,
+    "band_2": 1,
+    "band_3": 2,
+    "band_4": 3,
+    "band_5": 4
+  },
+  "notes": [
+    "GUITAR EQ 1 selector 2 contains incidental mouse-wheel events in the source sweep; selected fixtures use an unambiguous intended value.",
+    "CALIF EQ saved/default state exposes no UI volume; selector 5 residual is not cataloged."
+  ],
+  "fixtures": [
+    {
+      "file": "guitar_eq1_band_125hz_neg37.bin",
+      "effect": "eq.guitar_eq_1",
+      "parameter": "band_125_hz",
+      "selector": 0,
+      "value": -37,
+      "source": "EQ01_GUITAR_EQ_1_03_PARAMETER_SWEEP.pcapng",
+      "sha256": "fa908c13a8c3d71bcde1bad77b69a0c7a277bf3c94629c63bf2c4cd7324ea549"
+    },
+    {
+      "file": "guitar_eq1_band_400hz_pos23.bin",
+      "effect": "eq.guitar_eq_1",
+      "parameter": "band_400_hz",
+      "selector": 1,
+      "value": 23,
+      "source": "EQ01_GUITAR_EQ_1_03_PARAMETER_SWEEP.pcapng",
+      "sha256": "386804d00ee1468bbefb4e071ca5853740dd3c4ffa2355d2ddd313750993afe6"
+    },
+    {
+      "file": "guitar_eq1_band_800hz_pos37.bin",
+      "effect": "eq.guitar_eq_1",
+      "parameter": "band_800_hz",
+      "selector": 2,
+      "value": 37,
+      "source": "EQ01_GUITAR_EQ_1_03_PARAMETER_SWEEP.pcapng",
+      "sha256": "1589bd99e0b2589112b012f3cd82526ef8794f6b6658f0b300442400c5ee8740"
+    },
+    {
+      "file": "guitar_eq1_band_1_6khz_pos23.bin",
+      "effect": "eq.guitar_eq_1",
+      "parameter": "band_1_6_khz",
+      "selector": 3,
+      "value": 23,
+      "source": "EQ01_GUITAR_EQ_1_03_PARAMETER_SWEEP.pcapng",
+      "sha256": "b716aeec353c47109e776df6b5bce3b23ea808748f0da5ed4e0671564b37b00c"
+    },
+    {
+      "file": "guitar_eq1_band_4khz_neg1.bin",
+      "effect": "eq.guitar_eq_1",
+      "parameter": "band_4_khz",
+      "selector": 4,
+      "value": -1,
+      "source": "EQ01_GUITAR_EQ_1_03_PARAMETER_SWEEP.pcapng",
+      "sha256": "9edfbac859862ac53ebf65df3ccbe641a4c50cf40cc52da93d1cc40ddaece29b"
+    },
+    {
+      "file": "guitar_eq1_volume_083.bin",
+      "effect": "eq.guitar_eq_1",
+      "parameter": "volume",
+      "selector": 5,
+      "value": 83,
+      "source": "EQ01_GUITAR_EQ_1_03_PARAMETER_SWEEP.pcapng",
+      "sha256": "a90ce00a5cd1a6a3df55e85ca57634ea632a1e1bf9f25982b168e8eb0df125ee"
+    },
+    {
+      "file": "calif_eq_band_80hz_neg50.bin",
+      "effect": "eq.calif_eq",
+      "parameter": "band_80_hz",
+      "selector": 0,
+      "value": -50,
+      "source": "EQ05_CALIF_EQ_02_PARAMETER_SWEEP.pcapng",
+      "sha256": "6420f7a94eda6b8554f34192327e587d3944f7c895f90a3eee62ead6a1d395b0"
+    },
+    {
+      "file": "calif_eq_band_240hz_neg50.bin",
+      "effect": "eq.calif_eq",
+      "parameter": "band_240_hz",
+      "selector": 1,
+      "value": -50,
+      "source": "EQ05_CALIF_EQ_02_PARAMETER_SWEEP.pcapng",
+      "sha256": "593ed08e4d895c743694222730c8e316784417da94656e75e139bbaf17b3d7b0"
+    },
+    {
+      "file": "calif_eq_band_750hz_pos25.bin",
+      "effect": "eq.calif_eq",
+      "parameter": "band_750_hz",
+      "selector": 2,
+      "value": 25,
+      "source": "EQ05_CALIF_EQ_02_PARAMETER_SWEEP.pcapng",
+      "sha256": "4f279972682bde7fb690a61c37c910dc7fabdc63be20c5db0ec8600fcacc9d8e"
+    },
+    {
+      "file": "calif_eq_band_2_2khz_neg37.bin",
+      "effect": "eq.calif_eq",
+      "parameter": "band_2_2_khz",
+      "selector": 3,
+      "value": -37,
+      "source": "EQ05_CALIF_EQ_02_PARAMETER_SWEEP.pcapng",
+      "sha256": "118cf5cb418e5784ae245c95db988a022ae0f3746b3c7642923b899fb398b193"
+    },
+    {
+      "file": "calif_eq_band_6_6khz_pos50.bin",
+      "effect": "eq.calif_eq",
+      "parameter": "band_6_6_khz",
+      "selector": 4,
+      "value": 50,
+      "source": "EQ05_CALIF_EQ_02_PARAMETER_SWEEP.pcapng",
+      "sha256": "1deb0c347da8b6fcb315acad30b60c4e52b1af4a4fe6fb428cc15d084ea3a0fc"
+    }
+  ]
+}

@@ -7,7 +7,292 @@
   "name": "GUITAR EQ 1",
   "model_id": 53,
   "secondary_selector": 1,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "band_125_hz",
+      "name": "125 Hz",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": -50,
+        "maximum": 50,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase73_guitar_eq1_calif_eq_pcap",
+        "full_float32_required": true,
+        "evidence": "docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_all_eqs_phase73_with_log",
+        "monitor_validation_result": "all_5_models_parameter_values_exact_to_device",
+        "range_source": "user_reported_official_ui_and_phase73_anchor_sweeps",
+        "range_validated": [
+          -50,
+          50
+        ],
+        "pcap_anchor": true,
+        "pcap_range_observed": [
+          -50,
+          50
+        ]
+      }
+    },
+    {
+      "key": "band_400_hz",
+      "name": "400 Hz",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": -50,
+        "maximum": 50,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase73_guitar_eq1_calif_eq_pcap",
+        "full_float32_required": true,
+        "evidence": "docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_all_eqs_phase73_with_log",
+        "monitor_validation_result": "all_5_models_parameter_values_exact_to_device",
+        "range_source": "user_reported_official_ui_and_phase73_anchor_sweeps",
+        "range_validated": [
+          -50,
+          50
+        ],
+        "pcap_anchor": true,
+        "pcap_range_observed": [
+          -50,
+          50
+        ]
+      }
+    },
+    {
+      "key": "band_800_hz",
+      "name": "800 Hz",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": -50,
+        "maximum": 50,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase73_guitar_eq1_calif_eq_pcap",
+        "full_float32_required": true,
+        "evidence": "docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_all_eqs_phase73_with_log",
+        "monitor_validation_result": "all_5_models_parameter_values_exact_to_device",
+        "range_source": "user_reported_official_ui_and_phase73_anchor_sweeps",
+        "range_validated": [
+          -50,
+          50
+        ],
+        "pcap_anchor": true,
+        "pcap_range_observed": [
+          -50,
+          50
+        ]
+      }
+    },
+    {
+      "key": "band_1_6_khz",
+      "name": "1.6 kHz",
+      "display_order": 4,
+      "value_type": "integer",
+      "range": {
+        "minimum": -50,
+        "maximum": 50,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 3,
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase73_guitar_eq1_calif_eq_pcap",
+        "full_float32_required": true,
+        "evidence": "docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_all_eqs_phase73_with_log",
+        "monitor_validation_result": "all_5_models_parameter_values_exact_to_device",
+        "range_source": "user_reported_official_ui_and_phase73_anchor_sweeps",
+        "range_validated": [
+          -50,
+          50
+        ],
+        "pcap_anchor": true,
+        "pcap_range_observed": [
+          -50,
+          50
+        ]
+      }
+    },
+    {
+      "key": "band_4_khz",
+      "name": "4 kHz",
+      "display_order": 5,
+      "value_type": "integer",
+      "range": {
+        "minimum": -50,
+        "maximum": 50,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 4,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 4,
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase73_guitar_eq1_calif_eq_pcap",
+        "full_float32_required": true,
+        "evidence": "docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_all_eqs_phase73_with_log",
+        "monitor_validation_result": "all_5_models_parameter_values_exact_to_device",
+        "range_source": "user_reported_official_ui_and_phase73_anchor_sweeps",
+        "range_validated": [
+          -50,
+          50
+        ],
+        "pcap_anchor": true,
+        "pcap_range_observed": [
+          -50,
+          50
+        ]
+      }
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "display_order": 6,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 5,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 5,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "selector_mapping_source": "phase73_guitar_eq1_pcap",
+        "full_float32_required": true,
+        "evidence": "docs/phases/EQ_CLASS_CONSOLIDATION_PHASE73.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_all_eqs_phase73_with_log",
+        "monitor_validation_result": "all_5_models_parameter_values_exact_to_device",
+        "range_source": "user_reported_official_ui_and_phase73_guitar_eq1_sweep",
+        "range_validated": [
+          0,
+          100
+        ],
+        "pcap_anchor": true,
+        "pcap_range_observed": [
+          0,
+          100
+        ]
+      }
+    }
+  ]
 }
