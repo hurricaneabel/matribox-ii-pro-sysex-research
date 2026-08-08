@@ -62,3 +62,5 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 - `CAB_SUPERO_DOUBLE_BASS_PARAMETERS_PHASE70.md` — abertura da classe CAB com SUPERO 1X6 + DOUBLE BASS fisicamente validados; hidratação, seletores 1/5/6, sentinelas OFF e float32 completo.
 - `CAB_CLASS_SHARED_SCHEMA_CANDIDATES_PHASE71.md` — schema CAB compartilhado aplicado aos 59 modelos restantes como candidatos; 2 âncoras físicas preservadas.
 - `CAB_CLASS_CONSOLIDATION_PHASE71.md` — encerramento da classe CAB: 61/61 fisicamente validados, schema compartilhado 1/5/6, float32 completo e 183 parâmetros.
+- `IR_SHARED_PARAMETERS_PHASE72.md` — IR 1/IR 20 confirmam o schema compartilhado 1/5/6 com float32 completo; 20 IRs preparados como candidatos, sem investigar importação de WAV.
+- `IR_CLASS_CONSOLIDATION_PHASE72.md` — encerramento da classe IR: 20/20 fisicamente validados, schema compartilhado 1/5/6, float32 completo e 60 parâmetros.
