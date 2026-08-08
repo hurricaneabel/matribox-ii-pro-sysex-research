@@ -477,6 +477,197 @@ class SavedParameterDumpDecoderTests(unittest.TestCase):
         self.assertEqual(by_key["rate"].display_value, "3.7 Hz")
         self.assertEqual(by_key["sync"].value, False)
 
+    def test_skreamer_hydrates_only_three_cataloged_values(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({
+                (0, 0): 21,
+                (0, 1): 43,
+                (0, 2): 65,
+                (0, 3): 99,
+            }),
+            make_chain((0, "drv.skreamer")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("tone", 43), ("volume", 65)),
+        )
+
+    def test_inferred_skreamer9_hydrates_the_shared_three_value_layout(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 31, (0, 1): 52, (0, 2): 73, (0, 3): 99}),
+            make_chain((0, "drv.skreamer9")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 31), ("tone", 52), ("volume", 73)),
+        )
+
+    def test_butter_od_ignores_residual_saved_selector_two(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 65, (0, 2): 50}),
+            make_chain((0, "drv.butter_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("volume", 65)),
+        )
+
+    def test_inferred_warm_and_super_od_hydrate_three_shared_selectors(self) -> None:
+        for effect_key in ("drv.warm_od", "drv.super_od"):
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(
+                    make_dump({(0, 0): 23, (0, 1): 45, (0, 2): 67}),
+                    make_chain((0, effect_key)),
+                )
+                self.assertEqual(
+                    tuple((event.parameter_key, event.value) for event in events),
+                    (("gain", 23), ("tone", 45), ("volume", 67)),
+                )
+
+    def test_blues_od_hydrates_three_inferred_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 43, (0, 2): 65}),
+            make_chain((0, "drv.blues_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("tone", 43), ("volume", 65)),
+        )
+
+    def test_full_od_hydrates_three_controls_and_hp_mode(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 43, (0, 2): 65, (0, 3): 1}),
+            make_chain((0, "drv.full_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("tone", 43), ("volume", 65), ("mode", "HP")),
+        )
+
+    def test_breaker_od_hydrates_three_inferred_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 22, (0, 1): 44, (0, 2): 66}),
+            make_chain((0, "drv.breaker_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 22), ("tone", 44), ("volume", 66)),
+        )
+
+    def test_gerden_od_hydrates_voice_as_fourth_selector(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 43, (0, 2): 65, (0, 3): 87}),
+            make_chain((0, "drv.gerden_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("tone", 43), ("volume", 65), ("voice", 87)),
+        )
+
+    def test_timmy_od_hydrates_mode_ii_as_enum(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 43, (0, 2): 65, (0, 3): 87, (0, 4): 1}),
+            make_chain((0, "drv.timmy_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("volume", 43), ("bass", 65), ("treble", 87), ("mode", "II")),
+        )
+
+    def test_master_od_hydrates_five_numeric_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 43, (0, 2): 65, (0, 3): 87, (0, 4): 32}),
+            make_chain((0, "drv.master_od")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("gain", 21), ("volume", 43), ("bass", 65), ("middle", 87), ("treble", 32)),
+        )
+
+    def test_solar_fuzz_ignores_saved_residual_selectors(self) -> None:
+        events = decode_saved_parameter_events(
+            make_dump({(0, 0): 21, (0, 1): 65, (0, 2): 100, (0, 3): 100, (0, 4): 100}),
+            make_chain((0, "drv.solar_fuzz")),
+        )
+        self.assertEqual(
+            tuple((event.parameter_key, event.value) for event in events),
+            (("fuzz", 21), ("volume", 65)),
+        )
+
+    def test_phase55_inferred_effects_hydrate_expected_selectors(self) -> None:
+        cases = (
+            ("drv.fuzz_cream", {(0, 0): 21, (0, 1): 43, (0, 2): 65}, (("sustain", 21), ("tone", 43), ("volume", 65))),
+            ("drv.red_fuzz", {(0, 0): 22, (0, 1): 66}, (("fuzz", 22), ("volume", 66))),
+            ("drv.jp_dist", {(0, 0): 23, (0, 1): 45, (0, 2): 67}, (("gain", 23), ("tone", 45), ("volume", 67))),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(
+                    make_dump(values),
+                    make_chain((0, effect_key)),
+                )
+                self.assertEqual(
+                    tuple((event.parameter_key, event.value) for event in events),
+                    expected,
+                )
+
+    def test_phase56_inferred_effects_hydrate_expected_selectors(self) -> None:
+        cases = (
+            ("drv.dark_mouse", {(0, 0): 21, (0, 1): 43, (0, 2): 65}, (("gain", 21), ("filter", 43), ("volume", 65))),
+            ("drv.plexi_dist", {(0, 0): 11, (0, 1): 22, (0, 2): 33, (0, 3): 44, (0, 4): 55}, (("gain", 11), ("volume", 22), ("bass", 33), ("middle", 44), ("treble", 55))),
+            ("drv.master_dist", {(0, 0): 12, (0, 1): 23, (0, 2): 34, (0, 3): 45, (0, 4): 56}, (("gain", 12), ("volume", 23), ("bass", 34), ("contour", 45), ("treble", 56))),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(
+                    make_dump(values),
+                    make_chain((0, effect_key)),
+                )
+                self.assertEqual(
+                    tuple((event.parameter_key, event.value) for event in events),
+                    expected,
+                )
+
+    def test_phase57_inferred_effects_hydrate_expected_selectors(self) -> None:
+        cases = (
+            ("drv.dist_plus", {(0, 0): 21, (0, 1): 65}, (("gain", 21), ("volume", 65))),
+            ("drv.shark", {(0, 0): 22, (0, 1): 44, (0, 2): 66}, (("gain", 22), ("tone", 44), ("volume", 66))),
+            ("drv.strive", {(0, 0): 23, (0, 1): 45, (0, 2): 67, (0, 3): 0}, (("gain", 23), ("tone", 45), ("volume", 67), ("mode", "I"))),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(
+                    make_dump(values),
+                    make_chain((0, effect_key)),
+                )
+                self.assertEqual(
+                    tuple((event.parameter_key, event.value) for event in events),
+                    expected,
+                )
+
+    def test_phase58_inferred_effects_hydrate_expected_selectors(self) -> None:
+        cases = (
+            (
+                "drv.sardar_dist",
+                {(0, 0): 21, (0, 1): 32, (0, 2): 43, (0, 3): 54, (0, 4): 65, (0, 5): 76},
+                (("gain", 21), ("volume", 32), ("bass", 43), ("treble", 54), ("presence", 65), ("tight", 76)),
+            ),
+            (
+                "drv.bass_od",
+                {(0, 0): 22, (0, 1): 33, (0, 2): 44, (0, 3): 1, (0, 4): 66},
+                (("gain", 22), ("tone", 33), ("volume", 44), ("mode", "SCOOP"), ("blend", 66)),
+            ),
+            (
+                "drv.bass_dist",
+                {(0, 0): 23, (0, 1): 34, (0, 2): 45, (0, 3): 56, (0, 4): 67},
+                (("gain", 23), ("blend", 34), ("volume", 45), ("bass", 56), ("treble", 67)),
+            ),
+        )
+        for effect_key, values, expected in cases:
+            with self.subTest(effect=effect_key):
+                events = decode_saved_parameter_events(make_dump(values), make_chain((0, effect_key)))
+                self.assertEqual(tuple((event.parameter_key, event.value) for event in events), expected)
+
     def test_invalid_saved_value_is_ignored_individually(self) -> None:
         events = decode_saved_parameter_events(
             make_dump({(0, 0): 31.5, (0, 1): 67}),

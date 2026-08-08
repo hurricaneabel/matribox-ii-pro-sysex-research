@@ -1810,3 +1810,213 @@ A classe WAH está encerrada.
 2. executar a suíte offline completa;
 3. criar os commits e publicar a branch pelo usuário;
 4. integrar `research/wah-parameters` na `main` com merge explícito e publicar.
+
+## 35. Atualização atual — Fase 48 consolidada: DRIVE / SKREAMER
+
+Após a conclusão da classe WAH, a pesquisa segue em `research/drv-parameters`.
+O primeiro efeito DRIVE usa a identidade estrutural `03 / 00 / 03`. GAIN, TONE
+e VOLUME ocupam os seletores 0–2, usam inteiros 0–100 e possuem padrões salvos
+40, 70 e 50.
+
+Três dumps reabertos confirmaram `40 / 70 / 50`, `21 / 43 / 65` e
+`22 / 44 / 66`. A varredura ao vivo confirmou os três seletores e valores
+próximos aos limites. Os campos 3–14 estão zerados e não são hidratados.
+
+O catálogo passa à versão 26, com 29 efeitos parametrizados, 116 parâmetros e
+238 pendentes. A suíte cobre catálogo, exportação reproduzível e hidratação
+somente dos três controles conhecidos.
+
+A validação final no monitor confirmou GAIN 60, TONE 55 e VOLUME 78, além das
+alterações ao vivo. O Skreamer está aprovado.
+
+### Próximo passo exato
+
+1. manter a Fase 48 em `research/drv-parameters`;
+2. testar a repetição da assinatura GAIN/TONE/VOLUME no Skreamer 9;
+3. promover a inferência se o monitor aprovar;
+4. prosseguir pelos modelos DRIVE com captura proporcional ao risco.
+
+## 36. Atualização atual — Fase 49 consolidada: DRIVE / SKREAMER 9
+
+Skreamer 9 usa a identidade `03 / 01 / 03` e, segundo o manual, possui os mesmos
+três controles do Skreamer. A candidata infere GAIN 0, TONE 1 e VOLUME 2, todos
+em 0–100. Nenhum default foi declarado sem evidência.
+
+A hidratação lê somente os valores reais do dump; a implementação não depende
+de padrões inventados. O monitor confirmou o mapa, alterações ao vivo e uma
+cadeia cheia. O modelo passa a `physically_validated` sem PCAPNG próprio.
+
+### Próximo passo exato
+
+1. manter a Fase 49 em `research/drv-parameters`;
+2. usar captura curta nos layouts DRIVE ainda não comprovados;
+3. validar o próximo efeito no monitor;
+4. preservar a `main` estável até concluir a classe.
+
+## 37. Atualização atual — Fase 50 consolidada: DRIVE / BUTTER OD
+
+Butter OD usa a identidade `03 / 02 / 03`. Uma captura combinada confirmou GAIN
+no seletor 0 e VOLUME no seletor 1, ambos 0–100. Os padrões informados são 40 e
+70. Dois dumps idênticos preservaram `21 / 65 / 50`; o 50 do seletor 2 não tem
+controle nem evento ao vivo e é ignorado.
+
+A varredura confirmou 0, 1, 50, 99 e 100 nos dois controles. O catálogo passa à
+versão 28, com 31 efeitos parametrizados, 121 parâmetros e 236 pendentes.
+
+A validação final confirmou duas instâncias em cadeia cheia: posição 4 com
+`0 / 48` e posição 12 com `82 / 81`. O Butter OD está aprovado.
+
+### Próximo passo exato
+
+1. manter a Fase 50 em `research/drv-parameters`;
+2. testar inferências da família de três controles;
+3. promover modelos aprovados sem captura quando seguro;
+4. preservar captura curta para novos layouts.
+
+## 38. Atualização consolidada — Fase 51: WARM OD e SUPER OD
+
+Warm OD (`03 / 04 / 03`) e Super OD (`03 / 06 / 03`) declaram GAIN, TONE e
+VOLUME no manual. A candidata reutiliza os seletores 0–2 já confirmados por
+Skreamer e Skreamer 9. Os padrões informados são `40 / 50 / 50` e
+`50 / 50 / 50`, respectivamente.
+
+O teste físico confirmou os três seletores em duas instâncias simultâneas de
+cada modelo, numa cadeia cheia: Warm OD nas posições 4 e 10; Super OD nas
+posições 5 e 11. Hidratação, alterações em tempo real e estado desligado
+funcionaram corretamente. Ambos estão `physically_validated`.
+
+O catálogo passa à versão 30, com 33 efeitos parametrizados, 127 parâmetros e
+234 pendentes.
+
+### Próximo passo exato
+
+1. aplicar o pacote de consolidação em `research/drv-parameters`;
+2. executar a suíte offline;
+3. seguir para o próximo efeito DRIVE;
+4. investigar separadamente o retorno visual do aplicativo oficial ao slot 1
+   quando um comando de alteração de efeito é enviado pelo script.
+
+### Questão aberta: foco visual do aplicativo oficial
+
+O comando externo modifica corretamente o slot solicitado, porém o aplicativo
+oficial destaca novamente o slot 1. Tratar como problema de sincronização da UI,
+não como falha da escrita, até uma captura comparativa localizar uma eventual
+mensagem de seleção. Não modificar bytes desconhecidos do pacote estrutural.
+
+## 39. Atualização consolidada — Fase 52: BLUES OD e FULL OD
+
+Full OD (`03 / 0A / 03`) foi confirmado por duas capturas: GAIN/TONE/VOLUME nos
+seletores 0–2 e MODE no seletor 3, com LP=0 e HP=1. O dump salvo confirmou
+`21 / 43 / 65 / HP`; o monitor ainda precisa da aprovação visual final.
+
+Blues OD (`03 / 09 / 03`) reutiliza como inferência os seletores 0–2 da família
+de três controles, com padrões informados `40 / 60 / 50`. Ele permanece
+foi confirmado fisicamente nas posições 4 e 10. Full OD foi confirmado nas
+posições 5 e 11, incluindo LP/HP. Ambos funcionaram numa cadeia cheia e passam
+a `physically_validated`.
+
+O catálogo passa à versão 32: 35 efeitos parametrizados, 134 parâmetros e 232
+pendentes.
+
+### Próximo passo exato
+
+1. aplicar o pacote consolidado na branch `research/drv-parameters`;
+2. executar a suíte offline;
+3. confirmar no aplicativo oficial os nomes reais dos controles de Breaker OD;
+4. capturar Gerden OD com GAIN/TONE/VOLUME/VOICE;
+5. continuar a classe DRIVE.
+
+## 40. Atualização consolidada — Fase 53: BREAKER OD e GERDEN OD
+
+Breaker OD (`03 / 0E / 03`) usa GAIN/TONE/VOLUME na interface do firmware,
+apesar da divergência no manual. A candidata aplica seletores 0–2 e padrões
+`60 / 50 / 50` e foi confirmado fisicamente nas posições 4 e 10.
+
+Gerden OD (`03 / 10 / 03`) foi confirmado por captura com GAIN/TONE/VOLUME e
+VOICE nos seletores 0–3. O dump salvo confirmou `21 / 43 / 65 / 87`, os eventos
+ao vivo `22 / 44 / 66 / 88` e os limites 0–100. Ele entra como
+`physically_validated`. A integração visual foi aprovada nas posições 5 e 11.
+
+As quatro instâncias coexistiram numa cadeia cheia com outras classes; a
+hidratação, as alterações ao vivo e o estado desligado funcionaram corretamente.
+
+O catálogo passa à versão 34: 37 efeitos parametrizados, 141 parâmetros e 230
+pendentes.
+
+### Próximo passo exato
+
+1. aplicar o pacote consolidado na branch `research/drv-parameters`;
+2. executar a suíte offline;
+3. criar os commits de implementação e documentação DRIVE;
+4. publicar a branch de pesquisa;
+5. seguir para o próximo efeito DRIVE.
+
+## 41. Atualização consolidada — Fase 54
+
+Timmy OD (`03 / 1E / 03`) possui GAIN/VOLUME/BASS/TREBLE em 0–3 e MODE em 4,
+com I=0, II=1 e III=2. Master OD (`03 / 0F / 03`) possui cinco controles
+numéricos consecutivos: GAIN/VOLUME/BASS/MIDDLE/TREBLE. Solar Fuzz
+(`03 / 26 / 03`) usa somente FUZZ/VOLUME em 0–1; resíduos salvos em 2–4 são
+explicitamente ignorados.
+
+Os três layouts foram confirmados por capturas e aprovados no monitor juntos.
+Timmy exibiu MODE I/III, Master os cinco controles e Solar somente FUZZ/VOLUME.
+Todos estão `physically_validated` com integração aprovada.
+
+### Próximo passo exato
+
+## 42. Atualização consolidada — Fase 55
+
+Fuzz Cream (`03 / 22 / 03`), Red Fuzz (`03 / 24 / 03`) e JP Dist
+(`03 / 2A / 03`) reutilizam layouts já validados. Seus padrões informados são,
+respectivamente, `40/50/50`, `50/50` e `50/50/50`.
+
+Os três foram confirmados juntos com valores baixos, altos e limite 100. Todos
+estão `physically_validated`, com integração aprovada.
+
+### Próximo passo exato
+
+## 43. Atualização consolidada — Fase 56
+
+Dark Mouse (`03 / 2B / 03`) recebe GAIN/FILTER/VOLUME. Plexi Dist
+(`03 / 2D / 03`) recebe GAIN/VOLUME/BASS/MIDDLE/TREBLE. Master Dist
+(`03 / 2E / 03`) usa GAIN/VOLUME/BASS/CONTOUR/TREBLE. Todos reutilizam
+seletores consecutivos já validados e padrões 50.
+
+Os três foram confirmados juntos com valores baixos, altos e limite 100. FILTER,
+MIDDLE e CONTOUR corresponderam à interface real. Todos estão
+`physically_validated`, com integração aprovada.
+
+### Próximo passo exato
+
+## 44. Atualização consolidada — Fase 57
+
+Dist Plus (`03 / 29 / 03`) reutiliza GAIN/VOLUME. Shark (`03 / 30 / 03`)
+reutiliza GAIN/TONE/VOLUME. Strive (`03 / 32 / 03`) acrescenta MODE no seletor
+3, inferido como I=0, II=1 e III=2. Todos têm padrões informados 50, com MODE I
+no Strive.
+
+Os três foram confirmados no monitor com valores baixos, altos e extremos.
+Strive também confirmou MODE I/II/III. Todos estão `physically_validated`.
+
+### Próximo passo exato
+
+## 45. Atualização consolidada — Fase 58 e conclusão DRIVE
+
+Sardar Dist (`03 / 52 / 03`) usa seis numéricos em 0–5. Bass OD
+(`03 / 3F / 03`) usa GAIN/TONE/VOLUME/MODE/BLEND, com MODE inferido como
+NORMAL=0, SCOOP=1 e EDGE=2. Bass Dist (`03 / 40 / 03`) usa
+GAIN/BLEND/VOLUME/BASS/TREBLE. Todos os numéricos têm padrão 50.
+
+Os três foram aprovados em duas instâncias simultâneas, com valores baixos,
+altos, extremos 0/100 e MODE NORMAL/SCOOP/EDGE correto no Bass OD. Todos estão
+`physically_validated`. O catálogo permanece na versão 39, com 52 efeitos
+parametrizados, 199 parâmetros e 215 efeitos de outras classes ainda pendentes.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/drv-parameters`;
+2. executar a suíte offline;
+3. commitar implementação e documentação;
+4. publicar a branch e integrá-la à `main`;
+5. criar a branch de pesquisa da próxima classe.

@@ -41,3 +41,14 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 45 | `WAH_BASS_WAH_INFERRED_PARAMETERS_PHASE45.md` | BASS WAH inferido da família e aprovado fisicamente sem PCAPNG |
 | 46 | `WAH_TOUCH_WAH_MODE_PARAMETERS_PHASE46.md` | TOUCH WAH com MODE GUITAR/BASS no seletor 4 |
 | 47 | `WAH_AUTO_WAH_SYNC_RATE_PARAMETERS_PHASE47.md` | AUTO WAH com RATE decimal/ritmo condicionado por SYNC |
+| 48 | `DRV_SKREAMER_PARAMETERS_PHASE48.md` | SKREAMER inaugura DRIVE com GAIN/TONE/VOLUME |
+| 49 | `DRV_SKREAMER9_INFERRED_PARAMETERS_PHASE49.md` | SKREAMER 9 infere o layout 0–2 para validação física |
+| 50 | `DRV_BUTTER_OD_PARAMETERS_PHASE50.md` | BUTTER OD com GAIN/VOLUME e residual salvo rejeitado |
+| 51 | `DRV_WARM_SUPER_OD_INFERRED_PARAMETERS_PHASE51.md` | WARM/SUPER OD validados com GAIN/TONE/VOLUME em múltiplas instâncias |
+| 52 | `DRV_BLUES_FULL_OD_PARAMETERS_PHASE52.md` | FULL OD valida MODE LP/HP; BLUES OD infere GAIN/TONE/VOLUME |
+| 53 | `DRV_BREAKER_GERDEN_OD_PARAMETERS_PHASE53.md` | BREAKER candidato de três controles; GERDEN valida VOICE numérico |
+| 54 | `DRV_TIMMY_MASTER_SOLAR_PARAMETERS_PHASE54.md` | TIMMY MODE I/II/III, MASTER com cinco controles e SOLAR com resíduos rejeitados |
+| 55 | `DRV_FUZZ_RED_JP_INFERRED_PARAMETERS_PHASE55.md` | FUZZ CREAM, RED FUZZ e JP DIST reutilizam layouts DRIVE validados |
+| 56 | `DRV_DARK_PLEXI_MASTER_DIST_INFERRED_PARAMETERS_PHASE56.md` | DARK MOUSE e dois layouts DIST preparados por inferência |
+| 57 | `DRV_DIST_SHARK_STRIVE_INFERRED_PARAMETERS_PHASE57.md` | DIST PLUS, SHARK e STRIVE preparados por inferência controlada |
+| 58 | `DRV_SARDAR_BASS_OD_DIST_INFERRED_PARAMETERS_PHASE58.md` | SARDAR DIST, BASS OD e BASS DIST preparados por inferência controlada |

@@ -757,12 +757,32 @@ Os testes usam presets dedicados e alterações reversíveis.
 
 ## Próxima investigação
 
-As classes DYN, FREQ e WAH estão encerradas. Todos os seis modelos WAH foram
-implementados e aprovados fisicamente. A Fase 47 concluiu `AUTO WAH` com sete
-parâmetros e RATE condicionado por SYNC: `0,1–10,0 Hz` quando desligado e
-divisões rítmicas quando ligado. O próximo marco é consolidar a branch
-`research/wah-parameters` e integrá-la explicitamente na `main` após revisão do
-usuário.
+As classes DYN, FREQ e WAH estão encerradas. A pesquisa atual ocorre na classe
+DRIVE. A Fase 48 consolidou `Skreamer` com GAIN, TONE e VOLUME nos seletores
+0–2 e hidratação dos padrões 40/70/50. A Fase 49 validou o mesmo layout no
+`Skreamer 9` sem captura própria. A Fase 50 adiciona `Butter OD` com GAIN e
+VOLUME nos seletores 0–1 e foi aprovada em duas posições de uma cadeia cheia.
+A Fase 51 aplicou e validou fisicamente a assinatura GAIN/TONE/VOLUME em
+`Warm OD` e `Super OD`. Os dois funcionaram simultaneamente, em diferentes
+posições de uma cadeia cheia, com hidratação e alterações ao vivo corretas.
+A Fase 52 adiciona `Full OD` com GAIN, TONE, VOLUME e MODE (`LP=0`, `HP=1`),
+confirmado por captura, e valida `Blues OD` com a assinatura de três controles.
+Ambos foram aprovados em múltiplas posições de uma cadeia cheia.
+A Fase 53 prepara `Breaker OD` com GAIN/TONE/VOLUME conforme o firmware atual e
+confirma `Gerden OD` com VOICE numérico no seletor 3.
+Os dois foram aprovados fisicamente em múltiplas posições de uma cadeia cheia.
+A Fase 54 confirma `Timmy OD` com MODE I/II/III, `Master OD` com cinco controles
+numéricos e `Solar Fuzz` com FUZZ/VOLUME e rejeição de resíduos persistidos.
+Os três foram aprovados no monitor. A Fase 55 prepara `Fuzz Cream`, `Red Fuzz`
+e `JP Dist` como inferências controladas para teste físico direto.
+Os três foram aprovados no monitor. A Fase 56 prepara `Dark Mouse`, `Plexi Dist`
+e `Master Dist` para validação física direta.
+Os três foram aprovados no monitor. A Fase 57 também foi aprovada fisicamente:
+`Dist Plus`, `Shark` e `Strive` responderam corretamente, incluindo os valores
+extremos e os três modos I/II/III. A Fase 58 validou `Sardar Dist`, `Bass OD` e
+`Bass Dist` em duas instâncias simultâneas, incluindo extremos e os modos
+NORMAL/SCOOP/EDGE. Com isso, a pesquisa de parâmetros da classe DRIVE está
+concluída.
 Importação de IR e CLONE permanece um subsistema separado de arquivos externos.
 
 ## Continuidade entre chats
