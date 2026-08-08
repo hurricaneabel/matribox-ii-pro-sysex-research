@@ -1950,3 +1950,73 @@ pendentes.
 3. criar os commits de implementação e documentação DRIVE;
 4. publicar a branch de pesquisa;
 5. seguir para o próximo efeito DRIVE.
+
+## 41. Atualização consolidada — Fase 54
+
+Timmy OD (`03 / 1E / 03`) possui GAIN/VOLUME/BASS/TREBLE em 0–3 e MODE em 4,
+com I=0, II=1 e III=2. Master OD (`03 / 0F / 03`) possui cinco controles
+numéricos consecutivos: GAIN/VOLUME/BASS/MIDDLE/TREBLE. Solar Fuzz
+(`03 / 26 / 03`) usa somente FUZZ/VOLUME em 0–1; resíduos salvos em 2–4 são
+explicitamente ignorados.
+
+Os três layouts foram confirmados por capturas e aprovados no monitor juntos.
+Timmy exibiu MODE I/III, Master os cinco controles e Solar somente FUZZ/VOLUME.
+Todos estão `physically_validated` com integração aprovada.
+
+### Próximo passo exato
+
+## 42. Atualização consolidada — Fase 55
+
+Fuzz Cream (`03 / 22 / 03`), Red Fuzz (`03 / 24 / 03`) e JP Dist
+(`03 / 2A / 03`) reutilizam layouts já validados. Seus padrões informados são,
+respectivamente, `40/50/50`, `50/50` e `50/50/50`.
+
+Os três foram confirmados juntos com valores baixos, altos e limite 100. Todos
+estão `physically_validated`, com integração aprovada.
+
+### Próximo passo exato
+
+## 43. Atualização consolidada — Fase 56
+
+Dark Mouse (`03 / 2B / 03`) recebe GAIN/FILTER/VOLUME. Plexi Dist
+(`03 / 2D / 03`) recebe GAIN/VOLUME/BASS/MIDDLE/TREBLE. Master Dist
+(`03 / 2E / 03`) usa GAIN/VOLUME/BASS/CONTOUR/TREBLE. Todos reutilizam
+seletores consecutivos já validados e padrões 50.
+
+Os três foram confirmados juntos com valores baixos, altos e limite 100. FILTER,
+MIDDLE e CONTOUR corresponderam à interface real. Todos estão
+`physically_validated`, com integração aprovada.
+
+### Próximo passo exato
+
+## 44. Atualização consolidada — Fase 57
+
+Dist Plus (`03 / 29 / 03`) reutiliza GAIN/VOLUME. Shark (`03 / 30 / 03`)
+reutiliza GAIN/TONE/VOLUME. Strive (`03 / 32 / 03`) acrescenta MODE no seletor
+3, inferido como I=0, II=1 e III=2. Todos têm padrões informados 50, com MODE I
+no Strive.
+
+Os três foram confirmados no monitor com valores baixos, altos e extremos.
+Strive também confirmou MODE I/II/III. Todos estão `physically_validated`.
+
+### Próximo passo exato
+
+## 45. Atualização consolidada — Fase 58 e conclusão DRIVE
+
+Sardar Dist (`03 / 52 / 03`) usa seis numéricos em 0–5. Bass OD
+(`03 / 3F / 03`) usa GAIN/TONE/VOLUME/MODE/BLEND, com MODE inferido como
+NORMAL=0, SCOOP=1 e EDGE=2. Bass Dist (`03 / 40 / 03`) usa
+GAIN/BLEND/VOLUME/BASS/TREBLE. Todos os numéricos têm padrão 50.
+
+Os três foram aprovados em duas instâncias simultâneas, com valores baixos,
+altos, extremos 0/100 e MODE NORMAL/SCOOP/EDGE correto no Bass OD. Todos estão
+`physically_validated`. O catálogo permanece na versão 39, com 52 efeitos
+parametrizados, 199 parâmetros e 215 efeitos de outras classes ainda pendentes.
+
+### Próximo passo exato
+
+1. aplicar o pacote final na branch `research/drv-parameters`;
+2. executar a suíte offline;
+3. commitar implementação e documentação;
+4. publicar a branch e integrá-la à `main`;
+5. criar a branch de pesquisa da próxima classe.

@@ -47,3 +47,8 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 51 | `DRV_WARM_SUPER_OD_INFERRED_PARAMETERS_PHASE51.md` | WARM/SUPER OD validados com GAIN/TONE/VOLUME em múltiplas instâncias |
 | 52 | `DRV_BLUES_FULL_OD_PARAMETERS_PHASE52.md` | FULL OD valida MODE LP/HP; BLUES OD infere GAIN/TONE/VOLUME |
 | 53 | `DRV_BREAKER_GERDEN_OD_PARAMETERS_PHASE53.md` | BREAKER candidato de três controles; GERDEN valida VOICE numérico |
+| 54 | `DRV_TIMMY_MASTER_SOLAR_PARAMETERS_PHASE54.md` | TIMMY MODE I/II/III, MASTER com cinco controles e SOLAR com resíduos rejeitados |
+| 55 | `DRV_FUZZ_RED_JP_INFERRED_PARAMETERS_PHASE55.md` | FUZZ CREAM, RED FUZZ e JP DIST reutilizam layouts DRIVE validados |
+| 56 | `DRV_DARK_PLEXI_MASTER_DIST_INFERRED_PARAMETERS_PHASE56.md` | DARK MOUSE e dois layouts DIST preparados por inferência |
+| 57 | `DRV_DIST_SHARK_STRIVE_INFERRED_PARAMETERS_PHASE57.md` | DIST PLUS, SHARK e STRIVE preparados por inferência controlada |
+| 58 | `DRV_SARDAR_BASS_OD_DIST_INFERRED_PARAMETERS_PHASE58.md` | SARDAR DIST, BASS OD e BASS DIST preparados por inferência controlada |

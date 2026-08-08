@@ -1952,3 +1952,57 @@ A validação final confirmou Breaker OD nas posições 4 e 10 e Gerden OD nas
 posições 5 e 11, simultaneamente numa cadeia cheia. Hidratação, alterações ao
 vivo, estado desligado e VOICE 0–100 funcionaram corretamente. Breaker passa a
 `physically_validated`, e Gerden recebe aprovação da integração do monitor.
+
+## Fase 54 — Timmy OD, Master OD e Solar Fuzz
+
+Timmy OD (`03 / 1E / 03`) confirmou GAIN/VOLUME/BASS/TREBLE nos seletores 0–3
+e MODE no seletor 4. O enum usa I=0, II=1 e III=2; o padrão informado é II.
+
+Master OD (`03 / 0F / 03`) confirmou GAIN/VOLUME/BASS/MIDDLE/TREBLE nos
+seletores 0–4, todos 0–100. Isso segue a interface real do firmware, apesar da
+descrição diferente no manual.
+
+Solar Fuzz (`03 / 26 / 03`) confirmou FUZZ e VOLUME nos seletores 0–1. Campos
+salvos 2–4 continham 100 residual, mas não produziram eventos e são ignorados.
+
+A validação visual confirmou os três efeitos juntos, incluindo MODE I/III no
+Timmy, cinco controles no Master e ausência dos resíduos no Solar. As três
+integrações do monitor ficam aprovadas.
+
+## Fase 55 — Fuzz Cream, Red Fuzz e JP Dist inferidos
+
+Fuzz Cream (`03 / 22 / 03`) recebe 0=SUSTAIN, 1=TONE e 2=VOLUME. Red Fuzz
+(`03 / 24 / 03`) reutiliza exatamente 0=FUZZ e 1=VOLUME do Solar Fuzz. JP Dist
+(`03 / 2A / 03`) reutiliza 0=GAIN, 1=TONE e 2=VOLUME. Todos permanecem
+inferidos até validação física no monitor. A validação posterior confirmou os
+três simultaneamente, com valores baixos, altos, limite 100 e estado desligado;
+todos passam a `physically_validated`.
+
+## Fase 56 — Dark Mouse, Plexi Dist e Master Dist inferidos
+
+Dark Mouse (`03 / 2B / 03`) recebe GAIN/FILTER/VOLUME em 0–2. Plexi Dist
+(`03 / 2D / 03`) reutiliza GAIN/VOLUME/BASS/MIDDLE/TREBLE em 0–4. Master Dist
+(`03 / 2E / 03`) usa a mesma estrutura, com CONTOUR no seletor 3. Todos têm
+padrões informados 50 e permanecem candidatos até o monitor confirmar.
+
+A validação posterior confirmou os três simultaneamente, incluindo FILTER,
+MIDDLE e CONTOUR nas posições previstas, além de valores baixos, altos e limite
+100. Todos passam a `physically_validated`.
+
+## Fase 57 — Dist Plus, Shark e Strive inferidos
+
+Dist Plus (`03 / 29 / 03`) recebe GAIN/VOLUME em 0–1. Shark
+(`03 / 30 / 03`) recebe GAIN/TONE/VOLUME em 0–2. Strive (`03 / 32 / 03`)
+recebe os mesmos três numéricos e MODE em 3, inferido como I=0, II=1 e III=2.
+O monitor confirmou os três, incluindo extremos 0/100 e MODE I/II/III no
+Strive. Todos passam a `physically_validated`.
+
+## Fase 58 — Sardar Dist, Bass OD e Bass Dist inferidos
+
+Sardar Dist (`03 / 52 / 03`) recebe GAIN/VOLUME/BASS/TREBLE/PRESENCE/TIGHT em
+0–5. Bass OD (`03 / 3F / 03`) recebe GAIN/TONE/VOLUME/MODE/BLEND em 0–4, com
+MODE candidato NORMAL=0, SCOOP=1 e EDGE=2. Bass Dist (`03 / 40 / 03`) recebe
+GAIN/BLEND/VOLUME/BASS/TREBLE em 0–4. Todos usam padrões numéricos 50 e
+foram confirmados no monitor em duas instâncias simultâneas. Valores baixos,
+altos, extremos 0/100 e os modos NORMAL/SCOOP/EDGE responderam corretamente.
+Todos passam a `physically_validated`, concluindo a classe DRIVE.
