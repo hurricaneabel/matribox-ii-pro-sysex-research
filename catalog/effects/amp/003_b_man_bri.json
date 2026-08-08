@@ -7,7 +7,256 @@
   "name": "B-MAN BRI",
   "model_id": 36,
   "secondary_selector": 7,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "saved_dump_value": 23,
+        "saved_dump_default": 35,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "presence",
+      "name": "PRESENCE",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "saved_dump_value": 34,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "saved_dump_value": 45,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "bass",
+      "name": "BASS",
+      "display_order": 4,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 3,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 3,
+        "saved_dump_value": 56,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "middle",
+      "name": "MIDDLE",
+      "display_order": 5,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 4,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 4,
+        "saved_dump_value": 67,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "treble",
+      "name": "TREBLE",
+      "display_order": 6,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 5,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 5,
+        "saved_dump_value": 78,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    }
+  ]
 }

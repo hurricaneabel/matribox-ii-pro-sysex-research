@@ -52,3 +52,10 @@ atual e o próximo passo oficial permanecem em `docs/PROJECT_CONTINUITY.md`.
 | 56 | `DRV_DARK_PLEXI_MASTER_DIST_INFERRED_PARAMETERS_PHASE56.md` | DARK MOUSE e dois layouts DIST preparados por inferência |
 | 57 | `DRV_DIST_SHARK_STRIVE_INFERRED_PARAMETERS_PHASE57.md` | DIST PLUS, SHARK e STRIVE preparados por inferência controlada |
 | 58 | `DRV_SARDAR_BASS_OD_DIST_INFERRED_PARAMETERS_PHASE58.md` | SARDAR DIST, BASS OD e BASS DIST preparados por inferência controlada |
+| 59 | `AMP_TWD_BMAN_PARAMETERS_PHASE59.md` | TWD DELUXE e família B-MAN inauguram os parâmetros AMP |
+| 60 | `AMP_DARK_SUPERO_CANDIDATES_PHASE60.md` | DARK DOUBLE, DARK DELUXE e SUPERO 2 CL validados fisicamente no monitor |
+| 61 | `AMP_SUPERO_VOKS_CANDIDATES_PHASE61.md` | SUPERO 2 OD, VOKS 15TB e VOKS 30N validados fisicamente no monitor |
+| 62 | `AMP_VOKS_JAZZ_SUPERB_CANDIDATES_PHASE62.md` | VOKS 30TB, JAZZ 120 e SUPERB CL validados fisicamente no monitor |
+| 63 | `AMP_SUPERB_CALIF_CANDIDATES_PHASE63.md` | SUPERB OD, CALIF STAR CL e CALIF STAR OD validados fisicamente no monitor |
+| 64 | `AMP_BOG_CANDIDATES_PHASE64.md` | BOG SV CL, BOG SV OD e BOG XT BLUE preparados como candidatos somente-leitura |
+| 65–69 | `AMP_CLASS_CONSOLIDATION_PHASE69.md` | lotes acelerados, correção do HALEN 51 e conclusão física dos 63 AMP |

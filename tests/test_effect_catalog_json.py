@@ -54,7 +54,7 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         cls.catalog = load_effect_catalog()
 
     def test_catalog_has_all_legacy_classes_and_effects(self) -> None:
-        self.assertEqual(self.catalog.catalog_version, 39)
+        self.assertEqual(self.catalog.catalog_version, 50)
         self.assertEqual(len(self.catalog.classes), 16)
         self.assertEqual(self.catalog.effect_count, 267)
 
@@ -522,9 +522,72 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
                 "drv.sardar_dist",
                 "drv.bass_od",
                 "drv.bass_dist",
+                "amp.twd_deluxe",
+                "amp.b_man_n",
+                "amp.b_man_bri",
+                "amp.dark_double",
+                "amp.dark_deluxe",
+                "amp.supero_2_cl",
+                "amp.supero_2_od",
+                "amp.voks_15tb",
+                "amp.voks_30n",
+                "amp.voks_30tb",
+                "amp.jazz_120",
+                "amp.superb_cl",
+                "amp.superb_od",
+                "amp.calif_star_cl",
+                "amp.calif_star_od",
+                "amp.bog_sv_cl",
+                "amp.bog_sv_od",
+                "amp.bog_xt_blue",
+                "amp.bog_xt_red",
+                "amp.doctor_cl",
+                "amp.doctor_od",
+                "amp.dragon_cl",
+                "amp.dragon_cl_b",
+                "amp.dragon_od",
+                "amp.sol_100_cl",
+                "amp.sol_100_od",
+                "amp.sol_100_ld",
+                "amp.brit_45",
+                "amp.brit_45_plus",
+                "amp.brit_45jp",
+                "amp.brit_50",
+                "amp.brit_50_plus",
+                "amp.brit_50jp",
+                "amp.brit_slp",
+                "amp.brit_800",
+                "amp.brit_900",
+                "amp.flyman_1",
+                "amp.flyman_2",
+                "amp.flyman_plus_1",
+                "amp.flyman_plus_2",
+                "amp.calif_iic_plus_1",
+                "amp.calif_iic_plus_2",
+                "amp.calif_iic_plus_3",
+                "amp.calif_iv_ld_1",
+                "amp.calif_iv_ld_2",
+                "amp.calif_iv_ld_3",
+                "amp.calif_dual_v",
+                "amp.calif_dual_m",
+                "amp.tanger_r100",
+                "amp.halen_51",
+                "amp.eng_120",
+                "amp.eng_120_plus",
+                "amp.dizzy_vh",
+                "amp.dizzy_vh_s",
+                "amp.dizzy_vh_plus",
+                "amp.dizzy_vh_plus_s",
+                "amp.a_bassvt",
+                "amp.voks_bass",
+                "amp.cali_bass",
+                "amp.a_bassft",
+                "amp.f_2bass",
+                "amp.ac_preamp",
+                "amp.ac_preamp_2",
             }
         ]
-        self.assertEqual(len(pending), 215)
+        self.assertEqual(len(pending), 152)
         for model in pending:
             with self.subTest(effect=model.key):
                 self.assertEqual(model.parameter_catalog_status, "pending")
@@ -1272,6 +1335,546 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
         self.assertEqual(tuple(bass_od.parameters[3].choices.items()), ((0, "NORMAL"), (1, "SCOOP"), (2, "EDGE")))
         self.assertEqual(bass_od.parameters[3].validation["saved_dump_default_label"], "NORMAL")
 
+    def test_phase59_validates_twd_deluxe_and_b_man_layouts(self) -> None:
+        cases = (
+            ("amp.twd_deluxe", 0x01, ("gain", "tone", "volume"), (30, 50, 50)),
+            (
+                "amp.b_man_n",
+                0x03,
+                ("gain", "presence", "volume", "bass", "middle", "treble"),
+                (30, 50, 50, 50, 50, 50),
+            ),
+            (
+                "amp.b_man_bri",
+                0x24,
+                ("gain", "presence", "volume", "bass", "middle", "treble"),
+                (35, 50, 50, 50, 50, 50),
+            ),
+        )
+        for effect_key, model_id, keys, defaults in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    defaults,
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertEqual(parameter.validation["monitor_integration_physical_validation"], "approved")
+
+    def test_phase60_physically_validates_three_amp_layouts(self) -> None:
+        cases = (
+            (
+                "amp.dark_double",
+                0x04,
+                ("gain", "volume", "bass", "middle", "treble", "bright"),
+                (35, 50, 50, 40, 60, 1),
+                (19, 20, 19, 17, 9, 1),
+            ),
+            (
+                "amp.dark_deluxe",
+                0x05,
+                ("gain", "volume", "bass", "treble"),
+                (30, 50, 50, 50),
+                (65, 69, 74, 71),
+            ),
+            (
+                "amp.supero_2_cl",
+                0x0F,
+                ("gain", "tone", "volume"),
+                (30, 50, 50),
+                (87, 75, 94),
+            ),
+        )
+        for effect_key, model_id, keys, defaults, observed_values in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    defaults,
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+                    observed_values,
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertTrue(parameter.validation["read_only"])
+                    self.assertTrue(parameter.validation["physical_validation_without_pcapng"])
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+                    self.assertEqual(
+                        parameter.identification_status,
+                        "validated_with_chain_effect_context",
+                    )
+        bright = self.catalog.effect_by_key("amp.dark_double").parameters[-1]
+        self.assertEqual(bright.value_type, "boolean")
+        self.assertEqual((bright.minimum, bright.maximum, bright.step), (0, 1, 1))
+        self.assertEqual(bright.validation["boolean_encoding"], {"false": 0, "true": 1})
+
+    def test_phase61_supero_voks_are_physically_validated(self) -> None:
+        cases = (
+            (
+                "amp.supero_2_od",
+                0x28,
+                ("gain_1", "tone_1", "gain_2", "tone_2", "volume"),
+                (50, 50, 50, 50, 50),
+                (21, 34, 9, 8, 23),
+            ),
+            (
+                "amp.voks_15tb",
+                0x10,
+                ("gain", "tone_cut", "volume", "bass", "treble"),
+                (30, 60, 50, 50, 50),
+                (48, 58, 66, 69, 66),
+            ),
+            (
+                "amp.voks_30n",
+                0x11,
+                ("gain", "tone_cut", "volume", "bright"),
+                (30, 50, 50, 0),
+                (91, 90, 97, 1),
+            ),
+        )
+        for effect_key, model_id, keys, defaults, observed in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    defaults,
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+                    observed,
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertTrue(parameter.validation["read_only"])
+                    self.assertTrue(parameter.validation["physical_validation_without_pcapng"])
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+                    self.assertEqual(
+                        parameter.identification_status,
+                        "validated_with_chain_effect_context",
+                    )
+        bright = self.catalog.effect_by_key("amp.voks_30n").parameters[-1]
+        self.assertEqual(bright.value_type, "boolean")
+        self.assertEqual((bright.minimum, bright.maximum, bright.step), (0, 1, 1))
+        self.assertEqual(bright.validation["boolean_encoding"], {"false": 0, "true": 1})
+
+    def test_phase62_voks_jazz_superb_are_physically_validated(self) -> None:
+        cases = (
+            (
+                "amp.voks_30tb",
+                0x27,
+                ("gain", "tone_cut", "volume", "bass", "treble", "char"),
+                (30, 50, 50, 50, 50, 0),
+                (2, 4, 3, 4, 4, 1),
+            ),
+            (
+                "amp.jazz_120",
+                0x14,
+                ("gain", "bass", "middle", "treble", "bright"),
+                (50, 50, 50, 50, 0),
+                (39, 55, 43, 55, 1),
+            ),
+            (
+                "amp.superb_cl",
+                0x15,
+                ("gain", "presence", "volume", "bass", "middle", "treble"),
+                (35, 50, 50, 50, 50, 50),
+                (66, 74, 82, 88, 94, 100),
+            ),
+        )
+        for effect_key, model_id, keys, defaults, observed in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    defaults,
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+                    observed,
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertTrue(parameter.validation["read_only"])
+                    self.assertTrue(parameter.validation["physical_validation_without_pcapng"])
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+                    self.assertEqual(
+                        parameter.identification_status,
+                        "validated_with_chain_effect_context",
+                    )
+        char = self.catalog.effect_by_key("amp.voks_30tb").parameters[-1]
+        self.assertEqual(char.value_type, "enum")
+        self.assertEqual((char.minimum, char.maximum, char.step), (0, 1, 1))
+        self.assertEqual(char.choices, {0: "COOL", 1: "HOT"})
+        self.assertEqual(char.validation["enum_wire_values_validated"], [0, 1])
+        bright = self.catalog.effect_by_key("amp.jazz_120").parameters[-1]
+        self.assertEqual(bright.value_type, "boolean")
+        self.assertEqual((bright.minimum, bright.maximum, bright.step), (0, 1, 1))
+        self.assertEqual(bright.validation["boolean_encoding"], {"false": 0, "true": 1})
+
+    def test_phase63_validates_superb_calif_parameter_maps(self) -> None:
+        cases = (
+            (
+                "amp.superb_od",
+                0x48,
+                ("gain", "presence", "volume", "bass", "middle", "treble"),
+                (50, 50, 50, 50, 50, 50),
+                (3, 5, 7, 1, 4, 6),
+            ),
+            (
+                "amp.calif_star_cl",
+                0x19,
+                ("gain", "presence", "volume", "bass", "middle", "treble"),
+                (40, 50, 50, 50, 50, 50),
+                (33, 41, 54, 62, 45, 62),
+            ),
+            (
+                "amp.calif_star_od",
+                0x4A,
+                ("input", "gain", "presence", "volume", "bass", "middle", "treble"),
+                (50, 50, 50, 50, 50, 50, 50),
+                (94, 93, 79, 90, 97, 88, 100),
+            ),
+        )
+        for effect_key, model_id, keys, defaults, observed in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    defaults,
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+                    observed,
+                )
+                for parameter in effect.parameters:
+                    self.assertEqual(parameter.value_type, "integer")
+                    self.assertEqual((parameter.minimum, parameter.maximum, parameter.step), (0, 100, 1))
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertTrue(parameter.validation["read_only"])
+                    self.assertTrue(parameter.validation["physical_validation_without_pcapng"])
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+                    self.assertEqual(
+                        parameter.identification_status,
+                        "validated_with_chain_effect_context",
+                    )
+
+    def test_phase64_validated_bog_amps_preserve_physical_evidence(self) -> None:
+        cases = (
+            (
+                "amp.bog_sv_cl",
+                0x1A,
+                ("gain", "presence", "volume", "bass", "treble", "bright"),
+                (30, 50, 50, 50, 50, 0),
+                (8, 12, 18, 13, 20, 1),
+            ),
+            (
+                "amp.bog_sv_od",
+                0x3D,
+                ("gain", "presence", "volume", "bass", "middle", "treble"),
+                (30, 50, 50, 50, 50, 50),
+                (23, 37, 60, 57, 43, 57),
+            ),
+            (
+                "amp.bog_xt_blue",
+                0x43,
+                ("gain", "presence", "volume", "bass", "middle", "treble"),
+                (30, 50, 50, 50, 50, 50),
+                (62, 73, 82, 88, 94, 100),
+            ),
+        )
+        for effect_key, model_id, keys, defaults, observed in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    defaults,
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+                    observed,
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertTrue(parameter.validation["read_only"])
+                    self.assertTrue(parameter.validation["physical_validation_without_pcapng"])
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+                    self.assertEqual(
+                        parameter.identification_status,
+                        "validated_with_chain_effect_context",
+                    )
+        bright = self.catalog.effect_by_key("amp.bog_sv_cl").parameters[-1]
+        self.assertEqual(bright.value_type, "boolean")
+        self.assertEqual((bright.minimum, bright.maximum, bright.step), (0, 1, 1))
+        self.assertEqual(bright.validation["boolean_encoding"], {"false": 0, "true": 1})
+
+    def test_phase65_eight_amps_are_physically_validated(self) -> None:
+        cases = (
+            ("amp.bog_xt_red", 0x6E, ("gain", "presence", "volume", "bass", "middle", "treble"), (50, 50, 50, 50, 50, 50), (3, 9, 14, 20, 25, 32)),
+            ("amp.doctor_cl", 0x1B, ("gain", "tone_cut", "volume", "bass", "middle", "treble"), (35, 50, 50, 50, 50, 50), (27, 41, 31, 43, 32, 42)),
+            ("amp.doctor_od", 0x49, ("gain", "tone_cut", "volume", "bass", "middle", "treble"), (35, 50, 50, 50, 50, 50), (37, 58, 64, 71, 68, 81)),
+            ("amp.dragon_cl", 0x1F, ("gain", "volume", "bass", "middle", "treble"), (35, 50, 50, 50, 50), (7, 11, 14, 10, 15)),
+            ("amp.dragon_cl_b", 0x7B, ("gain", "volume", "bass", "middle", "treble"), (20, 50, 50, 50, 50), (41, 58, 62, 44, 68)),
+            ("amp.dragon_od", 0x7C, ("gain", "volume", "bass", "middle", "treble"), (30, 50, 50, 50, 50), (65, 76, 85, 89, 99)),
+            ("amp.sol_100_cl", 0x23, ("gain", "presence", "volume", "bass", "middle", "treble"), (30, 50, 50, 50, 50, 50), (41, 60, 40, 59, 41, 67)),
+            ("amp.sol_100_od", 0x47, ("gain", "presence", "volume", "bass", "middle", "treble"), (50, 50, 50, 50, 50, 50), (80, 69, 89, 77, 90, 99)),
+        )
+        for effect_key, model_id, keys, defaults, observed in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    defaults,
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+                    observed,
+                )
+                for parameter in effect.parameters:
+                    self.assertEqual(parameter.value_type, "integer")
+                    self.assertEqual((parameter.minimum, parameter.maximum, parameter.step), (0, 100, 1))
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertTrue(parameter.validation["read_only"])
+                    self.assertTrue(parameter.validation["physical_validation_without_pcapng"])
+                    self.assertEqual(
+                        parameter.validation["monitor_integration_physical_validation"],
+                        "approved",
+                    )
+                    self.assertEqual(
+                        parameter.identification_status,
+                        "validated_with_chain_effect_context",
+                    )
+
+
+    def test_phase66_nine_amps_are_physically_validated(self) -> None:
+        cases = (
+            ("amp.sol_100_ld", 0x59, ("gain", "presence", "volume", "bass", "middle", "treble"), (50, 50, 50, 50, 50, 50), (3, 0, 7, 0, 8, 0)),
+            ("amp.brit_45", 0x2A, ("gain", "presence", "volume", "bass", "middle", "treble"), (25, 65, 50, 45, 50, 65), (4, 9, 13, 19, 29, 49)),
+            ("amp.brit_45_plus", 0x2B, ("gain", "presence", "volume", "bass", "middle", "treble"), (45, 50, 50, 50, 50, 50), (10, 24, 39, 49, 28, 46)),
+            ("amp.brit_45jp", 0x2C, ("gain_1", "presence", "volume", "bass", "middle", "treble", "gain_2"), (50, 50, 50, 50, 50, 50, 50), (15, 23, 21, 13, 24, 31, 37)),
+            ("amp.brit_50", 0x2D, ("gain", "presence", "volume", "bass", "middle", "treble"), (40, 50, 50, 50, 50, 50), (85, 78, 85, 87, 94, 100)),
+            ("amp.brit_50_plus", 0x2E, ("gain", "presence", "volume", "bass", "middle", "treble"), (40, 50, 50, 50, 50, 50), (8, 0, 12, 100, 48, 66)),
+            ("amp.brit_50jp", 0x2F, ("gain_1", "presence", "volume", "bass", "middle", "treble", "gain_2"), (40, 50, 50, 50, 50, 50, 50), (3, 82, 29, 71, 34, 61, 37)),
+            ("amp.brit_slp", 0x30, ("gain", "presence", "volume", "bass", "middle", "treble"), (50, 50, 50, 50, 50, 50), (75, 28, 73, 37, 35, 93)),
+            ("amp.brit_800", 0x35, ("gain", "presence", "volume", "bass", "middle", "treble"), (50, 50, 50, 50, 50, 50), (100, 63, 39, 86, 48, 73)),
+        )
+        for effect_key, model_id, keys, defaults, observed in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(effect.capabilities, ("parameters",))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    tuple(range(len(keys))),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters), defaults
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters), observed
+                )
+                for parameter in effect.parameters:
+                    self.assertEqual(parameter.value_type, "integer")
+                    self.assertEqual((parameter.minimum, parameter.maximum, parameter.step), (0, 100, 1))
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertTrue(parameter.validation["read_only"])
+                    self.assertTrue(parameter.validation["physical_validation_without_pcapng"])
+                    self.assertEqual(parameter.validation["monitor_integration_physical_validation"], "approved")
+                    self.assertEqual(parameter.identification_status, "validated_with_chain_effect_context")
+
+    def test_phase67_nine_amps_are_physically_validated(self) -> None:
+        cases = (
+            ("amp.brit_900", 0x4E, (0, 8, 100, 6, 17, 40)),
+            ("amp.flyman_1", 0x40, (8, 19, 100, 29, 54, 21)),
+            ("amp.flyman_2", 0x41, (70, 36, 73, 0, 55, 100)),
+            ("amp.flyman_plus_1", 0x5D, (0, 82, 15, 100, 38, 65)),
+            ("amp.flyman_plus_2", 0x5E, (100, 0, 71, 33, 100, 67)),
+            ("amp.calif_iic_plus_1", 0x39, (0, 100, 31, 66, 42, 86)),
+            ("amp.calif_iic_plus_2", 0x3A, (100, 42, 0, 38, 87, 61)),
+            ("amp.calif_iic_plus_3", 0x3B, (8, 89, 40, 67, 46, 100)),
+            ("amp.calif_iv_ld_1", 0x55, (0, 85, 33, 76, 42, 100)),
+        )
+        expected_keys = ("gain", "presence", "volume", "bass", "middle", "treble")
+        for effect_key, model_id, observed in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(effect.capabilities, ("parameters",))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), expected_keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    (0, 1, 2, 3, 4, 5),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters),
+                    (50, 50, 50, 50, 50, 50),
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+                    observed,
+                )
+                for parameter in effect.parameters:
+                    self.assertEqual(parameter.value_type, "integer")
+                    self.assertEqual((parameter.minimum, parameter.maximum, parameter.step), (0, 100, 1))
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertTrue(parameter.validation["read_only"])
+                    self.assertTrue(parameter.validation["physical_validation_without_pcapng"])
+                    self.assertEqual(parameter.validation["monitor_integration_physical_validation"], "approved")
+                    self.assertEqual(parameter.identification_status, "validated_with_chain_effect_context")
+
+    def test_phase68_nine_amps_are_physically_validated(self) -> None:
+        standard_keys = ("gain", "presence", "volume", "bass", "middle", "treble")
+        validated_cases = (
+            ("amp.calif_iv_ld_2", 0x56, standard_keys, (0, 1, 2, 3, 4, 5), (3, 9, 33, 100, 0, 77)),
+            ("amp.calif_iv_ld_3", 0x57, standard_keys, (0, 1, 2, 3, 4, 5), (0, 100, 30, 70, 42, 74)),
+            ("amp.calif_dual_v", 0x68, standard_keys, (0, 1, 2, 3, 4, 5), (8, 34, 0, 100, 83, 21)),
+            ("amp.calif_dual_m", 0x69, standard_keys, (0, 1, 2, 3, 4, 5), (73, 0, 33, 67, 100, 42)),
+            ("amp.tanger_r100", 0x53, ("gain", "volume", "bass", "middle", "treble"), (0, 1, 2, 3, 4), (0, 100, 0, 100, 17)),
+            ("amp.halen_51", 0x5A, ("gain", "volume", "bass", "middle", "treble", "presence"), (0, 1, 2, 3, 4, 6), (46, 53, 61, 71, 79, 48)),
+            ("amp.eng_120", 0x5F, standard_keys, (0, 1, 2, 3, 4, 5), (15, 2, 4, 9, 100, 0)),
+            ("amp.eng_120_plus", 0x60, standard_keys, (0, 1, 2, 3, 4, 5), (20, 94, 44, 74, 99, 8)),
+            ("amp.dizzy_vh", 0x65, standard_keys, (0, 1, 2, 3, 4, 5), (17, 95, 35, 93, 56, 89)),
+        )
+        for effect_key, model_id, keys, selectors, observed in validated_cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, 0x07))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(
+                    tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters),
+                    selectors,
+                )
+                self.assertEqual(
+                    tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters),
+                    observed,
+                )
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertEqual(parameter.validation["monitor_integration_physical_validation"], "approved")
+                    self.assertEqual(parameter.identification_status, "validated_with_chain_effect_context")
+
+    def test_phase69_final_ten_amps_are_physically_validated(self) -> None:
+        standard = ("gain", "presence", "volume", "bass", "middle", "treble")
+        cases = (
+            ("amp.dizzy_vh_s", 0x66, 0x07, standard, (0, 1, 2, 3, 4, 5), (50, 50, 50, 50, 50, 50), (0, 100, 23, 77, 40, 65)),
+            ("amp.dizzy_vh_plus", 0x6A, 0x07, standard, (0, 1, 2, 3, 4, 5), (50, 50, 50, 50, 50, 50), (100, 0, 12, 88, 27, 66)),
+            ("amp.dizzy_vh_plus_s", 0x6B, 0x07, standard, (0, 1, 2, 3, 4, 5), (50, 50, 50, 50, 50, 50), (74, 34, 100, 0, 37, 57)),
+            ("amp.a_bassvt", 0x73, 0x07, ("gain", "bass", "middle", "midrange", "treble", "volume"), (0, 1, 2, 3, 4, 5), (50, 50, 50, 1, 50, 50), (11, 92, 40, 3, 99, 1)),
+            ("amp.voks_bass", 0x75, 0x07, ("volume", "bass", "treble"), (0, 1, 2), (50, 50, 50), (10, 93, 43)),
+            ("amp.cali_bass", 0x77, 0x07, ("gain", "volume", "bass", "middle", "treble"), (0, 1, 2, 3, 4), (50, 50, 50, 50, 50), (0, 100, 29, 88, 64)),
+            ("amp.a_bassft", 0x75, 0x08, ("volume", "bass", "treble"), (0, 1, 2), (50, 50, 50), (100, 38, 0)),
+            ("amp.f_2bass", 0x76, 0x08, ("volume", "bright", "bass", "middle", "treble"), (0, 1, 2, 3, 4), (50, 0, 50, 50, 50), (13, 0, 97, 77, 30)),
+            ("amp.ac_preamp", 0x7A, 0x08, ("volume", "tone", "balance", "eq_freq", "eq_q", "eq_gain"), (0, 1, 2, 3, 4, 5), (50, 50, 50, 50, 50, 50), (0, 100, 15, 98, 38, 94)),
+            ("amp.ac_preamp_2", 0x7B, 0x08, ("volume", "tone", "balance", "eq_freq", "eq_q", "eq_gain"), (0, 1, 2, 3, 4, 5), (50, 50, 50, 50, 50, 50), (100, 78, 65, 0, 94, 29)),
+        )
+        for effect_key, model_id, secondary, keys, selectors, defaults, observed in cases:
+            with self.subTest(effect=effect_key):
+                effect = self.catalog.effect_by_key(effect_key)
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual((effect.model_id, effect.secondary_selector), (model_id, secondary))
+                self.assertEqual(effect.capabilities, ("parameters",))
+                self.assertEqual(tuple(parameter.key for parameter in effect.parameters), keys)
+                self.assertEqual(tuple(dict(parameter.message_match)["parameter_selector"] for parameter in effect.parameters), selectors)
+                self.assertEqual(tuple(parameter.validation["saved_dump_default"] for parameter in effect.parameters), defaults)
+                self.assertEqual(tuple(parameter.validation["saved_dump_value"] for parameter in effect.parameters), observed)
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertEqual(parameter.validation["monitor_integration_physical_validation"], "approved")
+                    self.assertEqual(parameter.identification_status, "validated_with_chain_effect_context")
+
+        midrange = self.catalog.effect_by_key("amp.a_bassvt").parameters[3]
+        self.assertEqual(midrange.value_type, "enum")
+        self.assertEqual((midrange.minimum, midrange.maximum, midrange.step), (0, 4, 1))
+        self.assertEqual(tuple(midrange.choices.values()), ("220HZ", "450HZ", "800HZ", "1.6KHZ", "3KHZ"))
+        self.assertEqual(midrange.validation["enum_wire_values_validated"], [0, 1, 2, 3, 4])
+        bright = self.catalog.effect_by_key("amp.f_2bass").parameters[1]
+        self.assertEqual(bright.value_type, "boolean")
+        self.assertEqual(dict(bright.validation)["boolean_encoding"], {"false": 0, "true": 1})
+
+    def test_amp_class_is_fully_physically_validated(self) -> None:
+        amp = self.catalog.class_by_key("amp")
+        self.assertEqual(len(amp.models), 63)
+        self.assertEqual(sum(len(effect.parameters) for effect in amp.models), 356)
+        for effect in amp.models:
+            with self.subTest(effect=effect.key):
+                self.assertEqual(effect.parameter_catalog_status, "physically_validated")
+                self.assertEqual(effect.capabilities, ("parameters",))
+                self.assertGreater(len(effect.parameters), 0)
+                for parameter in effect.parameters:
+                    self.assertTrue(parameter.validation["physical"])
+                    self.assertEqual(parameter.validation["monitor_integration_physical_validation"], "approved")
+
+
     def test_filter_has_conditional_rate_domain(self) -> None:
         effect = self.catalog.effect_by_key("freq.filter")
         self.assertEqual(effect.parameter_catalog_status, "physically_validated")
@@ -1346,6 +1949,12 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             exported_bass_wah = exported.effect_by_key("wah.bass_wah")
             exported_touch_wah = exported.effect_by_key("wah.touch_wah")
             exported_auto_wah = exported.effect_by_key("wah.auto_wah")
+            exported_dark_double = exported.effect_by_key("amp.dark_double")
+            exported_dark_deluxe = exported.effect_by_key("amp.dark_deluxe")
+            exported_supero_2_cl = exported.effect_by_key("amp.supero_2_cl")
+            exported_supero_2_od = exported.effect_by_key("amp.supero_2_od")
+            exported_voks_15tb = exported.effect_by_key("amp.voks_15tb")
+            exported_voks_30n = exported.effect_by_key("amp.voks_30n")
             exported_skreamer = exported.effect_by_key("drv.skreamer")
             exported_skreamer9 = exported.effect_by_key("drv.skreamer9")
             exported_butter_od = exported.effect_by_key("drv.butter_od")
@@ -1419,6 +2028,30 @@ class EffectCatalogJsonMigrationTests(unittest.TestCase):
             self.assertEqual(
                 exported_auto_wah.parameters,
                 self.catalog.effect_by_key("wah.auto_wah").parameters,
+            )
+            self.assertEqual(
+                exported_dark_double.parameters,
+                self.catalog.effect_by_key("amp.dark_double").parameters,
+            )
+            self.assertEqual(
+                exported_dark_deluxe.parameters,
+                self.catalog.effect_by_key("amp.dark_deluxe").parameters,
+            )
+            self.assertEqual(
+                exported_supero_2_cl.parameters,
+                self.catalog.effect_by_key("amp.supero_2_cl").parameters,
+            )
+            self.assertEqual(
+                exported_supero_2_od.parameters,
+                self.catalog.effect_by_key("amp.supero_2_od").parameters,
+            )
+            self.assertEqual(
+                exported_voks_15tb.parameters,
+                self.catalog.effect_by_key("amp.voks_15tb").parameters,
+            )
+            self.assertEqual(
+                exported_voks_30n.parameters,
+                self.catalog.effect_by_key("amp.voks_30n").parameters,
             )
             self.assertEqual(
                 exported_skreamer.parameters,

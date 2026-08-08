@@ -6,7 +6,7 @@ corrigem interpretações anteriores.
 
 ## Resumo consolidado atual
 
-Classes completamente catalogadas:
+Classes estruturalmente catalogadas:
 
 | Classe | ID | Modelos | Observações de seletor |
 |---|---:|---:|---|
@@ -27,11 +27,21 @@ Classes completamente catalogadas:
 | FX RETURN | `0x0E` | 1 | `0x06` |
 | VOL | `0x0F` | 1 | `0x06` |
 
-Total confirmado no catálogo:
+Total estrutural confirmado no catálogo:
 
 ```text
 16 classes
 267 posições/modelos
+```
+
+Estado atual dos parâmetros:
+
+```text
+5 classes de parâmetros concluídas: DYN, FREQ, WAH, DRV e AMP
+115 efeitos com parâmetros fisicamente validados
+555 parâmetros catalogados
+AMP: 63/63 modelos, 356 parâmetros
+152 efeitos de outras classes ainda sem parâmetros
 ```
 
 Comandos estruturais principais:
@@ -43,11 +53,11 @@ Comandos estruturais principais:
 | `0x17` | 60 bytes | adição, substituição e remoção |
 | `0x18` | 62 bytes | estado ligado/desligado do slot |
 
-Estado da suíte após a integração dos blocos especiais:
+Estado da suíte após a conclusão da classe AMP:
 
 ```text
-158 testes automáticos
-158 aprovados
+520 testes automáticos
+520 aprovados
 ```
 
 A captura dos comandos enviados pelo editor oficial é realizada com
@@ -2006,3 +2016,151 @@ GAIN/BLEND/VOLUME/BASS/TREBLE em 0–4. Todos usam padrões numéricos 50 e
 foram confirmados no monitor em duas instâncias simultâneas. Valores baixos,
 altos, extremos 0/100 e os modos NORMAL/SCOOP/EDGE responderam corretamente.
 Todos passam a `physically_validated`, concluindo a classe DRIVE.
+
+## Fase 59 — primeiros parâmetros AMP
+
+TWD Deluxe (`04 / 01 / 07`) confirmou GAIN/TONE/VOLUME em 0–2. Embora o dump
+salve 50 nos campos 3–5, nenhum evento ao vivo usa esses seletores; são resíduos
+e devem ser ignorados.
+
+B-Man N (`04 / 03 / 07`) e B-Man Bri (`04 / 24 / 07`) confirmaram o mesmo
+layout: GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE em 0–5. A diferença de default
+está no GAIN: 30 no N e 35 no Bri. Os demais padrões são 50.
+
+A validação final no `matribox_monitor --live` aprovou os três modelos juntos.
+TWD Deluxe exibiu `2/0/6` somente nos seletores 0–2; B-Man N exibiu
+`33/88/100/78/84/90`; B-Man Bri exibiu `78/100/90/100/90/100`. Os valores 0 e
+100 foram apresentados corretamente e os resíduos do TWD não apareceram.
+
+## Fase 60 — Dark Double, Dark Deluxe e Supero 2 CL
+
+Dark Double (`04 / 04 / 07`) confirmou 0=GAIN, 1=VOLUME, 2=BASS, 3=MIDDLE,
+4=TREBLE e 5=BRIGHT. Os numéricos usam 0–100; BRIGHT usa `0=OFF` e `1=ON`.
+Os defaults da interface oficial são `35/50/50/40/60/ON`.
+
+Dark Deluxe (`04 / 05 / 07`) confirmou GAIN/VOLUME/BASS/TREBLE em 0–3, com
+defaults `30/50/50/50`. Supero 2 CL (`04 / 0F / 07`) confirmou
+GAIN/TONE/VOLUME em 0–2, com defaults `30/50/50`.
+
+A validação no preset 56B exibiu Dark Double em `19/20/19/17/9/ON`, Dark
+Deluxe em `65/69/74/71` e Supero 2 CL em `87/75/94`. O usuário acompanhou
+também o log e confirmou todos os controles usando faixas baixa, média e alta.
+Os três passam a `physically_validated`, com integração `approved`, sem PCAPNG
+adicional. O catálogo permanece na versão 41.
+
+
+## Fase 61 — Supero 2 OD, Voks 15TB e Voks 30N
+
+A interface oficial informa Supero 2 OD com GAIN 1/TONE 1/GAIN 2/TONE 2/VOLUME
+(0–100, todos padrão 50), Voks 15TB com GAIN/TONE CUT/VOLUME/BASS/TREBLE
+(0–100, padrões `30/60/50/50/50`) e Voks 30N com GAIN/TONE CUT/VOLUME
+(0–100, padrões `30/50/50`) mais BRIGHT OFF/ON, padrão OFF.
+
+A validação física confirmou os três simultaneamente no preset 56B e no log.
+Supero 2 OD exibiu `21/34/9/8/23`, Voks 15TB exibiu `48/58/66/69/66` e Voks
+30N exibiu `91/90/97/ON`. A ordem dos seletores e o BRIGHT responderam
+corretamente. Os três passam a `physically_validated`; o catálogo permanece na
+versão 42.
+
+## Fase 62 — Voks 30TB, Jazz 120 e Superb CL
+
+Voks 30TB (`04 / 27 / 07`) confirmou GAIN/TONE CUT/VOLUME/BASS/TREBLE em
+0–4 e CHAR em 5. Os numéricos usam 0–100; CHAR usa `0=COOL` e `1=HOT`. Os
+defaults são `30/50/50/50/50/COOL`. No preset 56B, o monitor exibiu
+`2/4/3/4/4/HOT`, e os dois estados de CHAR foram testados.
+
+Jazz 120 (`04 / 14 / 07`) confirmou GAIN/BASS/MIDDLE/TREBLE em 0–3 e BRIGHT
+em 4, com `0=OFF` e `1=ON`. Os defaults são `50/50/50/50/OFF`. O monitor
+exibiu `39/55/43/55/ON`, e os dois estados de BRIGHT foram testados.
+
+Superb CL (`04 / 15 / 07`) confirmou GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE
+em 0–5, todos 0–100, com defaults `35/50/50/50/50/50`. O monitor exibiu
+`66/74/82/88/94/100`.
+
+Os três passam a `physically_validated`, com integração `approved` e sem PCAPNG
+adicional. O catálogo permanece na versão 43, com 64 efeitos parametrizados,
+258 parâmetros e 203 efeitos `pending`.
+
+## Fase 63 — Superb OD, Calif Star CL e Calif Star OD
+
+Superb OD (`04 / 48 / 07`) confirmou GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE
+em seletores 0–5, todos 0–100 e defaults 50. No preset 56B, o monitor exibiu
+`3/5/7/1/4/6`.
+
+Calif Star CL (`04 / 19 / 07`) confirmou o mesmo layout 0–5, com GAIN padrão
+40 e os demais defaults 50. O monitor exibiu `33/41/54/62/45/62`.
+
+Calif Star OD (`04 / 4A / 07`) confirmou INPUT/GAIN/PRESENCE/VOLUME/BASS/
+MIDDLE/TREBLE em seletores 0–6, todos 0–100 e defaults 50. O monitor exibiu
+`94/93/79/90/97/88/100`, incluindo o extremo superior 100.
+
+Os três passam a `physically_validated`, com integração do monitor `approved`
+e sem PCAPNG adicional. O catálogo permanece na versão 44, com 67 efeitos
+parametrizados, 277 parâmetros e 200 efeitos `pending`.
+
+
+## Fase 64 — BOG SV e BOG XT Blue candidatos
+
+A interface oficial informa BOG SV CL (`04 / 1A / 07`) com GAIN, PRESENCE,
+VOLUME, BASS e TREBLE em 0–100, defaults `30/50/50/50/50`, mais BRIGHT OFF/ON
+com padrão OFF. BOG SV OD (`04 / 3D / 07`) e BOG XT BLUE (`04 / 43 / 07`)
+usam GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE em 0–100, defaults
+`30/50/50/50/50/50`.
+
+A Fase 64 prepara os três como `partially_cataloged`, inferindo seletor 0 em
+diante a partir da ordem da interface oficial. No BOG SV CL, BRIGHT ocupa o
+seletor candidato 5 e usa provisoriamente `0=OFF/1=ON`. Nenhum desses seletores
+é marcado como fisicamente confirmado antes do teste no monitor. O catálogo
+passa à versão 45, com 70 efeitos parametrizados, 295 parâmetros e 197 efeitos
+`pending`.
+
+## Fases 65–67 — lotes AMP acelerados
+
+Depois da Fase 64, a pesquisa passou a usar lotes de oito ou nove modelos com
+validação física conjunta no `matribox_monitor --live`. Os mapas eram primeiro
+registrados como `partially_cataloged` e só eram promovidos após o usuário
+confirmar os valores no hardware.
+
+A Fase 65 validou BOG XT RED, DOCTOR CL/OD, DRAGON CL/CL B/OD e SOL 100 CL/OD.
+A Fase 66 validou SOL 100 LD e a família BRIT 45/50/SLP/800, incluindo os
+modelos JP com `GAIN 2` no seletor 6. A Fase 67 validou BRIT 900, FLYMAN 1/2,
+FLYMAN+ 1/2, CALIF IIC+ 1/2/3 e CALIF IV LD 1. Os testes físicos desses lotes
+incluíram diversos valores 0 e 100 em seletores diferentes.
+
+## Fase 68 — Calif/Eng/Dizzy e a lacuna do HALEN 51
+
+CALIF IV LD 2/3, CALIF DUAL V/M, TANGER R100, ENG 120/+, DIZZY VH e HALEN 51
+foram validados no hardware. O HALEN 51 revelou uma exceção importante à regra
+de ordem visual: GAIN/VOLUME/BASS/MIDDLE/TREBLE usam seletores 0–4, o seletor 5
+não corresponde a um controle visível e `PRESENCE` usa o seletor **6**.
+
+A primeira candidata, que colocava PRESENCE em 5, hidratava sempre 0. Um hotfix
+mudou somente esse parâmetro para o seletor 6; o reteste exibiu
+`46/53/61/71/79/48`, confirmando a correção sem exigir nova validação dos outros
+oito modelos.
+
+## Fase 69 — dez AMP finais e conclusão da classe
+
+Os dez últimos modelos foram validados fisicamente de primeira: DIZZY VH S,
+DIZZY VH+, DIZZY VH+ S, A BASSVT, VOKS BASS, CALI BASS, A BASSFT, F-2BASS,
+AC PREAMP e AC PREAMP 2.
+
+A BASSVT usa a ordem GAIN/BASS/MIDDLE/MIDRANGE/TREBLE/VOLUME. `MIDRANGE` é um
+enum no seletor 3 com `220HZ=0`, `450HZ=1`, `800HZ=2`, `1.6KHZ=3` e `3KHZ=4`;
+o padrão informado pela interface é 450HZ. F-2BASS usa
+VOLUME/BRIGHT/BASS/MIDDLE/TREBLE, com BRIGHT booleano no seletor 1. AC PREAMP
+e AC PREAMP 2 usam VOLUME/TONE/BALANCE/EQ FREQ/EQ Q/EQ GAIN em 0–5.
+
+O snapshot final incluiu extremos 0/100 em vários modelos e mostrou A BASSVT em
+`11/92/40/1.6KHZ/99/1`, F-2BASS em `13/OFF/97/77/30`, AC PREAMP em
+`0/100/15/98/38/94` e AC PREAMP 2 em `100/78/65/0/94/29`. O usuário confirmou
+que todos os controles acompanharam corretamente as mudanças em tempo real.
+
+Com isso, a classe AMP encerra em **63/63 modelos fisicamente validados** e
+**356 parâmetros**, sem candidatos ou modelos pendentes. O catálogo inteiro
+permanece na versão 50, com 115 efeitos parametrizados e 555 parâmetros. A
+regressão de encerramento exige explicitamente que os 63 modelos AMP permaneçam
+`physically_validated`.
+
+A consolidação completa da classe está em
+`docs/phases/AMP_CLASS_CONSOLIDATION_PHASE69.md`.

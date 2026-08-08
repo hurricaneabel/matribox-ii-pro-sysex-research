@@ -7,7 +7,133 @@
   "name": "TWD DELUXE",
   "model_id": 1,
   "secondary_selector": 7,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "gain",
+      "name": "GAIN",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "saved_dump_value": 21,
+        "saved_dump_default": 30,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "tone",
+      "name": "TONE",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "saved_dump_value": 43,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    },
+    {
+      "key": "volume",
+      "name": "VOLUME",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "upper_float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "range_validated": [
+          0,
+          100
+        ],
+        "internal_slots_observed": [
+          1
+        ],
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "saved_dump_value": 65,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_and_capture_confirmed",
+        "evidence": "docs/phases/AMP_TWD_BMAN_PARAMETERS_PHASE59.md",
+        "monitor_integration_physical_validation": "approved"
+      }
+    }
+  ]
 }

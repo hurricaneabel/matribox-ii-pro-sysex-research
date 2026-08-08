@@ -2,12 +2,12 @@
 
 > Documento oficial de retomada entre conversas.
 >
-> **Última atualização:** 7 de agosto de 2026
-> **Marco consolidado:** Fase 45 — WAH / BASS WAH aprovado sem PCAPNG
-> **Trabalho atual:** candidata da Fase 46 — WAH / TOUCH WAH implementada offline
-> **Próximo passo:** validar TOUCH WAH fisicamente no monitor `--live`
+> **Última atualização:** 8 de agosto de 2026
+> **Marco consolidado:** Fase 69 — classe AMP concluída, 63/63 modelos fisicamente validados
+> **Trabalho atual:** consolidação final da branch `research/amp-parameters`
+> **Próximo passo:** executar a suíte local, revisar o diff e consolidar a branch; depois iniciar a próxima classe de parâmetros
 > **Branch estável:** `main`
-> **Branch de pesquisa atual:** `research/wah-parameters`
+> **Branch de pesquisa atual:** `research/amp-parameters`
 
 ## 1. Como usar este documento
 
@@ -95,9 +95,10 @@ O estado atual já permite:
   separados por slot interno, efeito e parâmetro;
 - hidratar valores persistidos dos parâmetros catalogados ao carregar o preset
   e após adicionar, substituir ou reordenar efeitos;
-- carregar as 16 classes, 267 efeitos e 80 parâmetros confirmados por
-  capturas em quatorze efeitos DYN e sete efeitos FREQ a partir de um catálogo
-  JSON versionado e independente de Python/Windows;
+- carregar as 16 classes e 267 efeitos a partir de um catálogo JSON versionado
+  e independente de Python/Windows;
+- hidratar e exibir 555 parâmetros catalogados em 115 efeitos fisicamente
+  validados, cobrindo integralmente as classes DYN, FREQ, WAH, DRIVE e AMP;
 - representar parâmetros com domínio condicionado, como RATE do FILTER, sem
   fabricar mensagens USB para defaults implícitos do dispositivo.
 
@@ -2020,3 +2021,194 @@ parametrizados, 199 parâmetros e 215 efeitos de outras classes ainda pendentes.
 3. commitar implementação e documentação;
 4. publicar a branch e integrá-la à `main`;
 5. criar a branch de pesquisa da próxima classe.
+
+## 46. Atualização atual — Fase 59 e início AMP
+
+A classe DRIVE está integrada à `main` no merge `3abb40a`. A pesquisa atual
+ocorre na branch `research/amp-parameters`.
+
+TWD Deluxe (`04 / 01 / 07`) possui GAIN/TONE/VOLUME nos seletores 0–2 e ignora
+resíduos salvos em 3–5. B-Man N (`04 / 03 / 07`) e B-Man Bri (`04 / 24 / 07`)
+compartilham GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE em 0–5. Todos foram
+confirmados por PCAPNG, estão `physically_validated` e tiveram a integração
+visual aprovada no monitor `--live`.
+
+A validação final no preset 56B mostrou TWD Deluxe em `2/0/6`, B-Man N em
+`33/88/100/78/84/90` e B-Man Bri em `78/100/90/100/90/100`. O TWD expôs
+somente seus três controles válidos; os resíduos 3–5 permaneceram ocultos.
+
+O catálogo permanece na versão 40: 55 efeitos parametrizados, 214 parâmetros e
+212 efeitos pendentes.
+
+### Próximo passo exato
+
+1. manter a branch `research/amp-parameters`;
+2. iniciar `DARK DOUBLE` (`04 / 04 / 07`) como próximo layout AMP pendente;
+3. identificar os controles reais e seus seletores sem assumir equivalência só pelo nome/família;
+4. capturar um conjunto diferencial curto e limites quando necessário;
+5. integrar o mapa confirmado ao catálogo e validar no monitor `--live`.
+
+## 47. Atualização consolidada — Fase 60: Dark/Supero
+
+A interface oficial confirmou os controles e defaults de Dark Double
+(`04 / 04 / 07`), Dark Deluxe (`04 / 05 / 07`) e Supero 2 CL
+(`04 / 0F / 07`). A ordem visual foi inicialmente tratada como hipótese de
+seletores consecutivos e testada somente em leitura.
+
+A validação física no preset 56B confirmou integralmente os mapas: Dark Double
+exibiu `19/20/19/17/9` com BRIGHT ligado; Dark Deluxe exibiu
+`65/69/74/71`; Supero 2 CL exibiu `87/75/94`. O usuário também acompanhou as
+alterações pelo log, usando faixas baixa, média e alta entre os três modelos,
+com correspondência correta de todos os controles.
+
+Assim, Dark Double fica com GAIN/VOLUME/BASS/MIDDLE/TREBLE/BRIGHT em 0–5,
+Dark Deluxe com GAIN/VOLUME/BASS/TREBLE em 0–3 e Supero 2 CL com
+GAIN/TONE/VOLUME em 0–2. Os três passam a `physically_validated`, com
+integração do monitor `approved`, sem necessidade de PCAPNG adicional.
+
+O catálogo permanece na versão 41: 58 efeitos parametrizados, 227 parâmetros e
+209 efeitos `pending`. A suíte física/local informada encerrou com 501 testes
+`OK`.
+
+### Próximo passo exato
+
+1. manter `research/amp-parameters`;
+2. levantar controles, faixas e defaults de `SUPERO 2 OD` (`04 / 28 / 07`);
+3. depois levantar `VOKS 15TB` (`04 / 10 / 07`) e `VOKS 30N` (`04 / 11 / 07`);
+4. preparar candidatos somente-leitura e validar no monitor antes de promover;
+5. não inferir layouts apenas por parentesco nominal.
+
+
+## 48. Marco consolidado — Fase 61: Supero/Voks validados
+
+Supero 2 OD (`04 / 28 / 07`) expõe GAIN 1/TONE 1/GAIN 2/TONE 2/VOLUME,
+todos 0–100 e padrão 50. Voks 15TB (`04 / 10 / 07`) expõe
+GAIN/TONE CUT/VOLUME/BASS/TREBLE, com defaults `30/60/50/50/50`. Voks 30N
+(`04 / 11 / 07`) expõe GAIN/TONE CUT/VOLUME e BRIGHT, com defaults
+`30/50/50/OFF`.
+
+O usuário confirmou os três simultaneamente no preset 56B, acompanhando painel
+e log. O monitor exibiu Supero 2 OD em `21/34/9/8/23`, Voks 15TB em
+`48/58/66/69/66` e Voks 30N em `91/90/97/ON`. Todos os valores responderam
+corretamente, incluindo BRIGHT. Os três passam a `physically_validated`, com
+integração `approved`, sem PCAPNG adicional. O catálogo permanece na versão 42:
+61 efeitos parametrizados, 241 parâmetros e 206 efeitos `pending`.
+
+## 49. Marco consolidado — Fase 62: Voks/Jazz/Superb validados
+
+A interface oficial informou Voks 30TB (`04 / 27 / 07`) com
+GAIN/TONE CUT/VOLUME/BASS/TREBLE e CHAR COOL/HOT, defaults
+`30/50/50/50/50/COOL`; Jazz 120 (`04 / 14 / 07`) com
+GAIN/BASS/MIDDLE/TREBLE e BRIGHT OFF/ON, defaults `50/50/50/50/OFF`; e Superb
+CL (`04 / 15 / 07`) com GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE, defaults
+`35/50/50/50/50/50`.
+
+A validação física no preset 56B confirmou Voks 30TB em `2/4/3/4/4/HOT`, Jazz
+120 em `39/55/43/55/ON` e Superb CL em `66/74/82/88/94/100`. O usuário também
+alternou CHAR entre COOL/HOT e BRIGHT entre OFF/ON, confirmando as codificações
+`0/1` e a ordem dos seletores. Os três passam a `physically_validated`, com
+integração do monitor `approved`, sem PCAPNG adicional.
+
+O catálogo permanece na versão 43: 64 efeitos parametrizados, 258 parâmetros e
+203 efeitos `pending`.
+
+### Próximo passo exato
+
+1. manter `research/amp-parameters`;
+2. levantar controles, faixas e defaults de `SUPERB OD`;
+3. preparar candidato somente-leitura e validar no monitor antes de promover.
+
+## 50. Marco consolidado — Fase 63: Superb/Calif validados
+
+A interface oficial informou Superb OD (`04 / 48 / 07`) com
+GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE, todos 0–100 e padrão 50; Calif Star
+CL (`04 / 19 / 07`) com o mesmo conjunto, mas GAIN padrão 40; e Calif Star OD
+(`04 / 4A / 07`) com INPUT/GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE, todos
+0–100 e padrão 50.
+
+A validação física no preset 56B confirmou Superb OD em `3/5/7/1/4/6`, Calif
+Star CL em `33/41/54/62/45/62` e Calif Star OD em
+`94/93/79/90/97/88/100`. A ordem dos seletores foi confirmada nos três modelos,
+inclusive o sétimo seletor do Calif Star OD e o extremo `TREBLE = 100`. Os três
+passam a `physically_validated`, com integração do monitor `approved`, sem
+PCAPNG adicional.
+
+O catálogo permanece na versão 44: 67 efeitos parametrizados, 277 parâmetros e
+200 efeitos `pending`.
+
+### Próximo passo exato
+
+1. manter `research/amp-parameters`;
+2. validar BOG SV CL, BOG SV OD e BOG XT BLUE no `matribox_monitor --live`;
+3. alternar BRIGHT OFF/ON no BOG SV CL;
+4. promover somente após confirmação física.
+
+## 51. Fase 64 — BOG SV e BOG XT Blue candidatos
+
+A interface oficial informa BOG SV CL (`04 / 1A / 07`) com
+GAIN/PRESENCE/VOLUME/BASS/TREBLE (0–100, defaults `30/50/50/50/50`) e BRIGHT
+OFF/ON, padrão OFF. BOG SV OD (`04 / 3D / 07`) e BOG XT BLUE
+(`04 / 43 / 07`) expõem GAIN/PRESENCE/VOLUME/BASS/MIDDLE/TREBLE, todos 0–100,
+com GAIN padrão 30 e os demais em 50.
+
+A candidata usa a ordem da interface oficial como hipótese de seletores 0–5.
+BOG SV CL coloca BRIGHT no seletor 5 com codificação candidata `0=OFF/1=ON`;
+os outros dois usam seis parâmetros inteiros consecutivos. Os três permanecem
+`partially_cataloged`, `physical: false` e somente-leitura até teste no hardware.
+
+O catálogo passa à versão 45: 70 efeitos parametrizados, 295 parâmetros e 197
+efeitos `pending`.
+
+### Próximo passo exato
+
+1. executar `python -m tools.commands.matribox_monitor --live`;
+2. confirmar ordem, nomes e valores nos três BOG;
+3. testar BRIGHT OFF/ON no BOG SV CL;
+4. somente depois promover os três para `physically_validated`.
+
+## 52. Marco consolidado — Fase 69: classe AMP concluída
+
+A pesquisa de parâmetros AMP foi encerrada com **63/63 modelos** em
+`physically_validated`. A classe contém **356 parâmetros** e não possui mais
+modelos `pending` ou `partially_cataloged`.
+
+As fases 65–69 foram executadas em lotes maiores para reduzir trabalho manual;
+a documentação detalhada desses lotes foi consolidada em
+`docs/phases/AMP_CLASS_CONSOLIDATION_PHASE69.md`.
+
+A validação final incluiu os dez últimos modelos: DIZZY VH S, DIZZY VH+,
+DIZZY VH+ S, A BASSVT, VOKS BASS, CALI BASS, A BASSFT, F-2BASS, AC PREAMP e
+AC PREAMP 2. O painel ao vivo confirmou a ordem e os valores de todos os
+controles, incluindo `MIDRANGE` do A BASSVT e `BRIGHT` do F-2BASS.
+
+Uma exceção importante descoberta durante a Fase 68 foi preservada: no
+`HALEN 51`, `PRESENCE` usa o seletor **6**; o seletor 5 é um campo
+oculto/não catalogado.
+
+Estado consolidado do catálogo:
+
+```text
+catalog_version: 50
+267 efeitos estruturais
+115 efeitos com parâmetros fisicamente validados
+555 parâmetros catalogados
+152 efeitos ainda sem parâmetros em outras classes
+AMP: 63/63 physically_validated, 356 parâmetros
+```
+
+Estado da suíte de encerramento:
+
+```text
+520 testes executados
+520 testes aprovados
+```
+
+### Próximo passo exato
+
+1. aplicar o delta final da Fase 69 no ambiente Windows;
+2. executar `python -m unittest discover -s tests -p "test_*.py"`;
+3. executar `python -m compileall tools tests` e `git diff --check`;
+4. revisar o diff consolidado da classe AMP;
+5. somente depois consolidar/commitir `research/amp-parameters`;
+6. iniciar a próxima classe de parâmetros ainda pendente, com CAB como próximo
+   grupo natural na ordem do catálogo.
