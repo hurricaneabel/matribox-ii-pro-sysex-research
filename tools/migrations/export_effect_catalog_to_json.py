@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 52
+CATALOG_VERSION = 53
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -2974,6 +2974,64 @@ def _validated_phase71_cab_shared_schema_seeds() -> tuple[dict[str, Any], ...]:
 CAB_SHARED_PARAMETER_SEEDS = _validated_phase71_cab_shared_schema_seeds()
 
 
+def _validated_phase72_ir_shared_schema_seeds() -> tuple[dict[str, Any], ...]:
+    """Schema compartilhado IR aprovado fisicamente em todos os 20 modelos."""
+
+    controls = (
+        ("volume", "VOLUME", 1, 0, 100, None, None),
+        ("low_cut", "LOW CUT", 5, 19, 2000, "Hz", (19, "OFF")),
+        ("high_cut", "HIGH CUT", 6, 2000, 20001, "Hz", (20001, "OFF")),
+    )
+    defaults = (50, 19, 20001)
+    result: list[dict[str, Any]] = []
+    for order, (key, name, selector, minimum, maximum, unit, sentinel) in enumerate(controls, start=1):
+        parameter: dict[str, Any] = {
+            "key": key,
+            "name": name,
+            "display_order": order,
+            "value_type": "integer",
+            "range": {"minimum": minimum, "maximum": maximum, "step": 1},
+            "unit": unit,
+            "protocol": {
+                "profile": "effect_parameter_response_1c_v1",
+                "value_codec": "float32_nibbles_v1",
+                "identification_status": "validated_with_chain_effect_context",
+                "message_match": {
+                    "parameter_selector": selector,
+                    "parameter_marker": 1,
+                    "parameter_type": 1,
+                },
+            },
+            "validation": {
+                "offline": True,
+                "physical": True,
+                "read_only": True,
+                "effect_identity_source": "current_chain",
+                "parameter_selector": selector,
+                "saved_dump_default": defaults[order - 1],
+                "saved_dump_default_source": "user_reported_official_ui",
+                "selector_mapping_source": "phase72_ir1_ir20_pcap_and_all_ir_live_validation",
+                "full_float32_required": True,
+                "evidence": "docs/phases/IR_CLASS_CONSOLIDATION_PHASE72.md",
+                "monitor_integration_physical_validation": "approved",
+                "monitor_validation_source": "user_live_monitor_all_irs_phase72_with_log",
+                "monitor_validation_result": "all_20_models_parameter_values_exact_to_device",
+                "range_validated": [minimum, maximum],
+            },
+        }
+        if sentinel is not None:
+            parameter["display"] = {
+                "kind": "numeric_with_sentinels",
+                "sentinels": [{"value": sentinel[0], "label": sentinel[1]}],
+            }
+            parameter["validation"]["off_wire_value"] = sentinel[0]
+        result.append(parameter)
+    return tuple(result)
+
+
+IR_SHARED_PARAMETER_SEEDS = _validated_phase72_ir_shared_schema_seeds()
+
+
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
     {
         "key": "gain",
@@ -4653,6 +4711,10 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key.startswith("cab.") and not parameters:
         parameters = list(CAB_SHARED_PARAMETER_SEEDS)
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key.startswith("ir."):
+        parameters = list(IR_SHARED_PARAMETER_SEEDS)
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:
