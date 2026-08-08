@@ -7,7 +7,72 @@
   "name": "D-CHORUS",
   "model_id": 2,
   "secondary_selector": 4,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "mode",
+      "name": "MODE",
+      "display_order": 1,
+      "value_type": "enum",
+      "range": {
+        "minimum": 0,
+        "maximum": 3,
+        "step": 1
+      },
+      "choices": [
+        {
+          "value": 0,
+          "label": "1"
+        },
+        {
+          "value": 1,
+          "label": "2"
+        },
+        {
+          "value": 2,
+          "label": "3"
+        },
+        {
+          "value": 3,
+          "label": "4"
+        }
+      ],
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "evidence": "docs/phases/MOD_CLASS_CONSOLIDATION_PHASE78.md",
+        "monitor_integration_physical_validation": "approved",
+        "candidate_family": "phase78_mod_final_four",
+        "candidate_requires_live_validation": false,
+        "selector_mapping_source": "user_live_monitor_phase78_confirms_zero_based_wire_to_one_based_ui",
+        "full_float32_required": true,
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_physical_default_ui_1_plus_live_monitor_wire_0_observation",
+        "enum_mapping_source": "user_live_monitor_phase78_off_by_one_sequence",
+        "candidate_enum_mapping_requires_live_validation": false,
+        "ui_default_label": "1",
+        "wire_default": 0,
+        "correction_reason": "device_ui_is_one_based_while_wire_enum_is_zero_based",
+        "monitor_validation_source": "user_live_retest_after_phase78_zero_based_fix",
+        "monitor_validation_result": "d_chorus_wire_0_3_maps_exactly_to_ui_mode_1_4"
+      }
+    }
+  ]
 }

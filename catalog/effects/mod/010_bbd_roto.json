@@ -7,7 +7,214 @@
   "name": "BBD ROTO",
   "model_id": 21,
   "secondary_selector": 4,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "depth",
+      "name": "DEPTH",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "evidence": "docs/phases/MOD_RATE_SYNC_FAMILY_CONSOLIDATION_PHASE74.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_mod_rate_sync_family_phase74_with_log",
+        "monitor_validation_result": "all_11_models_parameter_values_exact_to_device",
+        "candidate_family": "phase74_e_chorus_rate_sync_family",
+        "selector_mapping_source": "phase74_e_chorus_anchor_plus_user_reported_identical_or_subset_ui_schema_then_live_validated",
+        "candidate_requires_live_validation": false,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "range_source": "user_reported_official_ui",
+        "range_validated": [
+          0,
+          100
+        ],
+        "full_float32_required": true
+      }
+    },
+    {
+      "key": "rate",
+      "name": "RATE",
+      "display_order": 2,
+      "value_type": "number",
+      "range": {
+        "minimum": 0,
+        "maximum": 10,
+        "step": 0.1
+      },
+      "unit": "Hz",
+      "value_domain": {
+        "controller_parameter": "sync",
+        "reset_on_controller_change": true,
+        "states": [
+          {
+            "controller_value": false,
+            "default_value": 0.5,
+            "presentation": {
+              "kind": "numeric",
+              "unit": "Hz",
+              "decimals": 1
+            }
+          },
+          {
+            "controller_value": true,
+            "default_value": 4,
+            "presentation": {
+              "kind": "enum",
+              "choices": [
+                {
+                  "value": 0,
+                  "label": "1/1"
+                },
+                {
+                  "value": 1,
+                  "label": "1/2"
+                },
+                {
+                  "value": 2,
+                  "label": "1/2d"
+                },
+                {
+                  "value": 3,
+                  "label": "1/2t"
+                },
+                {
+                  "value": 4,
+                  "label": "1/4"
+                },
+                {
+                  "value": 5,
+                  "label": "1/4d"
+                },
+                {
+                  "value": 6,
+                  "label": "1/4t"
+                },
+                {
+                  "value": 7,
+                  "label": "1/8"
+                },
+                {
+                  "value": 8,
+                  "label": "1/8d"
+                },
+                {
+                  "value": 9,
+                  "label": "1/8t"
+                },
+                {
+                  "value": 10,
+                  "label": "1/16"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "evidence": "docs/phases/MOD_RATE_SYNC_FAMILY_CONSOLIDATION_PHASE74.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_mod_rate_sync_family_phase74_with_log",
+        "monitor_validation_result": "all_11_models_parameter_values_exact_to_device",
+        "candidate_family": "phase74_e_chorus_rate_sync_family",
+        "selector_mapping_source": "phase74_e_chorus_anchor_plus_user_reported_identical_or_subset_ui_schema_then_live_validated",
+        "candidate_requires_live_validation": false,
+        "conditional_domain_controller": "sync",
+        "sync_off_default": 0.5,
+        "sync_on_default_wire_value": 4,
+        "sync_on_default_label": "1/4",
+        "reset_on_sync_change_confirmed_by_user": true,
+        "sync_transition_default_source": "user_physical_confirmation_phase74",
+        "range_source": "user_reported_identical_rate_sync_ui_schema",
+        "range_validated": [
+          0.1,
+          10.0
+        ],
+        "step_validated": 0.1,
+        "full_float32_required": true
+      }
+    },
+    {
+      "key": "sync",
+      "name": "SYNC",
+      "display_order": 3,
+      "value_type": "boolean",
+      "range": {
+        "minimum": 0,
+        "maximum": 1,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "evidence": "docs/phases/MOD_RATE_SYNC_FAMILY_CONSOLIDATION_PHASE74.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_mod_rate_sync_family_phase74_with_log",
+        "monitor_validation_result": "all_11_models_parameter_values_exact_to_device",
+        "candidate_family": "phase74_e_chorus_rate_sync_family",
+        "selector_mapping_source": "phase74_e_chorus_anchor_plus_user_reported_identical_or_subset_ui_schema_then_live_validated",
+        "candidate_requires_live_validation": false,
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "boolean_encoding": {
+          "false": 0,
+          "true": 1
+        },
+        "full_float32_required": true
+      }
+    }
+  ]
 }

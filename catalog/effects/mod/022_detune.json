@@ -7,7 +7,142 @@
   "name": "DETUNE",
   "model_id": 41,
   "secondary_selector": 1,
-  "capabilities": [],
-  "parameter_catalog_status": "pending",
-  "parameters": []
+  "capabilities": [
+    "parameters"
+  ],
+  "parameter_catalog_status": "physically_validated",
+  "parameters": [
+    {
+      "key": "detune",
+      "name": "DETUNE",
+      "display_order": 1,
+      "value_type": "integer",
+      "range": {
+        "minimum": -50,
+        "maximum": 50,
+        "step": 1
+      },
+      "unit": "cents",
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 0,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 0,
+        "evidence": "docs/phases/MOD_CLASS_CONSOLIDATION_PHASE78.md",
+        "monitor_integration_physical_validation": "approved",
+        "candidate_family": "phase78_mod_final_four",
+        "candidate_requires_live_validation": false,
+        "selector_mapping_source": "user_reported_ui_order_plus_phase73_validated_signed_float32_schema",
+        "full_float32_required": true,
+        "saved_dump_default": -25,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "range_source": "user_reported_official_ui_and_established_float32_numeric_schema",
+        "range_validated": [
+          -50,
+          50
+        ],
+        "monitor_validation_source": "user_live_monitor_mod_phase78_final_four_with_log",
+        "monitor_validation_result": "detune_signed_range_wet_dry_exact_to_device"
+      }
+    },
+    {
+      "key": "wet",
+      "name": "WET",
+      "display_order": 2,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 1,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 1,
+        "evidence": "docs/phases/MOD_CLASS_CONSOLIDATION_PHASE78.md",
+        "monitor_integration_physical_validation": "approved",
+        "candidate_family": "phase78_mod_final_four",
+        "candidate_requires_live_validation": false,
+        "selector_mapping_source": "user_reported_ui_order_and_established_numeric_schema",
+        "full_float32_required": true,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "range_source": "user_reported_official_ui_and_established_float32_numeric_schema",
+        "range_validated": [
+          0,
+          100
+        ],
+        "monitor_validation_source": "user_live_monitor_mod_phase78_final_four_with_log",
+        "monitor_validation_result": "detune_signed_range_wet_dry_exact_to_device"
+      }
+    },
+    {
+      "key": "dry",
+      "name": "DRY",
+      "display_order": 3,
+      "value_type": "integer",
+      "range": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1
+      },
+      "unit": null,
+      "protocol": {
+        "profile": "effect_parameter_response_1c_v1",
+        "value_codec": "float32_nibbles_v1",
+        "identification_status": "validated_with_chain_effect_context",
+        "message_match": {
+          "parameter_selector": 2,
+          "parameter_marker": 1,
+          "parameter_type": 1
+        }
+      },
+      "validation": {
+        "offline": true,
+        "physical": true,
+        "read_only": true,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": 2,
+        "evidence": "docs/phases/MOD_CLASS_CONSOLIDATION_PHASE78.md",
+        "monitor_integration_physical_validation": "approved",
+        "candidate_family": "phase78_mod_final_four",
+        "candidate_requires_live_validation": false,
+        "selector_mapping_source": "user_reported_ui_order_and_established_numeric_schema",
+        "full_float32_required": true,
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "range_source": "user_reported_official_ui_and_established_float32_numeric_schema",
+        "range_validated": [
+          0,
+          100
+        ],
+        "monitor_validation_source": "user_live_monitor_mod_phase78_final_four_with_log",
+        "monitor_validation_result": "detune_signed_range_wet_dry_exact_to_device"
+      }
+    }
+  ]
 }

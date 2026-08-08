@@ -20,7 +20,7 @@ from tools.catalog.models import EffectClass, EffectModel, ParameterDefinition
 
 
 SCHEMA_VERSION = 1
-CATALOG_VERSION = 54
+CATALOG_VERSION = 59
 CLASS_INDEX_ORDER = (
     "freq",
     "drv",
@@ -3200,6 +3200,857 @@ EQ_PARAMETER_SEEDS: dict[str, tuple[dict[str, Any], ...]] = {
 }
 
 
+MOD_SYNC_RATE_CHOICES: tuple[tuple[int, str], ...] = (
+    (0, "1/1"), (1, "1/2"), (2, "1/2d"), (3, "1/2t"),
+    (4, "1/4"), (5, "1/4d"), (6, "1/4t"), (7, "1/8"),
+    (8, "1/8d"), (9, "1/8t"), (10, "1/16"),
+)
+
+
+def _phase74_mod_base_validation(selector: int, *, anchor: bool) -> dict[str, Any]:
+    validation: dict[str, Any] = {
+        "offline": True,
+        "physical": True,
+        "read_only": True,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": selector,
+        "evidence": "docs/phases/MOD_RATE_SYNC_FAMILY_CONSOLIDATION_PHASE74.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_mod_rate_sync_family_phase74_with_log",
+        "monitor_validation_result": "all_11_models_parameter_values_exact_to_device",
+        "candidate_family": "phase74_e_chorus_rate_sync_family",
+    }
+    if anchor:
+        validation.update({
+            "pcap_anchor": True,
+            "selector_mapping_source": "phase74_e_chorus_default_custom_sweep_pcap",
+        })
+    else:
+        validation.update({
+            "selector_mapping_source": "phase74_e_chorus_anchor_plus_user_reported_identical_or_subset_ui_schema_then_live_validated",
+            "candidate_requires_live_validation": False,
+        })
+    return validation
+
+
+def _phase74_mod_integer_parameter(
+    key: str,
+    name: str,
+    order: int,
+    selector: int,
+    *,
+    default: int = 50,
+    anchor: bool,
+) -> dict[str, Any]:
+    validation = _phase74_mod_base_validation(selector, anchor=anchor)
+    validation.update({
+        "saved_dump_default": default,
+        "saved_dump_default_source": "phase74_e_chorus_pcap" if anchor else "user_reported_official_ui",
+        "range_source": "phase74_e_chorus_sweep_and_user_reported_official_ui" if anchor else "user_reported_official_ui",
+        "range_validated": [0, 100],
+        "full_float32_required": True,
+    })
+    return {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase74_mod_rate_parameter(order: int, selector: int, *, anchor: bool) -> dict[str, Any]:
+    validation = _phase74_mod_base_validation(selector, anchor=anchor)
+    validation.update({
+        "conditional_domain_controller": "sync",
+        "sync_off_default": 0.5,
+        "sync_on_default_wire_value": 4,
+        "sync_on_default_label": "1/4",
+        "reset_on_sync_change_confirmed_by_user": True,
+        "sync_transition_default_source": "user_physical_confirmation_phase74",
+        "range_source": "phase74_e_chorus_sweep_and_user_reported_official_ui" if anchor else "user_reported_identical_rate_sync_ui_schema",
+        "range_validated": [0.1, 10.0],
+        "step_validated": 0.1,
+        "full_float32_required": True,
+    })
+    return {
+        "key": "rate",
+        "name": "RATE",
+        "display_order": order,
+        "value_type": "number",
+        # 0 is required by the shared wire domain for SYNC=ON (1/1).
+        "range": {"minimum": 0, "maximum": 10, "step": 0.1},
+        "unit": "Hz",
+        "value_domain": {
+            "controller_parameter": "sync",
+            "reset_on_controller_change": True,
+            "states": [
+                {
+                    "controller_value": False,
+                    "default_value": 0.5,
+                    "presentation": {"kind": "numeric", "unit": "Hz", "decimals": 1},
+                },
+                {
+                    "controller_value": True,
+                    "default_value": 4,
+                    "presentation": {
+                        "kind": "enum",
+                        "choices": [
+                            {"value": value, "label": label}
+                            for value, label in MOD_SYNC_RATE_CHOICES
+                        ],
+                    },
+                },
+            ],
+        },
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase74_mod_sync_parameter(order: int, selector: int, *, anchor: bool) -> dict[str, Any]:
+    validation = _phase74_mod_base_validation(selector, anchor=anchor)
+    validation.update({
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "phase74_e_chorus_pcap" if anchor else "user_reported_official_ui",
+        "boolean_encoding": {"false": 0, "true": 1},
+        "full_float32_required": True,
+    })
+    return {
+        "key": "sync",
+        "name": "SYNC",
+        "display_order": order,
+        "value_type": "boolean",
+        "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase74_mod_family_parameters(kind: str, *, anchor: bool) -> tuple[dict[str, Any], ...]:
+    if kind == "full":
+        return (
+            _phase74_mod_integer_parameter("depth", "DEPTH", 1, 0, anchor=anchor),
+            _phase74_mod_rate_parameter(2, 1, anchor=anchor),
+            _phase74_mod_integer_parameter("volume", "VOLUME", 3, 2, anchor=anchor),
+            _phase74_mod_sync_parameter(4, 3, anchor=anchor),
+        )
+    if kind == "compact":
+        return (
+            _phase74_mod_integer_parameter("depth", "DEPTH", 1, 0, anchor=anchor),
+            _phase74_mod_rate_parameter(2, 1, anchor=anchor),
+            _phase74_mod_sync_parameter(3, 2, anchor=anchor),
+        )
+    if kind == "rate_sync":
+        return (
+            _phase74_mod_rate_parameter(1, 0, anchor=anchor),
+            _phase74_mod_sync_parameter(2, 1, anchor=anchor),
+        )
+    raise ValueError(f"Família MOD desconhecida: {kind}")
+
+
+MOD_PHASE74_FAMILY_PARAMETER_SEEDS: dict[str, tuple[dict[str, Any], ...]] = {
+    "mod.e_chorus": _phase74_mod_family_parameters("full", anchor=True),
+    "mod.b_chorus": _phase74_mod_family_parameters("full", anchor=False),
+    "mod.vibrato": _phase74_mod_family_parameters("full", anchor=False),
+    "mod.ce_roto": _phase74_mod_family_parameters("full", anchor=False),
+    "mod.sine_trem": _phase74_mod_family_parameters("full", anchor=False),
+    "mod.triangule_trem": _phase74_mod_family_parameters("full", anchor=False),
+    "mod.bbd_roto": _phase74_mod_family_parameters("compact", anchor=False),
+    "mod.bbd_phaser": _phase74_mod_family_parameters("compact", anchor=False),
+    "mod.vibe": _phase74_mod_family_parameters("compact", anchor=False),
+    "mod.tremolo": _phase74_mod_family_parameters("compact", anchor=False),
+    "mod.phaser": _phase74_mod_family_parameters("rate_sync", anchor=False),
+}
+
+
+
+def _phase75_mod_flanger_base_validation(selector: int) -> dict[str, Any]:
+    return {
+        "offline": True,
+        "physical": True,
+        "read_only": True,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": selector,
+        "evidence": "docs/phases/MOD_FLANGER_FAMILY_CONSOLIDATION_PHASE75.md",
+        "monitor_integration_physical_validation": "approved",
+        "monitor_validation_source": "user_live_monitor_mod_flanger_family_phase75_with_log",
+        "monitor_validation_result": "all_3_models_parameter_values_exact_to_device",
+        "candidate_family": "phase75_mod_flanger_family",
+        "candidate_requires_live_validation": False,
+        "selector_mapping_source": "user_reported_identical_flanger_family_ui_order_plus_phase74_rate_sync_anchor",
+    }
+
+
+def _phase75_mod_flanger_integer_parameter(
+    key: str,
+    name: str,
+    order: int,
+    selector: int,
+) -> dict[str, Any]:
+    validation = _phase75_mod_flanger_base_validation(selector)
+    validation.update({
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "range_source": "user_reported_official_ui",
+        "range_validated": [0, 100],
+        "full_float32_required": True,
+    })
+    return {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase75_mod_flanger_rate_parameter() -> dict[str, Any]:
+    validation = _phase75_mod_flanger_base_validation(1)
+    validation.update({
+        "conditional_domain_controller": "sync",
+        "sync_off_default": 0.5,
+        "sync_on_default_wire_value": 4,
+        "sync_on_default_label": "1/4",
+        "reset_on_sync_change_confirmed_by_user": True,
+        "sync_transition_default_source": "user_physical_confirmation_phase74_and_user_reported_shared_mod_rate_sync_behavior",
+        "range_source": "phase74_e_chorus_rate_sync_anchor_plus_user_reported_identical_mod_rate_schema",
+        "range_validated": [0.1, 10.0],
+        "step_validated": 0.1,
+        "full_float32_required": True,
+    })
+    return {
+        "key": "rate",
+        "name": "RATE",
+        "display_order": 2,
+        "value_type": "number",
+        "range": {"minimum": 0, "maximum": 10, "step": 0.1},
+        "unit": "Hz",
+        "value_domain": {
+            "controller_parameter": "sync",
+            "reset_on_controller_change": True,
+            "states": [
+                {
+                    "controller_value": False,
+                    "default_value": 0.5,
+                    "presentation": {"kind": "numeric", "unit": "Hz", "decimals": 1},
+                },
+                {
+                    "controller_value": True,
+                    "default_value": 4,
+                    "presentation": {
+                        "kind": "enum",
+                        "choices": [
+                            {"value": value, "label": label}
+                            for value, label in MOD_SYNC_RATE_CHOICES
+                        ],
+                    },
+                },
+            ],
+        },
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": 1, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase75_mod_flanger_sync_parameter() -> dict[str, Any]:
+    validation = _phase75_mod_flanger_base_validation(4)
+    validation.update({
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "boolean_encoding": {"false": 0, "true": 1},
+        "full_float32_required": True,
+    })
+    return {
+        "key": "sync",
+        "name": "SYNC",
+        "display_order": 5,
+        "value_type": "boolean",
+        "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": 4, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase75_mod_flanger_family_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase75_mod_flanger_integer_parameter("depth", "DEPTH", 1, 0),
+        _phase75_mod_flanger_rate_parameter(),
+        _phase75_mod_flanger_integer_parameter("pre_delay", "PRE DELAY", 3, 2),
+        _phase75_mod_flanger_integer_parameter("feedback", "FEEDBACK", 4, 3),
+        _phase75_mod_flanger_sync_parameter(),
+    )
+
+
+MOD_PHASE75_FLANGER_FAMILY_PARAMETER_SEEDS: dict[str, tuple[dict[str, Any], ...]] = {
+    "mod.flanger": _phase75_mod_flanger_family_parameters(),
+    "mod.flanger_n": _phase75_mod_flanger_family_parameters(),
+    "mod.bass_jet": _phase75_mod_flanger_family_parameters(),
+}
+
+
+def _phase76_mod_dual_sync_base_validation(selector: int) -> dict[str, Any]:
+    return {
+        "offline": True,
+        "physical": True,
+        "read_only": True,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": selector,
+        "evidence": "docs/phases/MOD_DUAL_SYNC_FAMILY_CONSOLIDATION_PHASE76.md",
+        "monitor_integration_physical_validation": "approved",
+        "candidate_family": "phase76_mod_dual_sync_family",
+        "candidate_requires_live_validation": False,
+        "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
+        "full_float32_required": True,
+        "monitor_validation_source": "user_live_monitor_mod_dual_sync_phase76_with_log",
+        "monitor_validation_result": "trem_jet_and_pan_phaser_all_values_exact_to_device",
+    }
+
+
+def _phase76_mod_integer_parameter(key: str, name: str, order: int, selector: int) -> dict[str, Any]:
+    validation = _phase76_mod_dual_sync_base_validation(selector)
+    validation.update({
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "range_source": "user_reported_official_ui",
+        "range_validated": [0, 100],
+    })
+    return {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase76_mod_rate_parameter(
+    key: str,
+    name: str,
+    order: int,
+    selector: int,
+    controller_key: str,
+) -> dict[str, Any]:
+    validation = _phase76_mod_dual_sync_base_validation(selector)
+    validation.update({
+        "conditional_domain_controller": controller_key,
+        "sync_off_default": 0.5,
+        "sync_on_default_wire_value": 4,
+        "sync_on_default_label": "1/4",
+        "reset_on_sync_change_confirmed_by_user": True,
+        "sync_transition_default_source": "user_physical_confirmation_phase74_and_user_reported_shared_mod_rate_sync_behavior",
+        "range_source": "phase74_e_chorus_rate_sync_anchor_plus_user_reported_identical_mod_rate_schema",
+        "range_validated": [0.1, 10.0],
+        "step_validated": 0.1,
+    })
+    return {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "number",
+        "range": {"minimum": 0, "maximum": 10, "step": 0.1},
+        "unit": "Hz",
+        "value_domain": {
+            "controller_parameter": controller_key,
+            "reset_on_controller_change": True,
+            "states": [
+                {
+                    "controller_value": False,
+                    "default_value": 0.5,
+                    "presentation": {"kind": "numeric", "unit": "Hz", "decimals": 1},
+                },
+                {
+                    "controller_value": True,
+                    "default_value": 4,
+                    "presentation": {
+                        "kind": "enum",
+                        "choices": [
+                            {"value": value, "label": label}
+                            for value, label in MOD_SYNC_RATE_CHOICES
+                        ],
+                    },
+                },
+            ],
+        },
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase76_mod_sync_parameter(key: str, name: str, order: int, selector: int) -> dict[str, Any]:
+    validation = _phase76_mod_dual_sync_base_validation(selector)
+    validation.update({
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "boolean_encoding": {"false": 0, "true": 1},
+    })
+    return {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "boolean",
+        "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase76_trem_jet_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase76_mod_integer_parameter("flg_depth", "FLG DEPTH", 1, 0),
+        _phase76_mod_rate_parameter("flg_rate", "FLG RATE", 2, 1, "flg_sync"),
+        _phase76_mod_integer_parameter("feedback", "FEEDBACK", 3, 2),
+        _phase76_mod_integer_parameter("trm_depth", "TRM DEPTH", 4, 3),
+        _phase76_mod_rate_parameter("trm_rate", "TRM RATE", 5, 4, "trm_sync"),
+        _phase76_mod_sync_parameter("flg_sync", "FLG SYNC", 6, 5),
+        _phase76_mod_sync_parameter("trm_sync", "TRM SYNC", 7, 6),
+    )
+
+
+def _phase76_pan_phaser_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase76_mod_integer_parameter("phs_depth", "PHS DEPTH", 1, 0),
+        _phase76_mod_rate_parameter("phs_rate", "PHS RATE", 2, 1, "phs_sync"),
+        _phase76_mod_integer_parameter("pan_depth", "PAN DEPTH", 3, 2),
+        _phase76_mod_rate_parameter("pan_rate", "PAN RATE", 4, 3, "pan_sync"),
+        _phase76_mod_sync_parameter("phs_sync", "PHS SYNC", 5, 4),
+        _phase76_mod_sync_parameter("pan_sync", "PAN SYNC", 6, 5),
+    )
+
+
+MOD_PHASE76_DUAL_SYNC_PARAMETER_SEEDS: dict[str, tuple[dict[str, Any], ...]] = {
+    "mod.trem_jet": _phase76_trem_jet_parameters(),
+    "mod.pan_phaser": _phase76_pan_phaser_parameters(),
+}
+
+
+def _phase77_mod_family_base_validation(selector: int) -> dict[str, Any]:
+    return {
+        "offline": True,
+        "physical": True,
+        "read_only": True,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": selector,
+        "evidence": "docs/phases/MOD_ENUM_BIAS_FAMILY_CONSOLIDATION_PHASE77.md",
+        "monitor_integration_physical_validation": "approved",
+        "candidate_family": "phase77_mod_enum_bias_family",
+        "candidate_requires_live_validation": False,
+        "selector_mapping_source": "user_reported_ui_order_plus_phase74_validated_rate_sync_schema",
+        "full_float32_required": True,
+        "monitor_validation_source": "user_live_monitor_mod_enum_bias_phase77_with_log",
+        "monitor_validation_result": "phaser_st_u_vibe_bias_trem_all_values_exact_to_device",
+    }
+
+
+def _phase77_mod_integer_parameter(key: str, name: str, order: int, selector: int) -> dict[str, Any]:
+    validation = _phase77_mod_family_base_validation(selector)
+    validation.update({
+        "saved_dump_default": 50,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "range_source": "user_reported_official_ui",
+        "range_validated": [0, 100],
+    })
+    return {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "integer",
+        "range": {"minimum": 0, "maximum": 100, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase77_mod_rate_parameter(order: int, selector: int, controller_key: str = "sync") -> dict[str, Any]:
+    validation = _phase77_mod_family_base_validation(selector)
+    validation.update({
+        "conditional_domain_controller": controller_key,
+        "sync_off_default": 0.5,
+        "sync_on_default_wire_value": 4,
+        "sync_on_default_label": "1/4",
+        "reset_on_sync_change_confirmed_by_user": True,
+        "sync_transition_default_source": "user_physical_confirmation_phase74_and_user_reported_shared_mod_rate_sync_behavior",
+        "range_source": "phase74_e_chorus_rate_sync_anchor_plus_user_reported_identical_mod_rate_schema",
+        "range_validated": [0.1, 10.0],
+        "step_validated": 0.1,
+    })
+    return {
+        "key": "rate",
+        "name": "RATE",
+        "display_order": order,
+        "value_type": "number",
+        "range": {"minimum": 0, "maximum": 10, "step": 0.1},
+        "unit": "Hz",
+        "value_domain": {
+            "controller_parameter": controller_key,
+            "reset_on_controller_change": True,
+            "states": [
+                {
+                    "controller_value": False,
+                    "default_value": 0.5,
+                    "presentation": {"kind": "numeric", "unit": "Hz", "decimals": 1},
+                },
+                {
+                    "controller_value": True,
+                    "default_value": 4,
+                    "presentation": {
+                        "kind": "enum",
+                        "choices": [
+                            {"value": value, "label": label}
+                            for value, label in MOD_SYNC_RATE_CHOICES
+                        ],
+                    },
+                },
+            ],
+        },
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase77_mod_sync_parameter(order: int, selector: int) -> dict[str, Any]:
+    validation = _phase77_mod_family_base_validation(selector)
+    validation.update({
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "boolean_encoding": {"false": 0, "true": 1},
+    })
+    return {
+        "key": "sync",
+        "name": "SYNC",
+        "display_order": order,
+        "value_type": "boolean",
+        "range": {"minimum": 0, "maximum": 1, "step": 1},
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase77_mod_enum_parameter(
+    key: str,
+    name: str,
+    order: int,
+    selector: int,
+    choices: tuple[tuple[int, str], ...],
+    default_value: int,
+) -> dict[str, Any]:
+    validation = _phase77_mod_family_base_validation(selector)
+    validation.update({
+        "saved_dump_default": default_value,
+        "saved_dump_default_source": "user_reported_official_ui_and_natural_enum_order_candidate",
+        "enum_mapping_source": "user_reported_ui_choices_natural_zero_based_candidate",
+        "candidate_enum_mapping_requires_live_validation": False,
+        "enum_mapping_validation_source": "user_live_monitor_mod_enum_bias_phase77_with_log",
+    })
+    return {
+        "key": key,
+        "name": name,
+        "display_order": order,
+        "value_type": "enum",
+        "range": {"minimum": min(value for value, _label in choices), "maximum": max(value for value, _label in choices), "step": 1},
+        "choices": [{"value": value, "label": label} for value, label in choices],
+        "unit": None,
+        "protocol": {
+            "profile": "effect_parameter_response_1c_v1",
+            "value_codec": "float32_nibbles_v1",
+            "identification_status": "validated_with_chain_effect_context",
+            "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1},
+        },
+        "validation": validation,
+    }
+
+
+def _phase77_phaser_st_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase77_mod_enum_parameter("color", "COLOR", 1, 0, ((0, "WARM"), (1, "SHARP")), 0),
+        _phase77_mod_rate_parameter(2, 1),
+        _phase77_mod_sync_parameter(3, 2),
+    )
+
+
+def _phase77_u_vibe_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase77_mod_integer_parameter("depth", "DEPTH", 1, 0),
+        _phase77_mod_rate_parameter(2, 1),
+        _phase77_mod_integer_parameter("volume", "VOLUME", 3, 2),
+        _phase77_mod_enum_parameter("mode", "MODE", 4, 3, ((0, "CHORUS"), (1, "VIBRATO")), 0),
+        _phase77_mod_sync_parameter(5, 4),
+    )
+
+
+def _phase77_bias_trem_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase77_mod_integer_parameter("depth", "DEPTH", 1, 0),
+        _phase77_mod_rate_parameter(2, 1),
+        _phase77_mod_integer_parameter("volume", "VOLUME", 3, 2),
+        _phase77_mod_sync_parameter(4, 3),
+        _phase77_mod_integer_parameter("bias", "BIAS", 5, 4),
+    )
+
+
+MOD_PHASE77_ENUM_BIAS_PARAMETER_SEEDS: dict[str, tuple[dict[str, Any], ...]] = {
+    "mod.phaser_st": _phase77_phaser_st_parameters(),
+    "mod.u_vibe": _phase77_u_vibe_parameters(),
+    "mod.bias_trem": _phase77_bias_trem_parameters(),
+}
+
+
+
+def _phase78_mod_final_base_validation(selector: int, source: str) -> dict[str, Any]:
+    return {
+        "offline": True,
+        "physical": False,
+        "read_only": True,
+        "effect_identity_source": "current_chain",
+        "parameter_selector": selector,
+        "evidence": "docs/phases/MOD_FINAL_FOUR_CANDIDATES_PHASE78.md",
+        "monitor_integration_physical_validation": "pending",
+        "candidate_family": "phase78_mod_final_four",
+        "candidate_requires_live_validation": True,
+        "selector_mapping_source": source,
+        "full_float32_required": True,
+    }
+
+
+def _phase78_mod_integer_parameter(key: str, name: str, order: int, selector: int, *, default: int = 50, minimum: int = 0, maximum: int = 100, unit: str | None = None, source: str = "user_reported_ui_order_and_established_numeric_schema") -> dict[str, Any]:
+    validation = _phase78_mod_final_base_validation(selector, source)
+    validation.update({
+        "saved_dump_default": default,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "range_source": "user_reported_official_ui_and_established_float32_numeric_schema",
+        "range_validated": [minimum, maximum],
+    })
+    return {
+        "key": key, "name": name, "display_order": order, "value_type": "integer",
+        "range": {"minimum": minimum, "maximum": maximum, "step": 1}, "unit": unit,
+        "protocol": {"profile": "effect_parameter_response_1c_v1", "value_codec": "float32_nibbles_v1", "identification_status": "validated_with_chain_effect_context", "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1}},
+        "validation": validation,
+    }
+
+
+def _phase78_mod_rate_parameter(order: int, selector: int, controller_key: str = "sync") -> dict[str, Any]:
+    validation = _phase78_mod_final_base_validation(selector, "user_reported_ui_order_plus_phase74_validated_rate_sync_schema")
+    validation.update({
+        "conditional_domain_controller": controller_key,
+        "sync_off_default": 0.5,
+        "sync_on_default_wire_value": 4,
+        "sync_on_default_label": "1/4",
+        "reset_on_sync_change_confirmed_by_user": True,
+        "sync_transition_default_source": "user_physical_confirmation_phase74",
+        "range_source": "phase74_e_chorus_rate_sync_anchor_plus_user_reported_shared_mod_rate_schema",
+        "range_validated": [0.1, 10.0],
+        "step_validated": 0.1,
+    })
+    return {
+        "key": "rate", "name": "RATE", "display_order": order, "value_type": "number",
+        "range": {"minimum": 0, "maximum": 10, "step": 0.1}, "unit": "Hz",
+        "value_domain": {"controller_parameter": controller_key, "reset_on_controller_change": True, "states": [
+            {"controller_value": False, "default_value": 0.5, "presentation": {"kind": "numeric", "unit": "Hz", "decimals": 1}},
+            {"controller_value": True, "default_value": 4, "presentation": {"kind": "enum", "choices": [{"value": value, "label": label} for value, label in MOD_SYNC_RATE_CHOICES]}},
+        ]},
+        "protocol": {"profile": "effect_parameter_response_1c_v1", "value_codec": "float32_nibbles_v1", "identification_status": "validated_with_chain_effect_context", "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1}},
+        "validation": validation,
+    }
+
+
+def _phase78_mod_sync_parameter(order: int, selector: int) -> dict[str, Any]:
+    validation = _phase78_mod_final_base_validation(selector, "user_reported_ui_order_plus_phase74_validated_rate_sync_schema")
+    validation.update({"saved_dump_default": 0, "saved_dump_default_source": "user_reported_official_ui", "boolean_encoding": {"false": 0, "true": 1}})
+    return {
+        "key": "sync", "name": "SYNC", "display_order": order, "value_type": "boolean",
+        "range": {"minimum": 0, "maximum": 1, "step": 1}, "unit": None,
+        "protocol": {"profile": "effect_parameter_response_1c_v1", "value_codec": "float32_nibbles_v1", "identification_status": "validated_with_chain_effect_context", "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1}},
+        "validation": validation,
+    }
+
+
+def _phase78_mod_enum_parameter(key: str, name: str, order: int, selector: int, choices: tuple[tuple[int, str], ...], default_value: int, source: str) -> dict[str, Any]:
+    validation = _phase78_mod_final_base_validation(selector, source)
+    validation.update({
+        "saved_dump_default": default_value,
+        "saved_dump_default_source": "user_reported_official_ui",
+        "enum_mapping_source": "user_reported_ui_values_candidate",
+        "candidate_enum_mapping_requires_live_validation": False,
+    })
+    values = [value for value, _label in choices]
+    return {
+        "key": key, "name": name, "display_order": order, "value_type": "enum",
+        "range": {"minimum": min(values), "maximum": max(values), "step": 1},
+        "choices": [{"value": value, "label": label} for value, label in choices], "unit": None,
+        "protocol": {"profile": "effect_parameter_response_1c_v1", "value_codec": "float32_nibbles_v1", "identification_status": "validated_with_chain_effect_context", "message_match": {"parameter_selector": selector, "parameter_marker": 1, "parameter_type": 1}},
+        "validation": validation,
+    }
+
+
+def _phase78_d_chorus_parameters() -> tuple[dict[str, Any], ...]:
+    parameters = list(_phase78_mod_enum_parameter(
+        "mode", "MODE", 1, 0,
+        ((0, "1"), (1, "2"), (2, "3"), (3, "4")),
+        0,
+        "user_live_monitor_phase78_confirms_zero_based_wire_to_one_based_ui",
+    ) for _ in range(1))
+    validation = parameters[0]["validation"]
+    validation.update({
+        "saved_dump_default": 0,
+        "saved_dump_default_source": "user_physical_default_ui_1_plus_live_monitor_wire_0_observation",
+        "ui_default_label": "1",
+        "wire_default": 0,
+        "enum_mapping_source": "user_live_monitor_phase78_off_by_one_sequence",
+        "candidate_enum_mapping_requires_live_validation": False,
+        "correction_reason": "device_ui_is_one_based_while_wire_enum_is_zero_based",
+        "evidence": "docs/phases/MOD_CLASS_CONSOLIDATION_PHASE78.md",
+        "monitor_validation_source": "user_live_retest_after_phase78_zero_based_fix",
+        "monitor_validation_result": "d_chorus_wire_0_3_maps_exactly_to_ui_mode_1_4",
+    })
+    return tuple(parameters)
+
+
+def _phase78_promote_live_validated(
+    parameters: tuple[dict[str, Any], ...],
+    result: str,
+    source: str = "user_live_monitor_mod_phase78_final_four_with_log",
+) -> tuple[dict[str, Any], ...]:
+    promoted: list[dict[str, Any]] = []
+    for parameter in parameters:
+        item = json.loads(json.dumps(parameter))
+        validation = item["validation"]
+        validation.update({
+            "physical": True,
+            "evidence": "docs/phases/MOD_CLASS_CONSOLIDATION_PHASE78.md",
+            "monitor_integration_physical_validation": "approved",
+            "candidate_requires_live_validation": False,
+            "monitor_validation_source": source,
+            "monitor_validation_result": result,
+        })
+        promoted.append(item)
+    return tuple(promoted)
+
+
+def _phase78_m_chorus_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase78_mod_integer_parameter("mix", "MIX", 1, 0),
+        _phase78_mod_rate_parameter(2, 1),
+        _phase78_mod_integer_parameter("filter", "FILTER", 3, 2),
+        _phase78_mod_integer_parameter("depth_l", "DEPTH L", 4, 3),
+        _phase78_mod_integer_parameter("depth_c", "DEPTH C", 5, 4),
+        _phase78_mod_integer_parameter("depth_r", "DEPTH R", 6, 5),
+        _phase78_mod_sync_parameter(7, 6),
+    )
+
+
+def _phase78_detune_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase78_mod_integer_parameter("detune", "DETUNE", 1, 0, default=-25, minimum=-50, maximum=50, unit="cents", source="user_reported_ui_order_plus_phase73_validated_signed_float32_schema"),
+        _phase78_mod_integer_parameter("wet", "WET", 2, 1),
+        _phase78_mod_integer_parameter("dry", "DRY", 3, 2),
+    )
+
+
+def _phase78_lofi_bit_parameters() -> tuple[dict[str, Any], ...]:
+    return (
+        _phase78_mod_integer_parameter("mix", "MIX", 1, 0, default=50),
+        _phase78_mod_integer_parameter("krush", "KRUSH", 2, 1, default=20),
+        _phase78_mod_integer_parameter("bit", "BIT", 3, 2, default=20),
+        _phase78_mod_integer_parameter("hi_cut", "HI CUT", 4, 3, default=50),
+        _phase78_mod_integer_parameter("lo_cut", "LO CUT", 5, 4, default=50),
+    )
+
+
+MOD_PHASE78_FINAL_FOUR_PARAMETER_SEEDS: dict[str, tuple[dict[str, Any], ...]] = {
+    "mod.d_chorus": _phase78_promote_live_validated(
+        _phase78_d_chorus_parameters(),
+        "d_chorus_wire_0_3_maps_exactly_to_ui_mode_1_4",
+        "user_live_retest_after_phase78_zero_based_fix",
+    ),
+    "mod.m_chorus": _phase78_promote_live_validated(
+        _phase78_m_chorus_parameters(),
+        "m_chorus_all_seven_parameters_exact_to_device",
+    ),
+    "mod.detune": _phase78_promote_live_validated(
+        _phase78_detune_parameters(),
+        "detune_signed_range_wet_dry_exact_to_device",
+    ),
+    "mod.lofi_bit": _phase78_promote_live_validated(
+        _phase78_lofi_bit_parameters(),
+        "lofi_bit_all_five_parameters_exact_to_device",
+    ),
+}
+
+
 EBOOST_PARAMETER_SEEDS: tuple[dict[str, Any], ...] = (
     {
         "key": "gain",
@@ -4887,6 +5738,26 @@ def _effect_document(
         status = "physically_validated"
     elif effect_key in EQ_PARAMETER_SEEDS:
         parameters = list(EQ_PARAMETER_SEEDS[effect_key])
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key in MOD_PHASE74_FAMILY_PARAMETER_SEEDS:
+        parameters = list(MOD_PHASE74_FAMILY_PARAMETER_SEEDS[effect_key])
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key in MOD_PHASE75_FLANGER_FAMILY_PARAMETER_SEEDS:
+        parameters = list(MOD_PHASE75_FLANGER_FAMILY_PARAMETER_SEEDS[effect_key])
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key in MOD_PHASE76_DUAL_SYNC_PARAMETER_SEEDS:
+        parameters = list(MOD_PHASE76_DUAL_SYNC_PARAMETER_SEEDS[effect_key])
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key in MOD_PHASE77_ENUM_BIAS_PARAMETER_SEEDS:
+        parameters = list(MOD_PHASE77_ENUM_BIAS_PARAMETER_SEEDS[effect_key])
+        capabilities = ["parameters"]
+        status = "physically_validated"
+    elif effect_key in MOD_PHASE78_FINAL_FOUR_PARAMETER_SEEDS:
+        parameters = list(MOD_PHASE78_FINAL_FOUR_PARAMETER_SEEDS[effect_key])
         capabilities = ["parameters"]
         status = "physically_validated"
     elif effect_key == "dyn.m_boost" and not parameters:
